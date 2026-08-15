@@ -1,0 +1,35 @@
+# Version control and local environment files
+.git
+.git/**
+.gitignore
+.env
+.env.*
+!.env.example
+
+# Python caches, test output, and local environments
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.venv/
+**/venv/
+
+# Node dependencies and generated frontend output
+**/node_modules/
+**/dist/
+**/.vite/
+**/*.tsbuildinfo
+
+# Editor, operating-system, and runtime artifacts
+.vscode/
+.idea/
+**/.DS_Store
+**/Thumbs.db
+**/*.log
+**/*.tmp
+**/*.swp
+
+# Local Docker artifacts
+db_data/
