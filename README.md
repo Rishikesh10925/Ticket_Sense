@@ -81,7 +81,9 @@ Role-based access, the review UI, and the escalation workflow are not built yet 
 |---|---|
 | Repository, branch strategy, Docker Compose skeleton | ✅ Available |
 | FastAPI backend skeleton (`/health`) | ✅ Available |
+| Vite + React + TypeScript frontend skeleton | ✅ Available |
 | LangGraph orchestration pattern (design) | ✅ Documented, not implemented |
+| ITSM UI pattern research + low-fidelity wireframes | ✅ Documented, not implemented |
 | Ticket intake + optional attachment processing | ⏳ Planned |
 | Ticket classification (department/priority/sentiment) | ⏳ Planned |
 | Department routing | ⏳ Planned |
@@ -116,9 +118,11 @@ flowchart TD
     FINAL --> FB[Feedback / Analytics]
 ```
 
-Only the frontend/backend/database boxes and the Docker Compose wiring between them
-exist today; classification, retrieval, drafting, and confidence scoring are design
-targets described in [docs/architecture.md](docs/architecture.md) and
+Only the FastAPI backend, the Postgres+pgvector database, and the Docker Compose wiring
+between them exist today. The React frontend exists as an unstyled Vite scaffold only
+(no screens built, no wiring to the backend yet). Classification, retrieval, drafting,
+and confidence scoring are design targets described in
+[docs/architecture.md](docs/architecture.md) and
 [docs/langgraph-research.md](docs/langgraph-research.md).
 
 ## Project structure
@@ -130,6 +134,9 @@ TicketSense/
 │   ├── tests/              Backend tests
 │   ├── Dockerfile
 │   └── pyproject.toml
+├── frontend/             Vite + React + TypeScript scaffold
+│   ├── src/                Default Vite app entrypoint (not yet TicketSense screens)
+│   └── package.json
 ├── docs/                 Architecture, research, and evaluation notes
 ├── docker-compose.yml    Postgres (pgvector) + FastAPI backend
 ├── .env.example          Environment variable template
@@ -141,10 +148,11 @@ TicketSense/
 | Directory | Purpose |
 |---|---|
 | `backend/` | FastAPI service — the API that will host classification, routing, and RAG endpoints |
-| `docs/` | Architecture decisions, LangGraph research, and the evaluation protocol |
+| `frontend/` | React UI — currently the default Vite scaffold, not yet the TicketSense screens |
+| `docs/` | Architecture decisions, UI/LangGraph research, wireframes, and the evaluation protocol |
 
-`frontend/`, `ai/`, and `db/` (React UI, embeddings/LangGraph/ML training, migrations and
-seed data) are planned for later weeks and are not present yet.
+`ai/` and `db/` (embeddings/LangGraph/ML training, migrations and seed data) are planned
+for later weeks and are not present yet.
 
 ## Setup
 
@@ -153,6 +161,7 @@ seed data) are planned for later weeks and are not present yet.
 - [Git](https://git-scm.com/)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Compose v2)
 - [Python 3.11+](https://www.python.org/) and [uv](https://docs.astral.sh/uv/) for local (non-Docker) backend development
+- [Node.js 20+](https://nodejs.org/) for frontend development
 
 ### Clone
 
@@ -196,8 +205,19 @@ cd backend
 uv run pytest
 ```
 
-Database migrations, seed data, and the frontend are not part of the repository yet, so
-there are no migration/seed/frontend commands to run at this stage.
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+This runs the default Vite scaffold at `localhost:5173` — no TicketSense screens are
+built yet (see [Project status](#project-status)).
+
+Database migrations and seed data are not part of the repository yet, so there are no
+migration/seed commands to run at this stage.
 
 ## Environment variables
 
@@ -234,14 +254,16 @@ feature/confidence-model
 - GitHub repository and branch strategy
 - Docker Compose skeleton (`db` + `api`) — builds and runs locally
 - Initial FastAPI project structure with a working `/health` endpoint and a passing test
+- Vite + React + TypeScript frontend scaffold — installs and builds locally (default starter screen only)
 - LangGraph orchestration pattern researched and documented ([docs/langgraph-research.md](docs/langgraph-research.md))
+- ITSM ticket-submission and reviewer-dashboard UI patterns researched, with low-fidelity wireframes for all three roles ([docs/ui-research.md](docs/ui-research.md), [docs/wireframes.md](docs/wireframes.md))
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
 
 ### In Progress
 - Nothing yet — this is the end of Week 1 setup.
 
 ### Planned
-- Frontend (React + TypeScript + Vite)
+- TicketSense frontend screens (End User, Department Engineer, Admin) built from the Week 1 wireframes
 - Database schema and Alembic migrations (PostgreSQL + pgvector)
 - Ticket classification (department/priority/sentiment)
 - Department-scoped RAG (knowledge-base and resolved-ticket retrieval)
@@ -300,6 +322,8 @@ production system.
 - [docs/architecture.md](docs/architecture.md) — data flow, schema rationale, and design decisions
 - [docs/research-evaluation.md](docs/research-evaluation.md) — experiment matrix and evaluation protocol
 - [docs/langgraph-research.md](docs/langgraph-research.md) — planned LangGraph orchestration pattern
+- [docs/ui-research.md](docs/ui-research.md) — ITSM UI pattern research
+- [docs/wireframes.md](docs/wireframes.md) — low-fidelity wireframes for all three roles
 
 ## License
 
