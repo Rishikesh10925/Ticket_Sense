@@ -30,3 +30,6 @@ Thumbs.db
 
 # Docker
 db_data/
+
+# Downloaded datasets (not committed — see data/README.md)
+data/raw/
