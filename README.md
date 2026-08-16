@@ -84,6 +84,9 @@ Role-based access, the review UI, and the escalation workflow are not built yet 
 | Vite + React + TypeScript frontend skeleton | ✅ Available |
 | LangGraph orchestration pattern (design) | ✅ Documented, not implemented |
 | ITSM UI pattern research + low-fidelity wireframes | ✅ Documented, not implemented |
+| Public dataset identified + download script | ✅ Available (`data/download_dataset.py`) |
+| RAG / calibration / human-AI deferral literature review | ✅ Documented |
+| Knowledge-base article outline (5 departments) | ✅ Documented, articles not authored |
 | Ticket intake + optional attachment processing | ⏳ Planned |
 | Ticket classification (department/priority/sentiment) | ⏳ Planned |
 | Department routing | ⏳ Planned |
@@ -137,6 +140,8 @@ TicketSense/
 ├── frontend/             Vite + React + TypeScript scaffold
 │   ├── src/                Default Vite app entrypoint (not yet TicketSense screens)
 │   └── package.json
+├── data/                 Dataset identification and download script
+│   └── download_dataset.py
 ├── docs/                 Architecture, research, and evaluation notes
 ├── docker-compose.yml    Postgres (pgvector) + FastAPI backend
 ├── .env.example          Environment variable template
@@ -149,7 +154,8 @@ TicketSense/
 |---|---|
 | `backend/` | FastAPI service — the API that will host classification, routing, and RAG endpoints |
 | `frontend/` | React UI — currently the default Vite scaffold, not yet the TicketSense screens |
-| `docs/` | Architecture decisions, UI/LangGraph research, wireframes, and the evaluation protocol |
+| `data/` | Public dataset identification and download script (raw data itself is gitignored) |
+| `docs/` | Architecture decisions, UI/LangGraph/dataset/literature research, wireframes, and the evaluation protocol |
 
 `ai/` and `db/` (embeddings/LangGraph/ML training, migrations and seed data) are planned
 for later weeks and are not present yet.
@@ -216,6 +222,17 @@ npm run dev
 This runs the default Vite scaffold at `localhost:5173` — no TicketSense screens are
 built yet (see [Project status](#project-status)).
 
+### Dataset
+
+```bash
+pip install kagglehub
+python data/download_dataset.py
+```
+
+Downloads the public ticket dataset identified for classification into
+`data/raw/` (gitignored). See [docs/dataset-research.md](docs/dataset-research.md) for
+what it is and why it was chosen.
+
 Database migrations and seed data are not part of the repository yet, so there are no
 migration/seed commands to run at this stage.
 
@@ -257,6 +274,9 @@ feature/confidence-model
 - Vite + React + TypeScript frontend scaffold — installs and builds locally (default starter screen only)
 - LangGraph orchestration pattern researched and documented ([docs/langgraph-research.md](docs/langgraph-research.md))
 - ITSM ticket-submission and reviewer-dashboard UI patterns researched, with low-fidelity wireframes for all three roles ([docs/ui-research.md](docs/ui-research.md), [docs/wireframes.md](docs/wireframes.md))
+- Public IT-support ticket dataset identified, verified, and downloadable locally ([docs/dataset-research.md](docs/dataset-research.md), `data/download_dataset.py`)
+- Literature reviewed on RAG, confidence calibration, and human-AI deferral ([docs/literature-review.md](docs/literature-review.md))
+- Knowledge-base article outline drafted across all five target departments ([docs/knowledge-base-outline.md](docs/knowledge-base-outline.md))
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
 
 ### In Progress
@@ -265,6 +285,7 @@ feature/confidence-model
 ### Planned
 - TicketSense frontend screens (End User, Department Engineer, Admin) built from the Week 1 wireframes
 - Database schema and Alembic migrations (PostgreSQL + pgvector)
+- Authoring the outlined knowledge-base articles (SAP and Networking first)
 - Ticket classification (department/priority/sentiment)
 - Department-scoped RAG (knowledge-base and resolved-ticket retrieval)
 - LLM draft generation with citations (`ai/agents` LLM provider interface)
@@ -324,6 +345,9 @@ production system.
 - [docs/langgraph-research.md](docs/langgraph-research.md) — planned LangGraph orchestration pattern
 - [docs/ui-research.md](docs/ui-research.md) — ITSM UI pattern research
 - [docs/wireframes.md](docs/wireframes.md) — low-fidelity wireframes for all three roles
+- [docs/dataset-research.md](docs/dataset-research.md) — public dataset identification, structure, and license
+- [docs/literature-review.md](docs/literature-review.md) — RAG, confidence calibration, and human-AI deferral literature
+- [docs/knowledge-base-outline.md](docs/knowledge-base-outline.md) — planned KB article outline across all five departments
 
 ## License
 
