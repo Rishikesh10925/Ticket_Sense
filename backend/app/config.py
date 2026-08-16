@@ -11,6 +11,7 @@ class Settings(BaseSettings):
 
     app_env: str = "development"
     cors_origins: str = "http://localhost:5173"
+    database_url: str = "postgresql+asyncpg://ticketsense:ticketsense@localhost:5432/ticketsense"
 
     @property
     def cors_origin_list(self) -> list[str]:

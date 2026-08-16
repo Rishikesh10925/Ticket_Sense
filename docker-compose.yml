@@ -24,6 +24,7 @@ services:
     environment:
       APP_ENV: ${APP_ENV:-development}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-ticketsense}:${POSTGRES_PASSWORD:-ticketsense}@db:5432/${POSTGRES_DB:-ticketsense}
     ports:
       - "8000:8000"
     depends_on:
