@@ -12,7 +12,7 @@ for review, or whether the ticket should be escalated untouched. TicketSense doe
 send AI-generated responses to end users directly; a human engineer always makes the
 final call.
 
-> **Status: Week 1 (repository, tooling, and orchestration research).** The pipeline
+> **Status: Week 2 (database schema, backend/frontend foundations).** The pipeline
 > below describes the target architecture. See [Project status](#project-status) for
 > what is actually implemented today.
 
@@ -80,7 +80,8 @@ Role-based access, the review UI, and the escalation workflow are not built yet 
 | Feature | Status |
 |---|---|
 | Repository, branch strategy, Docker Compose skeleton | ✅ Available |
-| FastAPI backend skeleton (`/health`) | ✅ Available |
+| FastAPI backend skeleton (`/health`, router structure) | ✅ Available |
+| Database schema + Alembic migrations (7 core tables) | ✅ Available |
 | Vite + React + TypeScript frontend skeleton | ✅ Available |
 | LangGraph orchestration pattern (design) | ✅ Documented, not implemented |
 | ITSM UI pattern research + low-fidelity wireframes | ✅ Documented, not implemented |
@@ -121,10 +122,11 @@ flowchart TD
     FINAL --> FB[Feedback / Analytics]
 ```
 
-Only the FastAPI backend, the Postgres+pgvector database, and the Docker Compose wiring
-between them exist today. The React frontend exists as an unstyled Vite scaffold only
-(no screens built, no wiring to the backend yet). Classification, retrieval, drafting,
-and confidence scoring are design targets described in
+Only the FastAPI backend, the Postgres+pgvector database (schema live via Alembic), and
+the Docker Compose wiring between them exist today. The React frontend exists as an
+unstyled Vite scaffold only (no screens built, no wiring to the backend yet). No API
+endpoints read or write the database yet — the schema exists, but classification,
+retrieval, drafting, and confidence scoring are still design targets described in
 [docs/architecture.md](docs/architecture.md) and
 [docs/langgraph-research.md](docs/langgraph-research.md).
 
@@ -133,10 +135,16 @@ and confidence scoring are design targets described in
 ```text
 TicketSense/
 ├── backend/              FastAPI application
-│   ├── app/               Application package (config, main entrypoint)
+│   ├── app/                Application package
+│   │   ├── models/           SQLAlchemy models (users, departments, tickets, ...)
+│   │   ├── routers/          APIRouter modules (health so far)
+│   │   ├── config.py, database.py, main.py
 │   ├── tests/              Backend tests
+│   ├── alembic.ini
 │   ├── Dockerfile
 │   └── pyproject.toml
+├── db/
+│   └── migrations/        Alembic migration environment and versions
 ├── frontend/             Vite + React + TypeScript scaffold
 │   ├── src/                Default Vite app entrypoint (not yet TicketSense screens)
 │   └── package.json
@@ -152,13 +160,14 @@ TicketSense/
 
 | Directory | Purpose |
 |---|---|
-| `backend/` | FastAPI service — the API that will host classification, routing, and RAG endpoints |
+| `backend/` | FastAPI service — models, routers, and config for the API |
+| `db/migrations/` | Alembic migration environment (schema definitions live as SQLAlchemy models in `backend/app/models/`) |
 | `frontend/` | React UI — currently the default Vite scaffold, not yet the TicketSense screens |
 | `data/` | Public dataset identification and download script (raw data itself is gitignored) |
 | `docs/` | Architecture decisions, UI/LangGraph/dataset/literature research, wireframes, and the evaluation protocol |
 
-`ai/` and `db/` (embeddings/LangGraph/ML training, migrations and seed data) are planned
-for later weeks and are not present yet.
+`ai/` (embeddings/LangGraph/ML training) is planned for later weeks and is not present
+yet.
 
 ## Setup
 
@@ -211,6 +220,19 @@ cd backend
 uv run pytest
 ```
 
+### Database migrations
+
+With `db` running (via Docker Compose or otherwise) and `DATABASE_URL` in `.env`
+pointing at it:
+
+```bash
+cd backend
+uv run alembic upgrade head
+```
+
+Applies the schema (`departments`, `users`, `tickets`, `knowledge_base`, `embeddings`,
+`escalations`, `feedback`) via Alembic. `uv run alembic downgrade base` reverses it.
+
 ### Frontend
 
 ```bash
@@ -233,8 +255,8 @@ Downloads the public ticket dataset identified for classification into
 `data/raw/` (gitignored). See [docs/dataset-research.md](docs/dataset-research.md) for
 what it is and why it was chosen.
 
-Database migrations and seed data are not part of the repository yet, so there are no
-migration/seed commands to run at this stage.
+Seed data is not part of the repository yet, so there is no seed command to run at this
+stage.
 
 ## Environment variables
 
@@ -246,6 +268,7 @@ migration/seed commands to run at this stage.
 | `POSTGRES_PORT` | Host port mapped to Postgres (default `5432`) |
 | `APP_ENV` | Backend environment name (`development`/`production`), returned by `/health` |
 | `CORS_ORIGINS` | Comma-separated origins allowed to call the API |
+| `DATABASE_URL` | Async SQLAlchemy connection string, used by the backend and Alembic (must stay in sync with the `POSTGRES_*` values) |
 
 ## Development workflow
 
@@ -270,7 +293,11 @@ feature/confidence-model
 ### Completed
 - GitHub repository and branch strategy
 - Docker Compose skeleton (`db` + `api`) — builds and runs locally
-- Initial FastAPI project structure with a working `/health` endpoint and a passing test
+- Initial FastAPI project structure with a working `/health` endpoint, a base router
+  structure (`app/routers/`), and a passing test
+- Database schema live via Alembic — `departments`, `users`, `tickets`,
+  `knowledge_base`, `embeddings` (pgvector), `escalations`, `feedback`; migration
+  verified upgrade/downgrade/upgrade against a running Postgres container
 - Vite + React + TypeScript frontend scaffold — installs and builds locally (default starter screen only)
 - LangGraph orchestration pattern researched and documented ([docs/langgraph-research.md](docs/langgraph-research.md))
 - ITSM ticket-submission and reviewer-dashboard UI patterns researched, with low-fidelity wireframes for all three roles ([docs/ui-research.md](docs/ui-research.md), [docs/wireframes.md](docs/wireframes.md))
@@ -280,11 +307,10 @@ feature/confidence-model
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
 
 ### In Progress
-- Nothing yet — this is the end of Week 1 setup.
+- Week 2 foundations (React app shell, dataset cleaning/splitting, first KB articles) — see the repo's Week 2 branches for in-progress work from other team members.
 
 ### Planned
 - TicketSense frontend screens (End User, Department Engineer, Admin) built from the Week 1 wireframes
-- Database schema and Alembic migrations (PostgreSQL + pgvector)
 - Authoring the outlined knowledge-base articles (SAP and Networking first)
 - Ticket classification (department/priority/sentiment)
 - Department-scoped RAG (knowledge-base and resolved-ticket retrieval)
