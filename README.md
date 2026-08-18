@@ -87,7 +87,10 @@ Role-based access, the review UI, and the escalation workflow are not built yet 
 | ITSM UI pattern research + low-fidelity wireframes | ✅ Documented, not implemented |
 | Public dataset identified + download script | ✅ Available (`data/download_dataset.py`) |
 | RAG / calibration / human-AI deferral literature review | ✅ Documented |
-| Knowledge-base article outline (5 departments) | ✅ Documented, articles not authored |
+| Knowledge-base article outline (5 departments) | ✅ Documented |
+| Knowledge-base articles (SAP, Networking — 24 of 60) | ✅ Authored |
+| Dataset cleaned and structured into project schema | ✅ Available (`data/clean_dataset.py`) — 2 of 5 departments have real examples, see [known limitations](docs/dataset-cleaning.md) |
+| Train/val/test split strategy | ✅ Documented + implemented (`data/split_dataset.py`) |
 | Ticket intake + optional attachment processing | ⏳ Planned |
 | Ticket classification (department/priority/sentiment) | ⏳ Planned |
 | Department routing | ⏳ Planned |
@@ -144,12 +147,15 @@ TicketSense/
 │   ├── Dockerfile
 │   └── pyproject.toml
 ├── db/
-│   └── migrations/        Alembic migration environment and versions
+│   ├── migrations/        Alembic migration environment and versions
+│   └── seed/knowledge_base/  Authored KB articles (SAP, Networking so far)
 ├── frontend/             Vite + React + TypeScript scaffold
 │   ├── src/                Default Vite app entrypoint (not yet TicketSense screens)
 │   └── package.json
-├── data/                 Dataset identification and download script
-│   └── download_dataset.py
+├── data/                 Dataset download, cleaning, and split scripts
+│   ├── download_dataset.py
+│   ├── clean_dataset.py
+│   └── split_dataset.py
 ├── docs/                 Architecture, research, and evaluation notes
 ├── docker-compose.yml    Postgres (pgvector) + FastAPI backend
 ├── .env.example          Environment variable template
@@ -162,8 +168,9 @@ TicketSense/
 |---|---|
 | `backend/` | FastAPI service — models, routers, and config for the API |
 | `db/migrations/` | Alembic migration environment (schema definitions live as SQLAlchemy models in `backend/app/models/`) |
+| `db/seed/knowledge_base/` | Authored knowledge-base articles, one department per subfolder |
 | `frontend/` | React UI — currently the default Vite scaffold, not yet the TicketSense screens |
-| `data/` | Public dataset identification and download script (raw data itself is gitignored) |
+| `data/` | Dataset download, cleaning, and train/val/test split scripts (raw/processed data itself is gitignored) |
 | `docs/` | Architecture decisions, UI/LangGraph/dataset/literature research, wireframes, and the evaluation protocol |
 
 `ai/` (embeddings/LangGraph/ML training) is planned for later weeks and is not present
@@ -255,8 +262,18 @@ Downloads the public ticket dataset identified for classification into
 `data/raw/` (gitignored). See [docs/dataset-research.md](docs/dataset-research.md) for
 what it is and why it was chosen.
 
-Seed data is not part of the repository yet, so there is no seed command to run at this
-stage.
+```bash
+pip install -r data/requirements.txt
+python data/clean_dataset.py   # -> data/processed/tickets_clean.csv
+python data/split_dataset.py   # -> data/processed/tickets_{train,val,test}.csv
+```
+
+Cleans the raw dataset into TicketSense's schema and splits it 70/15/15, stratified by
+department. See [docs/dataset-cleaning.md](docs/dataset-cleaning.md) and
+[docs/split-strategy.md](docs/split-strategy.md) — only 2 of 5 departments currently
+have real examples, documented as a known limitation rather than papered over.
+
+A seed/import-to-database script is not part of the repository yet.
 
 ## Environment variables
 
@@ -304,14 +321,17 @@ feature/confidence-model
 - Public IT-support ticket dataset identified, verified, and downloadable locally ([docs/dataset-research.md](docs/dataset-research.md), `data/download_dataset.py`)
 - Literature reviewed on RAG, confidence calibration, and human-AI deferral ([docs/literature-review.md](docs/literature-review.md))
 - Knowledge-base article outline drafted across all five target departments ([docs/knowledge-base-outline.md](docs/knowledge-base-outline.md))
+- First batch of knowledge-base articles authored — SAP and Networking, 12 each (`db/seed/knowledge_base/`)
+- Public dataset cleaned and structured into the project's schema, and split 70/15/15 for classification ([docs/dataset-cleaning.md](docs/dataset-cleaning.md), [docs/split-strategy.md](docs/split-strategy.md)) — honestly limited to 2 of 5 departments given what the source dataset actually contains
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
 
 ### In Progress
-- Week 2 foundations (React app shell, dataset cleaning/splitting, first KB articles) — see the repo's Week 2 branches for in-progress work from other team members.
+- React app shell and static ticket-submission form (Week 2, Aashritha) — not yet in this branch.
 
 ### Planned
 - TicketSense frontend screens (End User, Department Engineer, Admin) built from the Week 1 wireframes
-- Authoring the outlined knowledge-base articles (SAP and Networking first)
+- Authoring the remaining knowledge-base articles (Cloud, Database, HR — 36 of 60)
+- Synthetic SAP/Cloud/Database ticket examples, since the public dataset has none
 - Ticket classification (department/priority/sentiment)
 - Department-scoped RAG (knowledge-base and resolved-ticket retrieval)
 - LLM draft generation with citations (`ai/agents` LLM provider interface)
@@ -374,6 +394,8 @@ production system.
 - [docs/dataset-research.md](docs/dataset-research.md) — public dataset identification, structure, and license
 - [docs/literature-review.md](docs/literature-review.md) — RAG, confidence calibration, and human-AI deferral literature
 - [docs/knowledge-base-outline.md](docs/knowledge-base-outline.md) — planned KB article outline across all five departments
+- [docs/dataset-cleaning.md](docs/dataset-cleaning.md) — queue → department mapping and its limitations
+- [docs/split-strategy.md](docs/split-strategy.md) — train/validation/test split strategy
 
 ## License
 
