@@ -1,0 +1,46 @@
+.shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.shell-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.shell-brand {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.shell-role-nav {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.shell-role-nav a {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.shell-role-nav a.active {
+  background: var(--color-secondary-bg);
+  color: var(--color-text);
+}
+
+.shell-content {
+  flex: 1;
+  padding: var(--space-lg);
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+}
