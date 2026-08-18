@@ -82,7 +82,9 @@ Role-based access, the review UI, and the escalation workflow are not built yet 
 | Repository, branch strategy, Docker Compose skeleton | ✅ Available |
 | FastAPI backend skeleton (`/health`, router structure) | ✅ Available |
 | Database schema + Alembic migrations (7 core tables) | ✅ Available |
-| Vite + React + TypeScript frontend skeleton | ✅ Available |
+| React app shell — routing, layout, role nav | ✅ Available |
+| Static ticket-submission form UI | ✅ Available (not wired to a backend yet) |
+| Shared frontend component library (Button, Card, FormField) | ✅ Available |
 | LangGraph orchestration pattern (design) | ✅ Documented, not implemented |
 | ITSM UI pattern research + low-fidelity wireframes | ✅ Documented, not implemented |
 | Public dataset identified + download script | ✅ Available (`data/download_dataset.py`) |
@@ -123,8 +125,9 @@ flowchart TD
 ```
 
 Only the FastAPI backend, the Postgres+pgvector database (schema live via Alembic), and
-the Docker Compose wiring between them exist today. The React frontend exists as an
-unstyled Vite scaffold only (no screens built, no wiring to the backend yet). No API
+the Docker Compose wiring between them exist today. The React frontend has an app shell
+(routing, layout, role navigation) and a static ticket-submission form, but no wiring to
+the backend — submitting the form logs to the console and does nothing else. No API
 endpoints read or write the database yet — the schema exists, but classification,
 retrieval, drafting, and confidence scoring are still design targets described in
 [docs/architecture.md](docs/architecture.md) and
@@ -145,8 +148,11 @@ TicketSense/
 │   └── pyproject.toml
 ├── db/
 │   └── migrations/        Alembic migration environment and versions
-├── frontend/             Vite + React + TypeScript scaffold
-│   ├── src/                Default Vite app entrypoint (not yet TicketSense screens)
+├── frontend/             Vite + React + TypeScript app
+│   ├── src/
+│   │   ├── components/      Shared library (Button, Card, FormField)
+│   │   ├── layouts/         App shell (header, role nav)
+│   │   └── pages/            End User / Engineer / Admin role screens
 │   └── package.json
 ├── data/                 Dataset identification and download script
 │   └── download_dataset.py
@@ -162,7 +168,7 @@ TicketSense/
 |---|---|
 | `backend/` | FastAPI service — models, routers, and config for the API |
 | `db/migrations/` | Alembic migration environment (schema definitions live as SQLAlchemy models in `backend/app/models/`) |
-| `frontend/` | React UI — currently the default Vite scaffold, not yet the TicketSense screens |
+| `frontend/` | React UI — app shell, role nav, static ticket form; not wired to the backend |
 | `data/` | Public dataset identification and download script (raw data itself is gitignored) |
 | `docs/` | Architecture decisions, UI/LangGraph/dataset/literature research, wireframes, and the evaluation protocol |
 
@@ -241,8 +247,10 @@ npm install
 npm run dev
 ```
 
-This runs the default Vite scaffold at `localhost:5173` — no TicketSense screens are
-built yet (see [Project status](#project-status)).
+Runs at `localhost:5173`. Redirects to `/end-user` (the ticket-submission form); the
+header nav switches between End User / Department Engineer / Admin. There's no auth yet,
+so the nav is a stand-in for role-based routing, not a permissions boundary — see
+[Project status](#project-status).
 
 ### Dataset
 
@@ -298,7 +306,9 @@ feature/confidence-model
 - Database schema live via Alembic — `departments`, `users`, `tickets`,
   `knowledge_base`, `embeddings` (pgvector), `escalations`, `feedback`; migration
   verified upgrade/downgrade/upgrade against a running Postgres container
-- Vite + React + TypeScript frontend scaffold — installs and builds locally (default starter screen only)
+- React app shell — routing, layout, and header navigation between the three roles (`frontend/src/layouts/Shell.tsx`)
+- Static ticket-submission form UI, plus placeholder Engineer/Admin screens matching the Week 1 wireframes — no backend wiring
+- Shared frontend component library — `Button`, `Card`, `FormField` (`frontend/src/components/`)
 - LangGraph orchestration pattern researched and documented ([docs/langgraph-research.md](docs/langgraph-research.md))
 - ITSM ticket-submission and reviewer-dashboard UI patterns researched, with low-fidelity wireframes for all three roles ([docs/ui-research.md](docs/ui-research.md), [docs/wireframes.md](docs/wireframes.md))
 - Public IT-support ticket dataset identified, verified, and downloadable locally ([docs/dataset-research.md](docs/dataset-research.md), `data/download_dataset.py`)
@@ -307,11 +317,13 @@ feature/confidence-model
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
 
 ### In Progress
-- Week 2 foundations (React app shell, dataset cleaning/splitting, first KB articles) — see the repo's Week 2 branches for in-progress work from other team members.
+- Dataset cleaning/splitting and the first knowledge-base articles — see the repo's
+  other Week 2 branches for this work from other team members.
 
 ### Planned
-- TicketSense frontend screens (End User, Department Engineer, Admin) built from the Week 1 wireframes
-- Authoring the outlined knowledge-base articles (SAP and Networking first)
+- Wiring the ticket-submission form and role screens to the backend API
+- Real Department Engineer and Admin screens (currently layout placeholders)
+- Authoring the remaining knowledge-base articles
 - Ticket classification (department/priority/sentiment)
 - Department-scoped RAG (knowledge-base and resolved-ticket retrieval)
 - LLM draft generation with citations (`ai/agents` LLM provider interface)
