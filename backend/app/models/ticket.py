@@ -15,7 +15,8 @@ class Ticket(UUIDPKMixin, CreatedAtMixin, Base):
         CheckConstraint("priority IN ('low','medium','high')", name="ck_tickets_priority"),
         CheckConstraint("sentiment IN ('positive','neutral','negative')", name="ck_tickets_sentiment"),
         CheckConstraint(
-            "status IN ('open','in_review','resolved','escalated','closed')", name="ck_tickets_status"
+            "status IN ('submitted','classified','routed','drafted','reviewed','closed')",
+            name="ck_tickets_status",
         ),
     )
 
@@ -31,7 +32,7 @@ class Ticket(UUIDPKMixin, CreatedAtMixin, Base):
     attachment_type: Mapped[str | None] = mapped_column(String(10), nullable=True)
     priority: Mapped[str | None] = mapped_column(String(10), nullable=True)
     sentiment: Mapped[str | None] = mapped_column(String(10), nullable=True)
-    status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="open", index=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="submitted", index=True)
     ai_draft_reply: Mapped[str | None] = mapped_column(Text(), nullable=True)
     confidence_score: Mapped[float | None] = mapped_column(Numeric(), nullable=True)
     confidence_features: Mapped[dict | None] = mapped_column(JSONB(), nullable=True)
