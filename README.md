@@ -12,7 +12,7 @@ for review, or whether the ticket should be escalated untouched. TicketSense doe
 send AI-generated responses to end users directly; a human engineer always makes the
 final call.
 
-> **Status: Week 2 (database schema, backend/frontend foundations).** The pipeline
+> **Status: Week 3 (authentication, RBAC, ticket lifecycle).** The pipeline
 > below describes the target architecture. See [Project status](#project-status) for
 > what is actually implemented today.
 
@@ -72,8 +72,10 @@ The engineer's final action (accept/edit/reject/escalate) is logged as feedback.
 | **Department Engineer** | View assigned tickets, review retrieved evidence and the AI draft, see confidence information, accept/edit/reject/escalate, send the final response |
 | **Admin** | Manage users and departments, manage knowledge-base content, view system analytics, configure settings |
 
-Role-based access, the review UI, and the escalation workflow are not built yet — see
-[Project status](#project-status).
+JWT auth and role-scoped ticket visibility are live (see
+[docs/authentication.md](docs/authentication.md)) — each role can log in and hit the
+ticket API today. The review UI, confidence information, and admin management screens
+are not built yet — see [Project status](#project-status).
 
 ## Features
 
@@ -93,7 +95,11 @@ Role-based access, the review UI, and the escalation workflow are not built yet 
 | Knowledge-base articles (SAP, Networking — 24 of 60) | ✅ Authored |
 | Dataset cleaned and structured into project schema | ✅ Available (`data/clean_dataset.py`) — 2 of 5 departments have real examples, see [known limitations](docs/dataset-cleaning.md) |
 | Train/val/test split strategy | ✅ Documented + implemented (`data/split_dataset.py`) |
-| Ticket intake + optional attachment processing | ⏳ Planned |
+| JWT authentication (register/login/me) | ✅ Available |
+| Role-based access control (3 roles) | ✅ Available — row-level ticket visibility; `require_role` gate ready for role-exclusive endpoints |
+| Ticket intake + optional attachment upload | ✅ Available (`POST /tickets`) |
+| Ticket list (filterable) + detail-view API | ✅ Available (`GET /tickets`, `GET /tickets/{id}`) |
+| Ticket lifecycle state machine | ✅ Implemented + tested (`backend/app/services/ticket_lifecycle.py`) — only `submitted` is reachable via the API so far |
 | Ticket classification (department/priority/sentiment) | ⏳ Planned |
 | Department routing | ⏳ Planned |
 | Department-scoped RAG (knowledge base + resolved tickets) | ⏳ Planned |
@@ -103,7 +109,6 @@ Role-based access, the review UI, and the escalation workflow are not built yet 
 | Human-in-the-loop review (accept/edit/reject/escalate) | ⏳ Planned |
 | Feedback logging | ⏳ Planned |
 | Basic analytics | ⏳ Planned |
-| Role-based access (3 roles) | ⏳ Planned |
 
 ## Architecture
 
@@ -127,12 +132,12 @@ flowchart TD
     FINAL --> FB[Feedback / Analytics]
 ```
 
-Only the FastAPI backend, the Postgres+pgvector database (schema live via Alembic), and
-the Docker Compose wiring between them exist today. The React frontend has an app shell
-(routing, layout, role navigation) and a static ticket-submission form, but no wiring to
-the backend — submitting the form logs to the console and does nothing else. No API
-endpoints read or write the database yet — the schema exists, but classification,
-retrieval, drafting, and confidence scoring are still design targets described in
+The FastAPI backend now has working auth (JWT + RBAC) and ticket create/list/detail
+endpoints backed by the Postgres+pgvector database, all live via Docker Compose. The
+React frontend still has only the app shell and a static ticket-submission form — it
+does not call the real API yet (that's Aashritha's Week 3 task; submitting the form
+still just logs to the console). Classification, retrieval, drafting, and confidence
+scoring are still design targets described in
 [docs/architecture.md](docs/architecture.md) and
 [docs/langgraph-research.md](docs/langgraph-research.md).
 
@@ -142,9 +147,13 @@ retrieval, drafting, and confidence scoring are still design targets described i
 TicketSense/
 ├── backend/              FastAPI application
 │   ├── app/                Application package
-│   │   ├── models/           SQLAlchemy models (users, departments, tickets, ...)
-│   │   ├── routers/          APIRouter modules (health so far)
-│   │   ├── config.py, database.py, main.py
+│   │   ├── core/              Password hashing, JWT encode/decode
+│   │   ├── models/            SQLAlchemy models (users, departments, tickets, ...)
+│   │   ├── routers/           APIRouter modules (health, auth, tickets)
+│   │   ├── schemas/           Pydantic request/response models
+│   │   ├── services/          Ticket lifecycle state machine
+│   │   ├── scripts/           Dev-only scripts (demo user seeding)
+│   │   ├── config.py, database.py, dependencies.py, main.py
 │   ├── tests/              Backend tests
 │   ├── alembic.ini
 │   ├── Dockerfile
@@ -246,6 +255,39 @@ uv run alembic upgrade head
 Applies the schema (`departments`, `users`, `tickets`, `knowledge_base`, `embeddings`,
 `escalations`, `feedback`) via Alembic. `uv run alembic downgrade base` reverses it.
 
+### Demo accounts (all three roles)
+
+Department Engineer and Admin can't self-register — seed one demo account per role:
+
+```bash
+cd backend
+uv run python -m app.scripts.seed_demo_users
+```
+
+See [docs/authentication.md](docs/authentication.md) for the accounts created and their
+password.
+
+### Try the API
+
+```bash
+# Register (End User only) and log in
+curl -X POST localhost:8000/auth/register -H "Content-Type: application/json" \
+  -d '{"email":"you@example.com","full_name":"You","password":"password123"}'
+curl -X POST localhost:8000/auth/login -d "username=you@example.com&password=password123"
+
+# Create a ticket (optionally with an attachment)
+curl -X POST localhost:8000/tickets -H "Authorization: Bearer <token>" \
+  -F "subject=VPN not connecting" -F "description=..." -F "attachment=@log.txt"
+
+# List (filterable by ?status=&priority=) and fetch by id
+curl localhost:8000/tickets -H "Authorization: Bearer <token>"
+curl localhost:8000/tickets/<id> -H "Authorization: Bearer <token>"
+```
+
+Full interactive docs at `localhost:8000/docs`. See
+[docs/authentication.md](docs/authentication.md) for the RBAC model and
+[docs/ticket-lifecycle.md](docs/ticket-lifecycle.md) for the ticket status state machine.
+
 ### Frontend
 
 ```bash
@@ -294,6 +336,9 @@ A seed/import-to-database script is not part of the repository yet.
 | `APP_ENV` | Backend environment name (`development`/`production`), returned by `/health` |
 | `CORS_ORIGINS` | Comma-separated origins allowed to call the API |
 | `DATABASE_URL` | Async SQLAlchemy connection string, used by the backend and Alembic (must stay in sync with the `POSTGRES_*` values) |
+| `JWT_SECRET_KEY` | Secret used to sign auth tokens — change before any non-local deployment |
+| `JWT_ALGORITHM` | JWT signing algorithm (default `HS256`) |
+| `JWT_EXPIRE_MINUTES` | Access token lifetime in minutes (default `60`) |
 
 ## Development workflow
 
@@ -333,10 +378,15 @@ feature/confidence-model
 - Knowledge-base article outline drafted across all five target departments ([docs/knowledge-base-outline.md](docs/knowledge-base-outline.md))
 - First batch of knowledge-base articles authored — SAP and Networking, 12 each (`db/seed/knowledge_base/`)
 - Public dataset cleaned and structured into the project's schema, and split 70/15/15 for classification ([docs/dataset-cleaning.md](docs/dataset-cleaning.md), [docs/split-strategy.md](docs/split-strategy.md)) — honestly limited to 2 of 5 departments given what the source dataset actually contains
+- JWT authentication and role-based access control for all three roles ([docs/authentication.md](docs/authentication.md)) — register/login/me, plus row-level ticket visibility scoped by role
+- Ticket CRUD API — create (with optional attachment upload), filterable list, detail-view, all tested against a live database and role-checked
+- Ticket lifecycle state machine defined, migrated into the schema, and unit-tested ([docs/ticket-lifecycle.md](docs/ticket-lifecycle.md))
+- Demo seed script for all three role accounts (`backend/app/scripts/seed_demo_users.py`)
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
 
 ### In Progress
-- Nothing yet — all Week 2 branches (backend schema, dataset prep, frontend shell) are merged.
+- Wiring the frontend to the real auth/ticket API, login/logout screens, and the End User "my tickets" view (Week 3, Aashritha) — not yet in this branch.
+- Remaining knowledge-base articles, embedding generation, and the confidence-model labelling guide (Week 3, Shivaganesh) — not yet in this branch.
 
 ### Planned
 - Wiring the ticket-submission form and role screens to the backend API
@@ -407,6 +457,8 @@ production system.
 - [docs/knowledge-base-outline.md](docs/knowledge-base-outline.md) — planned KB article outline across all five departments
 - [docs/dataset-cleaning.md](docs/dataset-cleaning.md) — queue → department mapping and its limitations
 - [docs/split-strategy.md](docs/split-strategy.md) — train/validation/test split strategy
+- [docs/authentication.md](docs/authentication.md) — JWT auth flow and role-based access control
+- [docs/ticket-lifecycle.md](docs/ticket-lifecycle.md) — ticket status state machine
 
 ## License
 
