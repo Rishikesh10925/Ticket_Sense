@@ -13,6 +13,13 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     database_url: str = "postgresql+asyncpg://ticketsense:ticketsense@localhost:5432/ticketsense"
 
+    jwt_secret_key: str = "dev-only-insecure-secret-change-me"
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = 60
+
+    upload_dir: str = "uploads"
+    max_upload_size_mb: int = 10
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
