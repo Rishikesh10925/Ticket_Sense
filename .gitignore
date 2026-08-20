@@ -34,3 +34,6 @@ db_data/
 # Downloaded/derived datasets (not committed — see data/README.md)
 data/raw/
 data/processed/
+
+# Uploaded ticket attachments (local dev storage)
+backend/uploads/
