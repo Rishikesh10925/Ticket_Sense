@@ -19,6 +19,12 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3", "pytest-asyncio>=0.24", "httpx>=0.27"]
+# ai/ scripts (embedding generation so far). Kept out of the default install since
+# sentence-transformers pulls in torch, which the API itself doesn't need — becomes
+# core once retrieval is wired into the live request path. See docs/architecture.md's
+# "ai/ packaging" note for why this lives in backend/pyproject.toml rather than a
+# separate ai/ project.
+ai = ["sentence-transformers>=3.0.0"]
 
 [build-system]
 requires = ["hatchling"]
