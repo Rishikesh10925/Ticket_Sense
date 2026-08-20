@@ -92,7 +92,9 @@ are not built yet — see [Project status](#project-status).
 | Public dataset identified + download script | ✅ Available (`data/download_dataset.py`) |
 | RAG / calibration / human-AI deferral literature review | ✅ Documented |
 | Knowledge-base article outline (5 departments) | ✅ Documented |
-| Knowledge-base articles (SAP, Networking — 24 of 60) | ✅ Authored |
+| Knowledge-base articles (all 5 departments — 60 of 60) | ✅ Authored |
+| Knowledge-base embeddings (sentence-transformers) | ✅ Generated (`ai/embeddings/embed_knowledge_base.py`) — verified with a real similarity-search query |
+| Confidence-model outcome labelling guide | ✅ Documented (for Weeks 8–11, no data to label yet) |
 | Dataset cleaned and structured into project schema | ✅ Available (`data/clean_dataset.py`) — 2 of 5 departments have real examples, see [known limitations](docs/dataset-cleaning.md) |
 | Train/val/test split strategy | ✅ Documented + implemented (`data/split_dataset.py`) |
 | JWT authentication (register/login/me) | ✅ Available |
@@ -160,7 +162,9 @@ TicketSense/
 │   └── pyproject.toml
 ├── db/
 │   ├── migrations/        Alembic migration environment and versions
-│   └── seed/knowledge_base/  Authored KB articles (SAP, Networking so far)
+│   └── seed/knowledge_base/  Authored KB articles, all 5 departments (60 articles)
+├── ai/
+│   └── embeddings/        Knowledge-base embedding generation (sentence-transformers)
 ├── frontend/             Vite + React + TypeScript app
 │   ├── src/
 │   │   ├── components/      Shared library (Button, Card, FormField)
@@ -184,12 +188,13 @@ TicketSense/
 | `backend/` | FastAPI service — models, routers, and config for the API |
 | `db/migrations/` | Alembic migration environment (schema definitions live as SQLAlchemy models in `backend/app/models/`) |
 | `db/seed/knowledge_base/` | Authored knowledge-base articles, one department per subfolder |
+| `ai/embeddings/` | Generates and stores embeddings for the knowledge-base articles |
 | `frontend/` | React UI — app shell, role nav, static ticket form; not wired to the backend |
 | `data/` | Dataset download, cleaning, and train/val/test split scripts (raw/processed data itself is gitignored) |
 | `docs/` | Architecture decisions, UI/LangGraph/dataset/literature research, wireframes, and the evaluation protocol |
 
-`ai/` (embeddings/LangGraph/ML training) is planned for later weeks and is not present
-yet.
+`ai/graph/` and `ai/models/` (LangGraph pipeline, classifier training) are planned for
+later weeks and are not present yet.
 
 ## Setup
 
@@ -323,7 +328,21 @@ department. See [docs/dataset-cleaning.md](docs/dataset-cleaning.md) and
 [docs/split-strategy.md](docs/split-strategy.md) — only 2 of 5 departments currently
 have real examples, documented as a known limitation rather than papered over.
 
-A seed/import-to-database script is not part of the repository yet.
+A seed/import-to-database script for ticket data is not part of the repository yet.
+
+### Knowledge-base embeddings
+
+```bash
+cd backend
+uv sync --extra ai
+cd ..
+uv run --project backend python ai/embeddings/embed_knowledge_base.py
+```
+
+Embeds all 60 authored knowledge-base articles (`db/seed/knowledge_base/`) with
+`sentence-transformers/all-MiniLM-L6-v2` and stores them in the `knowledge_base` and
+`embeddings` tables. See [ai/README.md](ai/README.md). Kept as an optional `ai` extra
+(pulls in `torch`) rather than a default backend dependency.
 
 ## Environment variables
 
@@ -376,7 +395,9 @@ feature/confidence-model
 - Public IT-support ticket dataset identified, verified, and downloadable locally ([docs/dataset-research.md](docs/dataset-research.md), `data/download_dataset.py`)
 - Literature reviewed on RAG, confidence calibration, and human-AI deferral ([docs/literature-review.md](docs/literature-review.md))
 - Knowledge-base article outline drafted across all five target departments ([docs/knowledge-base-outline.md](docs/knowledge-base-outline.md))
-- First batch of knowledge-base articles authored — SAP and Networking, 12 each (`db/seed/knowledge_base/`)
+- Full knowledge base authored — all 5 departments, 60 articles total (`db/seed/knowledge_base/`; SAP/Networking/Cloud/HR recovered from an earlier prototype's git history, Database authored fresh)
+- Knowledge-base embeddings generated with `sentence-transformers/all-MiniLM-L6-v2` (`ai/embeddings/embed_knowledge_base.py`) — verified with a real similarity-search query against the stored vectors
+- Confidence-model outcome labelling guide drafted for Weeks 8–11 ([docs/confidence-labelling-guide.md](docs/confidence-labelling-guide.md)) — design only, no data to label yet
 - Public dataset cleaned and structured into the project's schema, and split 70/15/15 for classification ([docs/dataset-cleaning.md](docs/dataset-cleaning.md), [docs/split-strategy.md](docs/split-strategy.md)) — honestly limited to 2 of 5 departments given what the source dataset actually contains
 - JWT authentication and role-based access control for all three roles ([docs/authentication.md](docs/authentication.md)) — register/login/me, plus row-level ticket visibility scoped by role
 - Ticket CRUD API — create (with optional attachment upload), filterable list, detail-view, all tested against a live database and role-checked
@@ -386,12 +407,10 @@ feature/confidence-model
 
 ### In Progress
 - Wiring the frontend to the real auth/ticket API, login/logout screens, and the End User "my tickets" view (Week 3, Aashritha) — not yet in this branch.
-- Remaining knowledge-base articles, embedding generation, and the confidence-model labelling guide (Week 3, Shivaganesh) — not yet in this branch.
 
 ### Planned
 - Wiring the ticket-submission form and role screens to the backend API
 - Real Department Engineer and Admin screens (currently layout placeholders)
-- Authoring the remaining knowledge-base articles (Cloud, Database, HR — 36 of 60)
 - Synthetic SAP/Cloud/Database ticket examples, since the public dataset has none
 - Ticket classification (department/priority/sentiment)
 - Department-scoped RAG (knowledge-base and resolved-ticket retrieval)
@@ -459,6 +478,8 @@ production system.
 - [docs/split-strategy.md](docs/split-strategy.md) — train/validation/test split strategy
 - [docs/authentication.md](docs/authentication.md) — JWT auth flow and role-based access control
 - [docs/ticket-lifecycle.md](docs/ticket-lifecycle.md) — ticket status state machine
+- [docs/confidence-labelling-guide.md](docs/confidence-labelling-guide.md) — plan for turning reviewer actions into confidence-model training labels
+- [ai/README.md](ai/README.md) — knowledge-base embedding generation
 
 ## License
 
