@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import EndUserHome from "./pages/EndUserHome";
 import EngineerQueue from "./pages/EngineerQueue";
 import AdminHome from "./pages/AdminHome";
+import TicketDetail from "./pages/TicketDetail";
 import "./pages/pages.css";
 
 const ROLE_HOME: Record<string, string> = {
@@ -39,6 +40,10 @@ export default function App() {
               <Route element={<RequireRole role="admin" />}>
                 <Route path="admin" element={<AdminHome />} />
               </Route>
+              {/* Backend enforces per-ticket access (see app/routers/tickets.py), so
+                  this route isn't role-restricted — any authenticated role that owns
+                  or is scoped to the ticket can reach it. */}
+              <Route path="tickets/:id" element={<TicketDetail />} />
             </Route>
           </Route>
         </Routes>
