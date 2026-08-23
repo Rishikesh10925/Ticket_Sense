@@ -15,17 +15,22 @@ dependencies = [
     "pyjwt>=2.9",
     "email-validator>=2.2",
     "python-multipart>=0.0.12",
+    # backend/app/services/classification.py loads joblib-pickled scikit-learn
+    # pipelines (ai/models/classifier.py) on every ticket creation — this is a core
+    # runtime dependency now that classification is wired into the live request path,
+    # not an ai/-only dev tool.
+    "scikit-learn>=1.5",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3", "pytest-asyncio>=0.24", "httpx>=0.27"]
-# ai/ scripts: embedding generation and classifier training/inference. Kept out of the
-# default install since sentence-transformers pulls in torch, which the API itself
-# doesn't need for most requests — becomes core once classification is wired into the
-# live request path (see backend/app/services/classification.py). See
-# docs/architecture.md's "ai/ packaging" note for why this lives in
-# backend/pyproject.toml rather than a separate ai/ project.
-ai = ["sentence-transformers>=3.0.0", "scikit-learn>=1.5", "pandas>=2.2"]
+# ai/ dev-only scripts: embedding generation (sentence-transformers, pulls in torch)
+# and classifier training (pandas, for reading the CSV datasets — scikit-learn itself
+# is already a core dependency, see above). Neither runs as part of a live API
+# request, so both stay out of the default install. See docs/architecture.md's
+# "ai/ packaging" note for why this lives in backend/pyproject.toml rather than a
+# separate ai/ project.
+ai = ["sentence-transformers>=3.0.0", "pandas>=2.2"]
 
 [build-system]
 requires = ["hatchling"]
