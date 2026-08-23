@@ -102,7 +102,8 @@ are not built yet — see [Project status](#project-status).
 | Ticket intake + optional attachment upload | ✅ Available (`POST /tickets`) |
 | Ticket list (filterable) + detail-view API | ✅ Available (`GET /tickets`, `GET /tickets/{id}`) |
 | Ticket lifecycle state machine | ✅ Implemented + tested (`backend/app/services/ticket_lifecycle.py`) — only `submitted` is reachable via the API so far |
-| Ticket classification (department/priority/sentiment) | ⏳ Planned |
+| Department/priority/sentiment classification models | ✅ Trained + packaged (`ai/models/`) — see honest accuracy/limitations in [classification-model.md](docs/classification-model.md) |
+| Classification wired into the live ticket pipeline | ⏳ Planned (Week 4, Rishikesh) |
 | Department routing | ⏳ Planned |
 | Department-scoped RAG (knowledge base + resolved tickets) | ⏳ Planned |
 | Evidence-grounded draft generation with citations | ⏳ Planned |
@@ -164,7 +165,8 @@ TicketSense/
 │   ├── migrations/        Alembic migration environment and versions
 │   └── seed/knowledge_base/  Authored KB articles, all 5 departments (60 articles)
 ├── ai/
-│   └── embeddings/        Knowledge-base embedding generation (sentence-transformers)
+│   ├── embeddings/         Knowledge-base embedding generation (sentence-transformers)
+│   └── models/             Department/priority/sentiment classifier training + packaging
 ├── frontend/             Vite + React + TypeScript app
 │   ├── src/
 │   │   ├── components/      Shared library (Button, Card, FormField)
@@ -189,12 +191,12 @@ TicketSense/
 | `db/migrations/` | Alembic migration environment (schema definitions live as SQLAlchemy models in `backend/app/models/`) |
 | `db/seed/knowledge_base/` | Authored knowledge-base articles, one department per subfolder |
 | `ai/embeddings/` | Generates and stores embeddings for the knowledge-base articles |
+| `ai/models/` | Trains and packages the department/priority/sentiment classifiers |
 | `frontend/` | React UI — app shell, role nav, static ticket form; not wired to the backend |
-| `data/` | Dataset download, cleaning, and train/val/test split scripts (raw/processed data itself is gitignored) |
-| `docs/` | Architecture decisions, UI/LangGraph/dataset/literature research, wireframes, and the evaluation protocol |
+| `data/` | Dataset download, cleaning, split, and synthetic-labeling scripts (raw/processed data itself is gitignored) |
+| `docs/` | Architecture decisions, UI/LangGraph/dataset/literature/classification research, wireframes, and the evaluation protocol |
 
-`ai/graph/` and `ai/models/` (LangGraph pipeline, classifier training) are planned for
-later weeks and are not present yet.
+`ai/graph/` (LangGraph pipeline) is planned for a later week and is not present yet.
 
 ## Setup
 
@@ -344,6 +346,22 @@ Embeds all 60 authored knowledge-base articles (`db/seed/knowledge_base/`) with
 `embeddings` tables. See [ai/README.md](ai/README.md). Kept as an optional `ai` extra
 (pulls in `torch`) rather than a default backend dependency.
 
+### Classification models
+
+```bash
+python data/synthetic_labeled_tickets.py   # -> data/processed/synthetic_tickets.csv
+cd backend && uv sync --extra ai && cd ..
+uv run --project backend python ai/models/train_classifier.py
+```
+
+Trains the department/priority/sentiment classifiers and saves them to
+`ai/models/artifacts/` (committed to the repo — small, and the live pipeline needs them
+at runtime). Metrics are written to
+[docs/classification-metrics.md](docs/classification-metrics.md); see
+[docs/classification-model.md](docs/classification-model.md) for what they mean and
+their honest limitations (department accuracy is dominated by class imbalance — SAP,
+Cloud, and Database have almost no real training examples).
+
 ## Environment variables
 
 | Variable | Purpose |
@@ -403,16 +421,17 @@ feature/confidence-model
 - Ticket CRUD API — create (with optional attachment upload), filterable list, detail-view, all tested against a live database and role-checked
 - Ticket lifecycle state machine defined, migrated into the schema, and unit-tested ([docs/ticket-lifecycle.md](docs/ticket-lifecycle.md))
 - Demo seed script for all three role accounts (`backend/app/scripts/seed_demo_users.py`)
+- Synthetic labeled ticket set covering all 5 departments and all 3 classification targets (`data/synthetic_labeled_tickets.py`, 120 tickets) — closes the public dataset's department/sentiment gaps
+- Department/priority/sentiment classifiers trained and packaged (`ai/models/`) — real, honestly-reported metrics in [docs/classification-metrics.md](docs/classification-metrics.md) and [docs/classification-model.md](docs/classification-model.md); department accuracy is skewed by severe class imbalance, documented rather than hidden
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
 
 ### In Progress
 - Wiring the frontend to the real auth/ticket API, login/logout screens, and the End User "my tickets" view (Week 3, Aashritha) — not yet in this branch.
+- Wiring the trained classifiers into the live ticket pipeline and department routing (Week 4, Rishikesh) — not yet in this branch.
 
 ### Planned
 - Wiring the ticket-submission form and role screens to the backend API
 - Real Department Engineer and Admin screens (currently layout placeholders)
-- Synthetic SAP/Cloud/Database ticket examples, since the public dataset has none
-- Ticket classification (department/priority/sentiment)
 - Department-scoped RAG (knowledge-base and resolved-ticket retrieval)
 - LLM draft generation with citations (`ai/agents` LLM provider interface)
 - LangGraph pipeline implementation
@@ -479,6 +498,8 @@ production system.
 - [docs/authentication.md](docs/authentication.md) — JWT auth flow and role-based access control
 - [docs/ticket-lifecycle.md](docs/ticket-lifecycle.md) — ticket status state machine
 - [docs/confidence-labelling-guide.md](docs/confidence-labelling-guide.md) — plan for turning reviewer actions into confidence-model training labels
+- [docs/classification-model.md](docs/classification-model.md) — classifier training methodology and honest limitations
+- [docs/classification-metrics.md](docs/classification-metrics.md) — auto-generated precision/recall/F1 tables
 - [ai/README.md](ai/README.md) — knowledge-base embedding generation
 
 ## License
