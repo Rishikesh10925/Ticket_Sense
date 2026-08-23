@@ -88,3 +88,57 @@
   color: var(--color-secondary-text);
   text-transform: capitalize;
 }
+
+.priority-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.priority-high {
+  background: #fde2e2;
+  color: var(--color-danger);
+}
+
+.priority-medium {
+  background: #fef3d6;
+  color: #8a6300;
+}
+
+.priority-low {
+  background: #e3f2e5;
+  color: var(--color-success);
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background: var(--color-secondary-bg);
+}
+
+.ticket-detail-badges {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.ticket-detail-fields {
+  margin: 0 0 var(--space-md);
+}
+
+.ticket-detail-fields dt {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-top: var(--space-sm);
+}
+
+.ticket-detail-fields dd {
+  margin: 0;
+  font-size: 14px;
+}
