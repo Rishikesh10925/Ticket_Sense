@@ -12,9 +12,9 @@ for review, or whether the ticket should be escalated untouched. TicketSense doe
 send AI-generated responses to end users directly; a human engineer always makes the
 final call.
 
-> **Status: Week 3 (authentication, RBAC, ticket lifecycle).** The pipeline
-> below describes the target architecture. See [Project status](#project-status) for
-> what is actually implemented today.
+> **Status: Week 4 (automatic ticket classification and department routing).** The
+> pipeline below describes the target architecture. See
+> [Project status](#project-status) for what is actually implemented today.
 
 ```text
 Ticket → Classification → Department Routing → Evidence Retrieval → Cited Draft
@@ -103,8 +103,8 @@ are not built yet — see [Project status](#project-status).
 | Ticket list (filterable) + detail-view API | ✅ Available (`GET /tickets`, `GET /tickets/{id}`) |
 | Ticket lifecycle state machine | ✅ Implemented + tested (`backend/app/services/ticket_lifecycle.py`) — only `submitted` is reachable via the API so far |
 | Department/priority/sentiment classification models | ✅ Trained + packaged (`ai/models/`) — see honest accuracy/limitations in [classification-model.md](docs/classification-model.md) |
-| Classification wired into the live ticket pipeline | ⏳ Planned (Week 4, Rishikesh) |
-| Department routing | ⏳ Planned |
+| Automatic classification + department routing (background task on ticket create) | ✅ Available — verified end-to-end via Docker, routes within a few seconds |
+| Department-scoped queue API — `?sort=priority`, admin `?department_id=` | ✅ Available |
 | Department-scoped RAG (knowledge base + resolved tickets) | ⏳ Planned |
 | Evidence-grounded draft generation with citations | ⏳ Planned |
 | Independent ML confidence model | ⏳ Planned |
@@ -135,14 +135,16 @@ flowchart TD
     FINAL --> FB[Feedback / Analytics]
 ```
 
-The FastAPI backend now has working auth (JWT + RBAC) and ticket create/list/detail
-endpoints backed by the Postgres+pgvector database, all live via Docker Compose. The
-React frontend still has only the app shell and a static ticket-submission form — it
-does not call the real API yet (that's Aashritha's Week 3 task; submitting the form
-still just logs to the console). Classification, retrieval, drafting, and confidence
-scoring are still design targets described in
-[docs/architecture.md](docs/architecture.md) and
-[docs/langgraph-research.md](docs/langgraph-research.md).
+The FastAPI backend has working auth (JWT + RBAC), ticket create/list/detail endpoints,
+and — new in Week 4 — automatic classification and department routing: submitting a
+ticket triggers a background task that predicts department/priority/sentiment
+(`ai/models/`) and advances the ticket through `classified` → `routed`, typically within
+a couple of seconds (verified through the actual Docker Compose deployment, not just
+locally — see [docs/ticket-routing.md](docs/ticket-routing.md)). The React frontend on
+this branch still has only the app shell and a static ticket-submission form (Aashritha's
+Week 3/4 frontend work lives on separate branches). Retrieval, drafting, and confidence
+scoring are still design targets described in [docs/architecture.md](docs/architecture.md)
+and [docs/langgraph-research.md](docs/langgraph-research.md).
 
 ## Project structure
 
@@ -154,7 +156,7 @@ TicketSense/
 │   │   ├── models/            SQLAlchemy models (users, departments, tickets, ...)
 │   │   ├── routers/           APIRouter modules (health, auth, tickets)
 │   │   ├── schemas/           Pydantic request/response models
-│   │   ├── services/          Ticket lifecycle state machine
+│   │   ├── services/          Ticket lifecycle state machine, classification + routing
 │   │   ├── scripts/           Dev-only scripts (demo user seeding)
 │   │   ├── config.py, database.py, dependencies.py, main.py
 │   ├── tests/              Backend tests
@@ -286,10 +288,16 @@ curl -X POST localhost:8000/auth/login -d "username=you@example.com&password=pas
 curl -X POST localhost:8000/tickets -H "Authorization: Bearer <token>" \
   -F "subject=VPN not connecting" -F "description=..." -F "attachment=@log.txt"
 
-# List (filterable by ?status=&priority=) and fetch by id
+# List — filterable by ?status=&priority=, sortable by ?sort=priority,
+# and (Admin only) scoped to one department via ?department_id=
 curl localhost:8000/tickets -H "Authorization: Bearer <token>"
 curl localhost:8000/tickets/<id> -H "Authorization: Bearer <token>"
 ```
+
+A newly created ticket comes back `status: submitted`; classification and department
+routing run as a background task and typically finish within a couple of seconds — a
+follow-up `GET /tickets/<id>` shows `status: routed` with `department_id`/`priority`/
+`sentiment` filled in. See [docs/ticket-routing.md](docs/ticket-routing.md).
 
 Full interactive docs at `localhost:8000/docs`. See
 [docs/authentication.md](docs/authentication.md) for the RBAC model and
@@ -423,11 +431,13 @@ feature/confidence-model
 - Demo seed script for all three role accounts (`backend/app/scripts/seed_demo_users.py`)
 - Synthetic labeled ticket set covering all 5 departments and all 3 classification targets (`data/synthetic_labeled_tickets.py`, 120 tickets) — closes the public dataset's department/sentiment gaps
 - Department/priority/sentiment classifiers trained and packaged (`ai/models/`) — real, honestly-reported metrics in [docs/classification-metrics.md](docs/classification-metrics.md) and [docs/classification-model.md](docs/classification-model.md); department accuracy is skewed by severe class imbalance, documented rather than hidden
+- Automatic classification + department routing wired into the live ticket pipeline (`backend/app/services/classification.py`) — a submitted ticket is classified and routed within a few seconds via a background task, verified end-to-end through the real Docker Compose deployment (not just locally); see [docs/ticket-routing.md](docs/ticket-routing.md)
+- Department-scoped queue API — `GET /tickets?sort=priority` and Admin's `?department_id=` filter
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
 
 ### In Progress
 - Wiring the frontend to the real auth/ticket API, login/logout screens, and the End User "my tickets" view (Week 3, Aashritha) — not yet in this branch.
-- Wiring the trained classifiers into the live ticket pipeline and department routing (Week 4, Rishikesh) — not yet in this branch.
+- Department Engineer queue UI (sortable/filterable) and classification results on the ticket detail screen (Week 4, Aashritha) — not yet in this branch.
 
 ### Planned
 - Wiring the ticket-submission form and role screens to the backend API
@@ -500,7 +510,8 @@ production system.
 - [docs/confidence-labelling-guide.md](docs/confidence-labelling-guide.md) — plan for turning reviewer actions into confidence-model training labels
 - [docs/classification-model.md](docs/classification-model.md) — classifier training methodology and honest limitations
 - [docs/classification-metrics.md](docs/classification-metrics.md) — auto-generated precision/recall/F1 tables
-- [ai/README.md](ai/README.md) — knowledge-base embedding generation
+- [docs/ticket-routing.md](docs/ticket-routing.md) — how a submitted ticket gets classified and routed automatically
+- [ai/README.md](ai/README.md) — knowledge-base embedding generation and classifier training
 
 ## License
 
