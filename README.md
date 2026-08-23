@@ -85,7 +85,9 @@ are not built yet — see [Project status](#project-status).
 | FastAPI backend skeleton (`/health`, router structure) | ✅ Available |
 | Database schema + Alembic migrations (7 core tables) | ✅ Available |
 | React app shell — routing, layout, role nav | ✅ Available |
-| Static ticket-submission form UI | ✅ Available (not wired to a backend yet) |
+| Ticket-submission form wired to the real API, incl. attachment upload | ✅ Available |
+| End User "my tickets" list with live status | ✅ Available |
+| Login / register / logout screens, role-aware redirect + route guards | ✅ Available |
 | Shared frontend component library (Button, Card, FormField) | ✅ Available |
 | LangGraph orchestration pattern (design) | ✅ Documented, not implemented |
 | ITSM UI pattern research + low-fidelity wireframes | ✅ Documented, not implemented |
@@ -136,15 +138,16 @@ flowchart TD
 ```
 
 The FastAPI backend has working auth (JWT + RBAC), ticket create/list/detail endpoints,
-and — new in Week 4 — automatic classification and department routing: submitting a
-ticket triggers a background task that predicts department/priority/sentiment
-(`ai/models/`) and advances the ticket through `classified` → `routed`, typically within
-a couple of seconds (verified through the actual Docker Compose deployment, not just
-locally — see [docs/ticket-routing.md](docs/ticket-routing.md)). The React frontend on
-this branch still has only the app shell and a static ticket-submission form (Aashritha's
-Week 3/4 frontend work lives on separate branches). Retrieval, drafting, and confidence
-scoring are still design targets described in [docs/architecture.md](docs/architecture.md)
-and [docs/langgraph-research.md](docs/langgraph-research.md).
+and automatic classification and department routing: submitting a ticket triggers a
+background task that predicts department/priority/sentiment (`ai/models/`) and advances
+the ticket through `classified` → `routed`, typically within a couple of seconds
+(verified through the actual Docker Compose deployment — see
+[docs/ticket-routing.md](docs/ticket-routing.md)). The React frontend calls this real
+API: login/register, ticket submission with attachment upload, and the End User's live
+ticket list with status, all verified end-to-end in a real browser against the real
+backend and database. Retrieval, drafting, and confidence scoring are still design
+targets described in [docs/architecture.md](docs/architecture.md) and
+[docs/langgraph-research.md](docs/langgraph-research.md).
 
 ## Project structure
 
@@ -171,9 +174,11 @@ TicketSense/
 │   └── models/             Department/priority/sentiment classifier training + packaging
 ├── frontend/             Vite + React + TypeScript app
 │   ├── src/
+│   │   ├── api/               Backend API client (fetch wrapper)
+│   │   ├── auth/               Auth context, route guards (login required / role required)
 │   │   ├── components/      Shared library (Button, Card, FormField)
-│   │   ├── layouts/         App shell (header, role nav)
-│   │   └── pages/            End User / Engineer / Admin role screens
+│   │   ├── layouts/         App shell (header, user info, logout)
+│   │   └── pages/            Login + End User / Engineer / Admin role screens
 │   └── package.json
 ├── data/                 Dataset download, cleaning, and split scripts
 │   ├── download_dataset.py
@@ -194,7 +199,7 @@ TicketSense/
 | `db/seed/knowledge_base/` | Authored knowledge-base articles, one department per subfolder |
 | `ai/embeddings/` | Generates and stores embeddings for the knowledge-base articles |
 | `ai/models/` | Trains and packages the department/priority/sentiment classifiers |
-| `frontend/` | React UI — app shell, role nav, static ticket form; not wired to the backend |
+| `frontend/` | React UI — login/register, role-aware routing, and a ticket form/list wired to the real backend |
 | `data/` | Dataset download, cleaning, split, and synthetic-labeling scripts (raw/processed data itself is gitignored) |
 | `docs/` | Architecture decisions, UI/LangGraph/dataset/literature/classification research, wireframes, and the evaluation protocol |
 
@@ -307,14 +312,24 @@ Full interactive docs at `localhost:8000/docs`. See
 
 ```bash
 cd frontend
+cp .env.example .env.local   # VITE_API_URL, defaults to localhost:8000
 npm install
 npm run dev
 ```
 
-Runs at `localhost:5173`. Redirects to `/end-user` (the ticket-submission form); the
-header nav switches between End User / Department Engineer / Admin. There's no auth yet,
-so the nav is a stand-in for role-based routing, not a permissions boundary — see
-[Project status](#project-status).
+Runs at `localhost:5173`. Unauthenticated visitors are redirected to `/login`; after
+login, `/` redirects to the screen for the logged-in user's actual role, and each role
+route is guarded (an End User can't navigate to `/admin`, etc. — see
+`frontend/src/auth/`). Needs the backend running (`docker compose up` or the manual
+steps above) and at least one seeded account:
+
+```bash
+cd backend && uv run python -m app.scripts.seed_demo_users
+```
+
+Log in as `customer@demo.local` / `Demo@123` (or any of the other two demo accounts) —
+password for all three is `Demo@123`, or register a new End User account from the login
+screen.
 
 ### Dataset
 
@@ -433,15 +448,18 @@ feature/confidence-model
 - Department/priority/sentiment classifiers trained and packaged (`ai/models/`) — real, honestly-reported metrics in [docs/classification-metrics.md](docs/classification-metrics.md) and [docs/classification-model.md](docs/classification-model.md); department accuracy is skewed by severe class imbalance, documented rather than hidden
 - Automatic classification + department routing wired into the live ticket pipeline (`backend/app/services/classification.py`) — a submitted ticket is classified and routed within a few seconds via a background task, verified end-to-end through the real Docker Compose deployment (not just locally); see [docs/ticket-routing.md](docs/ticket-routing.md)
 - Department-scoped queue API — `GET /tickets?sort=priority` and Admin's `?department_id=` filter
+- Frontend wired to the real backend — login/register/logout, role-aware redirect and
+  route guards, ticket submission with attachment upload, and a live "my tickets" list
+  with status. Verified end-to-end in a real browser: log in, submit a ticket with an
+  attachment, see it in the list, confirm it landed in the database — the Week 3 Team
+  Integration check.
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
 
 ### In Progress
-- Wiring the frontend to the real auth/ticket API, login/logout screens, and the End User "my tickets" view (Week 3, Aashritha) — not yet in this branch.
-- Department Engineer queue UI (sortable/filterable) and classification results on the ticket detail screen (Week 4, Aashritha) — not yet in this branch.
+- Department Engineer queue UI (sortable/filterable) and classification results on the ticket detail screen (Week 4, Aashritha) — being built now on this branch.
 
 ### Planned
-- Wiring the ticket-submission form and role screens to the backend API
-- Real Department Engineer and Admin screens (currently layout placeholders)
+- Real Admin screen (currently a layout placeholder, not wired to the ticket API)
 - Department-scoped RAG (knowledge-base and resolved-ticket retrieval)
 - LLM draft generation with citations (`ai/agents` LLM provider interface)
 - LangGraph pipeline implementation

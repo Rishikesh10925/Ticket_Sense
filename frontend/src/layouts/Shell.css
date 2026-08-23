@@ -44,3 +44,11 @@
   width: 100%;
   margin: 0 auto;
 }
+
+.shell-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
