@@ -1,0 +1,113 @@
+{
+  "department": {
+    "Cloud": {
+      "precision": 0.42857142857142855,
+      "recall": 0.75,
+      "f1-score": 0.5454545454545454,
+      "support": 4.0
+    },
+    "Database": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 3.0
+    },
+    "HR": {
+      "precision": 0.36363636363636365,
+      "recall": 0.5714285714285714,
+      "f1-score": 0.4444444444444444,
+      "support": 56.0
+    },
+    "Networking": {
+      "precision": 0.9803738317757009,
+      "recall": 0.9484629294755877,
+      "f1-score": 0.9641544117647058,
+      "support": 1106.0
+    },
+    "SAP": {
+      "precision": 0.25,
+      "recall": 0.3333333333333333,
+      "f1-score": 0.2857142857142857,
+      "support": 3.0
+    },
+    "accuracy": 0.9257679180887372,
+    "macro avg": {
+      "precision": 0.40451632479669863,
+      "recall": 0.5206449668474986,
+      "f1-score": 0.44795353747559624,
+      "support": 1172.0
+    },
+    "weighted avg": {
+      "precision": 0.9446428157182997,
+      "recall": 0.9257679180887372,
+      "f1-score": 0.9336882502897736,
+      "support": 1172.0
+    }
+  },
+  "priority": {
+    "high": {
+      "precision": 0.7513611615245009,
+      "recall": 0.6458658346333853,
+      "f1-score": 0.6946308724832215,
+      "support": 641.0
+    },
+    "low": {
+      "precision": 0.3523809523809524,
+      "recall": 0.5606060606060606,
+      "f1-score": 0.4327485380116959,
+      "support": 132.0
+    },
+    "medium": {
+      "precision": 0.5766423357664233,
+      "recall": 0.5939849624060151,
+      "f1-score": 0.5851851851851851,
+      "support": 399.0
+    },
+    "accuracy": 0.6186006825938567,
+    "macro avg": {
+      "precision": 0.5601281498906255,
+      "recall": 0.6001522858818203,
+      "f1-score": 0.5708548652267008,
+      "support": 1172.0
+    },
+    "weighted avg": {
+      "precision": 0.6469429029200459,
+      "recall": 0.6186006825938567,
+      "f1-score": 0.627875499290254,
+      "support": 1172.0
+    }
+  },
+  "sentiment": {
+    "negative": {
+      "precision": 0.8333333333333334,
+      "recall": 0.625,
+      "f1-score": 0.7142857142857143,
+      "support": 8.0
+    },
+    "neutral": {
+      "precision": 0.6363636363636364,
+      "recall": 0.875,
+      "f1-score": 0.7368421052631579,
+      "support": 8.0
+    },
+    "positive": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
+      "support": 2.0
+    },
+    "accuracy": 0.7222222222222222,
+    "macro avg": {
+      "precision": 0.8232323232323232,
+      "recall": 0.6666666666666666,
+      "f1-score": 0.7059314954051796,
+      "support": 18.0
+    },
+    "weighted avg": {
+      "precision": 0.7643097643097643,
+      "recall": 0.7222222222222222,
+      "f1-score": 0.7190197716513507,
+      "support": 18.0
+    }
+  }
+}
