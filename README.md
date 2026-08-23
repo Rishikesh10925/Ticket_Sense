@@ -12,7 +12,8 @@ for review, or whether the ticket should be escalated untouched. TicketSense doe
 send AI-generated responses to end users directly; a human engineer always makes the
 final call.
 
-> **Status: Week 4 (automatic ticket classification and department routing).** The
+> **Status: Week 4 (automatic ticket classification, department routing, and the
+> Engineer queue UI).** The
 > pipeline below describes the target architecture. See
 > [Project status](#project-status) for what is actually implemented today.
 
@@ -107,6 +108,10 @@ are not built yet — see [Project status](#project-status).
 | Department/priority/sentiment classification models | ✅ Trained + packaged (`ai/models/`) — see honest accuracy/limitations in [classification-model.md](docs/classification-model.md) |
 | Automatic classification + department routing (background task on ticket create) | ✅ Available — verified end-to-end via Docker, routes within a few seconds |
 | Department-scoped queue API — `?sort=priority`, admin `?department_id=` | ✅ Available |
+| Department Engineer queue UI — sortable by priority, filterable by status | ✅ Available |
+| Ticket detail screen with classification results (department, priority, sentiment) | ✅ Available |
+| `GET /departments` — resolves department names for the UI | ✅ Available |
+| Usability review of the End User submission flow | ✅ Documented (heuristic walkthrough — real outside testers still needed, see [usability-testing.md](docs/usability-testing.md)) |
 | Department-scoped RAG (knowledge base + resolved tickets) | ⏳ Planned |
 | Evidence-grounded draft generation with citations | ⏳ Planned |
 | Independent ML confidence model | ⏳ Planned |
@@ -178,7 +183,7 @@ TicketSense/
 │   │   ├── auth/               Auth context, route guards (login required / role required)
 │   │   ├── components/      Shared library (Button, Card, FormField)
 │   │   ├── layouts/         App shell (header, user info, logout)
-│   │   └── pages/            Login + End User / Engineer / Admin role screens
+│   │   └── pages/            Login, End User, Engineer queue, ticket detail, Admin
 │   └── package.json
 ├── data/                 Dataset download, cleaning, and split scripts
 │   ├── download_dataset.py
@@ -199,7 +204,7 @@ TicketSense/
 | `db/seed/knowledge_base/` | Authored knowledge-base articles, one department per subfolder |
 | `ai/embeddings/` | Generates and stores embeddings for the knowledge-base articles |
 | `ai/models/` | Trains and packages the department/priority/sentiment classifiers |
-| `frontend/` | React UI — login/register, role-aware routing, and a ticket form/list wired to the real backend |
+| `frontend/` | React UI — login/register, role-aware routing, ticket submission, and the Engineer queue + ticket detail views, all wired to the real backend |
 | `data/` | Dataset download, cleaning, split, and synthetic-labeling scripts (raw/processed data itself is gitignored) |
 | `docs/` | Architecture decisions, UI/LangGraph/dataset/literature/classification research, wireframes, and the evaluation protocol |
 
@@ -329,7 +334,9 @@ cd backend && uv run python -m app.scripts.seed_demo_users
 
 Log in as `customer@demo.local` / `Demo@123` (or any of the other two demo accounts) —
 password for all three is `Demo@123`, or register a new End User account from the login
-screen.
+screen. Log in as `engineer@demo.local` to see the Engineer queue (sortable by priority,
+filterable by status) — click any ticket for its detail screen, including its
+classification results once routed.
 
 ### Dataset
 
@@ -453,13 +460,17 @@ feature/confidence-model
   with status. Verified end-to-end in a real browser: log in, submit a ticket with an
   attachment, see it in the list, confirm it landed in the database — the Week 3 Team
   Integration check.
+- Department Engineer queue UI — sortable by priority, filterable by status, live against the real queue API (`frontend/src/pages/EngineerQueue.tsx`)
+- Ticket detail screen showing classification results (department resolved by name via new `GET /departments`, priority, sentiment) — reachable from both the Engineer queue and the End User's ticket list (`frontend/src/pages/TicketDetail.tsx`)
+- First usability review of the End User submission flow ([docs/usability-testing.md](docs/usability-testing.md)) — a heuristic walkthrough of the real running app, honestly noted as not a substitute for real outside testers, with concrete findings and a next-round plan
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
 
 ### In Progress
-- Department Engineer queue UI (sortable/filterable) and classification results on the ticket detail screen (Week 4, Aashritha) — being built now on this branch.
+- Nothing yet — Week 4 branches (routing, classification, engineer queue UI) are all pushed.
 
 ### Planned
 - Real Admin screen (currently a layout placeholder, not wired to the ticket API)
+- A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
 - Department-scoped RAG (knowledge-base and resolved-ticket retrieval)
 - LLM draft generation with citations (`ai/agents` LLM provider interface)
 - LangGraph pipeline implementation
@@ -529,6 +540,7 @@ production system.
 - [docs/classification-model.md](docs/classification-model.md) — classifier training methodology and honest limitations
 - [docs/classification-metrics.md](docs/classification-metrics.md) — auto-generated precision/recall/F1 tables
 - [docs/ticket-routing.md](docs/ticket-routing.md) — how a submitted ticket gets classified and routed automatically
+- [docs/usability-testing.md](docs/usability-testing.md) — End User submission flow usability findings
 - [ai/README.md](ai/README.md) — knowledge-base embedding generation and classifier training
 
 ## License
