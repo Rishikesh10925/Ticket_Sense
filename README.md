@@ -12,8 +12,9 @@ for review, or whether the ticket should be escalated untouched. TicketSense doe
 send AI-generated responses to end users directly; a human engineer always makes the
 final call.
 
-> **Status: Week 4 (automatic ticket classification, department routing, and the
-> Engineer queue UI).** The
+> **Status: Week 4 complete (automatic ticket classification, department routing, and
+> the Engineer queue UI — Team Integration verified end-to-end, see
+> [docs/team-integration-week4.md](docs/team-integration-week4.md)).** The
 > pipeline below describes the target architecture. See
 > [Project status](#project-status) for what is actually implemented today.
 
@@ -541,6 +542,7 @@ production system.
 - [docs/classification-metrics.md](docs/classification-metrics.md) — auto-generated precision/recall/F1 tables
 - [docs/ticket-routing.md](docs/ticket-routing.md) — how a submitted ticket gets classified and routed automatically
 - [docs/usability-testing.md](docs/usability-testing.md) — End User submission flow usability findings
+- [docs/team-integration-week4.md](docs/team-integration-week4.md) — Week 4 Team Integration evidence and mentor demo script
 - [ai/README.md](ai/README.md) — knowledge-base embedding generation and classifier training
 
 ## License
