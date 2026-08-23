@@ -21,8 +21,25 @@ Kept out of the default backend install (`sentence-transformers` pulls in `torch
 [docs/architecture.md](../docs/architecture.md)'s "ai/ packaging" note for why this
 lives here rather than as a separate project.
 
+## models/
+
+Trains and packages the department/priority/sentiment classifiers. See
+[docs/classification-model.md](../docs/classification-model.md) for methodology and
+honest limitations, and [docs/classification-metrics.md](../docs/classification-metrics.md)
+for the current precision/recall/F1 numbers.
+
+```bash
+python ../data/synthetic_labeled_tickets.py   # -> data/processed/synthetic_tickets.csv
+cd ../backend && uv sync --extra ai && cd ../ai
+uv run --project ../backend python models/train_classifier.py
+```
+
+Saves trained pipelines to `models/artifacts/*.joblib` (committed — small, and the live
+pipeline needs them at runtime). `models/classifier.py` loads them and exposes
+`classify_ticket(subject, description)` — the function
+`backend/app/services/classification.py` imports (Week 4, Rishikesh).
+
 ## What's not here yet
 
-Retrieval (querying `embeddings` for a given ticket), the LangGraph pipeline, and
-classifier training are all planned for later weeks — see the root
-[README.md](../README.md) Project status.
+Retrieval (querying `embeddings` for a given ticket) and the LangGraph pipeline are
+planned for later weeks — see the root [README.md](../README.md) Project status.
