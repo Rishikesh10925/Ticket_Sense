@@ -85,7 +85,9 @@ are not built yet — see [Project status](#project-status).
 | FastAPI backend skeleton (`/health`, router structure) | ✅ Available |
 | Database schema + Alembic migrations (7 core tables) | ✅ Available |
 | React app shell — routing, layout, role nav | ✅ Available |
-| Static ticket-submission form UI | ✅ Available (not wired to a backend yet) |
+| Ticket-submission form wired to the real API, incl. attachment upload | ✅ Available |
+| End User "my tickets" list with live status | ✅ Available |
+| Login / register / logout screens, role-aware redirect + route guards | ✅ Available |
 | Shared frontend component library (Button, Card, FormField) | ✅ Available |
 | LangGraph orchestration pattern (design) | ✅ Documented, not implemented |
 | ITSM UI pattern research + low-fidelity wireframes | ✅ Documented, not implemented |
@@ -132,13 +134,14 @@ flowchart TD
     FINAL --> FB[Feedback / Analytics]
 ```
 
-The FastAPI backend now has working auth (JWT + RBAC) and ticket create/list/detail
+The FastAPI backend has working auth (JWT + RBAC) and ticket create/list/detail
 endpoints backed by the Postgres+pgvector database, all live via Docker Compose. The
-React frontend still has only the app shell and a static ticket-submission form — it
-does not call the real API yet (that's Aashritha's Week 3 task; submitting the form
-still just logs to the console). Classification, retrieval, drafting, and confidence
-scoring are still design targets described in
-[docs/architecture.md](docs/architecture.md) and
+React frontend now calls this real API: login/register, ticket submission with
+attachment upload, and the End User's live ticket list with status, all verified
+end-to-end in a real browser against the real backend and database — login as
+`customer@demo.local`, submit a ticket with an attachment, and see it appear in "My
+tickets" immediately. Classification, retrieval, drafting, and confidence scoring are
+still design targets described in [docs/architecture.md](docs/architecture.md) and
 [docs/langgraph-research.md](docs/langgraph-research.md).
 
 ## Project structure
@@ -163,9 +166,11 @@ TicketSense/
 │   └── seed/knowledge_base/  Authored KB articles (SAP, Networking so far)
 ├── frontend/             Vite + React + TypeScript app
 │   ├── src/
+│   │   ├── api/               Backend API client (fetch wrapper)
+│   │   ├── auth/               Auth context, route guards (login required / role required)
 │   │   ├── components/      Shared library (Button, Card, FormField)
-│   │   ├── layouts/         App shell (header, role nav)
-│   │   └── pages/            End User / Engineer / Admin role screens
+│   │   ├── layouts/         App shell (header, user info, logout)
+│   │   └── pages/            Login + End User / Engineer / Admin role screens
 │   └── package.json
 ├── data/                 Dataset download, cleaning, and split scripts
 │   ├── download_dataset.py
@@ -184,7 +189,7 @@ TicketSense/
 | `backend/` | FastAPI service — models, routers, and config for the API |
 | `db/migrations/` | Alembic migration environment (schema definitions live as SQLAlchemy models in `backend/app/models/`) |
 | `db/seed/knowledge_base/` | Authored knowledge-base articles, one department per subfolder |
-| `frontend/` | React UI — app shell, role nav, static ticket form; not wired to the backend |
+| `frontend/` | React UI — login/register, role-aware routing, and a ticket form/list wired to the real backend |
 | `data/` | Dataset download, cleaning, and train/val/test split scripts (raw/processed data itself is gitignored) |
 | `docs/` | Architecture decisions, UI/LangGraph/dataset/literature research, wireframes, and the evaluation protocol |
 
@@ -292,14 +297,24 @@ Full interactive docs at `localhost:8000/docs`. See
 
 ```bash
 cd frontend
+cp .env.example .env.local   # VITE_API_URL, defaults to localhost:8000
 npm install
 npm run dev
 ```
 
-Runs at `localhost:5173`. Redirects to `/end-user` (the ticket-submission form); the
-header nav switches between End User / Department Engineer / Admin. There's no auth yet,
-so the nav is a stand-in for role-based routing, not a permissions boundary — see
-[Project status](#project-status).
+Runs at `localhost:5173`. Unauthenticated visitors are redirected to `/login`; after
+login, `/` redirects to the screen for the logged-in user's actual role, and each role
+route is guarded (an End User can't navigate to `/admin`, etc. — see
+`frontend/src/auth/`). Needs the backend running (`docker compose up` or the manual
+steps above) and at least one seeded account:
+
+```bash
+cd backend && uv run python -m app.scripts.seed_demo_users
+```
+
+Log in as `customer@demo.local` / `Demo@123` (or any of the other two demo accounts) —
+password for all three is `Demo@123`, or register a new End User account from the login
+screen.
 
 ### Dataset
 
@@ -382,15 +397,18 @@ feature/confidence-model
 - Ticket CRUD API — create (with optional attachment upload), filterable list, detail-view, all tested against a live database and role-checked
 - Ticket lifecycle state machine defined, migrated into the schema, and unit-tested ([docs/ticket-lifecycle.md](docs/ticket-lifecycle.md))
 - Demo seed script for all three role accounts (`backend/app/scripts/seed_demo_users.py`)
+- Frontend wired to the real backend — login/register/logout, role-aware redirect and
+  route guards, ticket submission with attachment upload, and a live "my tickets" list
+  with status. Verified end-to-end in a real browser: log in, submit a ticket with an
+  attachment, see it in the list, confirm it landed in the database — the Week 3 Team
+  Integration check.
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
 
 ### In Progress
-- Wiring the frontend to the real auth/ticket API, login/logout screens, and the End User "my tickets" view (Week 3, Aashritha) — not yet in this branch.
-- Remaining knowledge-base articles, embedding generation, and the confidence-model labelling guide (Week 3, Shivaganesh) — not yet in this branch.
+- Remaining knowledge-base articles, embedding generation, and the confidence-model labelling guide (Week 3, Shivaganesh) — pushed on a separate branch, not yet merged here.
 
 ### Planned
-- Wiring the ticket-submission form and role screens to the backend API
-- Real Department Engineer and Admin screens (currently layout placeholders)
+- Real Department Engineer and Admin screens (currently layout placeholders, not wired to the ticket API)
 - Authoring the remaining knowledge-base articles (Cloud, Database, HR — 36 of 60)
 - Synthetic SAP/Cloud/Database ticket examples, since the public dataset has none
 - Ticket classification (department/priority/sentiment)
