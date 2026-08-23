@@ -1,29 +1,56 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Button, Card, FormField } from "../components";
-
-// Static UI only — no backend wiring yet (see docs/wireframes.md "End User — submit a
-// ticket"). Submitting logs the form values and resets the form; nothing is sent
-// anywhere until the tickets API exists.
-const MY_TICKETS = [
-  { id: "#1042", subject: "ME023 error on PO creation", status: "In review" },
-  { id: "#1039", subject: "VPN not connecting from home", status: "Resolved" },
-];
+import { createTicket, listTickets, ApiError, type Ticket } from "../api/client";
+import { useAuth } from "../auth/AuthContext";
 
 export default function EndUserHome() {
+  const { token } = useAuth();
+
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [attachment, setAttachment] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  function handleSubmit(event: FormEvent) {
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [ticketsLoading, setTicketsLoading] = useState(true);
+  const [ticketsError, setTicketsError] = useState<string | null>(null);
+
+  async function loadTickets() {
+    if (!token) return;
+    setTicketsLoading(true);
+    setTicketsError(null);
+    try {
+      const data = await listTickets(token);
+      setTickets(data);
+    } catch (err) {
+      setTicketsError(err instanceof ApiError ? err.message : "Could not load tickets");
+    } finally {
+      setTicketsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadTickets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    console.log("new ticket (static, not submitted anywhere yet)", {
-      subject,
-      description,
-      attachment: attachment?.name ?? null,
-    });
-    setSubject("");
-    setDescription("");
-    setAttachment(null);
+    if (!token) return;
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      await createTicket(token, subject, description, attachment);
+      setSubject("");
+      setDescription("");
+      setAttachment(null);
+      await loadTickets();
+    } catch (err) {
+      setSubmitError(err instanceof ApiError ? err.message : "Could not submit ticket");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -67,31 +94,44 @@ export default function EndUserHome() {
             </select>
           </FormField>
 
-          <Button type="submit">Submit ticket</Button>
+          {submitError && <p className="form-error">{submitError}</p>}
+
+          <Button type="submit" disabled={submitting}>
+            {submitting ? "Submitting..." : "Submit ticket"}
+          </Button>
         </form>
       </Card>
 
       <div style={{ height: "var(--space-lg)" }} />
 
       <Card title="My tickets">
-        <table className="ticket-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Subject</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {MY_TICKETS.map((ticket) => (
-              <tr key={ticket.id}>
-                <td>{ticket.id}</td>
-                <td>{ticket.subject}</td>
-                <td>{ticket.status}</td>
+        {ticketsLoading && <p className="placeholder-note">Loading...</p>}
+        {ticketsError && <p className="form-error">{ticketsError}</p>}
+        {!ticketsLoading && !ticketsError && tickets.length === 0 && (
+          <p className="placeholder-note">No tickets submitted yet.</p>
+        )}
+        {!ticketsLoading && tickets.length > 0 && (
+          <table className="ticket-table">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Status</th>
+                <th>Submitted</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {tickets.map((ticket) => (
+                <tr key={ticket.id}>
+                  <td>{ticket.subject}</td>
+                  <td>
+                    <span className="status-badge">{ticket.status}</span>
+                  </td>
+                  <td>{new Date(ticket.created_at).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </Card>
     </>
   );
