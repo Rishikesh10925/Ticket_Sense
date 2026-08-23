@@ -55,3 +55,36 @@
   padding: var(--space-xs) var(--space-sm);
   border-bottom: 1px solid var(--color-border);
 }
+
+.login-page {
+  max-width: 360px;
+  margin: var(--space-lg) auto;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-top: var(--space-sm);
+}
+
+.form-error {
+  color: var(--color-danger);
+  font-size: 13px;
+  margin: 0 0 var(--space-md);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--color-secondary-bg);
+  color: var(--color-secondary-text);
+  text-transform: capitalize;
+}
