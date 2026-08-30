@@ -50,6 +50,27 @@ see "Next round" below for what a proper session needs.
 - Replace native validation tooltips with the existing `.form-error` styling (addresses #4).
 - Client-side file-type check before allowing Submit, not just after the request fails (addresses #5).
 
+## Week 5 follow-up: applied to the ticket detail screen
+
+Finding #1 ("no visual cue that a background process is about to update it") applied
+just as much to the ticket detail screen once it existed — a user landing on
+`/tickets/{id}` right after submitting had no way to tell classification was still
+running. Addressed on the ticket detail screen this week:
+
+- A `classifying…` badge shows while `status` is `submitted`/`classified` (not yet
+  `routed`), and the evidence panel explains why it's empty ("hasn't been routed to a
+  department yet") instead of just looking broken.
+- The screen polls briefly (every 2s, capped at 15 attempts / ~30s) while unrouted, and
+  stops once routed — addresses #2's "doesn't auto-refresh" for this screen
+  specifically. The End User's "My tickets" list itself (finding #1/#2's original
+  location) still doesn't auto-refresh — not addressed this week, still open.
+- A manual "Refresh" button on the evidence panel as a fallback, in case a ticket
+  outlives the poll window or the user navigates back to an already-open tab.
+
+Findings #3–#6 (submit confirmation, validation-tooltip styling, file-type
+pre-check, login/register visual cue) are about the submission/login screens
+specifically, not the ticket detail screen — still open, unrelated to this week's task.
+
 ## Next round
 
 A real round with outside testers (not team members) is still needed — this pass can
