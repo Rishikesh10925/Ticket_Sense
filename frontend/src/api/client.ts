@@ -28,6 +28,14 @@ export interface Ticket {
   updated_at: string;
 }
 
+export interface Evidence {
+  source_type: "knowledge_base" | "resolved_ticket";
+  source_id: string;
+  title: string;
+  snippet: string;
+  distance: number;
+}
+
 export class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -123,6 +131,12 @@ export async function getTicket(token: string, id: string): Promise<Ticket> {
 
 export async function listDepartments(token: string): Promise<Department[]> {
   const res = await fetch(`${API_URL}/departments`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function getTicketEvidence(token: string, id: string): Promise<Evidence[]> {
+  const res = await fetch(`${API_URL}/tickets/${id}/evidence`, { headers: authHeaders(token) });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
   return res.json();
 }
