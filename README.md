@@ -113,7 +113,10 @@ are not built yet — see [Project status](#project-status).
 | Ticket detail screen with classification results (department, priority, sentiment) | ✅ Available |
 | `GET /departments` — resolves department names for the UI | ✅ Available |
 | Usability review of the End User submission flow | ✅ Documented (heuristic walkthrough — real outside testers still needed, see [usability-testing.md](docs/usability-testing.md)) |
-| Department-scoped RAG (knowledge base + resolved tickets) | ⏳ Planned |
+| Department-scoped RAG retrieval function (knowledge base + resolved tickets) | ✅ Available (`ai/embeddings/retrieve.py`) — see [retrieval.md](docs/retrieval.md) |
+| Resolved-ticket embeddings (synthetic, no real history yet) | ✅ Available (`ai/embeddings/embed_resolved_tickets.py`) — 120 synthetic tickets embedded |
+| Recall@K retrieval evaluation | ✅ Measured — Recall@3 = 15/15 on a hand-labelled 15-query set, honest caveats in [retrieval.md](docs/retrieval.md) |
+| Retrieval wired into a live evidence API endpoint | ⏳ Planned (Week 5, Rishikesh) |
 | Evidence-grounded draft generation with citations | ⏳ Planned |
 | Independent ML confidence model | ⏳ Planned |
 | Confidence-based escalation | ⏳ Planned |
@@ -176,7 +179,7 @@ TicketSense/
 │   ├── migrations/        Alembic migration environment and versions
 │   └── seed/knowledge_base/  Authored KB articles, all 5 departments (60 articles)
 ├── ai/
-│   ├── embeddings/         Knowledge-base embedding generation (sentence-transformers)
+│   ├── embeddings/         KB + resolved-ticket embeddings, retrieval, Recall@K eval
 │   └── models/             Department/priority/sentiment classifier training + packaging
 ├── frontend/             Vite + React + TypeScript app
 │   ├── src/
@@ -203,7 +206,7 @@ TicketSense/
 | `backend/` | FastAPI service — models, routers, and config for the API |
 | `db/migrations/` | Alembic migration environment (schema definitions live as SQLAlchemy models in `backend/app/models/`) |
 | `db/seed/knowledge_base/` | Authored knowledge-base articles, one department per subfolder |
-| `ai/embeddings/` | Generates and stores embeddings for the knowledge-base articles |
+| `ai/embeddings/` | Embeds the knowledge base and resolved tickets, department-scoped retrieval, Recall@K evaluation |
 | `ai/models/` | Trains and packages the department/priority/sentiment classifiers |
 | `frontend/` | React UI — login/register, role-aware routing, ticket submission, and the Engineer queue + ticket detail views, all wired to the real backend |
 | `data/` | Dataset download, cleaning, split, and synthetic-labeling scripts (raw/processed data itself is gitignored) |
@@ -377,6 +380,20 @@ Embeds all 60 authored knowledge-base articles (`db/seed/knowledge_base/`) with
 `embeddings` tables. See [ai/README.md](ai/README.md). Kept as an optional `ai` extra
 (pulls in `torch`) rather than a default backend dependency.
 
+### Resolved-ticket embeddings + retrieval
+
+```bash
+uv run --project backend python data/seed_synthetic_tickets.py
+uv run --project backend python ai/embeddings/embed_resolved_tickets.py
+uv run --project backend python ai/embeddings/evaluate_retrieval.py
+```
+
+Seeds the 120 synthetic tickets as `closed` historical tickets (no real resolved-ticket
+history exists yet), embeds them as a second evidence source, and runs the Recall@K
+evaluation (currently 15/15 on the hand-labelled test set). See
+[docs/retrieval.md](docs/retrieval.md) for department scoping and an honest read of
+that score.
+
 ### Classification models
 
 ```bash
@@ -465,14 +482,18 @@ feature/confidence-model
 - Ticket detail screen showing classification results (department resolved by name via new `GET /departments`, priority, sentiment) — reachable from both the Engineer queue and the End User's ticket list (`frontend/src/pages/TicketDetail.tsx`)
 - First usability review of the End User submission flow ([docs/usability-testing.md](docs/usability-testing.md)) — a heuristic walkthrough of the real running app, honestly noted as not a substitute for real outside testers, with concrete findings and a next-round plan
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
+- Resolved tickets embedded as a second evidence source alongside the knowledge base (`ai/embeddings/embed_resolved_tickets.py`) — synthetic data standing in for real history, which doesn't exist yet; schema extended (migration `0003`) so `embeddings` can reference either a KB article or a ticket
+- Department-scoped similarity-search retrieval function (`ai/embeddings/retrieve.py`), scoped at the SQL level — verified no cross-department leakage on a real query
+- Recall@K retrieval evaluation ([docs/retrieval.md](docs/retrieval.md)) — 15/15 on a hand-labelled 15-query set (3 per department), with an honest read of what a perfect score does and doesn't mean at this corpus size
 
 ### In Progress
-- Nothing yet — Week 4 branches (routing, classification, engineer queue UI) are all pushed.
+- Retrieval wired into a live evidence API endpoint (Week 5, Rishikesh) — not yet in this branch.
+- Evidence-display panel on the Engineer's ticket detail screen (Week 5, Aashritha) — not yet in this branch.
 
 ### Planned
 - Real Admin screen (currently a layout placeholder, not wired to the ticket API)
 - A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
-- Department-scoped RAG (knowledge-base and resolved-ticket retrieval)
+- pgvector ANN indexes (still exact search — not worth it yet at 180 embedded rows)
 - LLM draft generation with citations (`ai/agents` LLM provider interface)
 - LangGraph pipeline implementation
 - Independent ML confidence model and confidence gate
@@ -543,7 +564,8 @@ production system.
 - [docs/ticket-routing.md](docs/ticket-routing.md) — how a submitted ticket gets classified and routed automatically
 - [docs/usability-testing.md](docs/usability-testing.md) — End User submission flow usability findings
 - [docs/team-integration-week4.md](docs/team-integration-week4.md) — Week 4 Team Integration evidence and mentor demo script
-- [ai/README.md](ai/README.md) — knowledge-base embedding generation and classifier training
+- [docs/retrieval.md](docs/retrieval.md) — department-scoped retrieval design and Recall@K results
+- [ai/README.md](ai/README.md) — knowledge-base/resolved-ticket embedding generation, retrieval, and classifier training
 
 ## License
 

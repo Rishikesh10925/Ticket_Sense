@@ -21,6 +21,37 @@ Kept out of the default backend install (`sentence-transformers` pulls in `torch
 [docs/architecture.md](../docs/architecture.md)'s "ai/ packaging" note for why this
 lives here rather than as a separate project.
 
+## embeddings/embed_resolved_tickets.py
+
+Embeds every `closed` ticket (subject + description) as a second evidence source
+alongside the knowledge base. No real resolved-ticket history exists yet, so right now
+this means the 120 synthetic tickets from `data/seed_synthetic_tickets.py` — see
+[docs/retrieval.md](../docs/retrieval.md).
+
+```bash
+uv run --project backend python ../data/seed_synthetic_tickets.py
+uv run --project backend python embeddings/embed_resolved_tickets.py
+```
+
+## embeddings/retrieve.py
+
+The department-scoped similarity-search retrieval function —
+`retrieve_evidence(db, query_text, department_id, k)`, merging both evidence sources,
+scoped at the SQL level so there's no cross-department leakage. See
+[docs/retrieval.md](../docs/retrieval.md) for how department scoping works and why the
+top-k merge is correct. This is the function
+`backend/app/services/retrieval.py` imports (Week 5, Rishikesh).
+
+## embeddings/evaluate_retrieval.py
+
+Recall@K evaluation against 15 hand-labelled test queries (3 per department). Current
+result: Recall@3 = 15/15 = 1.00 — see [docs/retrieval.md](../docs/retrieval.md) for the
+honest read of what a perfect score does and doesn't mean at this corpus size.
+
+```bash
+uv run --project backend python embeddings/evaluate_retrieval.py
+```
+
 ## models/
 
 Trains and packages the department/priority/sentiment classifiers. See
@@ -41,5 +72,5 @@ pipeline needs them at runtime). `models/classifier.py` loads them and exposes
 
 ## What's not here yet
 
-Retrieval (querying `embeddings` for a given ticket) and the LangGraph pipeline are
-planned for later weeks — see the root [README.md](../README.md) Project status.
+The LangGraph pipeline is planned for a later week — see the root
+[README.md](../README.md) Project status.
