@@ -45,5 +45,18 @@ label at all. See [../docs/classification-model.md](../docs/classification-model
 python synthetic_labeled_tickets.py
 ```
 
-No import-to-database script exists yet — that's later scope once ticket ingestion is
-wired up.
+## seed_synthetic_tickets.py
+
+Inserts the same 120 tickets (from `synthetic_labeled_tickets.py`) into the `tickets`
+table as `closed` historical tickets, attributed to a placeholder account
+(`synthetic-tickets@ticketsense.local`) — a stand-in resolved-ticket history for the
+retrieval pipeline to embed, since no real one exists yet. See
+[../docs/retrieval.md](../docs/retrieval.md).
+
+```bash
+uv run --project ../backend python seed_synthetic_tickets.py
+uv run --project ../backend python seed_synthetic_tickets.py --reset  # replace existing
+```
+
+Requires the five departments to already exist
+(`backend/app/scripts/seed_demo_users.py`) and `DATABASE_URL` configured.
