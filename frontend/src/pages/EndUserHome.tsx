@@ -1,10 +1,12 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Card, FormField } from "../components";
 import { createTicket, listTickets, ApiError, type Ticket } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 
 export default function EndUserHome() {
   const { token } = useAuth();
+  const navigate = useNavigate();
 
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
@@ -85,14 +87,10 @@ export default function EndUserHome() {
             />
           </FormField>
 
-          <FormField
-            label="Department"
-            hint="Suggested automatically once classification is built — not implemented yet"
-          >
-            <select disabled>
-              <option>Suggested after submit</option>
-            </select>
-          </FormField>
+          <p className="placeholder-note">
+            Department, priority, and sentiment are classified automatically after
+            submission — check "My tickets" below in a few seconds.
+          </p>
 
           {submitError && <p className="form-error">{submitError}</p>}
 
@@ -121,7 +119,11 @@ export default function EndUserHome() {
             </thead>
             <tbody>
               {tickets.map((ticket) => (
-                <tr key={ticket.id}>
+                <tr
+                  key={ticket.id}
+                  className="clickable-row"
+                  onClick={() => navigate(`/tickets/${ticket.id}`)}
+                >
                   <td>{ticket.subject}</td>
                   <td>
                     <span className="status-badge">{ticket.status}</span>

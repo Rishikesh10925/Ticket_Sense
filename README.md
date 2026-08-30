@@ -12,9 +12,12 @@ for review, or whether the ticket should be escalated untouched. TicketSense doe
 send AI-generated responses to end users directly; a human engineer always makes the
 final call.
 
-> **Status: Week 3 (authentication, RBAC, ticket lifecycle).** The pipeline
-> below describes the target architecture. See [Project status](#project-status) for
-> what is actually implemented today.
+> **Status: Week 5 complete (department-scoped RAG retrieval — knowledge base +
+> resolved tickets, live evidence API, and the evidence-display panel — Team
+> Integration verified with zero cross-department leakage across 10 sample tickets,
+> see [docs/team-integration-week5.md](docs/team-integration-week5.md)).** The
+> pipeline below describes the target architecture. See
+> [Project status](#project-status) for what is actually implemented today.
 
 ```text
 Ticket → Classification → Department Routing → Evidence Retrieval → Cited Draft
@@ -94,7 +97,9 @@ are not built yet — see [Project status](#project-status).
 | Public dataset identified + download script | ✅ Available (`data/download_dataset.py`) |
 | RAG / calibration / human-AI deferral literature review | ✅ Documented |
 | Knowledge-base article outline (5 departments) | ✅ Documented |
-| Knowledge-base articles (SAP, Networking — 24 of 60) | ✅ Authored |
+| Knowledge-base articles (all 5 departments — 60 of 60) | ✅ Authored |
+| Knowledge-base embeddings (sentence-transformers) | ✅ Generated (`ai/embeddings/embed_knowledge_base.py`) — verified with a real similarity-search query |
+| Confidence-model outcome labelling guide | ✅ Documented (for Weeks 8–11, no data to label yet) |
 | Dataset cleaned and structured into project schema | ✅ Available (`data/clean_dataset.py`) — 2 of 5 departments have real examples, see [known limitations](docs/dataset-cleaning.md) |
 | Train/val/test split strategy | ✅ Documented + implemented (`data/split_dataset.py`) |
 | JWT authentication (register/login/me) | ✅ Available |
@@ -102,9 +107,19 @@ are not built yet — see [Project status](#project-status).
 | Ticket intake + optional attachment upload | ✅ Available (`POST /tickets`) |
 | Ticket list (filterable) + detail-view API | ✅ Available (`GET /tickets`, `GET /tickets/{id}`) |
 | Ticket lifecycle state machine | ✅ Implemented + tested (`backend/app/services/ticket_lifecycle.py`) — only `submitted` is reachable via the API so far |
-| Ticket classification (department/priority/sentiment) | ⏳ Planned |
-| Department routing | ⏳ Planned |
-| Department-scoped RAG (knowledge base + resolved tickets) | ⏳ Planned |
+| Department/priority/sentiment classification models | ✅ Trained + packaged (`ai/models/`) — see honest accuracy/limitations in [classification-model.md](docs/classification-model.md) |
+| Automatic classification + department routing (background task on ticket create) | ✅ Available — verified end-to-end via Docker, routes within a few seconds |
+| Department-scoped queue API — `?sort=priority`, admin `?department_id=` | ✅ Available |
+| Department Engineer queue UI — sortable by priority, filterable by status | ✅ Available |
+| Ticket detail screen with classification results (department, priority, sentiment) | ✅ Available |
+| `GET /departments` — resolves department names for the UI | ✅ Available |
+| Usability review of the End User submission flow | ✅ Documented (heuristic walkthrough — real outside testers still needed, see [usability-testing.md](docs/usability-testing.md)) |
+| Department-scoped RAG retrieval function (knowledge base + resolved tickets) | ✅ Available (`ai/embeddings/retrieve.py`) — see [retrieval.md](docs/retrieval.md) |
+| Resolved-ticket embeddings (synthetic, no real history yet) | ✅ Available (`ai/embeddings/embed_resolved_tickets.py`) — 120 synthetic tickets embedded |
+| Recall@K retrieval evaluation | ✅ Measured — Recall@3 = 15/15 on a hand-labelled 15-query set, honest caveats in [retrieval.md](docs/retrieval.md) |
+| Live ticket-evidence API endpoint (`GET /tickets/{id}/evidence`) | ✅ Available — department-scoped, verified end-to-end |
+| pgvector HNSW index | ✅ Available (migration `0004`) — see [retrieval.md](docs/retrieval.md) for why HNSW over ivfflat |
+| Evidence-display panel on the ticket detail screen (source snippets + department/source tags) | ✅ Available — loading, empty, and "not yet routed" states, brief auto-poll while classifying |
 | Evidence-grounded draft generation with citations | ⏳ Planned |
 | Independent ML confidence model | ⏳ Planned |
 | Confidence-based escalation | ⏳ Planned |
@@ -134,14 +149,16 @@ flowchart TD
     FINAL --> FB[Feedback / Analytics]
 ```
 
-The FastAPI backend has working auth (JWT + RBAC) and ticket create/list/detail
-endpoints backed by the Postgres+pgvector database, all live via Docker Compose. The
-React frontend now calls this real API: login/register, ticket submission with
-attachment upload, and the End User's live ticket list with status, all verified
-end-to-end in a real browser against the real backend and database — login as
-`customer@demo.local`, submit a ticket with an attachment, and see it appear in "My
-tickets" immediately. Classification, retrieval, drafting, and confidence scoring are
-still design targets described in [docs/architecture.md](docs/architecture.md) and
+The FastAPI backend has working auth (JWT + RBAC), ticket create/list/detail endpoints,
+and automatic classification and department routing: submitting a ticket triggers a
+background task that predicts department/priority/sentiment (`ai/models/`) and advances
+the ticket through `classified` → `routed`, typically within a couple of seconds
+(verified through the actual Docker Compose deployment — see
+[docs/ticket-routing.md](docs/ticket-routing.md)). The React frontend calls this real
+API: login/register, ticket submission with attachment upload, and the End User's live
+ticket list with status, all verified end-to-end in a real browser against the real
+backend and database. Retrieval, drafting, and confidence scoring are still design
+targets described in [docs/architecture.md](docs/architecture.md) and
 [docs/langgraph-research.md](docs/langgraph-research.md).
 
 ## Project structure
@@ -154,7 +171,7 @@ TicketSense/
 │   │   ├── models/            SQLAlchemy models (users, departments, tickets, ...)
 │   │   ├── routers/           APIRouter modules (health, auth, tickets)
 │   │   ├── schemas/           Pydantic request/response models
-│   │   ├── services/          Ticket lifecycle state machine
+│   │   ├── services/          Ticket lifecycle state machine, classification + routing
 │   │   ├── scripts/           Dev-only scripts (demo user seeding)
 │   │   ├── config.py, database.py, dependencies.py, main.py
 │   ├── tests/              Backend tests
@@ -163,14 +180,17 @@ TicketSense/
 │   └── pyproject.toml
 ├── db/
 │   ├── migrations/        Alembic migration environment and versions
-│   └── seed/knowledge_base/  Authored KB articles (SAP, Networking so far)
+│   └── seed/knowledge_base/  Authored KB articles, all 5 departments (60 articles)
+├── ai/
+│   ├── embeddings/         KB + resolved-ticket embeddings, retrieval, Recall@K eval
+│   └── models/             Department/priority/sentiment classifier training + packaging
 ├── frontend/             Vite + React + TypeScript app
 │   ├── src/
 │   │   ├── api/               Backend API client (fetch wrapper)
 │   │   ├── auth/               Auth context, route guards (login required / role required)
 │   │   ├── components/      Shared library (Button, Card, FormField)
 │   │   ├── layouts/         App shell (header, user info, logout)
-│   │   └── pages/            Login + End User / Engineer / Admin role screens
+│   │   └── pages/            Login, End User, Engineer queue, ticket detail, Admin
 │   └── package.json
 ├── data/                 Dataset download, cleaning, and split scripts
 │   ├── download_dataset.py
@@ -189,12 +209,13 @@ TicketSense/
 | `backend/` | FastAPI service — models, routers, and config for the API |
 | `db/migrations/` | Alembic migration environment (schema definitions live as SQLAlchemy models in `backend/app/models/`) |
 | `db/seed/knowledge_base/` | Authored knowledge-base articles, one department per subfolder |
-| `frontend/` | React UI — login/register, role-aware routing, and a ticket form/list wired to the real backend |
-| `data/` | Dataset download, cleaning, and train/val/test split scripts (raw/processed data itself is gitignored) |
-| `docs/` | Architecture decisions, UI/LangGraph/dataset/literature research, wireframes, and the evaluation protocol |
+| `ai/embeddings/` | Embeds the knowledge base and resolved tickets, department-scoped retrieval, Recall@K evaluation |
+| `ai/models/` | Trains and packages the department/priority/sentiment classifiers |
+| `frontend/` | React UI — login/register, role-aware routing, ticket submission, and the Engineer queue + ticket detail views, all wired to the real backend |
+| `data/` | Dataset download, cleaning, split, and synthetic-labeling scripts (raw/processed data itself is gitignored) |
+| `docs/` | Architecture decisions, UI/LangGraph/dataset/literature/classification research, wireframes, and the evaluation protocol |
 
-`ai/` (embeddings/LangGraph/ML training) is planned for later weeks and is not present
-yet.
+`ai/graph/` (LangGraph pipeline) is planned for a later week and is not present yet.
 
 ## Setup
 
@@ -284,10 +305,21 @@ curl -X POST localhost:8000/auth/login -d "username=you@example.com&password=pas
 curl -X POST localhost:8000/tickets -H "Authorization: Bearer <token>" \
   -F "subject=VPN not connecting" -F "description=..." -F "attachment=@log.txt"
 
-# List (filterable by ?status=&priority=) and fetch by id
+# List — filterable by ?status=&priority=, sortable by ?sort=priority,
+# and (Admin only) scoped to one department via ?department_id=
 curl localhost:8000/tickets -H "Authorization: Bearer <token>"
 curl localhost:8000/tickets/<id> -H "Authorization: Bearer <token>"
+
+# Retrieved evidence for a ticket, once it's routed (department-scoped, see docs/retrieval.md)
+curl localhost:8000/tickets/<id>/evidence -H "Authorization: Bearer <token>"
 ```
+
+A newly created ticket comes back `status: submitted`; classification and department
+routing run as a background task and typically finish within a couple of seconds — a
+follow-up `GET /tickets/<id>` shows `status: routed` with `department_id`/`priority`/
+`sentiment` filled in. See [docs/ticket-routing.md](docs/ticket-routing.md). Once
+routed, `/evidence` returns the top matching knowledge-base articles and resolved
+tickets for that department, ranked by relevance.
 
 Full interactive docs at `localhost:8000/docs`. See
 [docs/authentication.md](docs/authentication.md) for the RBAC model and
@@ -314,7 +346,9 @@ cd backend && uv run python -m app.scripts.seed_demo_users
 
 Log in as `customer@demo.local` / `Demo@123` (or any of the other two demo accounts) —
 password for all three is `Demo@123`, or register a new End User account from the login
-screen.
+screen. Log in as `engineer@demo.local` to see the Engineer queue (sortable by priority,
+filterable by status) — click any ticket for its detail screen, including its
+classification results once routed.
 
 ### Dataset
 
@@ -338,7 +372,51 @@ department. See [docs/dataset-cleaning.md](docs/dataset-cleaning.md) and
 [docs/split-strategy.md](docs/split-strategy.md) — only 2 of 5 departments currently
 have real examples, documented as a known limitation rather than papered over.
 
-A seed/import-to-database script is not part of the repository yet.
+A seed/import-to-database script for ticket data is not part of the repository yet.
+
+### Knowledge-base embeddings
+
+```bash
+cd backend
+uv sync --extra ai
+cd ..
+uv run --project backend python ai/embeddings/embed_knowledge_base.py
+```
+
+Embeds all 60 authored knowledge-base articles (`db/seed/knowledge_base/`) with
+`sentence-transformers/all-MiniLM-L6-v2` and stores them in the `knowledge_base` and
+`embeddings` tables. See [ai/README.md](ai/README.md). Kept as an optional `ai` extra
+(pulls in `torch`) rather than a default backend dependency.
+
+### Resolved-ticket embeddings + retrieval
+
+```bash
+uv run --project backend python data/seed_synthetic_tickets.py
+uv run --project backend python ai/embeddings/embed_resolved_tickets.py
+uv run --project backend python ai/embeddings/evaluate_retrieval.py
+```
+
+Seeds the 120 synthetic tickets as `closed` historical tickets (no real resolved-ticket
+history exists yet), embeds them as a second evidence source, and runs the Recall@K
+evaluation (currently 15/15 on the hand-labelled test set). See
+[docs/retrieval.md](docs/retrieval.md) for department scoping and an honest read of
+that score.
+
+### Classification models
+
+```bash
+python data/synthetic_labeled_tickets.py   # -> data/processed/synthetic_tickets.csv
+cd backend && uv sync --extra ai && cd ..
+uv run --project backend python ai/models/train_classifier.py
+```
+
+Trains the department/priority/sentiment classifiers and saves them to
+`ai/models/artifacts/` (committed to the repo — small, and the live pipeline needs them
+at runtime). Metrics are written to
+[docs/classification-metrics.md](docs/classification-metrics.md); see
+[docs/classification-model.md](docs/classification-model.md) for what they mean and
+their honest limitations (department accuracy is dominated by class imbalance — SAP,
+Cloud, and Database have almost no real training examples).
 
 ## Environment variables
 
@@ -391,28 +469,41 @@ feature/confidence-model
 - Public IT-support ticket dataset identified, verified, and downloadable locally ([docs/dataset-research.md](docs/dataset-research.md), `data/download_dataset.py`)
 - Literature reviewed on RAG, confidence calibration, and human-AI deferral ([docs/literature-review.md](docs/literature-review.md))
 - Knowledge-base article outline drafted across all five target departments ([docs/knowledge-base-outline.md](docs/knowledge-base-outline.md))
-- First batch of knowledge-base articles authored — SAP and Networking, 12 each (`db/seed/knowledge_base/`)
+- Full knowledge base authored — all 5 departments, 60 articles total (`db/seed/knowledge_base/`; SAP/Networking/Cloud/HR recovered from an earlier prototype's git history, Database authored fresh)
+- Knowledge-base embeddings generated with `sentence-transformers/all-MiniLM-L6-v2` (`ai/embeddings/embed_knowledge_base.py`) — verified with a real similarity-search query against the stored vectors
+- Confidence-model outcome labelling guide drafted for Weeks 8–11 ([docs/confidence-labelling-guide.md](docs/confidence-labelling-guide.md)) — design only, no data to label yet
 - Public dataset cleaned and structured into the project's schema, and split 70/15/15 for classification ([docs/dataset-cleaning.md](docs/dataset-cleaning.md), [docs/split-strategy.md](docs/split-strategy.md)) — honestly limited to 2 of 5 departments given what the source dataset actually contains
 - JWT authentication and role-based access control for all three roles ([docs/authentication.md](docs/authentication.md)) — register/login/me, plus row-level ticket visibility scoped by role
 - Ticket CRUD API — create (with optional attachment upload), filterable list, detail-view, all tested against a live database and role-checked
 - Ticket lifecycle state machine defined, migrated into the schema, and unit-tested ([docs/ticket-lifecycle.md](docs/ticket-lifecycle.md))
 - Demo seed script for all three role accounts (`backend/app/scripts/seed_demo_users.py`)
+- Synthetic labeled ticket set covering all 5 departments and all 3 classification targets (`data/synthetic_labeled_tickets.py`, 120 tickets) — closes the public dataset's department/sentiment gaps
+- Department/priority/sentiment classifiers trained and packaged (`ai/models/`) — real, honestly-reported metrics in [docs/classification-metrics.md](docs/classification-metrics.md) and [docs/classification-model.md](docs/classification-model.md); department accuracy is skewed by severe class imbalance, documented rather than hidden
+- Automatic classification + department routing wired into the live ticket pipeline (`backend/app/services/classification.py`) — a submitted ticket is classified and routed within a few seconds via a background task, verified end-to-end through the real Docker Compose deployment (not just locally); see [docs/ticket-routing.md](docs/ticket-routing.md)
+- Department-scoped queue API — `GET /tickets?sort=priority` and Admin's `?department_id=` filter
 - Frontend wired to the real backend — login/register/logout, role-aware redirect and
   route guards, ticket submission with attachment upload, and a live "my tickets" list
   with status. Verified end-to-end in a real browser: log in, submit a ticket with an
   attachment, see it in the list, confirm it landed in the database — the Week 3 Team
   Integration check.
+- Department Engineer queue UI — sortable by priority, filterable by status, live against the real queue API (`frontend/src/pages/EngineerQueue.tsx`)
+- Ticket detail screen showing classification results (department resolved by name via new `GET /departments`, priority, sentiment) — reachable from both the Engineer queue and the End User's ticket list (`frontend/src/pages/TicketDetail.tsx`)
+- First usability review of the End User submission flow ([docs/usability-testing.md](docs/usability-testing.md)) — a heuristic walkthrough of the real running app, honestly noted as not a substitute for real outside testers, with concrete findings and a next-round plan
 - Architecture and evaluation protocol documented ([docs/architecture.md](docs/architecture.md), [docs/research-evaluation.md](docs/research-evaluation.md))
+- Resolved tickets embedded as a second evidence source alongside the knowledge base (`ai/embeddings/embed_resolved_tickets.py`) — synthetic data standing in for real history, which doesn't exist yet; schema extended (migration `0003`) so `embeddings` can reference either a KB article or a ticket
+- Department-scoped similarity-search retrieval function (`ai/embeddings/retrieve.py`), scoped at the SQL level — verified no cross-department leakage on a real query
+- Recall@K retrieval evaluation ([docs/retrieval.md](docs/retrieval.md)) — 15/15 on a hand-labelled 15-query set (3 per department), with an honest read of what a perfect score does and doesn't mean at this corpus size
+- pgvector HNSW index (migration `0004`) — chosen over `ivfflat` to avoid repeating a documented correctness bug at small table sizes; Recall@3 re-verified unchanged with the index in place
+- Live ticket-evidence API — `GET /tickets/{id}/evidence`, department-scoped from the ticket's own `department_id` (not client input), verified end-to-end against a real SAP ticket
+- Evidence-display panel on the ticket detail screen (`frontend/src/pages/TicketDetail.tsx`) — source snippets tagged by department and source type (Knowledge Base / Resolved Ticket), loading/empty/"not yet routed" states, and a brief auto-poll (capped, not indefinite) while classification is still running — a direct follow-up to a Week 4 usability finding ([docs/usability-testing.md](docs/usability-testing.md#week-5-follow-up-applied-to-the-ticket-detail-screen))
 
 ### In Progress
-- Remaining knowledge-base articles, embedding generation, and the confidence-model labelling guide (Week 3, Shivaganesh) — pushed on a separate branch, not yet merged here.
+- Nothing yet — all three Week 5 branches (retrieval, pgvector integration, evidence UI) are pushed.
 
 ### Planned
-- Real Department Engineer and Admin screens (currently layout placeholders, not wired to the ticket API)
-- Authoring the remaining knowledge-base articles (Cloud, Database, HR — 36 of 60)
-- Synthetic SAP/Cloud/Database ticket examples, since the public dataset has none
-- Ticket classification (department/priority/sentiment)
-- Department-scoped RAG (knowledge-base and resolved-ticket retrieval)
+- Real Admin screen (currently a layout placeholder, not wired to the ticket API)
+- A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
+- Auto-refresh on the End User's "my tickets" list itself (Week 4 usability finding #1/#2 — addressed on the ticket detail screen this week, still open on the list)
 - LLM draft generation with citations (`ai/agents` LLM provider interface)
 - LangGraph pipeline implementation
 - Independent ML confidence model and confidence gate
@@ -477,6 +568,15 @@ production system.
 - [docs/split-strategy.md](docs/split-strategy.md) — train/validation/test split strategy
 - [docs/authentication.md](docs/authentication.md) — JWT auth flow and role-based access control
 - [docs/ticket-lifecycle.md](docs/ticket-lifecycle.md) — ticket status state machine
+- [docs/confidence-labelling-guide.md](docs/confidence-labelling-guide.md) — plan for turning reviewer actions into confidence-model training labels
+- [docs/classification-model.md](docs/classification-model.md) — classifier training methodology and honest limitations
+- [docs/classification-metrics.md](docs/classification-metrics.md) — auto-generated precision/recall/F1 tables
+- [docs/ticket-routing.md](docs/ticket-routing.md) — how a submitted ticket gets classified and routed automatically
+- [docs/usability-testing.md](docs/usability-testing.md) — End User submission flow usability findings
+- [docs/team-integration-week4.md](docs/team-integration-week4.md) — Week 4 Team Integration evidence and mentor demo script
+- [docs/retrieval.md](docs/retrieval.md) — department-scoped retrieval design and Recall@K results
+- [docs/team-integration-week5.md](docs/team-integration-week5.md) — Week 5 Team Integration evidence (cross-department leakage check) and mentor demo script
+- [ai/README.md](ai/README.md) — knowledge-base/resolved-ticket embedding generation, retrieval, and classifier training
 
 ## License
 

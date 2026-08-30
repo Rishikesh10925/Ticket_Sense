@@ -34,5 +34,29 @@ Splits `processed/tickets_clean.csv` into stratified 70/15/15 train/val/test CSV
 python split_dataset.py
 ```
 
-No import-to-database script exists yet — that's later scope once ticket ingestion is
-wired up.
+## synthetic_labeled_tickets.py
+
+Writes `processed/synthetic_tickets.csv` — 120 hand-authored tickets, 24 per department,
+covering all 5 departments and all 3 classification targets (department/priority/
+sentiment), since the public dataset only covers 2 departments and has no sentiment
+label at all. See [../docs/classification-model.md](../docs/classification-model.md).
+
+```bash
+python synthetic_labeled_tickets.py
+```
+
+## seed_synthetic_tickets.py
+
+Inserts the same 120 tickets (from `synthetic_labeled_tickets.py`) into the `tickets`
+table as `closed` historical tickets, attributed to a placeholder account
+(`synthetic-tickets@ticketsense.local`) — a stand-in resolved-ticket history for the
+retrieval pipeline to embed, since no real one exists yet. See
+[../docs/retrieval.md](../docs/retrieval.md).
+
+```bash
+uv run --project ../backend python seed_synthetic_tickets.py
+uv run --project ../backend python seed_synthetic_tickets.py --reset  # replace existing
+```
+
+Requires the five departments to already exist
+(`backend/app/scripts/seed_demo_users.py`) and `DATABASE_URL` configured.
