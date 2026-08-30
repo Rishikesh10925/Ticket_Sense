@@ -10,8 +10,10 @@ from app.config import settings
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models import Ticket, User
+from app.schemas.evidence import EvidenceOut
 from app.schemas.tickets import TicketOut
 from app.services.classification import classify_and_route
+from app.services.retrieval import get_evidence_for_ticket
 
 router = APIRouter(prefix="/tickets", tags=["tickets"])
 
@@ -118,12 +120,7 @@ async def list_tickets(
     return list(result)
 
 
-@router.get("/{ticket_id}", response_model=TicketOut)
-async def get_ticket(
-    ticket_id: uuid.UUID,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-) -> Ticket:
+async def _get_ticket_or_403(ticket_id: uuid.UUID, current_user: User, db: AsyncSession) -> Ticket:
     ticket = await db.get(Ticket, ticket_id)
     if ticket is None:
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Ticket not found")
@@ -137,3 +134,25 @@ async def get_ticket(
         raise HTTPException(status_code=http_status.HTTP_403_FORBIDDEN, detail="Not permitted")
 
     return ticket
+
+
+@router.get("/{ticket_id}", response_model=TicketOut)
+async def get_ticket(
+    ticket_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Ticket:
+    return await _get_ticket_or_403(ticket_id, current_user, db)
+
+
+@router.get("/{ticket_id}/evidence", response_model=list[EvidenceOut])
+async def get_ticket_evidence(
+    ticket_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Retrieved evidence passages for this ticket — department-scoped at the query
+    level (see ai/embeddings/retrieve.py), using the same access check as viewing the
+    ticket itself. Empty list if the ticket hasn't been routed to a department yet."""
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+    return await get_evidence_for_ticket(db, ticket)
