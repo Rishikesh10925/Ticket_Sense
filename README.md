@@ -12,9 +12,10 @@ for review, or whether the ticket should be escalated untouched. TicketSense doe
 send AI-generated responses to end users directly; a human engineer always makes the
 final call.
 
-> **Status: Week 4 complete (automatic ticket classification, department routing, and
-> the Engineer queue UI — Team Integration verified end-to-end, see
-> [docs/team-integration-week4.md](docs/team-integration-week4.md)).** The
+> **Status: Week 5 complete (department-scoped RAG retrieval — knowledge base +
+> resolved tickets, live evidence API, and the evidence-display panel — Team
+> Integration verified with zero cross-department leakage across 10 sample tickets,
+> see [docs/team-integration-week5.md](docs/team-integration-week5.md)).** The
 > pipeline below describes the target architecture. See
 > [Project status](#project-status) for what is actually implemented today.
 
@@ -118,6 +119,7 @@ are not built yet — see [Project status](#project-status).
 | Recall@K retrieval evaluation | ✅ Measured — Recall@3 = 15/15 on a hand-labelled 15-query set, honest caveats in [retrieval.md](docs/retrieval.md) |
 | Live ticket-evidence API endpoint (`GET /tickets/{id}/evidence`) | ✅ Available — department-scoped, verified end-to-end |
 | pgvector HNSW index | ✅ Available (migration `0004`) — see [retrieval.md](docs/retrieval.md) for why HNSW over ivfflat |
+| Evidence-display panel on the ticket detail screen (source snippets + department/source tags) | ✅ Available — loading, empty, and "not yet routed" states, brief auto-poll while classifying |
 | Evidence-grounded draft generation with citations | ⏳ Planned |
 | Independent ML confidence model | ⏳ Planned |
 | Confidence-based escalation | ⏳ Planned |
@@ -493,13 +495,15 @@ feature/confidence-model
 - Recall@K retrieval evaluation ([docs/retrieval.md](docs/retrieval.md)) — 15/15 on a hand-labelled 15-query set (3 per department), with an honest read of what a perfect score does and doesn't mean at this corpus size
 - pgvector HNSW index (migration `0004`) — chosen over `ivfflat` to avoid repeating a documented correctness bug at small table sizes; Recall@3 re-verified unchanged with the index in place
 - Live ticket-evidence API — `GET /tickets/{id}/evidence`, department-scoped from the ticket's own `department_id` (not client input), verified end-to-end against a real SAP ticket
+- Evidence-display panel on the ticket detail screen (`frontend/src/pages/TicketDetail.tsx`) — source snippets tagged by department and source type (Knowledge Base / Resolved Ticket), loading/empty/"not yet routed" states, and a brief auto-poll (capped, not indefinite) while classification is still running — a direct follow-up to a Week 4 usability finding ([docs/usability-testing.md](docs/usability-testing.md#week-5-follow-up-applied-to-the-ticket-detail-screen))
 
 ### In Progress
-- Evidence-display panel on the Engineer's ticket detail screen (Week 5, Aashritha) — not yet in this branch.
+- Nothing yet — all three Week 5 branches (retrieval, pgvector integration, evidence UI) are pushed.
 
 ### Planned
 - Real Admin screen (currently a layout placeholder, not wired to the ticket API)
 - A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
+- Auto-refresh on the End User's "my tickets" list itself (Week 4 usability finding #1/#2 — addressed on the ticket detail screen this week, still open on the list)
 - LLM draft generation with citations (`ai/agents` LLM provider interface)
 - LangGraph pipeline implementation
 - Independent ML confidence model and confidence gate
@@ -571,6 +575,7 @@ production system.
 - [docs/usability-testing.md](docs/usability-testing.md) — End User submission flow usability findings
 - [docs/team-integration-week4.md](docs/team-integration-week4.md) — Week 4 Team Integration evidence and mentor demo script
 - [docs/retrieval.md](docs/retrieval.md) — department-scoped retrieval design and Recall@K results
+- [docs/team-integration-week5.md](docs/team-integration-week5.md) — Week 5 Team Integration evidence (cross-department leakage check) and mentor demo script
 - [ai/README.md](ai/README.md) — knowledge-base/resolved-ticket embedding generation, retrieval, and classifier training
 
 ## License
