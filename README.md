@@ -116,7 +116,8 @@ are not built yet — see [Project status](#project-status).
 | Department-scoped RAG retrieval function (knowledge base + resolved tickets) | ✅ Available (`ai/embeddings/retrieve.py`) — see [retrieval.md](docs/retrieval.md) |
 | Resolved-ticket embeddings (synthetic, no real history yet) | ✅ Available (`ai/embeddings/embed_resolved_tickets.py`) — 120 synthetic tickets embedded |
 | Recall@K retrieval evaluation | ✅ Measured — Recall@3 = 15/15 on a hand-labelled 15-query set, honest caveats in [retrieval.md](docs/retrieval.md) |
-| Retrieval wired into a live evidence API endpoint | ⏳ Planned (Week 5, Rishikesh) |
+| Live ticket-evidence API endpoint (`GET /tickets/{id}/evidence`) | ✅ Available — department-scoped, verified end-to-end |
+| pgvector HNSW index | ✅ Available (migration `0004`) — see [retrieval.md](docs/retrieval.md) for why HNSW over ivfflat |
 | Evidence-grounded draft generation with citations | ⏳ Planned |
 | Independent ML confidence model | ⏳ Planned |
 | Confidence-based escalation | ⏳ Planned |
@@ -306,12 +307,17 @@ curl -X POST localhost:8000/tickets -H "Authorization: Bearer <token>" \
 # and (Admin only) scoped to one department via ?department_id=
 curl localhost:8000/tickets -H "Authorization: Bearer <token>"
 curl localhost:8000/tickets/<id> -H "Authorization: Bearer <token>"
+
+# Retrieved evidence for a ticket, once it's routed (department-scoped, see docs/retrieval.md)
+curl localhost:8000/tickets/<id>/evidence -H "Authorization: Bearer <token>"
 ```
 
 A newly created ticket comes back `status: submitted`; classification and department
 routing run as a background task and typically finish within a couple of seconds — a
 follow-up `GET /tickets/<id>` shows `status: routed` with `department_id`/`priority`/
-`sentiment` filled in. See [docs/ticket-routing.md](docs/ticket-routing.md).
+`sentiment` filled in. See [docs/ticket-routing.md](docs/ticket-routing.md). Once
+routed, `/evidence` returns the top matching knowledge-base articles and resolved
+tickets for that department, ranked by relevance.
 
 Full interactive docs at `localhost:8000/docs`. See
 [docs/authentication.md](docs/authentication.md) for the RBAC model and
@@ -485,15 +491,15 @@ feature/confidence-model
 - Resolved tickets embedded as a second evidence source alongside the knowledge base (`ai/embeddings/embed_resolved_tickets.py`) — synthetic data standing in for real history, which doesn't exist yet; schema extended (migration `0003`) so `embeddings` can reference either a KB article or a ticket
 - Department-scoped similarity-search retrieval function (`ai/embeddings/retrieve.py`), scoped at the SQL level — verified no cross-department leakage on a real query
 - Recall@K retrieval evaluation ([docs/retrieval.md](docs/retrieval.md)) — 15/15 on a hand-labelled 15-query set (3 per department), with an honest read of what a perfect score does and doesn't mean at this corpus size
+- pgvector HNSW index (migration `0004`) — chosen over `ivfflat` to avoid repeating a documented correctness bug at small table sizes; Recall@3 re-verified unchanged with the index in place
+- Live ticket-evidence API — `GET /tickets/{id}/evidence`, department-scoped from the ticket's own `department_id` (not client input), verified end-to-end against a real SAP ticket
 
 ### In Progress
-- Retrieval wired into a live evidence API endpoint (Week 5, Rishikesh) — not yet in this branch.
 - Evidence-display panel on the Engineer's ticket detail screen (Week 5, Aashritha) — not yet in this branch.
 
 ### Planned
 - Real Admin screen (currently a layout placeholder, not wired to the ticket API)
 - A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
-- pgvector ANN indexes (still exact search — not worth it yet at 180 embedded rows)
 - LLM draft generation with citations (`ai/agents` LLM provider interface)
 - LangGraph pipeline implementation
 - Independent ML confidence model and confidence gate

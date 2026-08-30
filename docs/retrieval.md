@@ -67,13 +67,34 @@ ambiguous ticket. Recall@K should be re-measured as the knowledge base grows and
 to include closer near-duplicates, where a perfect score would actually mean something
 harder-won.
 
+## Live API endpoint (Week 5, Rishikesh)
+
+`GET /tickets/{ticket_id}/evidence` — `backend/app/services/retrieval.py` wraps
+`retrieve_evidence`, called with the ticket's own `department_id` (never a
+client-supplied one) so the department scope can't be spoofed by an API caller. Uses
+the same ownership/department access check as `GET /tickets/{ticket_id}` itself.
+Returns an empty list, not an error, for a ticket that hasn't been routed yet (no
+department to scope the search to — see `docs/ticket-lifecycle.md`).
+
+Verified end-to-end: submitting a real SAP-flavored ticket ("ME023 error on goods
+receipt") returned, in order, the matching resolved ticket (distance 0.08), a related
+resolved ticket, the correct KB article, then two more loosely-related resolved
+tickets — the ranking degrading sensibly as relevance drops, not just returning k
+arbitrary rows.
+
+## pgvector index
+
+Migration `0004` adds an **HNSW** index (`vector_cosine_ops`), not `ivfflat`.
+`architecture.md`'s "Resolved decisions" already recorded a real correctness bug from
+the original prototype's `ivfflat` index: with far fewer rows than its `lists`
+parameter assumed, `ivfflat`'s default `probes = 1` searched a near-empty cluster and
+returned wrong nearest neighbors. `ivfflat` needs `lists` tuned to the actual row count
+and re-tuned as the table grows; HNSW's graph structure doesn't have that small-table
+failure mode, so it's the safer default here without needing to pick (and later
+revisit) a `lists` value. Re-ran the Recall@3 evaluation with the index in place to
+confirm it doesn't change the result: still 15/15.
+
 ## What's not built yet
 
-- The live API endpoint that calls `retrieve_evidence` for a given ticket
-  (Week 5, Rishikesh — `backend/app/services/retrieval.py`).
 - The evidence-display panel on the Engineer's ticket detail screen
   (Week 5, Aashritha).
-- pgvector ANN indexes (`ivfflat`/`hnsw`) — still exact search, per
-  `architecture.md`'s "Resolved decisions" note: not worth an approximate index until
-  the embeddings table is large enough that a sequential scan is actually slow. At 180
-  rows, it isn't.
