@@ -142,3 +142,57 @@
   margin: 0;
   font-size: 14px;
 }
+
+.ticket-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .ticket-detail-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.status-pending {
+  background: #fef3d6;
+  color: #8a6300;
+}
+
+.evidence-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.evidence-item {
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.evidence-item-header {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+.evidence-item strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: var(--space-xs);
+}
+
+.evidence-snippet {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  white-space: pre-wrap;
+  max-height: 120px;
+  overflow-y: auto;
+}
