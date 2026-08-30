@@ -8,6 +8,11 @@ export interface User {
   department_id: string | null;
 }
 
+export interface Department {
+  id: string;
+  name: string;
+}
+
 export interface Ticket {
   id: string;
   submitted_by: string;
@@ -21,6 +26,14 @@ export interface Ticket {
   status: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface Evidence {
+  source_type: "knowledge_base" | "resolved_ticket";
+  source_id: string;
+  title: string;
+  snippet: string;
+  distance: number;
 }
 
 export class ApiError extends Error {
@@ -94,11 +107,13 @@ export async function createTicket(
 
 export async function listTickets(
   token: string,
-  filters: { status?: string; priority?: string } = {}
+  filters: { status?: string; priority?: string; departmentId?: string; sort?: string } = {}
 ): Promise<Ticket[]> {
   const params = new URLSearchParams();
   if (filters.status) params.set("status", filters.status);
   if (filters.priority) params.set("priority", filters.priority);
+  if (filters.departmentId) params.set("department_id", filters.departmentId);
+  if (filters.sort) params.set("sort", filters.sort);
   const query = params.toString();
 
   const res = await fetch(`${API_URL}/tickets${query ? `?${query}` : ""}`, {
@@ -110,6 +125,18 @@ export async function listTickets(
 
 export async function getTicket(token: string, id: string): Promise<Ticket> {
   const res = await fetch(`${API_URL}/tickets/${id}`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function listDepartments(token: string): Promise<Department[]> {
+  const res = await fetch(`${API_URL}/departments`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function getTicketEvidence(token: string, id: string): Promise<Evidence[]> {
+  const res = await fetch(`${API_URL}/tickets/${id}/evidence`, { headers: authHeaders(token) });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
   return res.json();
 }

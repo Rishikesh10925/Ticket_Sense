@@ -1,18 +1,23 @@
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, Form, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, UploadFile
 from fastapi import status as http_status
-from sqlalchemy import select
+from sqlalchemy import case, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models import Ticket, User
+from app.schemas.evidence import EvidenceOut
 from app.schemas.tickets import TicketOut
+from app.services.classification import classify_and_route
+from app.services.retrieval import get_evidence_for_ticket
 
 router = APIRouter(prefix="/tickets", tags=["tickets"])
+
+_PRIORITY_RANK = case({"high": 3, "medium": 2, "low": 1}, value=Ticket.priority, else_=0)
 
 _ATTACHMENT_TYPES = {
     "image/png": "image",
@@ -34,6 +39,7 @@ def _visibility_filter(current_user: User):
 
 @router.post("", response_model=TicketOut, status_code=http_status.HTTP_201_CREATED)
 async def create_ticket(
+    background_tasks: BackgroundTasks,
     subject: str = Form(..., min_length=1, max_length=255),
     description: str = Form(..., min_length=1),
     attachment: UploadFile | None = None,
@@ -73,6 +79,8 @@ async def create_ticket(
     db.add(ticket)
     await db.commit()
     await db.refresh(ticket)
+
+    background_tasks.add_task(classify_and_route, ticket.id)
     return ticket
 
 
@@ -80,9 +88,17 @@ async def create_ticket(
 async def list_tickets(
     status: str | None = None,
     priority: str | None = None,
+    department_id: uuid.UUID | None = None,
+    sort: str | None = None,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> list[Ticket]:
+    """The department-scoped ticket queue. A Department Engineer's own queue is just
+    this endpoint scoped to their department (see _visibility_filter); Admin can view
+    any single department's queue with `?department_id=`, since Admin otherwise sees
+    every ticket. `?sort=priority` orders high -> medium -> low -> unclassified,
+    matching the Engineer queue UI's "sortable by priority" requirement.
+    """
     query = select(Ticket)
 
     visibility = _visibility_filter(current_user)
@@ -92,18 +108,19 @@ async def list_tickets(
         query = query.where(Ticket.status == status)
     if priority is not None:
         query = query.where(Ticket.priority == priority)
+    if department_id is not None and current_user.role == "admin":
+        query = query.where(Ticket.department_id == department_id)
 
-    query = query.order_by(Ticket.created_at.desc())
+    if sort == "priority":
+        query = query.order_by(_PRIORITY_RANK.desc(), Ticket.created_at.desc())
+    else:
+        query = query.order_by(Ticket.created_at.desc())
+
     result = await db.scalars(query)
     return list(result)
 
 
-@router.get("/{ticket_id}", response_model=TicketOut)
-async def get_ticket(
-    ticket_id: uuid.UUID,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-) -> Ticket:
+async def _get_ticket_or_403(ticket_id: uuid.UUID, current_user: User, db: AsyncSession) -> Ticket:
     ticket = await db.get(Ticket, ticket_id)
     if ticket is None:
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Ticket not found")
@@ -117,3 +134,25 @@ async def get_ticket(
         raise HTTPException(status_code=http_status.HTTP_403_FORBIDDEN, detail="Not permitted")
 
     return ticket
+
+
+@router.get("/{ticket_id}", response_model=TicketOut)
+async def get_ticket(
+    ticket_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Ticket:
+    return await _get_ticket_or_403(ticket_id, current_user, db)
+
+
+@router.get("/{ticket_id}/evidence", response_model=list[EvidenceOut])
+async def get_ticket_evidence(
+    ticket_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Retrieved evidence passages for this ticket — department-scoped at the query
+    level (see ai/embeddings/retrieve.py), using the same access check as viewing the
+    ticket itself. Empty list if the ticket hasn't been routed to a department yet."""
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+    return await get_evidence_for_ticket(db, ticket)
