@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button, Card } from "../components";
 import {
   getTicket,
+  getTicketAttachment,
   getTicketEvidence,
   listDepartments,
   ApiError,
@@ -46,6 +47,49 @@ function evidenceBody(item: Evidence): string {
       .replace(/\*\*(.+?)\*\*/g, "$1");
   }
   return text.trim();
+}
+
+const ATTACHMENT_TYPE_LABEL: Record<string, string> = {
+  image: "Image",
+  pdf: "PDF",
+  log: "Log/text",
+};
+
+// Fetches the attachment as a blob and builds an object URL for it — the endpoint is
+// auth-gated (same per-ticket access check as the ticket itself), so it can't be used
+// as a plain <img src>/<a href>. Shows an inline preview for images, a "view" link
+// for PDF/log attachments (the browser handles opening those itself).
+function AttachmentPreview({ token, ticket }: { token: string; ticket: Ticket }) {
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    let objectUrl: string | null = null;
+    getTicketAttachment(token, ticket.id)
+      .then((blob) => {
+        if (!active) return;
+        objectUrl = URL.createObjectURL(blob);
+        setBlobUrl(objectUrl);
+      })
+      .catch(() => active && setLoadError("Could not load the attachment file."));
+    return () => {
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [token, ticket.id]);
+
+  if (loadError) return <p className="form-error">{loadError}</p>;
+  if (!blobUrl) return <p className="placeholder-note">Loading attachment…</p>;
+
+  if (ticket.attachment_type === "image") {
+    return <img src={blobUrl} alt="Ticket attachment" className="attachment-image-preview" />;
+  }
+  return (
+    <a href={blobUrl} target="_blank" rel="noreferrer" className="link-button">
+      View attachment ({ticket.attachment_path?.split("/").pop()})
+    </a>
+  );
 }
 
 const CITATION_RE = /(\[\d+\])/g;
@@ -202,20 +246,37 @@ export default function TicketDetail() {
             <dd>{ticket.sentiment ?? "Not yet classified"}</dd>
           </div>
 
-          {ticket.attachment_path && (
-            <div className="ticket-detail-field">
-              <dt>Attachment</dt>
-              <dd>
-                {ticket.attachment_type} — {ticket.attachment_path.split("/").pop()}
-              </dd>
-            </div>
-          )}
-
           <div className="ticket-detail-field">
             <dt>Submitted</dt>
             <dd>{new Date(ticket.created_at).toLocaleString()}</dd>
           </div>
         </dl>
+
+        {ticket.attachment_path && token && (
+          <div className="attachment-section">
+            <div className="attachment-section-header">
+              <strong>Attachment</strong>
+              <span className="status-badge">
+                {ATTACHMENT_TYPE_LABEL[ticket.attachment_type ?? ""] ?? ticket.attachment_type}
+              </span>
+              {ticket.attachment_type === "image" && ticket.ocr_confidence !== null && (
+                <span className="status-badge">
+                  OCR confidence: {(ticket.ocr_confidence * 100).toFixed(0)}%
+                </span>
+              )}
+            </div>
+
+            <AttachmentPreview token={token} ticket={ticket} />
+
+            {ticket.attachment_text ? (
+              <p className="attachment-extracted-text">{ticket.attachment_text}</p>
+            ) : isDrafting ? (
+              <p className="placeholder-note">Extracting text from the attachment…</p>
+            ) : (
+              <p className="placeholder-note">No text could be extracted from this attachment.</p>
+            )}
+          </div>
+        )}
 
         {!showDraftPanel && (
           <p className="placeholder-note">

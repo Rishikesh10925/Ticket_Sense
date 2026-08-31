@@ -27,6 +27,11 @@ export interface Ticket {
   description: string;
   attachment_path: string | null;
   attachment_type: string | null;
+  // Set once the pipeline's extract node has run — null while still processing, and
+  // also null if extraction found no readable text. Unlike ai_draft_reply, visible to
+  // every role that can see the ticket (see build_ticket_out).
+  attachment_text: string | null;
+  ocr_confidence: number | null;
   priority: string | null;
   sentiment: string | null;
   status: string;
@@ -143,6 +148,15 @@ export async function listDepartments(token: string): Promise<Department[]> {
   const res = await fetch(`${API_URL}/departments`, { headers: authHeaders(token) });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
   return res.json();
+}
+
+export async function getTicketAttachment(token: string, id: string): Promise<Blob> {
+  // The endpoint is auth-gated (same per-ticket access check as the ticket itself),
+  // so it can't be used as a plain <img src>/<a href> URL — the caller fetches the
+  // blob and builds an object URL from it instead.
+  const res = await fetch(`${API_URL}/tickets/${id}/attachment`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.blob();
 }
 
 export async function getTicketEvidence(token: string, id: string): Promise<Evidence[]> {
