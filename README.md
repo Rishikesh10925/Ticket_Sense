@@ -128,6 +128,10 @@ are not built yet — see [Project status](#project-status).
 | Draft displayed on the ticket record, hidden from End User (human review required) | ✅ Available (`TicketOut`/`build_ticket_out`) — draft + citations null for `end_user`, populated for the routed department's engineer |
 | Draft-display panel with inline source citations + side-by-side evidence/draft layout | ✅ Available (`frontend/src/pages/TicketDetail.tsx`) — engineer/admin only, verified in a real browser |
 | End User ticket-status screen polish ("draft in review" style states) | ✅ Available (`frontend/src/statusLabels.ts`) |
+| Attachment OCR/text extraction (image/PDF/log) | ✅ Available (`ai/ocr/extract.py`) — EasyOCR + `pypdf`, evaluated on 5 hand-crafted samples, see [ocr-evaluation.md](docs/ocr-evaluation.md) |
+| Attachment text folded into classification, retrieval, and drafting | ✅ Available — `ai/graph/nodes.py`'s `extract` node feeds every downstream node, see [langgraph-pipeline.md](docs/langgraph-pipeline.md) |
+| Attachment storage + retrieval API | ✅ Available (`POST /tickets`, `GET /tickets/{id}/attachment`) |
+| OCR confidence wired into the confidence-model feature set | ✅ Available (`Ticket.confidence_features`) — nothing consumes it yet, this only wires the value in |
 | Independent ML confidence model | ⏳ Planned |
 | Confidence-based escalation | ⏳ Planned |
 | Human-in-the-loop review (accept/edit/reject/escalate) | ⏳ Planned |
@@ -513,6 +517,10 @@ feature/confidence-model
 - Draft-display panel on the ticket detail screen (`frontend/src/pages/TicketDetail.tsx`, Aashritha) — the AI draft with its `[n]` citation markers rendered as hoverable inline badges, a numbered Sources list mapping each marker to its evidence item, and a side-by-side layout with the retrieved-evidence panel; engineer/admin only, matching the backend's end-user hiding
 - End User ticket-status screen polish — friendlier status text across the ticket list and detail screen (`frontend/src/statusLabels.ts`), notably "Draft in review" for `drafted` with an explanatory note, addressing the Week 6 roadmap's status-clarity ask
 - Week 6 Team Integration: 20-ticket full-pipeline dry run across all 5 departments — 20/20 reached `drafted` unattended, 20/20 drafts fully grounded (automated check), 16/20 routed to the expected department; the 4 misroutes are an honest classifier-imbalance finding (not a pipeline bug) with its own implication documented — a grounded draft can still be grounded in the wrong department's evidence if routing itself is wrong, which is exactly why human review stays load-bearing; see [docs/team-integration-week6.md](docs/team-integration-week6.md)
+- Attachment OCR/text extraction integrated (`ai/ocr/extract.py`, Shivaganesh) — EasyOCR for images, `pypdf` for PDF text layers, plain read for logs; evaluated against 5 hand-crafted sample screenshots (0.81–0.94 confidence, honest per-sample error notes) since no real screenshots exist, see [docs/ocr-evaluation.md](docs/ocr-evaluation.md)
+- LangGraph pipeline extended with an `extract` node ahead of `classify` (`ai/graph/nodes.py`, Rishikesh) — OCR/PDF/log text is folded into the description every downstream node (classify/retrieve/draft) actually reads, so an attachment genuinely changes routing and the draft, not just sits on the record unused
+- `attachment_text`/`ocr_confidence` persisted on the ticket (migration `0006`), visible to every role that can see the ticket (unlike the AI draft) — and `ocr_confidence` wired into `Ticket.confidence_features` as the first entry in the reliability-signal set the Weeks 8–11 confidence model will consume
+- Attachment retrieval — `GET /tickets/{id}/attachment` streams the stored file back with the same per-ticket access check as the ticket itself
 
 ### Planned
 - Real Admin screen (currently a layout placeholder, not wired to the ticket API)
