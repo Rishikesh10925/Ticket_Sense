@@ -15,6 +15,10 @@ class TicketState(TypedDict, total=False):
     ticket_id: str
     subject: str
     description: str
+    attachment_path: str | None
+    attachment_type: str | None
+    attachment_text: str | None
+    ocr_confidence: float | None
     department_name: str | None
     department_id: str | None
     priority: str | None

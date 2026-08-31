@@ -23,15 +23,42 @@ from embeddings.retrieve import retrieve_evidence  # noqa: E402
 from generation.llm_interface import LLMProvider  # noqa: E402
 from generation.prompt import build_prompt  # noqa: E402
 from models.classifier import classify_ticket  # noqa: E402
+from ocr.extract import extract_attachment_text  # noqa: E402
 
 from graph.state import TicketState  # noqa: E402
 
 _CITATION_RE = re.compile(r"\[(\d+)\]")
 
 
+def _augmented_description(state: TicketState) -> str:
+    """The ticket description, with any extracted attachment text folded in — used
+    everywhere classify/retrieve/draft would otherwise read state["description"]
+    alone, so OCR/PDF/log text actually feeds into classification, retrieval, and
+    drafting rather than just sitting on the ticket record unused. See
+    docs/langgraph-pipeline.md."""
+    description = state["description"]
+    attachment_text = state.get("attachment_text")
+    if attachment_text:
+        return f"{description}\n\n[Extracted from attachment]\n{attachment_text}"
+    return description
+
+
+def make_extract_node():
+    async def node(state: TicketState) -> dict:
+        attachment_path = state.get("attachment_path")
+        attachment_type = state.get("attachment_type")
+        if not attachment_path or not attachment_type:
+            return {"attachment_text": None, "ocr_confidence": None}
+
+        result = extract_attachment_text(attachment_path, attachment_type)
+        return {"attachment_text": result.text or None, "ocr_confidence": result.confidence}
+
+    return node
+
+
 def make_classify_node():
     async def node(state: TicketState) -> dict:
-        result = classify_ticket(state["subject"], state["description"])
+        result = classify_ticket(state["subject"], _augmented_description(state))
         return {
             "department_name": result.department,
             "priority": result.priority,
@@ -59,7 +86,7 @@ def make_retrieve_node(db):
             # app/services/retrieval.py's get_evidence_for_ticket.
             return {"evidence": []}
 
-        query_text = f"{state['subject']}\n\n{state['description']}"
+        query_text = f"{state['subject']}\n\n{_augmented_description(state)}"
         evidence = await retrieve_evidence(db, query_text, UUID(department_id), k=5)
         return {"evidence": evidence}
 
@@ -69,7 +96,7 @@ def make_retrieve_node(db):
 def make_draft_node(llm_provider: LLMProvider):
     async def node(state: TicketState) -> dict:
         evidence = state.get("evidence") or []
-        prompt = build_prompt(state["subject"], state["description"], evidence)
+        prompt = build_prompt(state["subject"], _augmented_description(state), evidence)
         draft = llm_provider.generate(prompt, evidence)
 
         # Citations are read back out of the draft's own [n] markers rather than just
