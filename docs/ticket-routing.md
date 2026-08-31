@@ -4,6 +4,14 @@ Week 4 note (Rishikesh) on how a submitted ticket becomes classified and routed 
 department queue, closing the loop the state machine (`docs/ticket-lifecycle.md`) and
 the trained classifiers (`docs/classification-model.md`) were both built for.
 
+**Superseded by Week 6**: the `classify_and_route` background task and
+`backend/app/services/classification.py` described below have been replaced by the
+LangGraph pipeline's `classify` and `route` nodes (`ai/graph/nodes.py`), which extend
+this same flow through retrieval and draft generation — see
+[langgraph-pipeline.md](langgraph-pipeline.md). The classification/routing behavior
+itself (model, department lookup, what happens when nothing matches) is unchanged; only
+where the code lives moved. This document is kept for the Week 4 design rationale.
+
 ## Flow
 
 ```text
