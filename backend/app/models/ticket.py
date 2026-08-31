@@ -30,6 +30,15 @@ class Ticket(UUIDPKMixin, CreatedAtMixin, Base):
     description: Mapped[str] = mapped_column(Text(), nullable=False)
     attachment_path: Mapped[str | None] = mapped_column(String(512), nullable=True)
     attachment_type: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    # Text pulled out of the attachment by ai/ocr/extract.py's extract node (OCR for
+    # images, direct text-layer read for PDFs, plain read for logs) — see
+    # docs/langgraph-pipeline.md. Null until the pipeline runs, and stays null if there
+    # was no attachment at all.
+    attachment_text: Mapped[str | None] = mapped_column(Text(), nullable=True)
+    # 0-1 for image attachments (EasyOCR's averaged per-detection confidence). Null for
+    # PDF/log attachments (a direct text read isn't a probabilistic extraction, see
+    # ai/ocr/extract.py's ExtractionResult) and for tickets with no attachment.
+    ocr_confidence: Mapped[float | None] = mapped_column(Numeric(), nullable=True)
     priority: Mapped[str | None] = mapped_column(String(10), nullable=True)
     sentiment: Mapped[str | None] = mapped_column(String(10), nullable=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="submitted", index=True)
