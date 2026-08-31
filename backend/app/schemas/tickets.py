@@ -17,6 +17,8 @@ class TicketOut(BaseModel):
     description: str
     attachment_path: str | None
     attachment_type: str | None
+    attachment_text: str | None
+    ocr_confidence: float | None
     priority: str | None
     sentiment: str | None
     status: str
@@ -32,7 +34,10 @@ def build_ticket_out(ticket, role: str) -> TicketOut:
     """TicketSense does not send AI-generated drafts to end users directly — a human
     engineer always makes the final call (see docs/architecture.md) — so the draft and
     its citations are stripped for the end_user role here rather than in the ORM layer,
-    which keeps the underlying ticket record itself untouched."""
+    which keeps the underlying ticket record itself untouched. attachment_text/
+    ocr_confidence are NOT stripped here — that's text extracted straight from the
+    submitter's own attachment, not an AI judgment about it, so every role that can see
+    the ticket can see it."""
     out = TicketOut.model_validate(ticket)
     if role == "end_user":
         out = out.model_copy(update={"ai_draft_reply": None, "ai_draft_citations": None})

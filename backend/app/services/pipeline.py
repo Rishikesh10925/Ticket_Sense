@@ -1,6 +1,6 @@
-"""Runs the full classify -> route -> retrieve -> draft LangGraph pipeline for a
-ticket and persists every stage's output, advancing the ticket's lifecycle status
-through classified -> routed -> drafted as each stage succeeds.
+"""Runs the full extract -> classify -> route -> retrieve -> draft LangGraph
+pipeline for a ticket and persists every stage's output, advancing the ticket's
+lifecycle status through classified -> routed -> drafted as each stage succeeds.
 
 Runs as a FastAPI BackgroundTask right after ticket creation (see
 app/routers/tickets.py) — the HTTP response returns immediately with status
@@ -38,8 +38,23 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
         pipeline = build_pipeline(db, Department, llm_provider)
 
         result = await pipeline.ainvoke(
-            {"ticket_id": str(ticket.id), "subject": ticket.subject, "description": ticket.description}
+            {
+                "ticket_id": str(ticket.id),
+                "subject": ticket.subject,
+                "description": ticket.description,
+                "attachment_path": ticket.attachment_path,
+                "attachment_type": ticket.attachment_type,
+            }
         )
+
+        ticket.attachment_text = result.get("attachment_text")
+        ticket.ocr_confidence = result.get("ocr_confidence")
+        # First entry in the reliability-signal set the confidence model (Weeks 8-11)
+        # will consume — see docs/architecture.md's confidence-features design and
+        # docs/ocr-evaluation.md for why OCR confidence is a meaningful signal on its
+        # own. Nothing reads this yet; this week only wires the value in.
+        if ticket.ocr_confidence is not None:
+            ticket.confidence_features = {"ocr_confidence": ticket.ocr_confidence}
 
         ticket.priority = result.get("priority")
         ticket.sentiment = result.get("sentiment")
