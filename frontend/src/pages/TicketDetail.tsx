@@ -11,7 +11,7 @@ import {
   type Citation,
 } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
-import { statusLabel } from "../statusLabels";
+import { statusLabel, statusBadgeClass } from "../statusLabels";
 
 const UNROUTED_STATUSES = ["submitted", "classified"];
 // The pipeline (classify -> route -> retrieve -> draft, see docs/langgraph-pipeline.md)
@@ -26,6 +26,27 @@ const SOURCE_LABEL: Record<Evidence["source_type"], string> = {
   knowledge_base: "Knowledge Base",
   resolved_ticket: "Resolved Ticket",
 };
+
+// A resolved ticket's snippet is stored as "subject\n\ndescription" (see
+// ai/embeddings/embed_resolved_tickets.py), and item.title already shows the subject
+// — without this, the body repeats it verbatim on its own first line. A knowledge-base
+// snippet is the article's raw markdown (see db/seed/knowledge_base/), which likewise
+// opens with a "# Title" line duplicating item.title and a "**Department:** X" line
+// duplicating the department badge already shown above it.
+function evidenceBody(item: Evidence): string {
+  let text = item.snippet;
+  if (item.source_type === "resolved_ticket") {
+    const [, ...rest] = text.split("\n\n");
+    if (rest.length > 0) text = rest.join("\n\n");
+  } else {
+    text = text
+      .replace(/^#\s+.*\n+/, "")
+      .replace(/^\*\*Department:\*\*.*\n+/, "")
+      .replace(/^#{1,6}\s+/gm, "")
+      .replace(/\*\*(.+?)\*\*/g, "$1");
+  }
+  return text.trim();
+}
 
 const CITATION_RE = /(\[\d+\])/g;
 
@@ -148,7 +169,7 @@ export default function TicketDetail() {
         }
       >
         <div className="ticket-detail-badges">
-          <span className="status-badge">{statusLabel(ticket.status)}</span>
+          <span className={statusBadgeClass(ticket.status)}>{statusLabel(ticket.status)}</span>
           {ticket.priority && (
             <span className={`priority-badge priority-${ticket.priority}`}>{ticket.priority}</span>
           )}
@@ -157,33 +178,43 @@ export default function TicketDetail() {
         </div>
 
         <dl className="ticket-detail-fields">
-          <dt>Description</dt>
-          <dd>{ticket.description}</dd>
+          <div className="ticket-detail-field ticket-detail-field-wide">
+            <dt>Description</dt>
+            <dd>{ticket.description}</dd>
+          </div>
 
-          <dt>Department</dt>
-          <dd>
-            {ticket.department_id
-              ? departmentNames[ticket.department_id] ?? ticket.department_id
-              : "Not yet routed"}
-          </dd>
+          <div className="ticket-detail-field">
+            <dt>Department</dt>
+            <dd>
+              {ticket.department_id
+                ? departmentNames[ticket.department_id] ?? ticket.department_id
+                : "Not yet routed"}
+            </dd>
+          </div>
 
-          <dt>Priority</dt>
-          <dd>{ticket.priority ?? "Not yet classified"}</dd>
+          <div className="ticket-detail-field">
+            <dt>Priority</dt>
+            <dd>{ticket.priority ?? "Not yet classified"}</dd>
+          </div>
 
-          <dt>Sentiment</dt>
-          <dd>{ticket.sentiment ?? "Not yet classified"}</dd>
+          <div className="ticket-detail-field">
+            <dt>Sentiment</dt>
+            <dd>{ticket.sentiment ?? "Not yet classified"}</dd>
+          </div>
 
           {ticket.attachment_path && (
-            <>
+            <div className="ticket-detail-field">
               <dt>Attachment</dt>
               <dd>
                 {ticket.attachment_type} — {ticket.attachment_path.split("/").pop()}
               </dd>
-            </>
+            </div>
           )}
 
-          <dt>Submitted</dt>
-          <dd>{new Date(ticket.created_at).toLocaleString()}</dd>
+          <div className="ticket-detail-field">
+            <dt>Submitted</dt>
+            <dd>{new Date(ticket.created_at).toLocaleString()}</dd>
+          </div>
         </dl>
 
         {!showDraftPanel && (
@@ -228,7 +259,7 @@ export default function TicketDetail() {
                     )}
                   </div>
                   <strong>{item.title}</strong>
-                  <p className="evidence-snippet">{item.snippet}</p>
+                  <p className="evidence-snippet">{evidenceBody(item)}</p>
                 </li>
               ))}
             </ul>
