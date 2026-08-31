@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Card } from "../components";
 import {
@@ -8,21 +8,46 @@ import {
   ApiError,
   type Ticket,
   type Evidence,
+  type Citation,
 } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import { statusLabel } from "../statusLabels";
 
 const UNROUTED_STATUSES = ["submitted", "classified"];
+// The pipeline (classify -> route -> retrieve -> draft, see docs/langgraph-pipeline.md)
+// runs as a single background task, so this only ever needs a couple of polls in
+// practice — but it polls through every pre-draft status, not just the pre-route ones,
+// so the draft panel picks up the moment it's ready rather than stopping at "routed".
+const PENDING_DRAFT_STATUSES = ["submitted", "classified", "routed"];
 const POLL_INTERVAL_MS = 2000;
-const MAX_POLLS = 15; // ~30s — classification normally finishes in a few seconds
+const MAX_POLLS = 15; // ~30s — the pipeline normally finishes in a few seconds
 
 const SOURCE_LABEL: Record<Evidence["source_type"], string> = {
   knowledge_base: "Knowledge Base",
   resolved_ticket: "Resolved Ticket",
 };
 
+const CITATION_RE = /(\[\d+\])/g;
+
+// Renders the draft's inline [n] markers as small linked badges instead of plain
+// text, and lets a reader hover one to see which source it points to without
+// cross-referencing the sources list by number themselves.
+function renderDraftWithCitations(draft: string, citations: Citation[]): ReactNode {
+  return draft.split(CITATION_RE).map((part, i) => {
+    const match = /^\[(\d+)\]$/.exec(part);
+    if (!match) return <span key={i}>{part}</span>;
+    const citation = citations[Number(match[1]) - 1];
+    return (
+      <sup key={i} className="citation-marker" title={citation?.title ?? "Unknown source"}>
+        {part}
+      </sup>
+    );
+  });
+}
+
 export default function TicketDetail() {
   const { id } = useParams<{ id: string }>();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
 
   const [ticket, setTicket] = useState<Ticket | null>(null);
@@ -85,7 +110,7 @@ export default function TicketDetail() {
   }, [token, id]);
 
   useEffect(() => {
-    if (!ticket || !UNROUTED_STATUSES.includes(ticket.status)) return;
+    if (!ticket || !PENDING_DRAFT_STATUSES.includes(ticket.status)) return;
     if (pollCount.current >= MAX_POLLS) return;
 
     const timer = setTimeout(async () => {
@@ -105,9 +130,15 @@ export default function TicketDetail() {
   if (!ticket) return null;
 
   const isClassifying = UNROUTED_STATUSES.includes(ticket.status);
+  const isDrafting = PENDING_DRAFT_STATUSES.includes(ticket.status);
+  // A department_engineer/admin sees the real draft once it exists; an end_user never
+  // does (the API nulls both fields for that role — see build_ticket_out), so the
+  // draft panel itself is engineer/admin-only rather than showing a permanently-empty
+  // card to someone who structurally can't see the draft.
+  const showDraftPanel = user?.role !== "end_user";
 
   return (
-    <div className="ticket-detail-layout">
+    <div className="ticket-detail-page">
       <Card
         title={ticket.subject}
         actions={
@@ -117,12 +148,12 @@ export default function TicketDetail() {
         }
       >
         <div className="ticket-detail-badges">
-          <span className="status-badge">{ticket.status}</span>
+          <span className="status-badge">{statusLabel(ticket.status)}</span>
           {ticket.priority && (
             <span className={`priority-badge priority-${ticket.priority}`}>{ticket.priority}</span>
           )}
           {ticket.sentiment && <span className="status-badge">{ticket.sentiment}</span>}
-          {isClassifying && <span className="status-badge status-pending">classifying…</span>}
+          {isDrafting && <span className="status-badge status-pending">working…</span>}
         </div>
 
         <dl className="ticket-detail-fields">
@@ -155,50 +186,92 @@ export default function TicketDetail() {
           <dd>{new Date(ticket.created_at).toLocaleString()}</dd>
         </dl>
 
-        <p className="placeholder-note">
-          The AI draft reply, confidence score, and accept/edit/reject/escalate actions
-          are not built yet.
-        </p>
-      </Card>
-
-      <Card
-        title="Retrieved evidence"
-        actions={
-          <Button variant="secondary" onClick={loadEvidence} disabled={evidenceLoading}>
-            Refresh
-          </Button>
-        }
-      >
-        {evidenceLoading && <p className="placeholder-note">Loading evidence...</p>}
-        {evidenceError && <p className="form-error">{evidenceError}</p>}
-        {!evidenceLoading && !evidenceError && isClassifying && (
+        {!showDraftPanel && (
           <p className="placeholder-note">
-            This ticket hasn't been routed to a department yet, so there's no evidence
-            to show. It updates automatically once classification finishes.
+            {isDrafting
+              ? "This ticket is being classified, routed, and drafted automatically."
+              : "A department engineer has an AI-drafted reply for this ticket, based on retrieved evidence. They'll review it before anything is sent to you."}
           </p>
         )}
-        {!evidenceLoading && !evidenceError && !isClassifying && evidence.length === 0 && (
-          <p className="placeholder-note">No matching evidence found for this ticket.</p>
-        )}
-        {!evidenceLoading && !evidenceError && evidence.length > 0 && (
-          <ul className="evidence-list">
-            {evidence.map((item) => (
-              <li key={`${item.source_type}-${item.source_id}`} className="evidence-item">
-                <div className="evidence-item-header">
-                  <span className="status-badge">{SOURCE_LABEL[item.source_type]}</span>
-                  {ticket.department_id && (
-                    <span className="status-badge">
-                      {departmentNames[ticket.department_id] ?? "—"}
-                    </span>
-                  )}
-                </div>
-                <strong>{item.title}</strong>
-                <p className="evidence-snippet">{item.snippet}</p>
-              </li>
-            ))}
-          </ul>
-        )}
       </Card>
+
+      <div className="ticket-detail-side-by-side">
+        <Card
+          title="Retrieved evidence"
+          actions={
+            <Button variant="secondary" onClick={loadEvidence} disabled={evidenceLoading}>
+              Refresh
+            </Button>
+          }
+        >
+          {evidenceLoading && <p className="placeholder-note">Loading evidence...</p>}
+          {evidenceError && <p className="form-error">{evidenceError}</p>}
+          {!evidenceLoading && !evidenceError && isClassifying && (
+            <p className="placeholder-note">
+              This ticket hasn't been routed to a department yet, so there's no evidence
+              to show. It updates automatically once classification finishes.
+            </p>
+          )}
+          {!evidenceLoading && !evidenceError && !isClassifying && evidence.length === 0 && (
+            <p className="placeholder-note">No matching evidence found for this ticket.</p>
+          )}
+          {!evidenceLoading && !evidenceError && evidence.length > 0 && (
+            <ul className="evidence-list">
+              {evidence.map((item) => (
+                <li key={`${item.source_type}-${item.source_id}`} className="evidence-item">
+                  <div className="evidence-item-header">
+                    <span className="status-badge">{SOURCE_LABEL[item.source_type]}</span>
+                    {ticket.department_id && (
+                      <span className="status-badge">
+                        {departmentNames[ticket.department_id] ?? "—"}
+                      </span>
+                    )}
+                  </div>
+                  <strong>{item.title}</strong>
+                  <p className="evidence-snippet">{item.snippet}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+
+        {showDraftPanel && (
+          <Card title="AI draft reply">
+            {isClassifying && (
+              <p className="placeholder-note">
+                Not routed to a department yet — drafting starts once retrieval has
+                somewhere to search.
+              </p>
+            )}
+            {!isClassifying && isDrafting && (
+              <p className="placeholder-note">Generating a grounded draft from the retrieved evidence…</p>
+            )}
+            {!isDrafting && !ticket.ai_draft_reply && (
+              <p className="placeholder-note">No draft is available for this ticket.</p>
+            )}
+            {ticket.ai_draft_reply && (
+              <>
+                <p className="draft-text">
+                  {renderDraftWithCitations(ticket.ai_draft_reply, ticket.ai_draft_citations ?? [])}
+                </p>
+                {ticket.ai_draft_citations && ticket.ai_draft_citations.length > 0 && (
+                  <>
+                    <h4 className="draft-sources-heading">Sources</h4>
+                    <ol className="draft-sources-list">
+                      {ticket.ai_draft_citations.map((citation, i) => (
+                        <li key={`${citation.source_type}-${citation.source_id}`}>
+                          <span className="status-badge">{SOURCE_LABEL[citation.source_type]}</span>{" "}
+                          [{i + 1}] {citation.title}
+                        </li>
+                      ))}
+                    </ol>
+                  </>
+                )}
+              </>
+            )}
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

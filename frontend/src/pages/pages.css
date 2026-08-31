@@ -143,7 +143,16 @@
   font-size: 14px;
 }
 
-.ticket-detail-layout {
+.ticket-detail-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* "Side-by-side layout: retrieved evidence next to the generated draft" — the ticket
+   info card sits full-width above this row so both panels stay readable at their own
+   width instead of squeezing three columns into one row. */
+.ticket-detail-side-by-side {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-lg);
@@ -151,9 +160,43 @@
 }
 
 @media (max-width: 720px) {
-  .ticket-detail-layout {
+  .ticket-detail-side-by-side {
     grid-template-columns: 1fr;
   }
+}
+
+.draft-text {
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 var(--space-md);
+}
+
+.citation-marker {
+  color: var(--color-primary);
+  font-weight: 600;
+  cursor: help;
+}
+
+.draft-sources-heading {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  margin: 0 0 var(--space-xs);
+}
+
+.draft-sources-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.draft-status-legend {
+  margin-top: var(--space-md);
 }
 
 .status-pending {

@@ -13,6 +13,12 @@ export interface Department {
   name: string;
 }
 
+export interface Citation {
+  source_type: "knowledge_base" | "resolved_ticket";
+  source_id: string;
+  title: string;
+}
+
 export interface Ticket {
   id: string;
   submitted_by: string;
@@ -24,6 +30,10 @@ export interface Ticket {
   priority: string | null;
   sentiment: string | null;
   status: string;
+  // Null for the end_user role even once a draft exists — see
+  // app/schemas/tickets.py's build_ticket_out.
+  ai_draft_reply: string | null;
+  ai_draft_citations: Citation[] | null;
   created_at: string;
   updated_at: string;
 }
