@@ -46,6 +46,14 @@ export interface Evidence {
   distance: number;
 }
 
+export interface KnowledgeBaseArticle {
+  id: string;
+  department_id: string;
+  title: string;
+  source_url: string | null;
+  updated_at: string;
+}
+
 export class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -147,6 +155,18 @@ export async function listDepartments(token: string): Promise<Department[]> {
 
 export async function getTicketEvidence(token: string, id: string): Promise<Evidence[]> {
   const res = await fetch(`${API_URL}/tickets/${id}/evidence`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function listUsers(token: string): Promise<User[]> {
+  const res = await fetch(`${API_URL}/users`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function listKnowledgeBase(token: string): Promise<KnowledgeBaseArticle[]> {
+  const res = await fetch(`${API_URL}/knowledge-base`, { headers: authHeaders(token) });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
   return res.json();
 }
