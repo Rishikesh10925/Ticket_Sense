@@ -456,17 +456,38 @@
 }
 
 .section-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
   padding: var(--space-sm);
   border-radius: var(--radius-sm);
   font-size: 14px;
   color: var(--color-text-muted);
   font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.12s ease, color 0.12s ease;
 }
 
-.section-list li:first-child {
+.section-list li:hover {
+  background: var(--color-surface-alt);
+}
+
+.section-list li.section-active {
   background: var(--color-primary-soft);
   color: var(--color-primary);
   font-weight: 600;
+}
+
+.section-soon {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-text-faint);
+  background: var(--color-surface-alt);
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
 }
 
 /* ---------- Attachment upload + display ---------- */
