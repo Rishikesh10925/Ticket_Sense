@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
     max_upload_size_mb: int = 10
 
+    # Selects the LLMProvider the draft-generation pipeline uses (see
+    # ai/generation/provider_factory.py). Only "stub" exists today — no paid LLM API
+    # key is available in this project's environment, see llm_interface.py.
+    llm_provider: str = "stub"
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

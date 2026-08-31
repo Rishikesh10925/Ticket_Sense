@@ -11,8 +11,8 @@ from app.database import get_db
 from app.dependencies import get_current_user
 from app.models import Ticket, User
 from app.schemas.evidence import EvidenceOut
-from app.schemas.tickets import TicketOut
-from app.services.classification import classify_and_route
+from app.schemas.tickets import TicketOut, build_ticket_out
+from app.services.pipeline import run_ticket_pipeline
 from app.services.retrieval import get_evidence_for_ticket
 
 router = APIRouter(prefix="/tickets", tags=["tickets"])
@@ -45,7 +45,7 @@ async def create_ticket(
     attachment: UploadFile | None = None,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> Ticket:
+) -> TicketOut:
     attachment_path: str | None = None
     attachment_type: str | None = None
 
@@ -80,8 +80,8 @@ async def create_ticket(
     await db.commit()
     await db.refresh(ticket)
 
-    background_tasks.add_task(classify_and_route, ticket.id)
-    return ticket
+    background_tasks.add_task(run_ticket_pipeline, ticket.id)
+    return build_ticket_out(ticket, current_user.role)
 
 
 @router.get("", response_model=list[TicketOut])
@@ -92,7 +92,7 @@ async def list_tickets(
     sort: str | None = None,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> list[Ticket]:
+) -> list[TicketOut]:
     """The department-scoped ticket queue. A Department Engineer's own queue is just
     this endpoint scoped to their department (see _visibility_filter); Admin can view
     any single department's queue with `?department_id=`, since Admin otherwise sees
@@ -117,7 +117,7 @@ async def list_tickets(
         query = query.order_by(Ticket.created_at.desc())
 
     result = await db.scalars(query)
-    return list(result)
+    return [build_ticket_out(t, current_user.role) for t in result]
 
 
 async def _get_ticket_or_403(ticket_id: uuid.UUID, current_user: User, db: AsyncSession) -> Ticket:
@@ -141,8 +141,9 @@ async def get_ticket(
     ticket_id: uuid.UUID,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> Ticket:
-    return await _get_ticket_or_403(ticket_id, current_user, db)
+) -> TicketOut:
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+    return build_ticket_out(ticket, current_user.role)
 
 
 @router.get("/{ticket_id}/evidence", response_model=list[EvidenceOut])

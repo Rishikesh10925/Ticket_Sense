@@ -20,7 +20,20 @@ class TicketOut(BaseModel):
     priority: str | None
     sentiment: str | None
     status: str
+    ai_draft_reply: str | None
+    ai_draft_citations: list[dict] | None
     created_at: datetime
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+def build_ticket_out(ticket, role: str) -> TicketOut:
+    """TicketSense does not send AI-generated drafts to end users directly — a human
+    engineer always makes the final call (see docs/architecture.md) — so the draft and
+    its citations are stripped for the end_user role here rather than in the ORM layer,
+    which keeps the underlying ticket record itself untouched."""
+    out = TicketOut.model_validate(ticket)
+    if role == "end_user":
+        out = out.model_copy(update={"ai_draft_reply": None, "ai_draft_citations": None})
+    return out

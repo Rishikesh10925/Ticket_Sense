@@ -4,13 +4,34 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.config import settings
-from app.models import Department
+from app.core.security import hash_password
+from app.models import Department, User
 
 
 def _register_and_login(api, email: str) -> str:
     api.post("/auth/register", json={"email": email, "full_name": "Test User", "password": "password123"})
     resp = api.post("/auth/login", data={"username": email, "password": "password123"})
     return resp.json()["access_token"]
+
+
+def _make_engineer_sync(email: str, department_id: str) -> None:
+    async def _create():
+        engine = create_async_engine(settings.database_url)
+        session_factory = async_sessionmaker(engine, expire_on_commit=False)
+        async with session_factory() as db:
+            db.add(
+                User(
+                    email=email,
+                    full_name="Engineer",
+                    role="department_engineer",
+                    department_id=department_id,
+                    hashed_password=hash_password("password123"),
+                )
+            )
+            await db.commit()
+        await engine.dispose()
+
+    asyncio.run(_create())
 
 
 def _department_id_sync(name: str) -> str:
@@ -52,10 +73,26 @@ def test_ticket_auto_classified_and_routed(api):
     # the classification, since TestClient runs background tasks before the *next*
     # request rather than before this one's response body is built.
     ticket = api.get(f"/tickets/{created['id']}", headers={"Authorization": f"Bearer {token}"}).json()
-    assert ticket["status"] == "routed"
+    # "drafted" requires the LangGraph pipeline (classify -> route -> retrieve ->
+    # draft, see app/services/pipeline.py) to have run end to end, not just routing.
+    assert ticket["status"] == "drafted"
     assert ticket["department_id"] == networking_id
     assert ticket["priority"] in ("low", "medium", "high")
     assert ticket["sentiment"] in ("positive", "neutral", "negative")
+    # An end_user never sees the AI draft directly — a human engineer makes the final
+    # call (see app/schemas/tickets.py's build_ticket_out).
+    assert ticket["ai_draft_reply"] is None
+    assert ticket["ai_draft_citations"] is None
+
+    _make_engineer_sync("networking_eng@example.com", networking_id)
+    engineer_token = api.post(
+        "/auth/login", data={"username": "networking_eng@example.com", "password": "password123"}
+    ).json()["access_token"]
+    engineer_view = api.get(
+        f"/tickets/{created['id']}", headers={"Authorization": f"Bearer {engineer_token}"}
+    ).json()
+    assert engineer_view["ai_draft_reply"]
+    assert engineer_view["ai_draft_citations"] is not None
 
 
 def test_queue_sort_by_priority(api):
