@@ -12,34 +12,43 @@ const USERS = [
 
 export default function AdminHome() {
   return (
-    <div className="admin-layout">
-      <Card title="Sections">
-        <ul className="section-list">
-          {SECTIONS.map((section) => (
-            <li key={section}>{section}</li>
-          ))}
-        </ul>
-      </Card>
-      <Card title="Users">
-        <table className="ticket-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Role</th>
-              <th>Department</th>
-            </tr>
-          </thead>
-          <tbody>
-            {USERS.map((user) => (
-              <tr key={user.name}>
-                <td>{user.name}</td>
-                <td>{user.role}</td>
-                <td>{user.department}</td>
-              </tr>
+    <>
+      <div className="page-header">
+        <div>
+          <h1>Admin</h1>
+          <p>Manage users, departments, and the knowledge base.</p>
+        </div>
+      </div>
+
+      <div className="admin-layout">
+        <Card title="Sections">
+          <ul className="section-list">
+            {SECTIONS.map((section) => (
+              <li key={section}>{section}</li>
             ))}
-          </tbody>
-        </table>
-      </Card>
-    </div>
+          </ul>
+        </Card>
+        <Card title="Users">
+          <table className="ticket-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Department</th>
+              </tr>
+            </thead>
+            <tbody>
+              {USERS.map((user) => (
+                <tr key={user.name}>
+                  <td className="ticket-table-subject">{user.name}</td>
+                  <td>{user.role}</td>
+                  <td>{user.department}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Card>
+      </div>
+    </>
   );
 }

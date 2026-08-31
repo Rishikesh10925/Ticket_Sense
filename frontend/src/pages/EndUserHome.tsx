@@ -1,9 +1,11 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, FormField } from "../components";
+import { Button, Card, FormField, StatCard } from "../components";
 import { createTicket, listTickets, ApiError, type Ticket } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
-import { statusLabel } from "../statusLabels";
+import { statusLabel, statusBadgeClass } from "../statusLabels";
+
+const OPEN_STATUSES = ["submitted", "classified", "routed", "drafted"];
 
 export default function EndUserHome() {
   const { token } = useAuth();
@@ -56,8 +58,28 @@ export default function EndUserHome() {
     }
   }
 
+  const openCount = tickets.filter((t) => OPEN_STATUSES.includes(t.status)).length;
+  const draftCount = tickets.filter((t) => t.status === "drafted").length;
+  const closedCount = tickets.filter((t) => t.status === "closed" || t.status === "reviewed").length;
+
   return (
     <>
+      <div className="page-header">
+        <div>
+          <h1>My tickets</h1>
+          <p>Submit a new issue and track it through to resolution.</p>
+        </div>
+      </div>
+
+      {!ticketsLoading && !ticketsError && tickets.length > 0 && (
+        <div className="stat-grid">
+          <StatCard label="Open" value={openCount} accent />
+          <StatCard label="Draft in review" value={draftCount} />
+          <StatCard label="Resolved" value={closedCount} />
+          <StatCard label="Total" value={tickets.length} />
+        </div>
+      )}
+
       <Card title="New ticket">
         <form onSubmit={handleSubmit}>
           <FormField label="Subject" htmlFor="subject">
@@ -96,14 +118,14 @@ export default function EndUserHome() {
           {submitError && <p className="form-error">{submitError}</p>}
 
           <Button type="submit" disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit ticket"}
+            {submitting ? "Submitting…" : "Submit ticket"}
           </Button>
         </form>
       </Card>
 
       <div style={{ height: "var(--space-lg)" }} />
 
-      <Card title="My tickets">
+      <Card title="Tickets">
         {ticketsLoading && <p className="placeholder-note">Loading...</p>}
         {ticketsError && <p className="form-error">{ticketsError}</p>}
         {!ticketsLoading && !ticketsError && tickets.length === 0 && (
@@ -125,9 +147,9 @@ export default function EndUserHome() {
                   className="clickable-row"
                   onClick={() => navigate(`/tickets/${ticket.id}`)}
                 >
-                  <td>{ticket.subject}</td>
+                  <td className="ticket-table-subject">{ticket.subject}</td>
                   <td>
-                    <span className="status-badge">{statusLabel(ticket.status)}</span>
+                    <span className={statusBadgeClass(ticket.status)}>{statusLabel(ticket.status)}</span>
                   </td>
                   <td>{new Date(ticket.created_at).toLocaleString()}</td>
                 </tr>
