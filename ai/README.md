@@ -67,8 +67,9 @@ uv run --project ../backend python models/train_classifier.py
 
 Saves trained pipelines to `models/artifacts/*.joblib` (committed — small, and the live
 pipeline needs them at runtime). `models/classifier.py` loads them and exposes
-`classify_ticket(subject, description)` — the function
-`backend/app/services/classification.py` imports (Week 4, Rishikesh).
+`classify_ticket(subject, description)` — the function the `classify` node in
+`graph/nodes.py` calls (Week 6, Rishikesh; superseded the Week 4
+`backend/app/services/classification.py`, since deleted).
 
 ## generation/
 
@@ -89,8 +90,18 @@ prompt = build_prompt(ticket.subject, ticket.description, evidence)
 draft = StubLLMProvider().generate(prompt, evidence)
 ```
 
-## What's not here yet
+`generation/provider_factory.py` adds `get_llm_provider(name)`, a config-driven lookup
+(`LLM_PROVIDER` in `.env`, only `"stub"` registered today) so callers never construct a
+provider class directly — see [docs/langgraph-pipeline.md](../docs/langgraph-pipeline.md).
 
-The LangGraph pipeline that wires classification → routing → retrieval → draft
-generation together, and persists the result, is Week 6 (Rishikesh) — see
+## graph/
+
+The LangGraph pipeline (Week 6, Rishikesh) that wires classification → routing →
+retrieval → draft generation into a single `StateGraph`: `state.py` (the `TicketState`
+TypedDict threaded between nodes), `nodes.py` (node factories — `make_classify_node`,
+`make_route_node`, `make_retrieve_node`, `make_draft_node` — each closing over the
+per-run DB session/LLM provider it needs rather than putting them in graph state), and
+`pipeline.py` (`build_pipeline(db, department_model, llm_provider)`, which builds and
+compiles the graph). `backend/app/services/pipeline.py` is what calls this against a
+real ticket and persists the result. See
 [docs/langgraph-pipeline.md](../docs/langgraph-pipeline.md).
