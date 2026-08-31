@@ -12,11 +12,13 @@ for review, or whether the ticket should be escalated untouched. TicketSense doe
 send AI-generated responses to end users directly; a human engineer always makes the
 final call.
 
-> **Status: Week 6 complete (LangGraph pipeline — classify → route → retrieve → draft
-> — wired end to end, LLM-provider abstraction, groundedness checking, and the
-> draft-display UI — Team Integration verified with a 20-ticket dry run across all 5
-> departments: 20/20 reached `drafted` unattended, 20/20 drafts fully grounded, see
-> [docs/team-integration-week6.md](docs/team-integration-week6.md)).** The pipeline
+> **Status: Week 7 complete (attachment OCR/PDF/log extraction, wired into the
+> LangGraph pipeline ahead of classification so attachment text actually drives
+> routing/retrieval/drafting, plus the upload UI with validation, preview, and
+> extracted-text display — Team Integration verified with 6 deliberately
+> vague-description tickets, each carrying only an attachment: 6/6 reached `drafted`
+> unattended, 6/6 fully grounded, see
+> [docs/team-integration-week7.md](docs/team-integration-week7.md)).** The pipeline
 > below describes the target architecture. See [Project status](#project-status) for
 > what is actually implemented today.
 
@@ -132,6 +134,8 @@ are not built yet — see [Project status](#project-status).
 | Attachment text folded into classification, retrieval, and drafting | ✅ Available — `ai/graph/nodes.py`'s `extract` node feeds every downstream node, see [langgraph-pipeline.md](docs/langgraph-pipeline.md) |
 | Attachment storage + retrieval API | ✅ Available (`POST /tickets`, `GET /tickets/{id}/attachment`) |
 | OCR confidence wired into the confidence-model feature set | ✅ Available (`Ticket.confidence_features`) — nothing consumes it yet, this only wires the value in |
+| Attachment-upload UI — type/size validation + preview thumbnail | ✅ Available (`frontend/src/components/AttachmentInput.tsx`) |
+| Attachment + extracted-text display on the ticket detail screen | ✅ Available (`frontend/src/pages/TicketDetail.tsx`) — real image preview, OCR-confidence badge, distinct "extracting"/"nothing extracted" states |
 | Independent ML confidence model | ⏳ Planned |
 | Confidence-based escalation | ⏳ Planned |
 | Human-in-the-loop review (accept/edit/reject/escalate) | ⏳ Planned |
@@ -521,6 +525,9 @@ feature/confidence-model
 - LangGraph pipeline extended with an `extract` node ahead of `classify` (`ai/graph/nodes.py`, Rishikesh) — OCR/PDF/log text is folded into the description every downstream node (classify/retrieve/draft) actually reads, so an attachment genuinely changes routing and the draft, not just sits on the record unused
 - `attachment_text`/`ocr_confidence` persisted on the ticket (migration `0006`), visible to every role that can see the ticket (unlike the AI draft) — and `ocr_confidence` wired into `Ticket.confidence_features` as the first entry in the reliability-signal set the Weeks 8–11 confidence model will consume
 - Attachment retrieval — `GET /tickets/{id}/attachment` streams the stored file back with the same per-ticket access check as the ticket itself
+- Attachment-upload UI with client-side file-type/size validation and a live preview thumbnail (`frontend/src/components/AttachmentInput.tsx`, Aashritha) — mirrors the backend's own accepted-type check so a bad file is rejected before upload, not after a round trip
+- Attachment display on the ticket detail screen (`frontend/src/pages/TicketDetail.tsx`) — the actual attachment image (fetched via the new auth-gated endpoint, not a plain `<img src>`), an OCR-confidence badge for images, and the extracted text, with distinct "still extracting" vs. "no text could be extracted" states
+- Week 7 Team Integration: 6 tickets submitted with deliberately vague subjects/descriptions and only an attachment (5 images + 1 PDF) to work from — 6/6 reached `drafted` unattended, 6/6 had text successfully extracted, 6/6 drafts fully grounded, 4/6 routed to the expected department (both misroutes were Cloud, the same already-documented classifier weak spot, not an extraction failure — the extracted text was clean and on-topic in both cases); verified live in a browser that OCR'd text alone drove correct routing and retrieved genuinely relevant evidence, see [docs/team-integration-week7.md](docs/team-integration-week7.md)
 
 ### Planned
 - Real Admin screen (currently a layout placeholder, not wired to the ticket API)
@@ -600,7 +607,9 @@ production system.
 - [docs/team-integration-week6.md](docs/team-integration-week6.md) — Week 6 Team Integration evidence (20-ticket full-pipeline dry run, automated groundedness check, honest misrouting finding) and mentor demo script
 - [docs/draft-generation.md](docs/draft-generation.md) — LLM-provider abstraction, prompt design, and what the stub provider is (and isn't)
 - [docs/groundedness-review.md](docs/groundedness-review.md) — manual review of generated drafts for citation correctness
-- [docs/langgraph-pipeline.md](docs/langgraph-pipeline.md) — the classify → route → retrieve → draft LangGraph pipeline, LLM-provider selection, and draft persistence/visibility
+- [docs/langgraph-pipeline.md](docs/langgraph-pipeline.md) — the extract → classify → route → retrieve → draft LangGraph pipeline, LLM-provider selection, draft persistence/visibility, and attachment storage/retrieval
+- [docs/ocr-evaluation.md](docs/ocr-evaluation.md) — OCR/PDF/log extraction quality notes and known limitations on hand-crafted sample screenshots
+- [docs/team-integration-week7.md](docs/team-integration-week7.md) — Week 7 Team Integration evidence (6 attachment-only tickets, confirming OCR text drives routing/retrieval/drafting) and mentor demo script
 - [ai/README.md](ai/README.md) — knowledge-base/resolved-ticket embedding generation, retrieval, draft generation, and classifier training
 
 ## License
