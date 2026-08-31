@@ -3,6 +3,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, UploadFile
 from fastapi import status as http_status
+from fastapi.responses import FileResponse
 from sqlalchemy import case, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -144,6 +145,27 @@ async def get_ticket(
 ) -> TicketOut:
     ticket = await _get_ticket_or_403(ticket_id, current_user, db)
     return build_ticket_out(ticket, current_user.role)
+
+
+@router.get("/{ticket_id}/attachment")
+async def get_ticket_attachment(
+    ticket_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> FileResponse:
+    """Streams the ticket's stored attachment back — same access check as viewing the
+    ticket itself. media_type isn't set explicitly: FileResponse infers it from the
+    saved filename's extension (preserved from upload, see create_ticket), which is
+    more precise than the coarse image/pdf/log bucket attachment_type stores."""
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+    if ticket.attachment_path is None:
+        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="No attachment on this ticket")
+
+    attachment_path = Path(ticket.attachment_path)
+    if not attachment_path.is_file():
+        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Attachment file not found")
+
+    return FileResponse(attachment_path, filename=attachment_path.name)
 
 
 @router.get("/{ticket_id}/evidence", response_model=list[EvidenceOut])
