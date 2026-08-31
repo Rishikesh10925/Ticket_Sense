@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "../components";
+import { Card, StatCard } from "../components";
 import { listTickets, ApiError, type Ticket } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
-import { statusLabel } from "../statusLabels";
+import { statusLabel, statusBadgeClass } from "../statusLabels";
 
 const STATUSES = ["submitted", "classified", "routed", "drafted", "reviewed", "closed"];
 
@@ -26,61 +26,86 @@ export default function EngineerQueue() {
       .finally(() => setLoading(false));
   }, [token, status]);
 
+  const highPriorityCount = tickets.filter((t) => t.priority === "high").length;
+  const draftCount = tickets.filter((t) => t.status === "drafted").length;
+
   return (
-    <Card
-      title="Queue"
-      actions={
-        <select value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Filter by status">
-          <option value="">All statuses</option>
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {statusLabel(s)}
-            </option>
-          ))}
-        </select>
-      }
-    >
-      {loading && <p className="placeholder-note">Loading...</p>}
-      {error && <p className="form-error">{error}</p>}
-      {!loading && !error && tickets.length === 0 && (
-        <p className="placeholder-note">No tickets in this view.</p>
+    <>
+      <div className="page-header">
+        <div>
+          <h1>Queue</h1>
+          <p>Tickets routed to your department.</p>
+        </div>
+      </div>
+
+      {!loading && !error && tickets.length > 0 && (
+        <div className="stat-grid">
+          <StatCard label="In queue" value={tickets.length} accent />
+          <StatCard label="High priority" value={highPriorityCount} />
+          <StatCard label="Draft in review" value={draftCount} />
+        </div>
       )}
-      {!loading && tickets.length > 0 && (
-        <table className="ticket-table">
-          <thead>
-            <tr>
-              <th>Subject</th>
-              <th>Priority</th>
-              <th>Sentiment</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tickets.map((ticket) => (
-              <tr
-                key={ticket.id}
-                className="clickable-row"
-                onClick={() => navigate(`/tickets/${ticket.id}`)}
-              >
-                <td>{ticket.subject}</td>
-                <td>
-                  {ticket.priority ? (
-                    <span className={`priority-badge priority-${ticket.priority}`}>
-                      {ticket.priority}
-                    </span>
-                  ) : (
-                    <span className="placeholder-note">pending</span>
-                  )}
-                </td>
-                <td>{ticket.sentiment ?? "—"}</td>
-                <td>
-                  <span className="status-badge">{statusLabel(ticket.status)}</span>
-                </td>
-              </tr>
+
+      <Card
+        title="Tickets"
+        actions={
+          <select
+            className="select-filter"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            aria-label="Filter by status"
+          >
+            <option value="">All statuses</option>
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {statusLabel(s)}
+              </option>
             ))}
-          </tbody>
-        </table>
-      )}
-    </Card>
+          </select>
+        }
+      >
+        {loading && <p className="placeholder-note">Loading...</p>}
+        {error && <p className="form-error">{error}</p>}
+        {!loading && !error && tickets.length === 0 && (
+          <p className="placeholder-note">No tickets in this view.</p>
+        )}
+        {!loading && tickets.length > 0 && (
+          <table className="ticket-table">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Priority</th>
+                <th>Sentiment</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tickets.map((ticket) => (
+                <tr
+                  key={ticket.id}
+                  className="clickable-row"
+                  onClick={() => navigate(`/tickets/${ticket.id}`)}
+                >
+                  <td className="ticket-table-subject">{ticket.subject}</td>
+                  <td>
+                    {ticket.priority ? (
+                      <span className={`priority-badge priority-${ticket.priority}`}>
+                        {ticket.priority}
+                      </span>
+                    ) : (
+                      <span className="placeholder-note">pending</span>
+                    )}
+                  </td>
+                  <td>{ticket.sentiment ?? "—"}</td>
+                  <td>
+                    <span className={statusBadgeClass(ticket.status)}>{statusLabel(ticket.status)}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </Card>
+    </>
   );
 }

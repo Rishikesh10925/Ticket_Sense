@@ -14,3 +14,9 @@ export const STATUS_LABELS: Record<string, string> = {
 export function statusLabel(status: string): string {
   return STATUS_LABELS[status] ?? status;
 }
+
+// pages.css has per-status accent colors (status-drafted, status-reviewed, ...) so the
+// queue/list reads at a glance instead of every status looking the same neutral gray.
+export function statusBadgeClass(status: string): string {
+  return `status-badge status-${status}`;
+}
