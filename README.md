@@ -123,8 +123,10 @@ are not built yet — see [Project status](#project-status).
 | Draft-generation prompt + LLM-provider abstraction | ✅ Available (`ai/generation/`) — default provider is deterministic/extractive, **no paid LLM API key available**, see [draft-generation.md](docs/draft-generation.md) |
 | Groundedness check (every citation maps to real evidence) | ✅ Implemented + self-tested against deliberately broken drafts, see [draft-generation.md](docs/draft-generation.md) |
 | Manual groundedness review of generated drafts | ✅ 10/10 fully grounded across all 5 departments — honest caveats in [groundedness-review.md](docs/groundedness-review.md) |
-| LangGraph pipeline (classify → route → retrieve → draft), draft persisted to the ticket | ✅ Available (`ai/graph/`) — verified end-to-end via Docker: a submitted ticket reaches `drafted` with `ai_draft_reply`/`ai_draft_citations` set, unattended, see [langgraph-pipeline.md](docs/langgraph-pipeline.md) |
+| LangGraph pipeline (classify → route → retrieve → draft), draft persisted to the ticket | ✅ Available (`ai/graph/`) — verified end-to-end live: a submitted ticket reaches `drafted` with `ai_draft_reply`/`ai_draft_citations` set, unattended, see [langgraph-pipeline.md](docs/langgraph-pipeline.md) |
 | Draft displayed on the ticket record, hidden from End User (human review required) | ✅ Available (`TicketOut`/`build_ticket_out`) — draft + citations null for `end_user`, populated for the routed department's engineer |
+| Draft-display panel with inline source citations + side-by-side evidence/draft layout | ✅ Available (`frontend/src/pages/TicketDetail.tsx`) — engineer/admin only, verified in a real browser |
+| End User ticket-status screen polish ("draft in review" style states) | ✅ Available (`frontend/src/statusLabels.ts`) |
 | Independent ML confidence model | ⏳ Planned |
 | Confidence-based escalation | ⏳ Planned |
 | Human-in-the-loop review (accept/edit/reject/escalate) | ⏳ Planned |
@@ -157,11 +159,12 @@ The FastAPI backend has working auth (JWT + RBAC), ticket create/list/detail end
 and a LangGraph pipeline (`ai/graph/`) that runs classification → routing → retrieval →
 draft generation unattended as a background task after ticket creation, advancing the
 ticket through `classified` → `routed` → `drafted` and persisting the cited draft to
-the ticket record (verified through the actual Docker Compose deployment — see
+the ticket record (verified end-to-end live — see
 [docs/langgraph-pipeline.md](docs/langgraph-pipeline.md)). The React frontend calls this
-real API: login/register, ticket submission with attachment upload, and the End User's
-live ticket list with status, all verified end-to-end in a real browser against the
-real backend and database. Confidence scoring and the human-review gate are still
+real API: login/register, ticket submission with attachment upload, the End User's
+live ticket list with status, and the Engineer/Admin draft-display panel with inline
+citations, all verified end-to-end in a real browser against the real backend and
+database. Confidence scoring and the human-review gate are still
 design targets described in [docs/architecture.md](docs/architecture.md) and
 [docs/langgraph-research.md](docs/langgraph-research.md).
 
@@ -503,9 +506,11 @@ feature/confidence-model
 - Live ticket-evidence API — `GET /tickets/{id}/evidence`, department-scoped from the ticket's own `department_id` (not client input), verified end-to-end against a real SAP ticket
 - Evidence-display panel on the ticket detail screen (`frontend/src/pages/TicketDetail.tsx`) — source snippets tagged by department and source type (Knowledge Base / Resolved Ticket), loading/empty/"not yet routed" states, and a brief auto-poll (capped, not indefinite) while classification is still running — a direct follow-up to a Week 4 usability finding ([docs/usability-testing.md](docs/usability-testing.md#week-5-follow-up-applied-to-the-ticket-detail-screen))
 - Draft-generation prompt, LLM-provider abstraction, and groundedness checker (`ai/generation/`) — default provider is deterministic/extractive since no paid LLM API key is available; 10/10 sample drafts fully grounded, with an explicit honest read of what that does and doesn't demonstrate ([docs/draft-generation.md](docs/draft-generation.md), [docs/groundedness-review.md](docs/groundedness-review.md))
-- LangGraph pipeline wiring classification → routing → retrieval → draft generation into a single `StateGraph` (`ai/graph/`), replacing the Week 4 classify-and-route background task — a submitted ticket reaches `drafted` with `ai_draft_reply`/`ai_draft_citations` persisted, unattended, verified end-to-end through the real Docker Compose deployment; see [docs/langgraph-pipeline.md](docs/langgraph-pipeline.md)
+- LangGraph pipeline wiring classification → routing → retrieval → draft generation into a single `StateGraph` (`ai/graph/`), replacing the Week 4 classify-and-route background task — a submitted ticket reaches `drafted` with `ai_draft_reply`/`ai_draft_citations` persisted, unattended, verified end-to-end live; see [docs/langgraph-pipeline.md](docs/langgraph-pipeline.md)
 - Config-driven LLM-provider selection (`ai/generation/provider_factory.py`, `LLM_PROVIDER` in `.env`) so the pipeline's `draft` node never hard-codes which backend generates text
 - `ai_draft_citations` persisted alongside `ai_draft_reply` (migration `0005`) and hidden from the End User role in the API response — a human engineer always makes the final call, see [docs/langgraph-pipeline.md](docs/langgraph-pipeline.md)
+- Draft-display panel on the ticket detail screen (`frontend/src/pages/TicketDetail.tsx`, Aashritha) — the AI draft with its `[n]` citation markers rendered as hoverable inline badges, a numbered Sources list mapping each marker to its evidence item, and a side-by-side layout with the retrieved-evidence panel; engineer/admin only, matching the backend's end-user hiding
+- End User ticket-status screen polish — friendlier status text across the ticket list and detail screen (`frontend/src/statusLabels.ts`), notably "Draft in review" for `drafted` with an explanatory note, addressing the Week 6 roadmap's status-clarity ask
 
 ### Planned
 - Real Admin screen (currently a layout placeholder, not wired to the ticket API)
