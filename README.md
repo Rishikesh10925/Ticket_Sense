@@ -513,9 +513,9 @@ feature/confidence-model
 - Draft-display panel on the ticket detail screen (`frontend/src/pages/TicketDetail.tsx`, Aashritha) — the AI draft with its `[n]` citation markers rendered as hoverable inline badges, a numbered Sources list mapping each marker to its evidence item, and a side-by-side layout with the retrieved-evidence panel; engineer/admin only, matching the backend's end-user hiding
 - End User ticket-status screen polish — friendlier status text across the ticket list and detail screen (`frontend/src/statusLabels.ts`), notably "Draft in review" for `drafted` with an explanatory note, addressing the Week 6 roadmap's status-clarity ask
 - Week 6 Team Integration: 20-ticket full-pipeline dry run across all 5 departments — 20/20 reached `drafted` unattended, 20/20 drafts fully grounded (automated check), 16/20 routed to the expected department; the 4 misroutes are an honest classifier-imbalance finding (not a pipeline bug) with its own implication documented — a grounded draft can still be grounded in the wrong department's evidence if routing itself is wrong, which is exactly why human review stays load-bearing; see [docs/team-integration-week6.md](docs/team-integration-week6.md)
+- Admin console wired to real data (`frontend/src/pages/AdminHome.tsx`) — Users, Departments (engineer/KB-article counts computed from real data, not fabricated), and Knowledge base sections backed by new admin-only `GET /users` and `GET /knowledge-base` endpoints; Analytics and Settings are honestly labeled "Soon" rather than faked
 
 ### Planned
-- Real Admin screen (currently a layout placeholder, not wired to the ticket API)
 - A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
 - Auto-refresh on the End User's "my tickets" list itself (Week 4 usability finding #1/#2 — addressed on the ticket detail screen this week, still open on the list)
 - A real generative LLM provider behind the same `LLMProvider` interface, once an API key is available
