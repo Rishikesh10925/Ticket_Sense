@@ -34,6 +34,9 @@ class Ticket(UUIDPKMixin, CreatedAtMixin, Base):
     sentiment: Mapped[str | None] = mapped_column(String(10), nullable=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="submitted", index=True)
     ai_draft_reply: Mapped[str | None] = mapped_column(Text(), nullable=True)
+    # [{"source_type": ..., "source_id": ..., "title": ...}, ...] — the evidence the
+    # draft actually cited, in citation-number order. See docs/langgraph-pipeline.md.
+    ai_draft_citations: Mapped[list | None] = mapped_column(JSONB(), nullable=True)
     confidence_score: Mapped[float | None] = mapped_column(Numeric(), nullable=True)
     confidence_features: Mapped[dict | None] = mapped_column(JSONB(), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
