@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "../components";
 import { listTickets, ApiError, type Ticket } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import { statusLabel } from "../statusLabels";
 
 const STATUSES = ["submitted", "classified", "routed", "drafted", "reviewed", "closed"];
 
@@ -33,7 +34,7 @@ export default function EngineerQueue() {
           <option value="">All statuses</option>
           {STATUSES.map((s) => (
             <option key={s} value={s}>
-              {s}
+              {statusLabel(s)}
             </option>
           ))}
         </select>
@@ -73,7 +74,7 @@ export default function EngineerQueue() {
                 </td>
                 <td>{ticket.sentiment ?? "—"}</td>
                 <td>
-                  <span className="status-badge">{ticket.status}</span>
+                  <span className="status-badge">{statusLabel(ticket.status)}</span>
                 </td>
               </tr>
             ))}

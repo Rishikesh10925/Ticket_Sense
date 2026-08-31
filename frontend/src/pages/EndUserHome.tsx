@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Card, FormField } from "../components";
 import { createTicket, listTickets, ApiError, type Ticket } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import { statusLabel } from "../statusLabels";
 
 export default function EndUserHome() {
   const { token } = useAuth();
@@ -88,8 +89,8 @@ export default function EndUserHome() {
           </FormField>
 
           <p className="placeholder-note">
-            Department, priority, and sentiment are classified automatically after
-            submission — check "My tickets" below in a few seconds.
+            Your ticket is classified, routed to the right team, and drafted into a
+            reply automatically — check "My tickets" below in a few seconds.
           </p>
 
           {submitError && <p className="form-error">{submitError}</p>}
@@ -126,13 +127,19 @@ export default function EndUserHome() {
                 >
                   <td>{ticket.subject}</td>
                   <td>
-                    <span className="status-badge">{ticket.status}</span>
+                    <span className="status-badge">{statusLabel(ticket.status)}</span>
                   </td>
                   <td>{new Date(ticket.created_at).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        )}
+        {!ticketsLoading && !ticketsError && tickets.length > 0 && (
+          <p className="placeholder-note draft-status-legend">
+            "Draft in review" means a department engineer has an AI-drafted reply ready
+            and is reviewing it before responding — a human always makes the final call.
+          </p>
         )}
       </Card>
     </>
