@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, FormField, StatCard } from "../components";
+import { AttachmentInput, Button, Card, FormField, StatCard } from "../components";
 import { createTicket, listTickets, ApiError, type Ticket } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { statusLabel, statusBadgeClass } from "../statusLabels";
@@ -14,6 +14,7 @@ export default function EndUserHome() {
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [attachment, setAttachment] = useState<File | null>(null);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -50,6 +51,7 @@ export default function EndUserHome() {
       setSubject("");
       setDescription("");
       setAttachment(null);
+      setAttachmentError(null);
       await loadTickets();
     } catch (err) {
       setSubmitError(err instanceof ApiError ? err.message : "Could not submit ticket");
@@ -101,14 +103,14 @@ export default function EndUserHome() {
             />
           </FormField>
 
-          <FormField label="Attachment" htmlFor="attachment" hint="Image, PDF, or log file — optional">
-            <input
-              id="attachment"
-              type="file"
-              accept="image/*,.pdf,.log,.txt"
-              onChange={(e) => setAttachment(e.target.files?.[0] ?? null)}
-            />
-          </FormField>
+          <AttachmentInput
+            file={attachment}
+            onChange={(file, error) => {
+              setAttachment(file);
+              setAttachmentError(error);
+            }}
+          />
+          {attachmentError && <p className="form-error">{attachmentError}</p>}
 
           <p className="placeholder-note">
             Your ticket is classified, routed to the right team, and drafted into a
@@ -117,7 +119,7 @@ export default function EndUserHome() {
 
           {submitError && <p className="form-error">{submitError}</p>}
 
-          <Button type="submit" disabled={submitting}>
+          <Button type="submit" disabled={submitting || !!attachmentError}>
             {submitting ? "Submitting…" : "Submit ticket"}
           </Button>
         </form>
