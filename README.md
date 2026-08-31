@@ -12,12 +12,13 @@ for review, or whether the ticket should be escalated untouched. TicketSense doe
 send AI-generated responses to end users directly; a human engineer always makes the
 final call.
 
-> **Status: Week 5 complete (department-scoped RAG retrieval — knowledge base +
-> resolved tickets, live evidence API, and the evidence-display panel — Team
-> Integration verified with zero cross-department leakage across 10 sample tickets,
-> see [docs/team-integration-week5.md](docs/team-integration-week5.md)).** The
-> pipeline below describes the target architecture. See
-> [Project status](#project-status) for what is actually implemented today.
+> **Status: Week 6 complete (LangGraph pipeline — classify → route → retrieve → draft
+> — wired end to end, LLM-provider abstraction, groundedness checking, and the
+> draft-display UI — Team Integration verified with a 20-ticket dry run across all 5
+> departments: 20/20 reached `drafted` unattended, 20/20 drafts fully grounded, see
+> [docs/team-integration-week6.md](docs/team-integration-week6.md)).** The pipeline
+> below describes the target architecture. See [Project status](#project-status) for
+> what is actually implemented today.
 
 ```text
 Ticket → Classification → Department Routing → Evidence Retrieval → Cited Draft
@@ -511,6 +512,7 @@ feature/confidence-model
 - `ai_draft_citations` persisted alongside `ai_draft_reply` (migration `0005`) and hidden from the End User role in the API response — a human engineer always makes the final call, see [docs/langgraph-pipeline.md](docs/langgraph-pipeline.md)
 - Draft-display panel on the ticket detail screen (`frontend/src/pages/TicketDetail.tsx`, Aashritha) — the AI draft with its `[n]` citation markers rendered as hoverable inline badges, a numbered Sources list mapping each marker to its evidence item, and a side-by-side layout with the retrieved-evidence panel; engineer/admin only, matching the backend's end-user hiding
 - End User ticket-status screen polish — friendlier status text across the ticket list and detail screen (`frontend/src/statusLabels.ts`), notably "Draft in review" for `drafted` with an explanatory note, addressing the Week 6 roadmap's status-clarity ask
+- Week 6 Team Integration: 20-ticket full-pipeline dry run across all 5 departments — 20/20 reached `drafted` unattended, 20/20 drafts fully grounded (automated check), 16/20 routed to the expected department; the 4 misroutes are an honest classifier-imbalance finding (not a pipeline bug) with its own implication documented — a grounded draft can still be grounded in the wrong department's evidence if routing itself is wrong, which is exactly why human review stays load-bearing; see [docs/team-integration-week6.md](docs/team-integration-week6.md)
 
 ### Planned
 - Real Admin screen (currently a layout placeholder, not wired to the ticket API)
@@ -587,6 +589,7 @@ production system.
 - [docs/team-integration-week4.md](docs/team-integration-week4.md) — Week 4 Team Integration evidence and mentor demo script
 - [docs/retrieval.md](docs/retrieval.md) — department-scoped retrieval design and Recall@K results
 - [docs/team-integration-week5.md](docs/team-integration-week5.md) — Week 5 Team Integration evidence (cross-department leakage check) and mentor demo script
+- [docs/team-integration-week6.md](docs/team-integration-week6.md) — Week 6 Team Integration evidence (20-ticket full-pipeline dry run, automated groundedness check, honest misrouting finding) and mentor demo script
 - [docs/draft-generation.md](docs/draft-generation.md) — LLM-provider abstraction, prompt design, and what the stub provider is (and isn't)
 - [docs/groundedness-review.md](docs/groundedness-review.md) — manual review of generated drafts for citation correctness
 - [docs/langgraph-pipeline.md](docs/langgraph-pipeline.md) — the classify → route → retrieve → draft LangGraph pipeline, LLM-provider selection, and draft persistence/visibility
