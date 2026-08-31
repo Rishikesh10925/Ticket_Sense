@@ -105,3 +105,23 @@ per-run DB session/LLM provider it needs rather than putting them in graph state
 compiles the graph). `backend/app/services/pipeline.py` is what calls this against a
 real ticket and persists the result. See
 [docs/langgraph-pipeline.md](../docs/langgraph-pipeline.md).
+
+## ocr/
+
+Attachment text extraction (Week 7, Shivaganesh): `extract.py` exposes
+`extract_attachment_text(path, attachment_type)`, dispatching to `extract_from_image`
+(EasyOCR — a per-process lazy-loaded `Reader`, same pattern as
+`embeddings/retrieve.py`'s `SentenceTransformer`), `extract_from_pdf` (`pypdf`'s text
+layer, not OCR), or `extract_from_log` (plain read). All three return an
+`ExtractionResult(text, confidence)` — `confidence` is EasyOCR's average per-detection
+score for images, `None` for PDF/log since a direct text read isn't a probabilistic
+extraction. See [docs/ocr-evaluation.md](../docs/ocr-evaluation.md) for quality notes
+and known limitations on the hand-crafted sample screenshots in
+`data/sample_screenshots/` (`data/make_sample_screenshots.py`).
+
+```python
+from ocr.extract import extract_attachment_text
+
+result = extract_attachment_text(ticket.attachment_path, ticket.attachment_type)
+print(result.text, result.confidence)
+```
