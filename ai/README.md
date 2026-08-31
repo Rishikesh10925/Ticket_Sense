@@ -96,14 +96,17 @@ provider class directly — see [docs/langgraph-pipeline.md](../docs/langgraph-p
 
 ## graph/
 
-The LangGraph pipeline (Week 6, Rishikesh) that wires classification → routing →
-retrieval → draft generation into a single `StateGraph`: `state.py` (the `TicketState`
-TypedDict threaded between nodes), `nodes.py` (node factories — `make_classify_node`,
+The LangGraph pipeline (Week 6, Rishikesh; extended Week 7 for attachment text) that
+wires extraction → classification → routing → retrieval → draft generation into a
+single `StateGraph`: `state.py` (the `TicketState` TypedDict threaded between nodes),
+`nodes.py` (node factories — `make_extract_node`, `make_classify_node`,
 `make_route_node`, `make_retrieve_node`, `make_draft_node` — each closing over the
-per-run DB session/LLM provider it needs rather than putting them in graph state), and
-`pipeline.py` (`build_pipeline(db, department_model, llm_provider)`, which builds and
-compiles the graph). `backend/app/services/pipeline.py` is what calls this against a
-real ticket and persists the result. See
+per-run DB session/LLM provider it needs rather than putting them in graph state; also
+`_augmented_description(state)`, which folds extracted attachment text into what
+classify/retrieve/draft actually read), and `pipeline.py`
+(`build_pipeline(db, department_model, llm_provider)`, which builds and compiles the
+graph). `backend/app/services/pipeline.py` is what calls this against a real ticket
+and persists the result. See
 [docs/langgraph-pipeline.md](../docs/langgraph-pipeline.md).
 
 ## ocr/
