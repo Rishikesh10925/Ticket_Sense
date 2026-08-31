@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, FormField } from "../components";
+import { LogoMark } from "../components/icons";
 import { register as apiRegister, ApiError } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 
@@ -34,60 +35,83 @@ export default function Login() {
 
   return (
     <div className="login-page">
-      <Card title={mode === "login" ? "Log in" : "Create an End User account"}>
-        <form onSubmit={handleSubmit}>
-          <FormField label="Email" htmlFor="email">
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </FormField>
+      <div className="login-brand-panel">
+        <div className="login-brand-mark">
+          <LogoMark width={40} height={40} />
+          <span>TicketSense</span>
+        </div>
+        <h1>Multi-agent enterprise ticket routing &amp; resolution</h1>
+        <p>
+          Tickets are classified, routed to the right team, and matched against a
+          knowledge base and prior resolved cases. An AI drafts a cited reply from
+          that evidence — a human engineer always makes the final call.
+        </p>
+        <ul className="login-brand-points">
+          <li>Automatic classification &amp; department routing</li>
+          <li>Grounded, cited draft replies with source evidence</li>
+          <li>Human review before anything reaches the requester</li>
+        </ul>
+      </div>
 
-          {mode === "register" && (
-            <FormField label="Full name" htmlFor="fullName">
+      <div className="login-form-panel">
+        <Card title={mode === "login" ? "Log in" : "Create an End User account"}>
+          <form onSubmit={handleSubmit}>
+            <FormField label="Email" htmlFor="email">
               <input
-                id="fullName"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </FormField>
-          )}
 
-          <FormField label="Password" htmlFor="password">
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              minLength={8}
-              required
-            />
-          </FormField>
+            {mode === "register" && (
+              <FormField label="Full name" htmlFor="fullName">
+                <input
+                  id="fullName"
+                  placeholder="Jane Doe"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                />
+              </FormField>
+            )}
 
-          {error && <p className="form-error">{error}</p>}
+            <FormField label="Password" htmlFor="password">
+              <input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                minLength={8}
+                required
+              />
+            </FormField>
 
-          <Button type="submit" disabled={submitting}>
-            {mode === "login" ? "Log in" : "Register"}
-          </Button>
-        </form>
+            {error && <p className="form-error">{error}</p>}
 
-        <button
-          type="button"
-          className="link-button"
-          onClick={() => {
-            setMode(mode === "login" ? "register" : "login");
-            setError(null);
-          }}
-        >
-          {mode === "login"
-            ? "New End User? Create an account"
-            : "Already have an account? Log in"}
-        </button>
-      </Card>
+            <Button type="submit" disabled={submitting} className="login-submit">
+              {submitting ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
+            </Button>
+          </form>
+
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => {
+              setMode(mode === "login" ? "register" : "login");
+              setError(null);
+            }}
+          >
+            {mode === "login"
+              ? "New End User? Create an account"
+              : "Already have an account? Log in"}
+          </button>
+        </Card>
+      </div>
     </div>
   );
 }
