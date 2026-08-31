@@ -70,7 +70,27 @@ pipeline needs them at runtime). `models/classifier.py` loads them and exposes
 `classify_ticket(subject, description)` — the function
 `backend/app/services/classification.py` imports (Week 4, Rishikesh).
 
+## generation/
+
+Draft generation: `llm_interface.py` (the `LLMProvider` abstraction + the default
+`StubLLMProvider`, extractive not generative — **no paid LLM API key is available**,
+see [docs/draft-generation.md](../docs/draft-generation.md) before reading too much
+into groundedness results), `prompt.py` (builds the grounded, cited-answer prompt),
+and `groundedness.py` (verifies every citation maps to a real evidence item). See
+[docs/groundedness-review.md](../docs/groundedness-review.md) for the manual review of
+generated drafts (10/10 fully grounded — with the caveat that a fully honest read of
+what that does and doesn't mean is in the docs, not just the number).
+
+```python
+from generation.prompt import build_prompt
+from generation.llm_interface import StubLLMProvider
+
+prompt = build_prompt(ticket.subject, ticket.description, evidence)
+draft = StubLLMProvider().generate(prompt, evidence)
+```
+
 ## What's not here yet
 
-The LangGraph pipeline is planned for a later week — see the root
-[README.md](../README.md) Project status.
+The LangGraph pipeline that wires classification → routing → retrieval → draft
+generation together, and persists the result, is Week 6 (Rishikesh) — see
+[docs/langgraph-pipeline.md](../docs/langgraph-pipeline.md).

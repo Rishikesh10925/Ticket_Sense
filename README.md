@@ -120,7 +120,10 @@ are not built yet — see [Project status](#project-status).
 | Live ticket-evidence API endpoint (`GET /tickets/{id}/evidence`) | ✅ Available — department-scoped, verified end-to-end |
 | pgvector HNSW index | ✅ Available (migration `0004`) — see [retrieval.md](docs/retrieval.md) for why HNSW over ivfflat |
 | Evidence-display panel on the ticket detail screen (source snippets + department/source tags) | ✅ Available — loading, empty, and "not yet routed" states, brief auto-poll while classifying |
-| Evidence-grounded draft generation with citations | ⏳ Planned |
+| Draft-generation prompt + LLM-provider abstraction | ✅ Available (`ai/generation/`) — default provider is deterministic/extractive, **no paid LLM API key available**, see [draft-generation.md](docs/draft-generation.md) |
+| Groundedness check (every citation maps to real evidence) | ✅ Implemented + self-tested against deliberately broken drafts, see [draft-generation.md](docs/draft-generation.md) |
+| Manual groundedness review of generated drafts | ✅ 10/10 fully grounded across all 5 departments — honest caveats in [groundedness-review.md](docs/groundedness-review.md) |
+| LangGraph pipeline (classify → route → retrieve → draft), draft persisted to the ticket | ⏳ Planned (Week 6, Rishikesh) |
 | Independent ML confidence model | ⏳ Planned |
 | Confidence-based escalation | ⏳ Planned |
 | Human-in-the-loop review (accept/edit/reject/escalate) | ⏳ Planned |
@@ -183,7 +186,8 @@ TicketSense/
 │   └── seed/knowledge_base/  Authored KB articles, all 5 departments (60 articles)
 ├── ai/
 │   ├── embeddings/         KB + resolved-ticket embeddings, retrieval, Recall@K eval
-│   └── models/             Department/priority/sentiment classifier training + packaging
+│   ├── models/             Department/priority/sentiment classifier training + packaging
+│   └── generation/         Draft prompt, LLM-provider abstraction, groundedness check
 ├── frontend/             Vite + React + TypeScript app
 │   ├── src/
 │   │   ├── api/               Backend API client (fetch wrapper)
@@ -211,6 +215,7 @@ TicketSense/
 | `db/seed/knowledge_base/` | Authored knowledge-base articles, one department per subfolder |
 | `ai/embeddings/` | Embeds the knowledge base and resolved tickets, department-scoped retrieval, Recall@K evaluation |
 | `ai/models/` | Trains and packages the department/priority/sentiment classifiers |
+| `ai/generation/` | Draft-generation prompt, LLM-provider abstraction (default: deterministic/extractive), groundedness check |
 | `frontend/` | React UI — login/register, role-aware routing, ticket submission, and the Engineer queue + ticket detail views, all wired to the real backend |
 | `data/` | Dataset download, cleaning, split, and synthetic-labeling scripts (raw/processed data itself is gitignored) |
 | `docs/` | Architecture decisions, UI/LangGraph/dataset/literature/classification research, wireframes, and the evaluation protocol |
@@ -496,16 +501,16 @@ feature/confidence-model
 - pgvector HNSW index (migration `0004`) — chosen over `ivfflat` to avoid repeating a documented correctness bug at small table sizes; Recall@3 re-verified unchanged with the index in place
 - Live ticket-evidence API — `GET /tickets/{id}/evidence`, department-scoped from the ticket's own `department_id` (not client input), verified end-to-end against a real SAP ticket
 - Evidence-display panel on the ticket detail screen (`frontend/src/pages/TicketDetail.tsx`) — source snippets tagged by department and source type (Knowledge Base / Resolved Ticket), loading/empty/"not yet routed" states, and a brief auto-poll (capped, not indefinite) while classification is still running — a direct follow-up to a Week 4 usability finding ([docs/usability-testing.md](docs/usability-testing.md#week-5-follow-up-applied-to-the-ticket-detail-screen))
+- Draft-generation prompt, LLM-provider abstraction, and groundedness checker (`ai/generation/`) — default provider is deterministic/extractive since no paid LLM API key is available; 10/10 sample drafts fully grounded, with an explicit honest read of what that does and doesn't demonstrate ([docs/draft-generation.md](docs/draft-generation.md), [docs/groundedness-review.md](docs/groundedness-review.md))
 
 ### In Progress
-- Nothing yet — all three Week 5 branches (retrieval, pgvector integration, evidence UI) are pushed.
+- LangGraph pipeline wiring classification → routing → retrieval → draft generation, and persisting the result to the ticket record (Week 6, Rishikesh) — not yet in this branch.
 
 ### Planned
 - Real Admin screen (currently a layout placeholder, not wired to the ticket API)
 - A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
 - Auto-refresh on the End User's "my tickets" list itself (Week 4 usability finding #1/#2 — addressed on the ticket detail screen this week, still open on the list)
-- LLM draft generation with citations (`ai/agents` LLM provider interface)
-- LangGraph pipeline implementation
+- A real generative LLM provider behind the same `LLMProvider` interface, once an API key is available
 - Independent ML confidence model and confidence gate
 - Human-in-the-loop review UI and escalation workflow
 - Feedback logging and analytics
@@ -576,7 +581,9 @@ production system.
 - [docs/team-integration-week4.md](docs/team-integration-week4.md) — Week 4 Team Integration evidence and mentor demo script
 - [docs/retrieval.md](docs/retrieval.md) — department-scoped retrieval design and Recall@K results
 - [docs/team-integration-week5.md](docs/team-integration-week5.md) — Week 5 Team Integration evidence (cross-department leakage check) and mentor demo script
-- [ai/README.md](ai/README.md) — knowledge-base/resolved-ticket embedding generation, retrieval, and classifier training
+- [docs/draft-generation.md](docs/draft-generation.md) — LLM-provider abstraction, prompt design, and what the stub provider is (and isn't)
+- [docs/groundedness-review.md](docs/groundedness-review.md) — manual review of generated drafts for citation correctness
+- [ai/README.md](ai/README.md) — knowledge-base/resolved-ticket embedding generation, retrieval, draft generation, and classifier training
 
 ## License
 
