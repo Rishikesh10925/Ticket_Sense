@@ -10,7 +10,8 @@ leakage, verified in the Week 5 Team Integration check).
 """
 
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID
 
@@ -44,6 +45,11 @@ class EvidenceResult:
     snippet: str
     department_id: UUID
     distance: float
+    # Source's own updated_at — the confidence model's document-freshness feature reads
+    # this (see ai/confidence/features.py, Week 8). Defaults to "now" (maximally fresh)
+    # so existing call sites that construct EvidenceResult directly in tests, without a
+    # real DB row behind them, don't need updating.
+    updated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 async def retrieve_evidence(
@@ -59,7 +65,11 @@ async def retrieve_evidence(
 
     kb_stmt = (
         select(
-            KnowledgeBase.id, KnowledgeBase.title, Embedding.chunk_text, distance.label("distance")
+            KnowledgeBase.id,
+            KnowledgeBase.title,
+            Embedding.chunk_text,
+            distance.label("distance"),
+            KnowledgeBase.updated_at,
         )
         .join(KnowledgeBase, Embedding.knowledge_base_id == KnowledgeBase.id)
         .where(KnowledgeBase.department_id == department_id)
@@ -67,7 +77,13 @@ async def retrieve_evidence(
         .limit(k)
     )
     ticket_stmt = (
-        select(Ticket.id, Ticket.subject, Embedding.chunk_text, distance.label("distance"))
+        select(
+            Ticket.id,
+            Ticket.subject,
+            Embedding.chunk_text,
+            distance.label("distance"),
+            Ticket.updated_at,
+        )
         .join(Ticket, Embedding.ticket_id == Ticket.id)
         .where(Ticket.department_id == department_id)
         .order_by(distance)
@@ -85,6 +101,7 @@ async def retrieve_evidence(
             snippet=row.chunk_text,
             department_id=department_id,
             distance=row.distance,
+            updated_at=row.updated_at,
         )
         for row in kb_rows
     ] + [
@@ -95,6 +112,7 @@ async def retrieve_evidence(
             snippet=row.chunk_text,
             department_id=department_id,
             distance=row.distance,
+            updated_at=row.updated_at,
         )
         for row in ticket_rows
     ]
