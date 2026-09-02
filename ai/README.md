@@ -128,3 +128,33 @@ from ocr.extract import extract_attachment_text
 result = extract_attachment_text(ticket.attachment_path, ticket.attachment_type)
 print(result.text, result.confidence)
 ```
+
+## confidence/
+
+The confidence classifier (Week 8, Shivaganesh) — an independent model that scores a
+generated draft on external reliability signals, never the LLM's own self-assessment
+(see [docs/architecture.md](../docs/architecture.md)). `features.py` computes the five
+signals (`retrieval_relevance`, `ticket_resolution_similarity`, `document_freshness`,
+`ocr_confidence`, `category_risk` — the last one derived from the department
+classifier's own measured per-department F1, see
+[docs/classification-metrics.md](../docs/classification-metrics.md)) into a
+`ConfidenceFeatures` dataclass. `synthetic_labels.py` bootstraps training labels with a
+documented, explicitly-not-real-data formula, since no real human review outcomes
+exist yet — see [docs/confidence-model.md](../docs/confidence-model.md)'s "What the
+synthetic labels are (and aren't)" before trusting this model's accuracy against real
+outcomes. `train.py` builds a dataset from real retrieval against the 120 synthetic
+historical tickets and trains a `LogisticRegression`; `predict.py` loads the saved
+artifact and exposes `predict_confidence(features) -> float`.
+
+```python
+from confidence.features import compute_features
+from confidence.predict import predict_confidence
+
+features = compute_features(evidence, ticket.ocr_confidence, department_name)
+score = predict_confidence(features)
+```
+
+Initial evaluation: accuracy 0.54, ROC-AUC 0.605 on a 96/24 train/test split — see
+[docs/confidence-metrics.md](../docs/confidence-metrics.md) for the full table and
+[docs/confidence-model.md](../docs/confidence-model.md) for the honest read of what
+that does and doesn't demonstrate yet.
