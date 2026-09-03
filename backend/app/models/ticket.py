@@ -48,4 +48,10 @@ class Ticket(UUIDPKMixin, CreatedAtMixin, Base):
     ai_draft_citations: Mapped[list | None] = mapped_column(JSONB(), nullable=True)
     confidence_score: Mapped[float | None] = mapped_column(Numeric(), nullable=True)
     confidence_features: Mapped[dict | None] = mapped_column(JSONB(), nullable=True)
+    # Snapshot of the department's configured threshold at the moment this ticket was
+    # scored — not a live reference to Department.confidence_threshold, which can
+    # change later. Needed so a historical ticket's gate decision (Week 9) stays
+    # explainable even after an admin adjusts the department's threshold. See
+    # docs/confidence-model.md.
+    confidence_threshold: Mapped[float | None] = mapped_column(Numeric(), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
