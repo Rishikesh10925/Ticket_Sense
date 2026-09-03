@@ -12,13 +12,14 @@ for review, or whether the ticket should be escalated untouched. TicketSense doe
 send AI-generated responses to end users directly; a human engineer always makes the
 final call.
 
-> **Status: Week 8 complete (independent confidence model — 5 engineered features,
-> initial `LogisticRegression` trained on synthetic bootstrap labels — wired into the
-> LangGraph pipeline as a `score` stage, a confidence indicator + feature breakdown on
-> the engineer's screen, and admin-configurable per-department thresholds — Team
-> Integration reviewed the model's numbers together and jointly set real thresholds
-> derived from each department's measured classification accuracy, see
-> [docs/team-integration-week8.md](docs/team-integration-week8.md)).** The pipeline
+> **Status: Week 9 complete (the confidence gate is a real conditional edge in the
+> LangGraph pipeline — `score` now runs before `draft`, so a low-confidence ticket is
+> escalated with no draft ever generated — plus a full Accept/Edit/Reject/Escalate
+> reviewer UI, an escalation view, and a confidence model now trained on real reviewer
+> feedback where it exists, preferred over the Week 8 synthetic bootstrap. Team
+> Integration had each member review a ticket genuinely routed to their own
+> department, through their own login, see
+> [docs/team-integration-week9.md](docs/team-integration-week9.md)).** The pipeline
 > below describes the target architecture. See [Project status](#project-status) for
 > what is actually implemented today.
 
@@ -557,6 +558,8 @@ feature/confidence-model
 - `ai/confidence/train.py` now builds two datasets and combines them — real `feedback` rows (preferred whenever a ticket has one) plus the Week 8 synthetic bootstrap for everything else — implementing "real outcomes as the primary training signal going forward" as an actual precedence rule, not just a stated intention
 - Retrained on the first real feedback (4 real + 120 synthetic rows): accuracy 0.44, ROC-AUC 0.571 — reported plainly even though it's lower than Week 8's synthetic-only numbers, since 4 examples can't meaningfully move a 124-example dataset and the honest read is sampling noise, not regression; see [confidence-model.md](docs/confidence-model.md)'s "Week 9 refinement" section for the full accounting, including that those 4 rows are QA actions from testing the reviewer UI, not organic reviewer judgment yet
 - Analysed the first real gate decisions and found the honest answer is "not yet possible" — the only real reviewer follow-ups are the same 4 QA rows, so their 3:1 failure ratio reflects the test design (one of each action, deliberately) rather than the model; a genuine miscalibration read needs organic reviewer volume, explicitly deferred rather than faked — see [confidence-model.md](docs/confidence-model.md)'s "First real gate decisions" section
+- Added one named `department_engineer` demo account per team member (`backend/app/scripts/seed_demo_users.py`) — SAP/Cloud/HR respectively — closing a gap Week 8's own team-integration doc had already flagged (`engineer@demo.local` alone can only ever review Networking tickets)
+- Week 9 Team Integration: 6-ticket dry run across SAP/Cloud/HR — the same two classifier misroutes Week 7/8 already documented (ME023 → HR, EC2 → Database) reproduced at nearly identical scores, and neither SAP ticket cleared SAP's 0.65 threshold in this run either, an open calibration question now recorded across two consecutive weeks rather than adjusted on a small sample; each team member reviewed a ticket genuinely routed to their own department through their own login — two via Edit/Reject, one via the escalation view (no SAP draft existed to review, so reviewing *why* it escalated stood in, which the escalation view is built for) — see [docs/team-integration-week9.md](docs/team-integration-week9.md)
 
 ### Planned
 - A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
@@ -622,7 +625,7 @@ production system.
 - [docs/split-strategy.md](docs/split-strategy.md) — train/validation/test split strategy
 - [docs/authentication.md](docs/authentication.md) — JWT auth flow and role-based access control
 - [docs/ticket-lifecycle.md](docs/ticket-lifecycle.md) — ticket status state machine
-- [docs/confidence-labelling-guide.md](docs/confidence-labelling-guide.md) — plan for turning reviewer actions into confidence-model training labels
+- [docs/confidence-labelling-guide.md](docs/confidence-labelling-guide.md) — the Week 3 plan for turning reviewer actions into confidence-model training labels, implemented in `ai/confidence/labels.py` (Week 9)
 - [docs/classification-model.md](docs/classification-model.md) — classifier training methodology and honest limitations
 - [docs/classification-metrics.md](docs/classification-metrics.md) — auto-generated precision/recall/F1 tables
 - [docs/ticket-routing.md](docs/ticket-routing.md) — how a submitted ticket gets classified and routed automatically
@@ -631,6 +634,7 @@ production system.
 - [docs/confidence-metrics.md](docs/confidence-metrics.md) — auto-generated precision/recall/F1/ROC-AUC table
 - [docs/usability-testing-confidence-layout.md](docs/usability-testing-confidence-layout.md) — usability findings on the combined evidence + draft + confidence layout
 - [docs/team-integration-week8.md](docs/team-integration-week8.md) — Week 8 Team Integration evidence (10-ticket confidence dry run, jointly-decided per-department thresholds) and mentor demo script
+- [docs/team-integration-week9.md](docs/team-integration-week9.md) — Week 9 Team Integration evidence (6-ticket confidence-gate dry run, each team member reviewing via their own named engineer account)
 - [docs/team-integration-week4.md](docs/team-integration-week4.md) — Week 4 Team Integration evidence and mentor demo script
 - [docs/retrieval.md](docs/retrieval.md) — department-scoped retrieval design and Recall@K results
 - [docs/team-integration-week5.md](docs/team-integration-week5.md) — Week 5 Team Integration evidence (cross-department leakage check) and mentor demo script

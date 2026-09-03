@@ -28,6 +28,29 @@ DEMO_USERS = [
         "department": "Networking",
     },
     {"email": "admin@demo.local", "full_name": "Demo Admin", "role": "admin", "department": None},
+    # One named account per team member (Week 9 Team Integration: "have each member
+    # act as the reviewing engineer on at least one ticket") — engineer@demo.local
+    # alone can only ever review Networking tickets, which doesn't let three people
+    # genuinely each review one themselves. Kept separate from engineer@demo.local
+    # rather than replacing it, since other docs/scripts already reference that account.
+    {
+        "email": "rishikesh.engineer@demo.local",
+        "full_name": "Rishikesh (Engineer)",
+        "role": "department_engineer",
+        "department": "SAP",
+    },
+    {
+        "email": "aashritha.engineer@demo.local",
+        "full_name": "Aashritha (Engineer)",
+        "role": "department_engineer",
+        "department": "Cloud",
+    },
+    {
+        "email": "shivaganesh.engineer@demo.local",
+        "full_name": "Shivaganesh (Engineer)",
+        "role": "department_engineer",
+        "department": "HR",
+    },
 ]
 
 
