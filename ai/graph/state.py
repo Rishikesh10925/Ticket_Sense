@@ -26,3 +26,6 @@ class TicketState(TypedDict, total=False):
     evidence: list[Any]  # list[embeddings.retrieve.EvidenceResult]
     draft: str | None
     citations: list[dict]
+    confidence_score: float | None
+    confidence_features: dict | None
+    confidence_threshold: float | None

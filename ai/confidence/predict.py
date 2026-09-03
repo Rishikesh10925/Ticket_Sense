@@ -5,9 +5,14 @@ train.py for how the model was trained and docs/confidence-model.md for the hone
 read of what the score does and doesn't mean.
 """
 
+import sys
 from pathlib import Path
 
 import joblib
+
+_THIS_DIR = Path(__file__).resolve().parent
+if str(_THIS_DIR) not in sys.path:
+    sys.path.insert(0, str(_THIS_DIR))
 
 from features import ConfidenceFeatures  # noqa: E402
 

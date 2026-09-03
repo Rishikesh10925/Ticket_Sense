@@ -80,9 +80,13 @@ def test_ticket_auto_classified_and_routed(api):
     assert ticket["priority"] in ("low", "medium", "high")
     assert ticket["sentiment"] in ("positive", "neutral", "negative")
     # An end_user never sees the AI draft directly — a human engineer makes the final
-    # call (see app/schemas/tickets.py's build_ticket_out).
+    # call (see app/schemas/tickets.py's build_ticket_out). The confidence score/
+    # features/threshold judge that draft, so they're hidden the same way.
     assert ticket["ai_draft_reply"] is None
     assert ticket["ai_draft_citations"] is None
+    assert ticket["confidence_score"] is None
+    assert ticket["confidence_features"] is None
+    assert ticket["confidence_threshold"] is None
 
     _make_engineer_sync("networking_eng@example.com", networking_id)
     engineer_token = api.post(
@@ -93,6 +97,12 @@ def test_ticket_auto_classified_and_routed(api):
     ).json()
     assert engineer_view["ai_draft_reply"]
     assert engineer_view["ai_draft_citations"] is not None
+    assert 0.0 <= engineer_view["confidence_score"] <= 1.0
+    assert set(engineer_view["confidence_features"]) == {
+        "retrieval_relevance", "ticket_resolution_similarity", "document_freshness",
+        "ocr_confidence", "category_risk",
+    }
+    assert engineer_view["confidence_threshold"] == 0.5  # DEFAULT_CONFIDENCE_THRESHOLD
 
 
 def test_queue_sort_by_priority(api):
