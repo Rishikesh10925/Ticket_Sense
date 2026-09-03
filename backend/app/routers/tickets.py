@@ -10,11 +10,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.database import get_db
 from app.dependencies import get_current_user
-from app.models import Ticket, User
+from app.models import Escalation, Feedback, Ticket, User
+from app.schemas.escalations import EscalationOut
 from app.schemas.evidence import EvidenceOut
+from app.schemas.feedback import FeedbackCreate
 from app.schemas.tickets import TicketOut, build_ticket_out
 from app.services.pipeline import run_ticket_pipeline
 from app.services.retrieval import get_evidence_for_ticket
+from app.services.ticket_lifecycle import TicketStatus, transition
 
 router = APIRouter(prefix="/tickets", tags=["tickets"])
 
@@ -179,3 +182,88 @@ async def get_ticket_evidence(
     ticket itself. Empty list if the ticket hasn't been routed to a department yet."""
     ticket = await _get_ticket_or_403(ticket_id, current_user, db)
     return await get_evidence_for_ticket(db, ticket)
+
+
+def _require_reviewer(current_user: User) -> None:
+    if current_user.role not in ("department_engineer", "admin"):
+        raise HTTPException(
+            status_code=http_status.HTTP_403_FORBIDDEN,
+            detail="Only a department engineer or admin can review a ticket",
+        )
+
+
+@router.get("/{ticket_id}/escalation", response_model=EscalationOut)
+async def get_ticket_escalation(
+    ticket_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Escalation:
+    """The escalation record for a ticket the confidence gate (or a reviewer) sent
+    straight to a human — reviewer-only, same reasoning as hiding confidence_score
+    from end_user (see app/schemas/tickets.py's build_ticket_out): the reason
+    references the confidence score/threshold that triggered it, which is an AI
+    judgment the end user never sees."""
+    _require_reviewer(current_user)
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+    escalation = await db.scalar(
+        select(Escalation).where(Escalation.ticket_id == ticket.id).order_by(Escalation.created_at.desc())
+    )
+    if escalation is None:
+        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="This ticket has not been escalated")
+    return escalation
+
+
+@router.post("/{ticket_id}/feedback", response_model=TicketOut, status_code=http_status.HTTP_201_CREATED)
+async def submit_ticket_feedback(
+    ticket_id: uuid.UUID,
+    body: FeedbackCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> TicketOut:
+    """Records a reviewer's Accept/Edit/Reject/Escalate action on a drafted ticket —
+    the primary training signal for confidence-model retraining going forward (see
+    docs/confidence-labelling-guide.md). Only valid on a ticket currently `drafted`:
+    there's nothing to review before that, and reviewing twice would silently
+    overwrite the first reviewer's record. `edit`/`reject` intentionally leave
+    `Ticket.ai_draft_reply` untouched — that's the AI's actual original output, an
+    audit trail; the reviewer's edited text or rejection reason lives on the
+    `Feedback` row instead, never overwriting what the AI produced.
+    """
+    _require_reviewer(current_user)
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+
+    if ticket.status != TicketStatus.DRAFTED:
+        raise HTTPException(
+            status_code=http_status.HTTP_409_CONFLICT,
+            detail=f"Ticket must be 'drafted' to record reviewer feedback (currently '{ticket.status}')",
+        )
+    if body.action == "edit" and not body.edited_reply:
+        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail="edited_reply is required for the 'edit' action")
+    if body.action == "reject" and not body.reject_reason:
+        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail="reject_reason is required for the 'reject' action")
+
+    db.add(
+        Feedback(
+            ticket_id=ticket.id,
+            reviewer_id=current_user.id,
+            action=body.action,
+            edited_reply=body.edited_reply,
+            reject_reason=body.reject_reason,
+        )
+    )
+
+    if body.action == "escalate":
+        ticket.status = transition(TicketStatus(ticket.status), TicketStatus.ESCALATED)
+        db.add(
+            Escalation(
+                ticket_id=ticket.id,
+                reason="Engineer escalated after reviewing the draft",
+                confidence_score=ticket.confidence_score,
+            )
+        )
+    else:
+        ticket.status = transition(TicketStatus(ticket.status), TicketStatus.REVIEWED)
+
+    await db.commit()
+    await db.refresh(ticket)
+    return build_ticket_out(ticket, current_user.role)
