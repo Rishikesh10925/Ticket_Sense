@@ -15,7 +15,7 @@ class Ticket(UUIDPKMixin, CreatedAtMixin, Base):
         CheckConstraint("priority IN ('low','medium','high')", name="ck_tickets_priority"),
         CheckConstraint("sentiment IN ('positive','neutral','negative')", name="ck_tickets_sentiment"),
         CheckConstraint(
-            "status IN ('submitted','classified','routed','drafted','reviewed','closed')",
+            "status IN ('submitted','classified','routed','drafted','reviewed','escalated','closed')",
             name="ck_tickets_status",
         ),
     )
