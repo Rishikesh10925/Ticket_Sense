@@ -24,6 +24,8 @@ from generation.llm_interface import LLMProvider  # noqa: E402
 from generation.prompt import build_prompt  # noqa: E402
 from models.classifier import classify_ticket  # noqa: E402
 from ocr.extract import extract_attachment_text  # noqa: E402
+from confidence.features import compute_features  # noqa: E402
+from confidence.predict import predict_confidence  # noqa: E402
 
 from graph.state import TicketState  # noqa: E402
 
@@ -115,5 +117,28 @@ def make_draft_node(llm_provider: LLMProvider):
             )
 
         return {"draft": draft, "citations": citations}
+
+    return node
+
+
+def make_score_node(db, department_model, default_threshold: float):
+    async def node(state: TicketState) -> dict:
+        features = compute_features(
+            state.get("evidence") or [], state.get("ocr_confidence"), state.get("department_name")
+        )
+        score = predict_confidence(features)
+
+        threshold = default_threshold
+        department_id = state.get("department_id")
+        if department_id is not None:
+            department = await db.get(department_model, UUID(department_id))
+            if department is not None:
+                threshold = float(department.confidence_threshold)
+
+        return {
+            "confidence_score": score,
+            "confidence_features": features.to_dict(),
+            "confidence_threshold": threshold,
+        }
 
     return node

@@ -9,6 +9,12 @@ before reading too much into the trained model's accuracy against real outcomes.
 
 import math
 import random
+import sys
+from pathlib import Path
+
+_THIS_DIR = Path(__file__).resolve().parent
+if str(_THIS_DIR) not in sys.path:
+    sys.path.insert(0, str(_THIS_DIR))
 
 from features import ConfidenceFeatures  # noqa: E402
 
