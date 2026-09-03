@@ -146,9 +146,14 @@ classifier's own measured per-department F1, see
 documented, explicitly-not-real-data formula, since no real human review outcomes
 exist yet — see [docs/confidence-model.md](../docs/confidence-model.md)'s "What the
 synthetic labels are (and aren't)" before trusting this model's accuracy against real
-outcomes. `train.py` builds a dataset from real retrieval against the 120 synthetic
-historical tickets and trains a `LogisticRegression`; `predict.py` loads the saved
-artifact and exposes `predict_confidence(features) -> float`.
+outcomes. `labels.py` (Week 9) turns a real `feedback` row into a training label
+instead — accept/reject map directly, edit is minor-vs-heavy via an edit-distance
+ratio, and escalate-after-a-draft is treated like a reject, per
+[docs/confidence-labelling-guide.md](../docs/confidence-labelling-guide.md). `train.py`
+builds two datasets — real feedback rows (via `labels.py`, preferred whenever a ticket
+has one) plus the Week 8 synthetic fallback for everything else — and trains a
+`LogisticRegression` on the combination; `predict.py` loads the saved artifact and
+exposes `predict_confidence(features) -> float`.
 
 ```python
 from confidence.features import compute_features
