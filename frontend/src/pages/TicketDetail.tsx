@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Card, ConfidenceIndicator, ReviewActions } from "../components";
+import { AlertTriangleIcon } from "../components/icons";
 import {
   getTicket,
   getTicketAttachment,
@@ -96,31 +97,60 @@ function AttachmentPreview({ token, ticket }: { token: string; ticket: Ticket })
 
 // Fetches the escalation record for a ticket the gate (or a reviewer) sent straight
 // to a human — reviewer-only endpoint, same as this component's caller already gates
-// rendering on (see showDraftPanel below).
-function EscalationDetails({ token, ticketId }: { token: string; ticketId: string }) {
+// rendering on (see showDraftPanel below). The score/threshold/feature breakdown
+// shown here come straight off `ticket`, not the escalation record — the pipeline
+// persists them unconditionally at scoring time regardless of which way the gate went
+// (see app/services/pipeline.py), so the same rich confidence readout the draft panel
+// gets is already sitting right there, not something this view has to reconstruct.
+function EscalationDetails({ token, ticket }: { token: string; ticket: Ticket }) {
   const [escalation, setEscalation] = useState<Escalation | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
-    getTicketEscalation(token, ticketId)
+    getTicketEscalation(token, ticket.id)
       .then((e) => active && setEscalation(e))
       .catch((err) => active && setError(err instanceof ApiError ? err.message : "Could not load escalation details"));
     return () => {
       active = false;
     };
-  }, [token, ticketId]);
+  }, [token, ticket.id]);
 
-  if (error) return <p className="form-error">{error}</p>;
-  if (!escalation) return <p className="placeholder-note">Loading escalation details…</p>;
+  const hadDraft = ticket.ai_draft_reply !== null;
 
   return (
     <div className="escalation-details">
-      <p>{escalation.reason}</p>
-      {escalation.confidence_score !== null && (
-        <p className="placeholder-note">
-          Confidence score at the time: {(escalation.confidence_score * 100).toFixed(0)}%
-        </p>
+      <div className="escalation-banner">
+        <span className="escalation-banner-icon">
+          <AlertTriangleIcon />
+        </span>
+        <div>
+          <p className="escalation-banner-title">Needs human investigation</p>
+          <p className="escalation-banner-subtitle">
+            {hadDraft
+              ? "A reviewer escalated this ticket after seeing the AI's draft — handle it directly, there's nothing left to approve."
+              : "The confidence gate sent this straight to a human — no AI draft was generated for it at all."}
+          </p>
+        </div>
+      </div>
+
+      {ticket.confidence_score !== null && ticket.confidence_threshold !== null && ticket.confidence_features !== null && (
+        <div className="confidence-section escalation-confidence">
+          <ConfidenceIndicator
+            score={ticket.confidence_score}
+            threshold={ticket.confidence_threshold}
+            features={ticket.confidence_features}
+          />
+        </div>
+      )}
+
+      {error && <p className="form-error">{error}</p>}
+      {!error && !escalation && <p className="placeholder-note">Loading escalation reason…</p>}
+      {escalation && (
+        <div className="escalation-reason">
+          <span className="escalation-reason-label">Reason</span>
+          <p>{escalation.reason}</p>
+        </div>
       )}
     </div>
   );
@@ -366,10 +396,10 @@ export default function TicketDetail() {
 
         {showDraftPanel && isEscalated && token && (
           <Card title="Escalation">
-            <EscalationDetails token={token} ticketId={ticket.id} />
+            <EscalationDetails token={token} ticket={ticket} />
             {ticket.ai_draft_reply && (
               <>
-                <h4 className="draft-sources-heading">Draft at time of escalation</h4>
+                <h4 className="draft-sources-heading escalation-draft-heading">Draft at time of escalation</h4>
                 <p className="draft-text">
                   {renderDraftWithCitations(ticket.ai_draft_reply, ticket.ai_draft_citations ?? [])}
                 </p>
