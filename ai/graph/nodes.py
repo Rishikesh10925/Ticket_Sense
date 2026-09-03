@@ -116,7 +116,7 @@ def make_draft_node(llm_provider: LLMProvider):
                 {"source_type": item.source_type, "source_id": str(item.source_id), "title": item.title}
             )
 
-        return {"draft": draft, "citations": citations}
+        return {"draft": draft, "citations": citations, "gate_decision": "draft"}
 
     return node
 
@@ -140,5 +140,29 @@ def make_score_node(db, department_model, default_threshold: float):
             "confidence_features": features.to_dict(),
             "confidence_threshold": threshold,
         }
+
+    return node
+
+
+def gate_condition(state: TicketState) -> str:
+    """The Week 9 confidence gate: routes to "draft" if the score clears the
+    department's threshold, "escalate" otherwise — a LangGraph conditional edge
+    (see pipeline.py), not an if/else buried inside a node, so the routing decision
+    is visible in the graph definition itself (see docs/architecture.md's "Conditional
+    routing, not a fixed threshold call inside a node"). Score/threshold are computed
+    by the score node, which runs immediately before this — see docs/langgraph-pipeline.md
+    for why score comes before draft, not after."""
+    score = state.get("confidence_score")
+    threshold = state.get("confidence_threshold")
+    if score is None or threshold is None:
+        # Shouldn't happen (score always runs first), but fails open to drafting
+        # rather than crashing the pipeline on an unexpected state shape.
+        return "draft"
+    return "draft" if score >= threshold else "escalate"
+
+
+def make_escalate_node():
+    async def node(state: TicketState) -> dict:
+        return {"gate_decision": "escalate"}
 
     return node

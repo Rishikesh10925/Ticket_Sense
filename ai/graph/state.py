@@ -29,3 +29,4 @@ class TicketState(TypedDict, total=False):
     confidence_score: float | None
     confidence_features: dict | None
     confidence_threshold: float | None
+    gate_decision: str | None  # "draft" | "escalate" — see nodes.py's gate_condition
