@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Card } from "../components";
+import { Button, Card, ConfidenceIndicator } from "../components";
 import {
   getTicket,
   getTicketAttachment,
@@ -343,6 +343,17 @@ export default function TicketDetail() {
             )}
             {ticket.ai_draft_reply && (
               <>
+                {ticket.confidence_score !== null &&
+                  ticket.confidence_features !== null &&
+                  ticket.confidence_threshold !== null && (
+                    <div className="confidence-section">
+                      <ConfidenceIndicator
+                        score={ticket.confidence_score}
+                        threshold={ticket.confidence_threshold}
+                        features={ticket.confidence_features}
+                      />
+                    </div>
+                  )}
                 <p className="draft-text">
                   {renderDraftWithCitations(ticket.ai_draft_reply, ticket.ai_draft_citations ?? [])}
                 </p>

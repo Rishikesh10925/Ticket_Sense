@@ -11,6 +11,15 @@ export interface User {
 export interface Department {
   id: string;
   name: string;
+  confidence_threshold: number;
+}
+
+export interface ConfidenceFeatures {
+  retrieval_relevance: number;
+  ticket_resolution_similarity: number;
+  document_freshness: number;
+  ocr_confidence: number;
+  category_risk: number;
 }
 
 export interface Citation {
@@ -39,6 +48,11 @@ export interface Ticket {
   // app/schemas/tickets.py's build_ticket_out.
   ai_draft_reply: string | null;
   ai_draft_citations: Citation[] | null;
+  // Null for the end_user role, same reason as the draft fields above — a confidence
+  // judgment about a draft no one shows them is meaningless to expose.
+  confidence_score: number | null;
+  confidence_features: ConfidenceFeatures | null;
+  confidence_threshold: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -181,6 +195,20 @@ export async function listUsers(token: string): Promise<User[]> {
 
 export async function listKnowledgeBase(token: string): Promise<KnowledgeBaseArticle[]> {
   const res = await fetch(`${API_URL}/knowledge-base`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function updateDepartmentThreshold(
+  token: string,
+  departmentId: string,
+  confidenceThreshold: number
+): Promise<Department> {
+  const res = await fetch(`${API_URL}/departments/${departmentId}/threshold`, {
+    method: "PATCH",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ confidence_threshold: confidenceThreshold }),
+  });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
   return res.json();
 }

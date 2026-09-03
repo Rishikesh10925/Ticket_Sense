@@ -397,6 +397,12 @@
   line-height: 1.5;
 }
 
+.confidence-section {
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
 .draft-text {
   white-space: pre-wrap;
   font-size: 14px;
@@ -488,6 +494,34 @@
   background: var(--color-surface-alt);
   padding: 2px 6px;
   border-radius: var(--radius-full);
+}
+
+.threshold-editor {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.threshold-editor input {
+  width: 72px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.threshold-editor input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.threshold-editor .btn {
+  padding: 6px 12px;
+  font-size: 12.5px;
 }
 
 /* ---------- Attachment upload + display ---------- */
