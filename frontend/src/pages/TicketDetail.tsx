@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Card, ConfidenceIndicator } from "../components";
+import { Button, Card, ConfidenceIndicator, ReviewActions } from "../components";
 import {
   getTicket,
   getTicketAttachment,
+  getTicketEscalation,
   getTicketEvidence,
   listDepartments,
   ApiError,
   type Ticket,
   type Evidence,
   type Citation,
+  type Escalation,
 } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { statusLabel, statusBadgeClass } from "../statusLabels";
@@ -89,6 +91,38 @@ function AttachmentPreview({ token, ticket }: { token: string; ticket: Ticket })
     <a href={blobUrl} target="_blank" rel="noreferrer" className="link-button">
       View attachment ({ticket.attachment_path?.split("/").pop()})
     </a>
+  );
+}
+
+// Fetches the escalation record for a ticket the gate (or a reviewer) sent straight
+// to a human — reviewer-only endpoint, same as this component's caller already gates
+// rendering on (see showDraftPanel below).
+function EscalationDetails({ token, ticketId }: { token: string; ticketId: string }) {
+  const [escalation, setEscalation] = useState<Escalation | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    getTicketEscalation(token, ticketId)
+      .then((e) => active && setEscalation(e))
+      .catch((err) => active && setError(err instanceof ApiError ? err.message : "Could not load escalation details"));
+    return () => {
+      active = false;
+    };
+  }, [token, ticketId]);
+
+  if (error) return <p className="form-error">{error}</p>;
+  if (!escalation) return <p className="placeholder-note">Loading escalation details…</p>;
+
+  return (
+    <div className="escalation-details">
+      <p>{escalation.reason}</p>
+      {escalation.confidence_score !== null && (
+        <p className="placeholder-note">
+          Confidence score at the time: {(escalation.confidence_score * 100).toFixed(0)}%
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -196,6 +230,7 @@ export default function TicketDetail() {
 
   const isClassifying = UNROUTED_STATUSES.includes(ticket.status);
   const isDrafting = PENDING_DRAFT_STATUSES.includes(ticket.status);
+  const isEscalated = ticket.status === "escalated";
   // A department_engineer/admin sees the real draft once it exists; an end_user never
   // does (the API nulls both fields for that role — see build_ticket_out), so the
   // draft panel itself is engineer/admin-only rather than showing a permanently-empty
@@ -282,7 +317,9 @@ export default function TicketDetail() {
           <p className="placeholder-note">
             {isDrafting
               ? "This ticket is being classified, routed, and drafted automatically."
-              : "A department engineer has an AI-drafted reply for this ticket, based on retrieved evidence. They'll review it before anything is sent to you."}
+              : isEscalated
+                ? "This ticket needed closer attention than an automatic draft could provide, and has been sent directly to an engineer to handle."
+                : "A department engineer has an AI-drafted reply for this ticket, based on retrieved evidence. They'll review it before anything is sent to you."}
           </p>
         )}
       </Card>
@@ -327,7 +364,21 @@ export default function TicketDetail() {
           )}
         </Card>
 
-        {showDraftPanel && (
+        {showDraftPanel && isEscalated && token && (
+          <Card title="Escalation">
+            <EscalationDetails token={token} ticketId={ticket.id} />
+            {ticket.ai_draft_reply && (
+              <>
+                <h4 className="draft-sources-heading">Draft at time of escalation</h4>
+                <p className="draft-text">
+                  {renderDraftWithCitations(ticket.ai_draft_reply, ticket.ai_draft_citations ?? [])}
+                </p>
+              </>
+            )}
+          </Card>
+        )}
+
+        {showDraftPanel && !isEscalated && (
           <Card title="AI draft reply">
             {isClassifying && (
               <p className="placeholder-note">
@@ -369,6 +420,14 @@ export default function TicketDetail() {
                       ))}
                     </ol>
                   </>
+                )}
+                {ticket.status === "drafted" && token && (
+                  <ReviewActions token={token} ticket={ticket} onDone={loadTicket} />
+                )}
+                {ticket.status === "reviewed" && (
+                  <p className="placeholder-note draft-status-legend">
+                    This ticket has already been reviewed.
+                  </p>
                 )}
               </>
             )}
