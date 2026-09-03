@@ -44,6 +44,16 @@ export function ShieldIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function AlertTriangleIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 3.5 21.5 20H2.5z" />
+      <path d="M12 9.5v4.2" />
+      <path d="M12 17.3v.1" />
+    </svg>
+  );
+}
+
 export function LogoutIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base(props)}>

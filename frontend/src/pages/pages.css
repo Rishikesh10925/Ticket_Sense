@@ -199,6 +199,14 @@
   color: var(--color-primary);
 }
 
+.stat-card-danger {
+  border-color: var(--color-danger);
+}
+
+.stat-card-danger .stat-card-value {
+  color: var(--color-danger);
+}
+
 /* ---------- Tables ---------- */
 
 .ticket-table {
@@ -238,6 +246,33 @@
 
 .clickable-row:hover {
   background: var(--color-surface-alt);
+}
+
+.row-escalated {
+  background: var(--color-danger-bg);
+}
+
+.row-escalated:hover {
+  background: color-mix(in srgb, var(--color-danger-bg) 70%, var(--color-surface-alt));
+}
+
+.confidence-mini-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.confidence-mini-pass {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.confidence-mini-fail {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
 }
 
 /* ---------- Badges ---------- */
@@ -468,13 +503,81 @@
   resize: vertical;
 }
 
-.escalation-details p {
-  font-size: 14px;
+.escalation-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
-.escalation-details p:first-child {
-  font-weight: 600;
+.escalation-banner {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.escalation-banner-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
   color: var(--color-danger);
+}
+
+.escalation-banner-title {
+  margin: 0 0 2px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--color-danger);
+}
+
+.escalation-banner-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.escalation-confidence {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.escalation-reason {
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.escalation-reason-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.escalation-reason p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.escalation-draft-heading {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
 }
 
 /* ---------- Admin ---------- */

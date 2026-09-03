@@ -5,7 +5,7 @@ import { listTickets, ApiError, type Ticket } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { statusLabel, statusBadgeClass } from "../statusLabels";
 
-const STATUSES = ["submitted", "classified", "routed", "drafted", "reviewed", "closed"];
+const STATUSES = ["submitted", "classified", "routed", "drafted", "escalated", "reviewed", "closed"];
 
 export default function EngineerQueue() {
   const { token } = useAuth();
@@ -28,6 +28,7 @@ export default function EngineerQueue() {
 
   const highPriorityCount = tickets.filter((t) => t.priority === "high").length;
   const draftCount = tickets.filter((t) => t.status === "drafted").length;
+  const escalatedCount = tickets.filter((t) => t.status === "escalated").length;
 
   return (
     <>
@@ -43,6 +44,7 @@ export default function EngineerQueue() {
           <StatCard label="In queue" value={tickets.length} accent />
           <StatCard label="High priority" value={highPriorityCount} />
           <StatCard label="Draft in review" value={draftCount} />
+          <StatCard label="Escalated" value={escalatedCount} tone={escalatedCount > 0 ? "danger" : undefined} />
         </div>
       )}
 
@@ -76,6 +78,7 @@ export default function EngineerQueue() {
                 <th>Subject</th>
                 <th>Priority</th>
                 <th>Sentiment</th>
+                <th>Confidence</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -83,7 +86,7 @@ export default function EngineerQueue() {
               {tickets.map((ticket) => (
                 <tr
                   key={ticket.id}
-                  className="clickable-row"
+                  className={`clickable-row${ticket.status === "escalated" ? " row-escalated" : ""}`}
                   onClick={() => navigate(`/tickets/${ticket.id}`)}
                 >
                   <td className="ticket-table-subject">{ticket.subject}</td>
@@ -97,6 +100,21 @@ export default function EngineerQueue() {
                     )}
                   </td>
                   <td>{ticket.sentiment ?? "—"}</td>
+                  <td>
+                    {ticket.confidence_score !== null && ticket.confidence_threshold !== null ? (
+                      <span
+                        className={`confidence-mini-badge ${
+                          ticket.confidence_score >= ticket.confidence_threshold
+                            ? "confidence-mini-pass"
+                            : "confidence-mini-fail"
+                        }`}
+                      >
+                        {Math.round(ticket.confidence_score * 100)}%
+                      </span>
+                    ) : (
+                      <span className="placeholder-note">—</span>
+                    )}
+                  </td>
                   <td>
                     <span className={statusBadgeClass(ticket.status)}>{statusLabel(ticket.status)}</span>
                   </td>
