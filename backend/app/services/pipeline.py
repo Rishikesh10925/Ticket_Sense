@@ -1,4 +1,4 @@
-"""Runs the full extract -> classify -> route -> retrieve -> draft LangGraph
+"""Runs the full extract -> classify -> route -> retrieve -> draft -> score LangGraph
 pipeline for a ticket and persists every stage's output, advancing the ticket's
 lifecycle status through classified -> routed -> drafted as each stage succeeds.
 
@@ -20,6 +20,7 @@ if str(_AI_DIR) not in sys.path:
 from app.config import settings
 from app.database import SessionLocal
 from app.models import Department, Ticket
+from app.models.department import DEFAULT_CONFIDENCE_THRESHOLD
 from app.services.ticket_lifecycle import TicketStatus, transition
 
 from generation.provider_factory import get_llm_provider  # noqa: E402
@@ -35,7 +36,7 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
             return
 
         llm_provider = get_llm_provider(settings.llm_provider)
-        pipeline = build_pipeline(db, Department, llm_provider)
+        pipeline = build_pipeline(db, Department, llm_provider, DEFAULT_CONFIDENCE_THRESHOLD)
 
         result = await pipeline.ainvoke(
             {
@@ -49,12 +50,6 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
 
         ticket.attachment_text = result.get("attachment_text")
         ticket.ocr_confidence = result.get("ocr_confidence")
-        # First entry in the reliability-signal set the confidence model (Weeks 8-11)
-        # will consume — see docs/architecture.md's confidence-features design and
-        # docs/ocr-evaluation.md for why OCR confidence is a meaningful signal on its
-        # own. Nothing reads this yet; this week only wires the value in.
-        if ticket.ocr_confidence is not None:
-            ticket.confidence_features = {"ocr_confidence": ticket.ocr_confidence}
 
         ticket.priority = result.get("priority")
         ticket.sentiment = result.get("sentiment")
@@ -73,6 +68,14 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
             # department the ticket stays at `routed` and un-drafted.
             ticket.ai_draft_reply = result.get("draft")
             ticket.ai_draft_citations = result.get("citations") or []
+
+            # Confidence scoring happens "at draft time" (docs/architecture.md) — a
+            # score for a ticket with no draft to score would be meaningless, so it's
+            # persisted alongside the draft, not unconditionally like attachment_text.
+            ticket.confidence_score = result.get("confidence_score")
+            ticket.confidence_features = result.get("confidence_features")
+            ticket.confidence_threshold = result.get("confidence_threshold")
+
             ticket.status = transition(TicketStatus(ticket.status), TicketStatus.DRAFTED)
 
         await db.commit()
