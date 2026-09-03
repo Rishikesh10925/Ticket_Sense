@@ -1,20 +1,29 @@
 # LangGraph pipeline
 
 Week 6 (Rishikesh), extended Week 7 (Rishikesh) to fold in attachment text, extended
-Week 8 (Rishikesh) to add confidence scoring. Wires attachment extraction →
-classification → routing → retrieval → draft generation → confidence scoring into a
-single LangGraph `StateGraph`, so a submitted ticket flows through all six stages
-unattended and ends with a cited, scored draft on the ticket record, ready for an
-engineer to review. Implements the shape agreed in
-[langgraph-research.md](langgraph-research.md) (Week 1) — the confidence-**gate**
-conditional edge sketched there is Week 9's job; this graph computes a score but
-doesn't yet branch on it.
+Week 8 (Rishikesh) to add confidence scoring, extended Week 9 (Rishikesh) to add the
+confidence gate. Wires attachment extraction → classification → routing → retrieval →
+confidence scoring → **a gate that decides whether to draft at all** into a single
+LangGraph `StateGraph`, so a submitted ticket flows through unattended and ends either
+with a cited draft ready for an engineer, or an escalation with no draft shown. This is
+the graph shape [langgraph-research.md](langgraph-research.md) (Week 1) originally
+sketched, now fully implemented — the confidence-scoring node and the gate conditional
+edge it deferred to later weeks are both built.
 
 ## Graph shape
 
 ```text
-   ticket ──► extract ──► classify ──► route ──► retrieve ──► draft ──► score ──► END
+                                                          ┌──► draft ────┐
+   ticket ──► extract ──► classify ──► route ──► retrieve ──► score ──►[gate]         ├──► END
+                                                          └──► escalate ─┘
 ```
+
+`score` runs **before** `draft` (this changed in Week 9 — Week 8 had `draft` then
+`score`). Scoring only needs the retrieved evidence, OCR confidence, and routed
+department — none of it depends on the draft's actual text — so the gate can decide
+*whether to draft at all* instead of drafting first and discarding the result on a
+failed gate. This also matches [architecture.md](architecture.md)'s "Example"
+walkthrough literally: an escalated ticket has no AI draft, not a hidden one.
 
 - **extract** (`ai/graph/nodes.py::make_extract_node`) — calls
   `ai/ocr/extract.py`'s `extract_attachment_text(path, attachment_type)` (Week 7,
@@ -33,11 +42,6 @@ doesn't yet branch on it.
   `retrieve_evidence`, department-scoped (Week 5). Returns `[]` with no department
   rather than guessing — same rule `app/services/retrieval.py`'s
   `get_evidence_for_ticket` already used for the on-demand evidence endpoint.
-- **draft** (`make_draft_node`) — builds the prompt (`ai/generation/prompt.py`) from
-  `_augmented_description(state)`, calls the configured `LLMProvider`'s `generate()`
-  (Week 6, Shivaganesh), and reads the citation markers (`[n]`) back out of the
-  generated draft to build the persisted citations list — in the order the draft
-  actually cited them, not just every retrieved item.
 - **score** (`make_score_node`, Week 8) — computes the five confidence features
   (`ai/confidence/features.py::compute_features`, Shivaganesh) from the retrieved
   evidence, `ocr_confidence`, and routed department, then scores them with the trained
@@ -49,6 +53,25 @@ doesn't yet branch on it.
   [confidence-model.md](confidence-model.md) for the model itself and
   [architecture.md](architecture.md) for why this is a separate model, never the
   drafting LLM's own self-assessment.
+- **the gate** (`gate_condition`, Week 9) — a LangGraph *conditional edge* attached to
+  `score`, not an if/else buried inside a node — reads `confidence_score` and
+  `confidence_threshold` straight from state and routes to `"draft"` if the score
+  clears the threshold, `"escalate"` otherwise. Deliberately a conditional edge rather
+  than a branch inside `score` itself, so the routing decision is visible in the graph
+  definition (see `docs/architecture.md`'s "Conditional routing, not a fixed threshold
+  call inside a node"). Fails open to `"draft"` if score/threshold are somehow missing,
+  rather than crashing the pipeline.
+- **draft** (`make_draft_node`) — only runs if the gate passed. Builds the prompt
+  (`ai/generation/prompt.py`) from `_augmented_description(state)`, calls the
+  configured `LLMProvider`'s `generate()` (Week 6, Shivaganesh), and reads the citation
+  markers (`[n]`) back out of the generated draft to build the persisted citations list
+  — in the order the draft actually cited them, not just every retrieved item.
+- **escalate** (`make_escalate_node`, Week 9) — only runs if the gate failed. A
+  deliberately trivial node (`{"gate_decision": "escalate"}`) — creating the actual
+  `Escalation` database row happens in `backend/app/services/pipeline.py`, not here,
+  matching the established pattern that graph nodes read/compute but don't write to
+  tables other than looking up `Department` (see "Why closures, not graph state"
+  below).
 
 ## Attachment text feeds into classification, retrieval, and drafting
 
@@ -102,19 +125,51 @@ that module has been deleted). After each stage it persists the result and advan
    this doesn't advance `status` itself, it's just data attached to the ticket.
 1. `submitted → classified`: `priority`, `sentiment` persisted.
 2. `classified → routed`: `department_id` persisted, only if a department matched.
-3. `routed → drafted`: `ai_draft_reply`, `ai_draft_citations`
-   (`[{"source_type", "source_id", "title"}, ...]`, nullable JSONB column added in
-   migration `0005_ticket_draft_citations`), and — new in Week 8 — `confidence_score`,
-   `confidence_features` (the full five-signal dict, replacing the Week 7 stopgap that
-   only stored `{"ocr_confidence": ...}`), and `confidence_threshold` (nullable
-   columns added in migration `0007_confidence_score_threshold_fields`) are all
-   persisted together, only once routed — matching the existing rule that evidence
-   retrieval (and therefore scoring, which needs that evidence) needs a department to
-   scope to.
+3. Once routed, `confidence_score`, `confidence_features` (the full five-signal dict),
+   and `confidence_threshold` (nullable columns added in migration
+   `0007_confidence_score_threshold_fields`) are always persisted — the gate always
+   scores, on both branches. Then, based on `result["gate_decision"]`:
+   - **`"draft"`**: `ai_draft_reply`, `ai_draft_citations`
+     (`[{"source_type", "source_id", "title"}, ...]`, nullable JSONB column added in
+     migration `0005_ticket_draft_citations`) are persisted, and status advances
+     `routed → drafted`.
+   - **`"escalate"`** (Week 9): no draft fields are touched — they stay `null`, per
+     `architecture.md`'s "draft withheld". Status advances `routed → escalated`
+     instead (migration `0008_ticket_escalated_status` added `escalated` to the status
+     CHECK constraint and `ticket_lifecycle.py`'s valid-transitions map), and an
+     `Escalation` row is created recording the reason (`"Confidence score {x} below
+     department threshold {y}"`) and the triggering `confidence_score`.
 
-If no department matches, the ticket deliberately stays at `routed`/`classified` and
-un-drafted rather than drafting ungrounded — the same behavior the evidence endpoint
-already had (empty evidence list) is now extended to skip drafting entirely.
+If no department matches at all, the ticket deliberately stays at `routed`/`classified`
+and un-drafted/un-scored rather than guessing — the same behavior the evidence endpoint
+already had (empty evidence list) extends to skipping the gate entirely.
+
+## Logging the gate's decision
+
+Week 9's roadmap asks for "every gate decision (score, threshold, path taken)" to be
+logged for later evaluation. Deliberately **no separate decision-log table** was
+added: `Ticket.confidence_score`, `Ticket.confidence_threshold`, and `Ticket.status`
+(`drafted` vs. `escalated`) already are that log, on the ticket record itself — a
+query for "tickets whose gate escalated them" is just `WHERE status = 'escalated'`, and
+the score/threshold that produced that outcome are sitting right there for evaluation
+or retraining, no join needed. Adding a redundant append-only log table would duplicate
+data already captured, for no evaluation capability this doesn't already provide.
+
+## Reviewing a gated ticket
+
+A ticket that reaches `drafted` is reviewed via `POST /tickets/{id}/feedback`
+(`app/routers/tickets.py::submit_ticket_feedback`, Week 9) — a department_engineer or
+admin records one of `accept`/`edit`/`reject`/`escalate`, which is logged to the
+`feedback` table (the training signal `docs/confidence-labelling-guide.md` describes)
+and advances status to `reviewed` (accept/edit/reject) or `escalated` (a reviewer
+choosing to escalate a ticket that already had a draft — a second, human-initiated path
+to `escalated`, distinct from the gate's own). `edit`/`reject` deliberately never
+overwrite `Ticket.ai_draft_reply` — that column stays the AI's actual original output
+(an audit trail), and the reviewer's edited text or rejection reason lives on the
+`Feedback` row instead. A ticket that's already `escalated` (whichever path it took)
+is read via `GET /tickets/{id}/escalation` — reviewer-only, same reasoning as hiding
+`confidence_score` from `end_user`, since the reason references the score/threshold
+that triggered it.
 
 ## Hiding the draft from end users
 
@@ -146,11 +201,11 @@ constraint care about, not the exact MIME type).
 
 ## What's deferred to later weeks
 
-- The confidence **gate** — a conditional edge that branches on `confidence_score` vs.
-  `confidence_threshold` (high → human review, low → escalation, per
-  `langgraph-research.md`) is Week 9. The score is computed (this week); nothing acts
-  on it yet.
 - A checkpointer for resolution-replay/audit — the graph currently runs start-to-finish
   in one `ainvoke()` call per ticket with no persisted intermediate graph state beyond
   what's written to the `tickets` table at the end of each stage.
 - A real generative `LLMProvider` implementation.
+- Retraining the confidence model on real Accept/Edit/Reject/Escalate outcomes instead
+  of the Week 8 synthetic bootstrap labels, now that `feedback` rows are being produced
+  by real reviewer actions — see Shivaganesh's Week 9 branch and
+  [confidence-model.md](confidence-model.md).
