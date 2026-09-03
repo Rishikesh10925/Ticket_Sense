@@ -1,6 +1,7 @@
-"""Runs the full extract -> classify -> route -> retrieve -> draft -> score LangGraph
-pipeline for a ticket and persists every stage's output, advancing the ticket's
-lifecycle status through classified -> routed -> drafted as each stage succeeds.
+"""Runs the full extract -> classify -> route -> retrieve -> score -> [confidence
+gate] -> draft | escalate LangGraph pipeline for a ticket and persists every stage's
+output, advancing the ticket's lifecycle status through classified -> routed ->
+drafted | escalated as each stage succeeds.
 
 Runs as a FastAPI BackgroundTask right after ticket creation (see
 app/routers/tickets.py) — the HTTP response returns immediately with status
@@ -19,7 +20,7 @@ if str(_AI_DIR) not in sys.path:
 
 from app.config import settings
 from app.database import SessionLocal
-from app.models import Department, Ticket
+from app.models import Department, Escalation, Ticket
 from app.models.department import DEFAULT_CONFIDENCE_THRESHOLD
 from app.services.ticket_lifecycle import TicketStatus, transition
 
@@ -62,20 +63,33 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
             ticket.status = transition(TicketStatus(ticket.status), TicketStatus.ROUTED)
             await db.flush()
 
-            # Evidence retrieval (and therefore a grounded draft) only makes sense once
-            # a department is known to scope the search to — matches the existing rule
-            # in app/services/retrieval.py's get_evidence_for_ticket. Without a
-            # department the ticket stays at `routed` and un-drafted.
-            ticket.ai_draft_reply = result.get("draft")
-            ticket.ai_draft_citations = result.get("citations") or []
-
-            # Confidence scoring happens "at draft time" (docs/architecture.md) — a
-            # score for a ticket with no draft to score would be meaningless, so it's
-            # persisted alongside the draft, not unconditionally like attachment_text.
+            # Confidence scoring now runs before drafting (Week 9's gate — see
+            # ai/graph/pipeline.py) — persisted regardless of which branch the gate
+            # took, since a score/threshold exist either way. score/threshold/features
+            # are the full log of "what the gate saw" — see docs/langgraph-pipeline.md
+            # for why no separate decision-log table was added.
             ticket.confidence_score = result.get("confidence_score")
             ticket.confidence_features = result.get("confidence_features")
             ticket.confidence_threshold = result.get("confidence_threshold")
 
-            ticket.status = transition(TicketStatus(ticket.status), TicketStatus.DRAFTED)
+            if result.get("gate_decision") == "draft":
+                ticket.ai_draft_reply = result.get("draft")
+                ticket.ai_draft_citations = result.get("citations") or []
+                ticket.status = transition(TicketStatus(ticket.status), TicketStatus.DRAFTED)
+            else:
+                # Gate failed: no draft is generated or shown (docs/architecture.md's
+                # "Example" — "escalated ... with the draft withheld") — the ticket
+                # goes straight to a human, and the Escalation row records why.
+                ticket.status = transition(TicketStatus(ticket.status), TicketStatus.ESCALATED)
+                db.add(
+                    Escalation(
+                        ticket_id=ticket.id,
+                        reason=(
+                            f"Confidence score {ticket.confidence_score:.3f} below "
+                            f"department threshold {ticket.confidence_threshold:.3f}"
+                        ),
+                        confidence_score=ticket.confidence_score,
+                    )
+                )
 
         await db.commit()
