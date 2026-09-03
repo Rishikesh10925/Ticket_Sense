@@ -12,13 +12,13 @@ for review, or whether the ticket should be escalated untouched. TicketSense doe
 send AI-generated responses to end users directly; a human engineer always makes the
 final call.
 
-> **Status: Week 7 complete (attachment OCR/PDF/log extraction, wired into the
-> LangGraph pipeline ahead of classification so attachment text actually drives
-> routing/retrieval/drafting, plus the upload UI with validation, preview, and
-> extracted-text display — Team Integration verified with 6 deliberately
-> vague-description tickets, each carrying only an attachment: 6/6 reached `drafted`
-> unattended, 6/6 fully grounded, see
-> [docs/team-integration-week7.md](docs/team-integration-week7.md)).** The pipeline
+> **Status: Week 8 complete (independent confidence model — 5 engineered features,
+> initial `LogisticRegression` trained on synthetic bootstrap labels — wired into the
+> LangGraph pipeline as a `score` stage, a confidence indicator + feature breakdown on
+> the engineer's screen, and admin-configurable per-department thresholds — Team
+> Integration reviewed the model's numbers together and jointly set real thresholds
+> derived from each department's measured classification accuracy, see
+> [docs/team-integration-week8.md](docs/team-integration-week8.md)).** The pipeline
 > below describes the target architecture. See [Project status](#project-status) for
 > what is actually implemented today.
 
@@ -543,6 +543,7 @@ feature/confidence-model
 - Confidence-score display component (`frontend/src/components/ConfidenceIndicator.tsx`, Aashritha) — a pass/fail badge plus a per-feature bar breakdown of all 5 confidence signals, with `category_risk` visually distinguished (amber, not indigo) since it's the one feature where a full bar is bad news, not good news; engineer/admin only, inserted into the AI draft panel above the draft text
 - Admin threshold configuration UI — the Departments tab's table gained an editable, per-department confidence threshold with a Save action, wired to `PATCH /departments/{id}/threshold`, verified end-to-end (including via a page reload and a direct API check that the new value actually persisted)
 - Usability review of the combined evidence + draft + confidence layout (heuristic walkthrough, honestly not a substitute for real outside testers) — see [usability-testing-confidence-layout.md](docs/usability-testing-confidence-layout.md)
+- Week 8 Team Integration: reviewed the confidence model's own evaluation numbers together, ran a 10-ticket dry run across all 5 departments (10/10 scored, scores tracked `category_risk` closely — even a correctly-routed SAP ticket scored low due to that department's weak classifier), then jointly decided and set real per-department thresholds (0.45–0.75) derived directly from each department's measured classification F1, live via the admin endpoint ahead of Week 9's gate — see [docs/team-integration-week8.md](docs/team-integration-week8.md)
 
 ### Planned
 - A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
@@ -618,6 +619,7 @@ production system.
 - [docs/confidence-model.md](docs/confidence-model.md) — confidence-model feature engineering, synthetic label formula, and initial evaluation
 - [docs/confidence-metrics.md](docs/confidence-metrics.md) — auto-generated precision/recall/F1/ROC-AUC table
 - [docs/usability-testing-confidence-layout.md](docs/usability-testing-confidence-layout.md) — usability findings on the combined evidence + draft + confidence layout
+- [docs/team-integration-week8.md](docs/team-integration-week8.md) — Week 8 Team Integration evidence (10-ticket confidence dry run, jointly-decided per-department thresholds) and mentor demo script
 - [docs/team-integration-week4.md](docs/team-integration-week4.md) — Week 4 Team Integration evidence and mentor demo script
 - [docs/retrieval.md](docs/retrieval.md) — department-scoped retrieval design and Recall@K results
 - [docs/team-integration-week5.md](docs/team-integration-week5.md) — Week 5 Team Integration evidence (cross-department leakage check) and mentor demo script
