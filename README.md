@@ -80,11 +80,12 @@ The engineer's final action (accept/edit/reject/escalate) is logged as feedback.
 
 JWT auth and role-scoped ticket visibility are live (see
 [docs/authentication.md](docs/authentication.md)) — each role can log in and hit the
-ticket API today, and a Department Engineer now sees confidence information (Week 8,
-`frontend/src/components/ConfidenceIndicator.tsx`) alongside the draft. The
-accept/edit/reject/escalate review actions, the confidence gate that gets tickets to
-that screen automatically, and full admin management screens are not built yet — see
-[Project status](#project-status).
+ticket API today, and a Department Engineer sees confidence information (Week 8,
+`frontend/src/components/ConfidenceIndicator.tsx`) alongside the draft, plus the
+accept/edit/reject/escalate review actions and escalation view (Week 9,
+`frontend/src/components/ReviewActions.tsx`, `frontend/src/pages/TicketDetail.tsx`) —
+the confidence gate now genuinely routes tickets to one screen or the other. Full admin
+analytics screens are not built yet — see [Project status](#project-status).
 
 ## Features
 
@@ -143,8 +144,9 @@ that screen automatically, and full admin management screens are not built yet �
 | Confidence-score display (indicator + feature breakdown) | ✅ Available (`frontend/src/components/ConfidenceIndicator.tsx`) — engineer/admin only |
 | Admin-configurable per-department confidence threshold | ✅ Available (`PATCH /departments/{id}/threshold`, Admin console's Departments tab) |
 | Confidence-based escalation | ✅ Available — real conditional edge in the LangGraph pipeline, see [langgraph-pipeline.md](docs/langgraph-pipeline.md) |
-| Human-in-the-loop review (accept/edit/reject/escalate) | ✅ Available (`POST /tickets/{id}/feedback`) — backend done; reviewer action UI is Aashritha's Week 9 branch |
-| Feedback logging | ⏳ Planned |
+| Human-in-the-loop review (accept/edit/reject/escalate) | ✅ Available (`POST /tickets/{id}/feedback`, reviewer action UI in `frontend/src/components/ReviewActions.tsx`) |
+| Escalation view (gate- or reviewer-initiated) | ✅ Available (`GET /tickets/{id}/escalation`, `frontend/src/pages/TicketDetail.tsx`'s `EscalationDetails`) |
+| Feedback logging | ✅ Available (`feedback` table, populated by real reviewer actions) |
 | Basic analytics | ⏳ Planned |
 
 ## Architecture
@@ -548,15 +550,16 @@ feature/confidence-model
 - Ticket lifecycle extended to branch (`ROUTED → DRAFTED | ESCALATED`, `DRAFTED → REVIEWED | ESCALATED`) via a set-based valid-transitions map, plus an `escalated` status (migration `0008`)
 - `GET /tickets/{id}/escalation` (reviewer-only) and `POST /tickets/{id}/feedback` (Accept/Edit/Reject/Escalate, reviewer-only, only valid on a `drafted` ticket) — `edit`/`reject` never overwrite the AI's original draft, the reviewer's version lives on the `feedback` row instead
 - No separate gate-decision log table — `confidence_score`/`confidence_threshold`/`status` on the ticket record already are that log, deliberately not duplicated
+- Reviewer-action UI (`frontend/src/components/ReviewActions.tsx`, Aashritha) — Accept/Edit/Reject/Escalate buttons on a `drafted` ticket, wired to `POST /tickets/{id}/feedback`; Edit and Reject switch to a textarea first (matching the backend's requirement for `edited_reply`/`reject_reason`) rather than submitting blind, and the panel disappears on its own once the ticket moves past `drafted`
+- Escalation view (`EscalationDetails` in `frontend/src/pages/TicketDetail.tsx`, Aashritha) — shown instead of the draft panel once `status === "escalated"`, fetching `GET /tickets/{id}/escalation` for the reason and the confidence score at the time; if a draft existed before a reviewer escalated it, that original draft is shown read-only underneath, distinguishing "no draft was ever generated" (gate-triggered) from "a draft existed but was escalated anyway" (reviewer-triggered)
+- Verified live in a browser end-to-end: a normal-threshold ticket reviewed with all four actions (Accept, Edit, Reject, reviewer-Escalate) each correctly updates ticket status and, for Edit/Reject, leaves `ai_draft_reply` genuinely untouched; a ticket forced below threshold reaches `escalated` with no draft ever generated and the Escalation card renders the real reason/score
 
 ### Planned
 - A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
 - Auto-refresh on the End User's "my tickets" list itself (Week 4 usability finding #1/#2 — addressed on the ticket detail screen this week, still open on the list)
 - A real generative LLM provider behind the same `LLMProvider` interface, once an API key is available
-- Independent ML confidence model and confidence gate
-- Human-in-the-loop review UI and escalation workflow
-- Feedback logging and analytics
-- Role-based access for the three user roles
+- Feedback analytics dashboard (acceptance/edit/reject/escalation rates, AI-human agreement)
+- Confidence-model refinement using real (not only synthetic) reviewer outcomes
 
 ## Scope
 
