@@ -80,8 +80,11 @@ The engineer's final action (accept/edit/reject/escalate) is logged as feedback.
 
 JWT auth and role-scoped ticket visibility are live (see
 [docs/authentication.md](docs/authentication.md)) — each role can log in and hit the
-ticket API today. The review UI, confidence information, and admin management screens
-are not built yet — see [Project status](#project-status).
+ticket API today, and a Department Engineer now sees confidence information (Week 8,
+`frontend/src/components/ConfidenceIndicator.tsx`) alongside the draft. The
+accept/edit/reject/escalate review actions, the confidence gate that gets tickets to
+that screen automatically, and full admin management screens are not built yet — see
+[Project status](#project-status).
 
 ## Features
 
@@ -136,8 +139,10 @@ are not built yet — see [Project status](#project-status).
 | OCR confidence wired into the confidence-model feature set | ✅ Available (`Ticket.confidence_features`) — nothing consumes it yet, this only wires the value in |
 | Attachment-upload UI — type/size validation + preview thumbnail | ✅ Available (`frontend/src/components/AttachmentInput.tsx`) |
 | Attachment + extracted-text display on the ticket detail screen | ✅ Available (`frontend/src/pages/TicketDetail.tsx`) — real image preview, OCR-confidence badge, distinct "extracting"/"nothing extracted" states |
-| Independent ML confidence model | ⏳ Planned |
-| Confidence-based escalation | ⏳ Planned |
+| Independent ML confidence model | ✅ Available (`ai/confidence/`) — 5-feature `LogisticRegression`, accuracy 0.54 / ROC-AUC 0.605 on synthetic bootstrap labels, see [confidence-model.md](docs/confidence-model.md) |
+| Confidence-score display (indicator + feature breakdown) | ✅ Available (`frontend/src/components/ConfidenceIndicator.tsx`) — engineer/admin only |
+| Admin-configurable per-department confidence threshold | ✅ Available (`PATCH /departments/{id}/threshold`, Admin console's Departments tab) |
+| Confidence-based escalation | ⏳ Planned (Week 9 — the score is computed, nothing gates on it yet) |
 | Human-in-the-loop review (accept/edit/reject/escalate) | ⏳ Planned |
 | Feedback logging | ⏳ Planned |
 | Basic analytics | ⏳ Planned |
@@ -535,6 +540,9 @@ feature/confidence-model
 - `confidence_score`/`confidence_features`/`confidence_threshold` persisted on the ticket (migration `0007`) and hidden from the End User role the same way the AI draft is — a confidence judgment about a draft no one shows them is meaningless to expose
 - Admin-configurable per-department confidence threshold — `PATCH /departments/{id}/threshold`, defaulting to 0.5, snapshotted onto each ticket at scoring time so a later threshold change doesn't retroactively change what a past ticket's gate decision "would have been"
 - Synthetic review-outcome logging bootstrapped (`backend/app/scripts/seed_synthetic_confidence_data.py`) — scores all 120 synthetic historical tickets through the real feature pipeline and logs a synthetically-labelled `feedback` row for each under a clearly-named placeholder reviewer account, exercising the same schema/logging path real Week 9+ reviewer actions will use
+- Confidence-score display component (`frontend/src/components/ConfidenceIndicator.tsx`, Aashritha) — a pass/fail badge plus a per-feature bar breakdown of all 5 confidence signals, with `category_risk` visually distinguished (amber, not indigo) since it's the one feature where a full bar is bad news, not good news; engineer/admin only, inserted into the AI draft panel above the draft text
+- Admin threshold configuration UI — the Departments tab's table gained an editable, per-department confidence threshold with a Save action, wired to `PATCH /departments/{id}/threshold`, verified end-to-end (including via a page reload and a direct API check that the new value actually persisted)
+- Usability review of the combined evidence + draft + confidence layout (heuristic walkthrough, honestly not a substitute for real outside testers) — see [usability-testing-confidence-layout.md](docs/usability-testing-confidence-layout.md)
 
 ### Planned
 - A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
@@ -607,6 +615,9 @@ production system.
 - [docs/classification-metrics.md](docs/classification-metrics.md) — auto-generated precision/recall/F1 tables
 - [docs/ticket-routing.md](docs/ticket-routing.md) — how a submitted ticket gets classified and routed automatically
 - [docs/usability-testing.md](docs/usability-testing.md) — End User submission flow usability findings
+- [docs/confidence-model.md](docs/confidence-model.md) — confidence-model feature engineering, synthetic label formula, and initial evaluation
+- [docs/confidence-metrics.md](docs/confidence-metrics.md) — auto-generated precision/recall/F1/ROC-AUC table
+- [docs/usability-testing-confidence-layout.md](docs/usability-testing-confidence-layout.md) — usability findings on the combined evidence + draft + confidence layout
 - [docs/team-integration-week4.md](docs/team-integration-week4.md) — Week 4 Team Integration evidence and mentor demo script
 - [docs/retrieval.md](docs/retrieval.md) — department-scoped retrieval design and Recall@K results
 - [docs/team-integration-week5.md](docs/team-integration-week5.md) — Week 5 Team Integration evidence (cross-department leakage check) and mentor demo script
