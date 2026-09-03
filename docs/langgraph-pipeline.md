@@ -171,6 +171,31 @@ is read via `GET /tickets/{id}/escalation` — reviewer-only, same reasoning as 
 `confidence_score` from `end_user`, since the reason references the score/threshold
 that triggered it.
 
+## Reviewer UI
+
+`TicketDetail.tsx` (Week 9, Aashritha) renders one of two mutually exclusive cards in
+the department_engineer/admin view, based on `ticket.status`, never both:
+
+- `status === "escalated"`: an "Escalation" card (`EscalationDetails`) fetches
+  `GET /tickets/{id}/escalation` and shows the reason text plus the confidence score
+  at the time, if any. If the ticket had a draft before a *reviewer* escalated it (as
+  opposed to the gate sending it straight there), that original draft is shown
+  underneath, read-only — there's nothing left to review once a ticket is escalated.
+- otherwise: the existing "AI draft reply" card, with a `ReviewActions` component
+  (`frontend/src/components/ReviewActions.tsx`) appended only when
+  `status === "drafted"` — Accept/Edit/Reject/Escalate buttons that call
+  `POST /tickets/{id}/feedback`. Edit and Reject switch to a textarea instead of
+  submitting immediately (matching the backend's requirement that `edit` needs
+  `edited_reply` and `reject` needs `reject_reason`); Accept and reviewer-Escalate fire
+  immediately. On success the parent re-fetches the ticket, which naturally hides
+  `ReviewActions` once `status` moves past `drafted`.
+
+A ticket the gate sent straight to `escalated` never shows `ReviewActions` at all
+(there's no `drafted` status in its history), and never shows a draft either, unless a
+reviewer later escalates a ticket that *did* have one — the UI distinguishes "no draft
+was ever generated" from "a draft existed but was escalated anyway" by checking
+`ticket.ai_draft_reply` inside the Escalation card rather than assuming either case.
+
 ## Hiding the draft from end users
 
 TicketSense does not send AI-generated drafts to end users directly — a human engineer
