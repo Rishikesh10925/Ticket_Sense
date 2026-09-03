@@ -142,8 +142,8 @@ that screen automatically, and full admin management screens are not built yet �
 | Independent ML confidence model | ✅ Available (`ai/confidence/`) — 5-feature `LogisticRegression`, accuracy 0.54 / ROC-AUC 0.605 on synthetic bootstrap labels, see [confidence-model.md](docs/confidence-model.md) |
 | Confidence-score display (indicator + feature breakdown) | ✅ Available (`frontend/src/components/ConfidenceIndicator.tsx`) — engineer/admin only |
 | Admin-configurable per-department confidence threshold | ✅ Available (`PATCH /departments/{id}/threshold`, Admin console's Departments tab) |
-| Confidence-based escalation | ⏳ Planned (Week 9 — the score is computed, nothing gates on it yet) |
-| Human-in-the-loop review (accept/edit/reject/escalate) | ⏳ Planned |
+| Confidence-based escalation | ✅ Available — real conditional edge in the LangGraph pipeline, see [langgraph-pipeline.md](docs/langgraph-pipeline.md) |
+| Human-in-the-loop review (accept/edit/reject/escalate) | ✅ Available (`POST /tickets/{id}/feedback`) — backend done; reviewer action UI is Aashritha's Week 9 branch |
 | Feedback logging | ⏳ Planned |
 | Basic analytics | ⏳ Planned |
 
@@ -544,6 +544,10 @@ feature/confidence-model
 - Admin threshold configuration UI — the Departments tab's table gained an editable, per-department confidence threshold with a Save action, wired to `PATCH /departments/{id}/threshold`, verified end-to-end (including via a page reload and a direct API check that the new value actually persisted)
 - Usability review of the combined evidence + draft + confidence layout (heuristic walkthrough, honestly not a substitute for real outside testers) — see [usability-testing-confidence-layout.md](docs/usability-testing-confidence-layout.md)
 - Week 8 Team Integration: reviewed the confidence model's own evaluation numbers together, ran a 10-ticket dry run across all 5 departments (10/10 scored, scores tracked `category_risk` closely — even a correctly-routed SAP ticket scored low due to that department's weak classifier), then jointly decided and set real per-department thresholds (0.45–0.75) derived directly from each department's measured classification F1, live via the admin endpoint ahead of Week 9's gate — see [docs/team-integration-week8.md](docs/team-integration-week8.md)
+- Confidence gate wired into the LangGraph pipeline as a real conditional edge (`ai/graph/nodes.py::gate_condition`, Rishikesh) — `score` now runs before `draft` so a low-confidence ticket never generates a draft at all (escalated with the draft genuinely withheld, not hidden), matching `docs/architecture.md`'s design literally
+- Ticket lifecycle extended to branch (`ROUTED → DRAFTED | ESCALATED`, `DRAFTED → REVIEWED | ESCALATED`) via a set-based valid-transitions map, plus an `escalated` status (migration `0008`)
+- `GET /tickets/{id}/escalation` (reviewer-only) and `POST /tickets/{id}/feedback` (Accept/Edit/Reject/Escalate, reviewer-only, only valid on a `drafted` ticket) — `edit`/`reject` never overwrite the AI's original draft, the reviewer's version lives on the `feedback` row instead
+- No separate gate-decision log table — `confidence_score`/`confidence_threshold`/`status` on the ticket record already are that log, deliberately not duplicated
 
 ### Planned
 - A real round of usability testing with outside testers (this week's was a heuristic walkthrough, not the real thing)
