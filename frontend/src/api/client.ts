@@ -73,6 +73,18 @@ export interface KnowledgeBaseArticle {
   updated_at: string;
 }
 
+export interface Escalation {
+  id: string;
+  ticket_id: string;
+  reason: string;
+  confidence_score: number | null;
+  escalated_to: string | null;
+  resolved_at: string | null;
+  created_at: string;
+}
+
+export type FeedbackAction = "accept" | "edit" | "reject" | "escalate";
+
 export class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -195,6 +207,31 @@ export async function listUsers(token: string): Promise<User[]> {
 
 export async function listKnowledgeBase(token: string): Promise<KnowledgeBaseArticle[]> {
   const res = await fetch(`${API_URL}/knowledge-base`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function getTicketEscalation(token: string, id: string): Promise<Escalation> {
+  const res = await fetch(`${API_URL}/tickets/${id}/escalation`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function submitTicketFeedback(
+  token: string,
+  id: string,
+  action: FeedbackAction,
+  details: { editedReply?: string; rejectReason?: string } = {}
+): Promise<Ticket> {
+  const res = await fetch(`${API_URL}/tickets/${id}/feedback`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action,
+      edited_reply: details.editedReply ?? null,
+      reject_reason: details.rejectReason ?? null,
+    }),
+  });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
   return res.json();
 }

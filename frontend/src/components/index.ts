@@ -3,4 +3,5 @@ export { default as Button } from "./Button";
 export { default as ConfidenceIndicator } from "./ConfidenceIndicator";
 export { default as Card } from "./Card";
 export { default as FormField } from "./FormField";
+export { default as ReviewActions } from "./ReviewActions";
 export { default as StatCard } from "./StatCard";

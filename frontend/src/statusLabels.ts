@@ -8,6 +8,7 @@ export const STATUS_LABELS: Record<string, string> = {
   routed: "Routed to team",
   drafted: "Draft in review",
   reviewed: "Reviewed",
+  escalated: "Escalated",
   closed: "Closed",
 };
 
