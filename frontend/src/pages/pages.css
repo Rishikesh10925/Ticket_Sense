@@ -303,6 +303,11 @@
   color: var(--color-success);
 }
 
+.status-escalated {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
 /* ---------- Ticket detail ---------- */
 
 .ticket-detail-page {
@@ -440,6 +445,36 @@
 
 .draft-status-legend {
   margin-top: var(--space-md);
+}
+
+/* ---------- Review actions & escalation ---------- */
+
+.review-actions {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.review-actions-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.review-actions textarea {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  width: 100%;
+  resize: vertical;
+}
+
+.escalation-details p {
+  font-size: 14px;
+}
+
+.escalation-details p:first-child {
+  font-weight: 600;
+  color: var(--color-danger);
 }
 
 /* ---------- Admin ---------- */
