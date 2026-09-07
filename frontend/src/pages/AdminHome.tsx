@@ -102,7 +102,9 @@ export default function AdminHome() {
               <li
                 key={s.id}
                 className={s.id === section ? "section-active" : ""}
-                onClick={() => setSection(s.id)}
+                onClick={() => s.available && setSection(s.id)}
+                aria-disabled={!s.available}
+                style={!s.available ? { cursor: "default", opacity: 0.6 } : {}}
               >
                 {s.label}
                 {!s.available && <span className="section-soon">Soon</span>}

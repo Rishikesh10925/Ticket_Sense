@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FormField from "./FormField";
 
 const ACCEPTED_TYPES: Record<string, string> = {
@@ -28,8 +28,16 @@ function validate(file: File): string | null {
   return null;
 }
 
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export default function AttachmentInput({ file, onChange }: AttachmentInputProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!file || !file.type.startsWith("image/")) {
@@ -50,15 +58,16 @@ export default function AttachmentInput({ file, onChange }: AttachmentInputProps
     onChange(error ? null : selected, error);
   }
 
-  return (
-    <FormField label="Attachment" htmlFor="attachment" hint="Image, PDF, or log file — optional, up to 10MB">
-      <input
-        id="attachment"
-        type="file"
-        accept={Object.keys(ACCEPTED_TYPES).join(",")}
-        onChange={(e) => handleFileSelect(e.target.files?.[0] ?? null)}
-      />
-      {file && (
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    const dropped = e.dataTransfer.files?.[0];
+    if (dropped) handleFileSelect(dropped);
+  }
+
+  if (file) {
+    return (
+      <FormField label="Attachment" hint="Image, PDF, or log file — up to 10MB">
         <div className="attachment-preview">
           {previewUrl ? (
             <img src={previewUrl} alt="Attachment preview" className="attachment-preview-thumb" />
@@ -67,17 +76,50 @@ export default function AttachmentInput({ file, onChange }: AttachmentInputProps
           )}
           <div className="attachment-preview-meta">
             <span className="attachment-preview-name">{file.name}</span>
-            <span className="attachment-preview-size">{(file.size / 1024).toFixed(0)} KB</span>
+            <span className="attachment-preview-size">{formatFileSize(file.size)}</span>
           </div>
           <button
             type="button"
             className="link-button attachment-preview-remove"
-            onClick={() => handleFileSelect(null)}
+            onClick={() => {
+              handleFileSelect(null);
+              if (inputRef.current) inputRef.current.value = "";
+            }}
           >
             Remove
           </button>
         </div>
-      )}
+      </FormField>
+    );
+  }
+
+  return (
+    <FormField label="Attachment" htmlFor="attachment" hint="Image, PDF, or log file — optional, up to 10MB">
+      <div
+        className={`attachment-dropzone${dragOver ? " attachment-dropzone-active" : ""}`}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+        onClick={() => inputRef.current?.click()}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") inputRef.current?.click(); }}
+        aria-label="Upload attachment — click or drag and drop"
+      >
+        <span className="attachment-dropzone-icon">📎</span>
+        <span className="attachment-dropzone-text">
+          {dragOver ? "Drop to attach" : "Click or drag to attach a file"}
+        </span>
+        <span className="attachment-dropzone-hint">PNG, JPEG, PDF, or plain text · max 10MB</span>
+      </div>
+      <input
+        ref={inputRef}
+        id="attachment"
+        type="file"
+        accept={Object.keys(ACCEPTED_TYPES).join(",")}
+        onChange={(e) => handleFileSelect(e.target.files?.[0] ?? null)}
+        style={{ display: "none" }}
+      />
     </FormField>
   );
 }

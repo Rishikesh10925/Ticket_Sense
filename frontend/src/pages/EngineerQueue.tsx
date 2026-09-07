@@ -7,6 +7,12 @@ import { statusLabel, statusBadgeClass } from "../statusLabels";
 
 const STATUSES = ["submitted", "classified", "routed", "drafted", "escalated", "reviewed", "closed"];
 
+const SENTIMENT_CLASS: Record<string, string> = {
+  positive: "sentiment-positive",
+  neutral: "sentiment-neutral",
+  negative: "sentiment-negative",
+};
+
 export default function EngineerQueue() {
   const { token } = useAuth();
   const navigate = useNavigate();
@@ -35,7 +41,7 @@ export default function EngineerQueue() {
       <div className="page-header">
         <div>
           <h1>Queue</h1>
-          <p>Tickets routed to your department.</p>
+          <p>Tickets routed to your department, sorted by priority.</p>
         </div>
       </div>
 
@@ -69,7 +75,13 @@ export default function EngineerQueue() {
         {loading && <p className="placeholder-note">Loading...</p>}
         {error && <p className="form-error">{error}</p>}
         {!loading && !error && tickets.length === 0 && (
-          <p className="placeholder-note">No tickets in this view.</p>
+          <div className="empty-state">
+            <div className="empty-state-icon">✅</div>
+            <p className="empty-state-title">Queue is clear</p>
+            <p className="empty-state-desc">
+              {status ? `No tickets with status "${statusLabel(status)}"` : "No tickets in your queue right now."}
+            </p>
+          </div>
         )}
         {!loading && tickets.length > 0 && (
           <table className="ticket-table">
@@ -96,10 +108,18 @@ export default function EngineerQueue() {
                         {ticket.priority}
                       </span>
                     ) : (
-                      <span className="placeholder-note">pending</span>
+                      <span className="placeholder-note">—</span>
                     )}
                   </td>
-                  <td>{ticket.sentiment ?? "—"}</td>
+                  <td>
+                    {ticket.sentiment ? (
+                      <span className={`sentiment-badge ${SENTIMENT_CLASS[ticket.sentiment] ?? ""}`}>
+                        {ticket.sentiment}
+                      </span>
+                    ) : (
+                      <span className="placeholder-note">—</span>
+                    )}
+                  </td>
                   <td>
                     {ticket.confidence_score !== null && ticket.confidence_threshold !== null ? (
                       <span

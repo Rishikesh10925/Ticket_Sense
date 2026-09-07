@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Button from "./Button";
 import FormField from "./FormField";
+import { CheckIcon, EditIcon, XIcon, ArrowUpRightIcon } from "./icons";
 import { submitTicketFeedback, ApiError, type FeedbackAction, type Ticket } from "../api/client";
 
 interface ReviewActionsProps {
@@ -54,9 +55,11 @@ export default function ReviewActions({ token, ticket, onDone }: ReviewActionsPr
             disabled={submitting || !editedReply.trim()}
             onClick={() => act("edit", { editedReply })}
           >
+            <CheckIcon />
             {submitting ? "Saving…" : "Save edit"}
           </Button>
           <Button variant="secondary" disabled={submitting} onClick={() => setMode("idle")}>
+            <XIcon />
             Cancel
           </Button>
         </div>
@@ -67,12 +70,13 @@ export default function ReviewActions({ token, ticket, onDone }: ReviewActionsPr
   if (mode === "rejecting") {
     return (
       <div className="review-actions">
-        <FormField label="Rejection reason" htmlFor="reject-reason">
+        <FormField label="Rejection reason" htmlFor="reject-reason" hint="Briefly explain why this draft isn't suitable.">
           <textarea
             id="reject-reason"
             rows={3}
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
+            placeholder="e.g. Incorrect resolution steps, missing context…"
           />
         </FormField>
         {error && <p className="form-error">{error}</p>}
@@ -82,6 +86,7 @@ export default function ReviewActions({ token, ticket, onDone }: ReviewActionsPr
             disabled={submitting || !rejectReason.trim()}
             onClick={() => act("reject", { rejectReason })}
           >
+            <XIcon />
             {submitting ? "Rejecting…" : "Confirm reject"}
           </Button>
           <Button variant="secondary" disabled={submitting} onClick={() => setMode("idle")}>
@@ -97,15 +102,19 @@ export default function ReviewActions({ token, ticket, onDone }: ReviewActionsPr
       {error && <p className="form-error">{error}</p>}
       <div className="review-actions-buttons">
         <Button disabled={submitting} onClick={() => act("accept")}>
+          <CheckIcon />
           Accept
         </Button>
         <Button variant="secondary" disabled={submitting} onClick={() => setMode("editing")}>
+          <EditIcon />
           Edit
         </Button>
         <Button variant="danger" disabled={submitting} onClick={() => setMode("rejecting")}>
+          <XIcon />
           Reject
         </Button>
         <Button variant="secondary" disabled={submitting} onClick={() => act("escalate")}>
+          <ArrowUpRightIcon />
           Escalate
         </Button>
       </div>
