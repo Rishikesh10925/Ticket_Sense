@@ -3,6 +3,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-base);
 }
 
 .card-header {
@@ -12,6 +13,7 @@
   gap: var(--space-md);
   padding: var(--space-md) var(--space-lg);
   border-bottom: 1px solid var(--color-border);
+  min-height: 52px;
 }
 
 .card-header h3 {
@@ -19,12 +21,14 @@
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.01em;
+  color: var(--color-text);
 }
 
 .card-actions {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  flex-shrink: 0;
 }
 
 .card-body {

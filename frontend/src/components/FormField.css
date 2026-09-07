@@ -9,6 +9,7 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--color-text);
+  letter-spacing: 0.005em;
 }
 
 .form-field input,
@@ -17,16 +18,23 @@
   font-family: var(--font-sans);
   font-size: 14px;
   padding: 10px 12px;
-  border: 1px solid var(--color-border-strong);
+  border: 1.5px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
   background: var(--color-surface);
   color: var(--color-text);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--transition-base), box-shadow var(--transition-base), background-color var(--transition-base);
+  line-height: 1.5;
 }
 
 .form-field input::placeholder,
 .form-field textarea::placeholder {
   color: var(--color-text-faint);
+}
+
+.form-field input:hover:not(:focus),
+.form-field textarea:hover:not(:focus) {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-alt);
 }
 
 .form-field input:focus,
@@ -35,9 +43,16 @@
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-soft);
+  background: var(--color-surface);
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .form-field-hint {
   font-size: 12px;
   color: var(--color-text-muted);
+  line-height: 1.4;
 }

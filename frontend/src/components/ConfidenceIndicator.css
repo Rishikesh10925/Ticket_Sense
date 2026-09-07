@@ -11,40 +11,44 @@
 }
 
 .confidence-score-badge {
-  width: 64px;
-  height: 64px;
-  min-width: 64px;
+  width: 68px;
+  height: 68px;
+  min-width: 68px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono, inherit);
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   border: 3px solid transparent;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  box-shadow: var(--shadow-sm);
 }
 
 .confidence-pass {
-  background: var(--color-success-bg);
+  background: linear-gradient(135deg, var(--color-success-bg) 0%, #bbf7d0 100%);
   color: var(--color-success);
-  border-color: var(--color-success);
+  border-color: rgba(21, 128, 61, 0.3);
 }
 
 .confidence-fail {
-  background: var(--color-danger-bg);
+  background: linear-gradient(135deg, var(--color-danger-bg) 0%, #fecaca 100%);
   color: var(--color-danger);
-  border-color: var(--color-danger);
+  border-color: rgba(185, 28, 28, 0.3);
 }
 
 .confidence-score-meta {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .confidence-score-label {
   font-size: 14px;
   font-weight: 700;
+  color: var(--color-text);
 }
 
 .confidence-score-threshold {
@@ -63,7 +67,7 @@
 
 .confidence-feature-row {
   display: grid;
-  grid-template-columns: 130px 1fr 38px;
+  grid-template-columns: 140px 1fr 40px;
   align-items: center;
   gap: var(--space-sm);
 }
@@ -71,23 +75,26 @@
 .confidence-feature-label {
   font-size: 12.5px;
   color: var(--color-text-muted);
+  white-space: nowrap;
 }
 
 .confidence-feature-bar-track {
-  height: 6px;
+  height: 7px;
   border-radius: var(--radius-full);
   background: var(--color-surface-alt);
   overflow: hidden;
+  border: 1px solid var(--color-border);
 }
 
 .confidence-feature-bar-fill {
   height: 100%;
   border-radius: var(--radius-full);
-  background: var(--color-primary);
+  background: linear-gradient(90deg, var(--color-primary) 0%, #818cf8 100%);
+  transition: width var(--transition-slow);
 }
 
 .confidence-feature-bar-risk {
-  background: var(--color-warning);
+  background: linear-gradient(90deg, var(--color-warning) 0%, #fbbf24 100%);
 }
 
 .confidence-feature-value {

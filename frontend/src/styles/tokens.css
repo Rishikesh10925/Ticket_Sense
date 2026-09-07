@@ -2,6 +2,7 @@
   /* Brand */
   --color-primary: #4f46e5;
   --color-primary-hover: #4338ca;
+  --color-primary-active: #3730a3;
   --color-primary-soft: #eef2ff;
   --color-primary-text: #ffffff;
 
@@ -9,6 +10,7 @@
   --color-bg: #f8fafc;
   --color-surface: #ffffff;
   --color-surface-alt: #f1f5f9;
+  --color-surface-hover: #e8edf5;
   --color-border: #e2e8f0;
   --color-border-strong: #cbd5e1;
   --color-text: #0f172a;
@@ -21,10 +23,12 @@
 
   /* Semantic */
   --color-success: #15803d;
+  --color-success-hover: #166534;
   --color-success-bg: #dcfce7;
   --color-warning: #a16207;
   --color-warning-bg: #fef3c7;
   --color-danger: #b91c1c;
+  --color-danger-hover: #991b1b;
   --color-danger-bg: #fee2e2;
   --color-info: #0369a1;
   --color-info-bg: #e0f2fe;
@@ -35,10 +39,13 @@
   --color-sidebar-text-active: #ffffff;
   --color-sidebar-active-bg: rgba(255, 255, 255, 0.08);
   --color-sidebar-border: rgba(255, 255, 255, 0.08);
+  --color-sidebar-hover-bg: rgba(255, 255, 255, 0.05);
 
+  --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-full: 999px;
 
   --space-xs: 4px;
@@ -51,8 +58,52 @@
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
   --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
   --shadow-lg: 0 12px 24px -6px rgba(15, 23, 42, 0.12), 0 4px 8px -4px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 8px 20px -4px rgba(15, 23, 42, 0.1), 0 4px 8px -4px rgba(15, 23, 42, 0.07);
+
+  --transition-fast: 0.1s ease;
+  --transition-base: 0.15s ease;
+  --transition-slow: 0.25s ease;
 
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-sans);
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-hover);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better focus default */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
 }
 
 * {
