@@ -7,13 +7,37 @@
 }
 
 .login-brand-panel {
-  background: linear-gradient(155deg, #4338ca 0%, #4f46e5 45%, #6366f1 100%);
+  position: relative;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(165, 180, 252, 0.25), transparent 45%),
+    linear-gradient(165deg, var(--gradient-primary-start) 0%, var(--gradient-primary-mid) 55%, var(--gradient-primary-end) 100%);
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: var(--space-md);
+  gap: var(--space-lg);
   padding: var(--space-2xl);
+  overflow: hidden;
+}
+
+.login-brand-panel::before {
+  /* A restrained grid texture — atmosphere without visual noise, echoing the
+     "instrument panel" register the rest of the app is going for. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 90% 70% at 20% 30%, #000 0%, transparent 75%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.login-brand-panel > * {
+  position: relative;
+  z-index: 1;
 }
 
 .login-brand-mark {
@@ -41,30 +65,96 @@
   margin: 0;
 }
 
-.login-brand-points {
+/* ---------- Pipeline diagram ---------- */
+
+.pipeline {
+  position: relative;
   list-style: none;
-  margin: var(--space-md) 0 0;
+  margin: var(--space-sm) 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-  font-size: 14px;
+  gap: var(--space-md);
+  max-width: 420px;
 }
 
-.login-brand-points li {
+.pipeline-step {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+/* Connecting line running through every node's center, stopping short of the
+   last one — drawn once per step rather than as one long absolutely
+   positioned line, so it survives the list reflowing at narrow widths. */
+.pipeline-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 34px;
+  width: 1px;
+  height: calc(100% + var(--space-md) - 2px);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.pipeline-node {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  color: rgba(255, 255, 255, 0.92);
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.85);
+  z-index: 1;
 }
 
-.login-brand-points li::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-full);
-  background: #a5b4fc;
-  flex-shrink: 0;
+.pipeline-step-signature .pipeline-node {
+  background: #fff;
+  color: var(--gradient-primary-mid);
+  border-color: #fff;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15);
+}
+
+.pipeline-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 4px;
+}
+
+.pipeline-step-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.pipeline-step-index {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.pipeline-step-signature .pipeline-step-title {
+  color: #fff;
+}
+
+.pipeline-step-detail {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.68);
+  max-width: 34ch;
+}
+
+.pipeline-step-signature .pipeline-step-detail {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .login-form-panel {
@@ -102,22 +192,31 @@
 
 .page-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
 .page-header h1 {
-  font-size: 22px;
+  font-size: 26px;
+  font-weight: 700;
   margin: 0 0 4px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .page-header p {
   margin: 0;
   color: var(--color-text-muted);
   font-size: 14px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-lg) 0;
 }
 
 .placeholder-note {
@@ -168,43 +267,179 @@
 
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
 .stat-card {
+  position: relative;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-lg);
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-border);
 }
 
 .stat-card-value {
-  font-size: 28px;
+  font-size: 38px;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .stat-card-label {
-  margin-top: 4px;
-  font-size: 13px;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--color-text-faint);
+}
+
+.stat-card-hint {
+  margin-top: 6px;
+  font-size: 12.5px;
   color: var(--color-text-muted);
-  font-weight: 500;
+}
+
+.stat-card-accent::before {
+  background: var(--color-primary);
 }
 
 .stat-card-accent .stat-card-value {
   color: var(--color-primary);
 }
 
+.stat-card-success::before {
+  background: var(--color-success-strong);
+}
+
+.stat-card-success .stat-card-value {
+  color: var(--color-success-strong);
+}
+
+.stat-card-info::before {
+  background: var(--color-info-strong);
+}
+
+.stat-card-info .stat-card-value {
+  color: var(--color-info-strong);
+}
+
+.stat-card-warning::before {
+  background: var(--color-warning-strong);
+}
+
+.stat-card-warning .stat-card-value {
+  color: var(--color-warning-strong);
+}
+
 .stat-card-danger {
-  border-color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 35%, var(--color-border));
+}
+
+.stat-card-danger::before {
+  background: var(--color-danger-strong);
 }
 
 .stat-card-danger .stat-card-value {
-  color: var(--color-danger);
+  color: var(--color-danger-strong);
+}
+
+/* ---------- Slide-over drawer (New ticket) ---------- */
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(1px);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 40;
+  animation: drawer-fade 0.18s var(--ease-out);
+}
+
+@keyframes drawer-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.drawer-panel {
+  width: min(440px, 100vw);
+  height: 100%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  animation: drawer-slide-in 0.22s var(--ease-out);
+}
+
+@keyframes drawer-slide-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.drawer-header h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.drawer-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.drawer-close:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+.drawer-body {
+  padding: var(--space-lg);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.drawer-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+@media (max-width: 480px) {
+  .drawer-panel {
+    width: 100vw;
+  }
 }
 
 /* ---------- Tables ---------- */
@@ -212,31 +447,53 @@
 .ticket-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .ticket-table th {
   text-align: left;
-  color: var(--color-text-muted);
-  font-weight: 600;
-  font-size: 12px;
+  color: var(--color-text-faint);
+  font-weight: 700;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  padding: var(--space-sm) var(--space-sm);
+  letter-spacing: var(--tracking-micro);
+  padding: 0 var(--space-sm) var(--space-sm);
   border-bottom: 1px solid var(--color-border);
 }
 
 .ticket-table td {
-  padding: 12px var(--space-sm);
+  padding: 11px var(--space-sm);
   border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
 }
 
 .ticket-table tbody tr:last-child td {
   border-bottom: none;
 }
 
+.ticket-table tbody tr:nth-child(even) {
+  background: var(--color-surface-sunken);
+}
+
+.col-right {
+  text-align: right;
+}
+
+/* Tighter row height for the Engineer queue — a power-user, high-frequency
+   screen where scanning many rows matters more than generous row padding. */
+.ticket-table-dense td {
+  padding: 8px var(--space-sm);
+}
+
 .ticket-table-subject {
   font-weight: 600;
+  color: var(--color-text);
+}
+
+.ticket-table-date {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .clickable-row {
@@ -245,21 +502,23 @@
 }
 
 .clickable-row:hover {
-  background: var(--color-surface-alt);
+  background: var(--color-primary-soft);
 }
 
 .row-escalated {
-  background: var(--color-danger-bg);
+  background: var(--color-danger-bg) !important;
 }
 
 .row-escalated:hover {
-  background: color-mix(in srgb, var(--color-danger-bg) 70%, var(--color-surface-alt));
+  background: color-mix(in srgb, var(--color-danger-bg) 65%, var(--color-primary-soft)) !important;
 }
 
 .confidence-mini-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
+  display: inline-flex;
+  min-width: 44px;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
   font-size: 12px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -287,6 +546,7 @@
   font-weight: 600;
   background: var(--color-surface-alt);
   color: var(--color-text-muted);
+  white-space: nowrap;
 }
 
 .status-badge::before {
@@ -295,6 +555,7 @@
   height: 6px;
   border-radius: var(--radius-full);
   background: currentColor;
+  flex-shrink: 0;
 }
 
 .priority-badge {
@@ -319,6 +580,59 @@
 .priority-low {
   background: var(--color-success-bg);
   color: var(--color-success);
+}
+
+/* Compact glanceable indicators for the Engineer queue — a dot + label that
+   takes a fraction of the width of a full pill badge, so the subject column
+   (the thing an engineer is actually scanning for) stays legible. */
+.glance {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-transform: capitalize;
+}
+
+.glance-dot {
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+.glance-high {
+  color: var(--color-danger-strong);
+}
+
+.glance-medium {
+  color: var(--color-warning-strong);
+}
+
+.glance-low {
+  color: var(--color-success-strong);
+}
+
+.sentiment-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  cursor: default;
+}
+
+.sentiment-positive {
+  background: var(--color-success-strong);
+}
+
+.sentiment-neutral {
+  background: var(--color-border-strong);
+}
+
+.sentiment-negative {
+  background: var(--color-danger-strong);
 }
 
 .status-pending {
@@ -351,6 +665,15 @@
   gap: var(--space-lg);
 }
 
+/* The ticket subject is the page's real heading, not just another card title
+   — scaled up relative to the shared Card component's default so it carries
+   the weight a page-level h1 should, without changing Card's own default. */
+.ticket-detail-page > .card:first-child > .card-header h3 {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
 .ticket-detail-badges {
   display: flex;
   gap: var(--space-sm);
@@ -369,14 +692,15 @@
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--tracking-micro);
   color: var(--color-text-faint);
-  margin: 0 0 3px;
+  margin: 0 0 4px;
 }
 
 .ticket-detail-field dd {
   margin: 0;
   font-size: 14px;
+  color: var(--color-text);
 }
 
 .ticket-detail-field-wide {
@@ -441,6 +765,23 @@
   padding-bottom: var(--space-md);
   margin-bottom: var(--space-md);
   border-bottom: 1px solid var(--color-border);
+}
+
+/* A quiet top-edge accent on the draft panel itself, colored by whether the
+   confidence gate passed — the gate's verdict is legible before you even
+   read the score, the same "glance, don't explain" idea as the stat cards. */
+.card-gate-pass,
+.card-gate-fail {
+  border-top-width: 3px;
+  border-top-style: solid;
+}
+
+.card-gate-pass {
+  border-top-color: var(--color-success-strong);
+}
+
+.card-gate-fail {
+  border-top-color: var(--color-danger-strong);
 }
 
 .draft-text {
@@ -585,9 +926,16 @@
 .engineer-layout,
 .admin-layout {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 240px 1fr;
   gap: var(--space-lg);
   align-items: start;
+}
+
+@media (max-width: 720px) {
+  .engineer-layout,
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
 }
 
 .section-list {
@@ -600,17 +948,29 @@
 }
 
 .section-list li {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-sm);
-  padding: var(--space-sm);
+  gap: 10px;
+  padding: 9px var(--space-sm) 9px 14px;
   border-radius: var(--radius-sm);
-  font-size: 14px;
   color: var(--color-text-muted);
-  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.section-list li::before {
+  /* Active indicator bar — a thin accent stripe rather than a full
+     background fill, so the active state reads without shouting. */
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  transition: background-color 0.12s ease;
 }
 
 .section-list li:hover {
@@ -620,10 +980,50 @@
 .section-list li.section-active {
   background: var(--color-primary-soft);
   color: var(--color-primary);
+}
+
+.section-list li.section-active::before {
+  background: var(--color-primary);
+}
+
+.section-list-icon {
+  display: flex;
+  flex-shrink: 0;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.section-list-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+  gap: 1px;
+}
+
+.section-list-label {
+  font-size: 13.5px;
   font-weight: 600;
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-list-hint {
+  font-size: 11.5px;
+  color: var(--color-text-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-list li.section-active .section-list-hint {
+  color: color-mix(in srgb, var(--color-primary) 65%, var(--color-text-faint));
 }
 
 .section-soon {
+  flex-shrink: 0;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -634,27 +1034,74 @@
   border-radius: var(--radius-full);
 }
 
+/* ---------- Threshold control ---------- */
+
 .threshold-editor {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
-.threshold-editor input {
-  width: 72px;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  padding: 6px 8px;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-sm);
+.threshold-editor-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 168px;
+}
+
+.threshold-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 120px;
+  height: 4px;
+  border-radius: var(--radius-full);
+  /* Filled portion up to the current value, in the primary color, so the
+     control itself reads as "how strict" without needing the numeral. */
+  background: linear-gradient(
+    to right,
+    var(--color-primary) 0%,
+    var(--color-primary) var(--fill, 50%),
+    var(--color-border-strong) var(--fill, 50%),
+    var(--color-border-strong) 100%
+  );
+  cursor: pointer;
+}
+
+.threshold-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
   background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.threshold-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary);
+  cursor: pointer;
+}
+
+.threshold-slider:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.threshold-readout {
+  min-width: 38px;
+  font-size: 13.5px;
+  font-weight: 700;
   color: var(--color-text);
 }
 
-.threshold-editor input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-soft);
+.threshold-readout-changed {
+  color: var(--color-primary);
 }
 
 .threshold-editor .btn {

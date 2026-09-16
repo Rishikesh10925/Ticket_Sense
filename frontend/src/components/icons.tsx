@@ -63,6 +63,120 @@ export function LogoutIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+export function UsersIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="9" cy="8" r="3.2" />
+      <path d="M3.5 20c.7-3.2 2.9-5 5.5-5s4.8 1.8 5.5 5" />
+      <path d="M16 4.8c1.5.4 2.6 1.7 2.6 3.3 0 1.5-1 2.8-2.4 3.2" />
+      <path d="M15 15.3c2.2.4 3.9 2 4.5 4.7" />
+    </svg>
+  );
+}
+
+export function BuildingIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <rect x="5" y="3.5" width="11" height="17" rx="1" />
+      <path d="M16 9.5h3.5v11H16" />
+      <path d="M8 7.5h.01M11.5 7.5h.01M8 11h.01M11.5 11h.01M8 14.5h.01M11.5 14.5h.01" strokeWidth="2.4" />
+    </svg>
+  );
+}
+
+export function BookIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M4 5.2C4 4.5 4.6 4 5.3 4H11v16H5.3c-.7 0-1.3-.5-1.3-1.2z" />
+      <path d="M20 5.2c0-.7-.6-1.2-1.3-1.2H13v16h5.7c.7 0 1.3-.5 1.3-1.2z" />
+    </svg>
+  );
+}
+
+export function ChartIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M4 20V10M11 20V4M18 20v-7" />
+      <path d="M2.5 20h19" />
+    </svg>
+  );
+}
+
+export function GearIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="12" r="3.1" />
+      <path d="M12 3.5v2.1M12 18.4v2.1M20.5 12h-2.1M5.6 12H3.5M17.7 6.3l-1.5 1.5M7.8 16.2l-1.5 1.5M17.7 17.7l-1.5-1.5M7.8 7.8 6.3 6.3" />
+    </svg>
+  );
+}
+
+export function TagIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M11.5 3.5H5.8a2.3 2.3 0 0 0-2.3 2.3v5.7c0 .6.24 1.17.66 1.6l8.9 8.9a2.3 2.3 0 0 0 3.25 0l5.04-5.04a2.3 2.3 0 0 0 0-3.25l-8.9-8.9a2.3 2.3 0 0 0-1.6-.66z" />
+      <circle cx="8.3" cy="8.3" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function RouteIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="5.5" cy="6" r="2" />
+      <circle cx="18.5" cy="18" r="2" />
+      <path d="M5.5 8v4a4 4 0 0 0 4 4h4" />
+      <path d="M16 13.5l2.5 2.5-2.5 2.5" />
+    </svg>
+  );
+}
+
+export function DraftIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M6 3.5h9l4 4V20a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4.5a1 1 0 0 1 1-1z" />
+      <path d="M14.5 3.5V8h4.5" />
+      <path d="M8 12.5h8M8 16h5.5" />
+    </svg>
+  );
+}
+
+export function GaugeIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M4 15a8 8 0 1 1 16 0" />
+      <path d="M12 15l4.2-5" />
+      <path d="M12 15v.01" strokeWidth="2.6" />
+    </svg>
+  );
+}
+
+export function UserCheckIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="9.5" cy="8" r="3.2" />
+      <path d="M3.5 20c.7-3.2 2.9-5 6-5" />
+      <path d="M15.5 15.5l2 2 3.5-3.8" />
+    </svg>
+  );
+}
+
+export function PlusIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+export function CloseIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg {...base(props)}>
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  );
+}
+
 export function LogoMark(props: SVGProps<SVGSVGElement>) {
   return (
     <svg width="28" height="28" viewBox="0 0 32 32" {...props}>
