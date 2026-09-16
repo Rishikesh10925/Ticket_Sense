@@ -409,7 +409,16 @@ export default function TicketDetail() {
         )}
 
         {showDraftPanel && !isEscalated && (
-          <Card title="AI draft reply">
+          <Card
+            title="AI draft reply"
+            className={
+              ticket.confidence_score !== null && ticket.confidence_threshold !== null
+                ? ticket.confidence_score >= ticket.confidence_threshold
+                  ? "card-gate-pass"
+                  : "card-gate-fail"
+                : undefined
+            }
+          >
             {isClassifying && (
               <p className="placeholder-note">
                 Not routed to a department yet — drafting starts once retrieval has

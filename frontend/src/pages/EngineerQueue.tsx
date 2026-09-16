@@ -48,8 +48,8 @@ export default function EngineerQueue() {
       {!loading && !error && tickets.length > 0 && (
         <div className="stat-grid">
           <StatCard label="In queue" value={tickets.length} accent />
-          <StatCard label="High priority" value={highPriorityCount} />
-          <StatCard label="Draft in review" value={draftCount} />
+          <StatCard label="High priority" value={highPriorityCount} tone={highPriorityCount > 0 ? "warning" : undefined} />
+          <StatCard label="Draft in review" value={draftCount} tone="info" />
           <StatCard label="Escalated" value={escalatedCount} tone={escalatedCount > 0 ? "danger" : undefined} />
         </div>
       )}
@@ -84,13 +84,13 @@ export default function EngineerQueue() {
           </div>
         )}
         {!loading && tickets.length > 0 && (
-          <table className="ticket-table">
+          <table className="ticket-table ticket-table-dense">
             <thead>
               <tr>
                 <th>Subject</th>
                 <th>Priority</th>
                 <th>Sentiment</th>
-                <th>Confidence</th>
+                <th className="col-right">Confidence</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -104,7 +104,8 @@ export default function EngineerQueue() {
                   <td className="ticket-table-subject">{ticket.subject}</td>
                   <td>
                     {ticket.priority ? (
-                      <span className={`priority-badge priority-${ticket.priority}`}>
+                      <span className={`glance glance-${ticket.priority}`}>
+                        <span className="glance-dot" />
                         {ticket.priority}
                       </span>
                     ) : (
@@ -121,9 +122,20 @@ export default function EngineerQueue() {
                     )}
                   </td>
                   <td>
+                    {ticket.sentiment ? (
+                      <span
+                        className={`sentiment-dot sentiment-${ticket.sentiment}`}
+                        title={`Sentiment: ${ticket.sentiment}`}
+                        aria-label={`Sentiment: ${ticket.sentiment}`}
+                      />
+                    ) : (
+                      <span className="placeholder-note">—</span>
+                    )}
+                  </td>
+                  <td className="col-right">
                     {ticket.confidence_score !== null && ticket.confidence_threshold !== null ? (
                       <span
-                        className={`confidence-mini-badge ${
+                        className={`confidence-mini-badge tabular-nums ${
                           ticket.confidence_score >= ticket.confidence_threshold
                             ? "confidence-mini-pass"
                             : "confidence-mini-fail"

@@ -40,12 +40,11 @@
 .btn-primary {
   background: var(--color-primary);
   color: var(--color-primary-text);
-  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.25), var(--shadow-sm);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--color-primary-hover);
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35), var(--shadow-sm);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-primary:active:not(:disabled) {

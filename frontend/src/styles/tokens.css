@@ -5,12 +5,18 @@
   --color-primary-active: #3730a3;
   --color-primary-soft: #eef2ff;
   --color-primary-text: #ffffff;
+  /* Richer stops used for the login brand panel + instrument-panel accents —
+     same hue family as --color-primary, not a new brand color. */
+  --gradient-primary-start: #312e81;
+  --gradient-primary-mid: #4338ca;
+  --gradient-primary-end: #6366f1;
 
   /* Neutrals (slate) */
   --color-bg: #f8fafc;
   --color-surface: #ffffff;
   --color-surface-alt: #f1f5f9;
   --color-surface-hover: #e8edf5;
+  --color-surface-sunken: #f8fafc;
   --color-border: #e2e8f0;
   --color-border-strong: #cbd5e1;
   --color-text: #0f172a;
@@ -24,22 +30,28 @@
   /* Semantic */
   --color-success: #15803d;
   --color-success-hover: #166534;
+  --color-success-strong: #16a34a;
   --color-success-bg: #dcfce7;
   --color-warning: #a16207;
+  --color-warning-strong: #d97706;
   --color-warning-bg: #fef3c7;
   --color-danger: #b91c1c;
   --color-danger-hover: #991b1b;
+  --color-danger-strong: #dc2626;
   --color-danger-bg: #fee2e2;
   --color-info: #0369a1;
+  --color-info-strong: #0284c7;
   --color-info-bg: #e0f2fe;
 
   /* Sidebar (dark, deliberately distinct from the light content area) */
-  --color-sidebar-bg: #0f172a;
+  --color-sidebar-bg: #0b1120;
+  --color-sidebar-bg-raised: #131c31;
   --color-sidebar-text: #94a3b8;
   --color-sidebar-text-active: #ffffff;
   --color-sidebar-active-bg: rgba(255, 255, 255, 0.08);
   --color-sidebar-border: rgba(255, 255, 255, 0.08);
   --color-sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+  --color-sidebar-label: #475569;
 
   --radius-xs: 4px;
   --radius-sm: 8px;
@@ -58,12 +70,17 @@
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
   --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
   --shadow-lg: 0 12px 24px -6px rgba(15, 23, 42, 0.12), 0 4px 8px -4px rgba(15, 23, 42, 0.06);
+  --shadow-xl: 0 24px 48px -12px rgba(15, 23, 42, 0.22), 0 8px 16px -8px rgba(15, 23, 42, 0.1);
   --shadow-card-hover: 0 8px 20px -4px rgba(15, 23, 42, 0.1), 0 4px 8px -4px rgba(15, 23, 42, 0.07);
 
   --transition-fast: 0.1s ease;
   --transition-base: 0.15s ease;
   --transition-slow: 0.25s ease;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
+  /* Micro-label rhythm: disciplined uppercase small-caps-style labels used
+     consistently for eyebrow text, table headers, dt labels, badges. */
+  --tracking-micro: 0.045em;
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
 }
@@ -106,27 +123,15 @@ html {
   border-radius: var(--radius-xs);
 }
 
-* {
-  box-sizing: border-box;
+/* Disciplined uppercase micro-label — eyebrow text, table headers, dt labels. */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--color-text-faint);
 }
 
-body {
-  margin: 0;
-  font-family: var(--font-sans);
-  color: var(--color-text);
-  background: var(--color-bg);
-  -webkit-font-smoothing: antialiased;
-}
-
-h1,
-h2,
-h3,
-h4 {
-  font-family: var(--font-sans);
-  letter-spacing: -0.01em;
-}
-
-::selection {
-  background: var(--color-primary-soft);
-  color: var(--color-primary-hover);
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
