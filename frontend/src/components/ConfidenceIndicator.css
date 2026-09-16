@@ -1,68 +1,109 @@
 .confidence-indicator {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 .confidence-score-row {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
-.confidence-score-badge {
-  width: 68px;
-  height: 68px;
-  min-width: 68px;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono, inherit);
-  font-size: 17px;
+/* ---------- Radial gauge ---------- */
+
+.confidence-gauge {
+  position: relative;
+  min-width: 92px;
+}
+
+.confidence-gauge-track {
+  stroke: var(--color-surface-alt);
+}
+
+.confidence-gauge-arc {
+  transition: stroke-dashoffset 0.5s var(--ease-out);
+}
+
+.confidence-pass .confidence-gauge-arc {
+  stroke: var(--color-success-strong);
+}
+
+.confidence-fail .confidence-gauge-arc {
+  stroke: var(--color-danger-strong);
+}
+
+.confidence-gauge-tick {
+  stroke: var(--color-text);
+  opacity: 0.55;
+}
+
+.confidence-gauge-value {
+  font-family: var(--font-sans);
+  font-size: 24px;
   font-weight: 700;
-  border: 3px solid transparent;
   font-variant-numeric: tabular-nums;
+  fill: var(--color-text);
   letter-spacing: -0.02em;
-  box-shadow: var(--shadow-sm);
 }
 
-.confidence-pass {
-  background: linear-gradient(135deg, var(--color-success-bg) 0%, #bbf7d0 100%);
-  color: var(--color-success);
-  border-color: rgba(21, 128, 61, 0.3);
-}
-
-.confidence-fail {
-  background: linear-gradient(135deg, var(--color-danger-bg) 0%, #fecaca 100%);
-  color: var(--color-danger);
-  border-color: rgba(185, 28, 28, 0.3);
+.confidence-gauge-unit {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  fill: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .confidence-score-meta {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .confidence-score-label {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 700;
-  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.confidence-pass-text {
+  color: var(--color-success-strong);
+}
+
+.confidence-fail-text {
+  color: var(--color-danger-strong);
 }
 
 .confidence-score-threshold {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--color-text-muted);
 }
+
+.confidence-score-threshold strong {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.confidence-score-sub {
+  font-size: 12px;
+  color: var(--color-text-faint);
+  line-height: 1.5;
+  max-width: 34ch;
+}
+
+/* ---------- Feature breakdown ---------- */
 
 .confidence-feature-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: var(--space-md) 0 0;
+  border-top: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 11px;
 }
 
 .confidence-feature-row {
@@ -75,32 +116,47 @@
 .confidence-feature-label {
   font-size: 12.5px;
   color: var(--color-text-muted);
-  white-space: nowrap;
+  font-weight: 500;
 }
 
 .confidence-feature-bar-track {
-  height: 7px;
+  position: relative;
+  height: 6px;
   border-radius: var(--radius-full);
   background: var(--color-surface-alt);
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  /* Quiet 25/50/75 tick marks — reads as an instrument scale, not a plain loading bar. */
+  background-image: linear-gradient(
+    to right,
+    transparent 24.6%,
+    var(--color-border-strong) 24.6%,
+    var(--color-border-strong) 25.4%,
+    transparent 25.4%,
+    transparent 49.6%,
+    var(--color-border-strong) 49.6%,
+    var(--color-border-strong) 50.4%,
+    transparent 50.4%,
+    transparent 74.6%,
+    var(--color-border-strong) 74.6%,
+    var(--color-border-strong) 75.4%,
+    transparent 75.4%
+  );
 }
 
 .confidence-feature-bar-fill {
   height: 100%;
   border-radius: var(--radius-full);
-  background: linear-gradient(90deg, var(--color-primary) 0%, #818cf8 100%);
-  transition: width var(--transition-slow);
+  background: var(--color-primary);
+  transition: width 0.4s var(--ease-out);
 }
 
 .confidence-feature-bar-risk {
-  background: linear-gradient(90deg, var(--color-warning) 0%, #fbbf24 100%);
+  background: var(--color-warning-strong);
 }
 
 .confidence-feature-value {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   text-align: right;
   color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
 }

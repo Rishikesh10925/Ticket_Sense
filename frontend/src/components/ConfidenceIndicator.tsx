@@ -29,22 +29,82 @@ const FEATURE_ORDER: (keyof ConfidenceFeatures)[] = [
   "category_risk",
 ];
 
+// Radial gauge geometry — a fixed 100x100 viewBox so the arc math (circumference,
+// dash-offset, threshold tick angle) is computed once here rather than smeared
+// across CSS. 0% sits at the top and the arc sweeps clockwise, like a dial.
+const R = 40;
+const CX = 50;
+const CY = 50;
+const CIRCUMFERENCE = 2 * Math.PI * R;
+
+function pointOnCircle(radius: number, fraction: number) {
+  const angle = fraction * 2 * Math.PI - Math.PI / 2;
+  return { x: CX + radius * Math.cos(angle), y: CY + radius * Math.sin(angle) };
+}
+
+function ConfidenceGauge({ score, threshold, passes }: { score: number; threshold: number; passes: boolean }) {
+  const scoreFraction = Math.max(0, Math.min(1, score));
+  const dashOffset = CIRCUMFERENCE * (1 - scoreFraction);
+  const tickInner = pointOnCircle(R - 5, threshold);
+  const tickOuter = pointOnCircle(R + 5, threshold);
+  const scorePercent = Math.round(score * 100);
+
+  return (
+    <div className={`confidence-gauge ${passes ? "confidence-pass" : "confidence-fail"}`}>
+      <svg viewBox="0 0 100 100" width={92} height={92} role="img" aria-label={`Confidence score ${scorePercent}%`}>
+        <circle cx={CX} cy={CY} r={R} className="confidence-gauge-track" strokeWidth={8} fill="none" />
+        <circle
+          cx={CX}
+          cy={CY}
+          r={R}
+          className="confidence-gauge-arc"
+          strokeWidth={8}
+          fill="none"
+          strokeDasharray={CIRCUMFERENCE}
+          strokeDashoffset={dashOffset}
+          strokeLinecap="round"
+          transform={`rotate(-90 ${CX} ${CY})`}
+        />
+        <line
+          x1={tickInner.x}
+          y1={tickInner.y}
+          x2={tickOuter.x}
+          y2={tickOuter.y}
+          className="confidence-gauge-tick"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+        />
+        <text x={CX} y={CY - 2} textAnchor="middle" className="confidence-gauge-value">
+          {scorePercent}
+        </text>
+        <text x={CX} y={CY + 15} textAnchor="middle" className="confidence-gauge-unit">
+          %
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 export default function ConfidenceIndicator({ score, threshold, features }: ConfidenceIndicatorProps) {
   const passes = score >= threshold;
-  const scorePercent = Math.round(score * 100);
   const thresholdPercent = Math.round(threshold * 100);
 
   return (
     <div className="confidence-indicator">
       <div className="confidence-score-row">
-        <div className={`confidence-score-badge ${passes ? "confidence-pass" : "confidence-fail"}`}>
-          {scorePercent}%
-        </div>
+        <ConfidenceGauge score={score} threshold={threshold} passes={passes} />
         <div className="confidence-score-meta">
-          <span className="confidence-score-label">
+          <span className={`confidence-score-label ${passes ? "confidence-pass-text" : "confidence-fail-text"}`}>
             {passes ? "Above threshold" : "Below threshold"}
           </span>
-          <span className="confidence-score-threshold">Department threshold: {thresholdPercent}%</span>
+          <span className="confidence-score-threshold">
+            Gate line at <strong className="tabular-nums">{thresholdPercent}%</strong> for this department
+          </span>
+          <span className="confidence-score-sub">
+            {passes
+              ? "This draft cleared the independent confidence check before reaching a reviewer."
+              : "This draft did not clear the independent confidence check."}
+          </span>
         </div>
       </div>
 
@@ -62,7 +122,7 @@ export default function ConfidenceIndicator({ score, threshold, features }: Conf
                   style={{ width: `${percent}%` }}
                 />
               </div>
-              <span className="confidence-feature-value">{percent}%</span>
+              <span className="confidence-feature-value tabular-nums">{percent}%</span>
             </li>
           );
         })}

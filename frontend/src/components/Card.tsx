@@ -5,11 +5,12 @@ interface CardProps {
   title?: string;
   actions?: ReactNode;
   children: ReactNode;
+  className?: string;
 }
 
-export default function Card({ title, actions, children }: CardProps) {
+export default function Card({ title, actions, children, className }: CardProps) {
   return (
-    <div className="card">
+    <div className={["card", className].filter(Boolean).join(" ")}>
       {(title || actions) && (
         <div className="card-header">
           {title && <h3>{title}</h3>}
