@@ -1,69 +1,114 @@
 .confidence-indicator {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 .confidence-score-row {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
-.confidence-score-badge {
-  width: 64px;
-  height: 64px;
-  min-width: 64px;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono, inherit);
-  font-size: 18px;
+/* ---------- Radial gauge ---------- */
+
+.confidence-gauge {
+  position: relative;
+  min-width: 92px;
+}
+
+.confidence-gauge-track {
+  stroke: var(--color-surface-alt);
+}
+
+.confidence-gauge-arc {
+  transition: stroke-dashoffset 0.5s var(--ease-out);
+}
+
+.confidence-pass .confidence-gauge-arc {
+  stroke: var(--color-success-strong);
+}
+
+.confidence-fail .confidence-gauge-arc {
+  stroke: var(--color-danger-strong);
+}
+
+.confidence-gauge-tick {
+  stroke: var(--color-text);
+  opacity: 0.55;
+}
+
+.confidence-gauge-value {
+  font-family: var(--font-sans);
+  font-size: 24px;
   font-weight: 700;
-  border: 3px solid transparent;
+  font-variant-numeric: tabular-nums;
+  fill: var(--color-text);
+  letter-spacing: -0.02em;
 }
 
-.confidence-pass {
-  background: var(--color-success-bg);
-  color: var(--color-success);
-  border-color: var(--color-success);
-}
-
-.confidence-fail {
-  background: var(--color-danger-bg);
-  color: var(--color-danger);
-  border-color: var(--color-danger);
+.confidence-gauge-unit {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  fill: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .confidence-score-meta {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
+  min-width: 0;
 }
 
 .confidence-score-label {
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.confidence-pass-text {
+  color: var(--color-success-strong);
+}
+
+.confidence-fail-text {
+  color: var(--color-danger-strong);
 }
 
 .confidence-score-threshold {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--color-text-muted);
 }
+
+.confidence-score-threshold strong {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.confidence-score-sub {
+  font-size: 12px;
+  color: var(--color-text-faint);
+  line-height: 1.5;
+  max-width: 34ch;
+}
+
+/* ---------- Feature breakdown ---------- */
 
 .confidence-feature-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: var(--space-md) 0 0;
+  border-top: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 11px;
 }
 
 .confidence-feature-row {
   display: grid;
-  grid-template-columns: 130px 1fr 38px;
+  grid-template-columns: 140px 1fr 40px;
   align-items: center;
   gap: var(--space-sm);
 }
@@ -71,29 +116,47 @@
 .confidence-feature-label {
   font-size: 12.5px;
   color: var(--color-text-muted);
+  font-weight: 500;
 }
 
 .confidence-feature-bar-track {
+  position: relative;
   height: 6px;
   border-radius: var(--radius-full);
   background: var(--color-surface-alt);
   overflow: hidden;
+  /* Quiet 25/50/75 tick marks — reads as an instrument scale, not a plain loading bar. */
+  background-image: linear-gradient(
+    to right,
+    transparent 24.6%,
+    var(--color-border-strong) 24.6%,
+    var(--color-border-strong) 25.4%,
+    transparent 25.4%,
+    transparent 49.6%,
+    var(--color-border-strong) 49.6%,
+    var(--color-border-strong) 50.4%,
+    transparent 50.4%,
+    transparent 74.6%,
+    var(--color-border-strong) 74.6%,
+    var(--color-border-strong) 75.4%,
+    transparent 75.4%
+  );
 }
 
 .confidence-feature-bar-fill {
   height: 100%;
   border-radius: var(--radius-full);
   background: var(--color-primary);
+  transition: width 0.4s var(--ease-out);
 }
 
 .confidence-feature-bar-risk {
-  background: var(--color-warning);
+  background: var(--color-warning-strong);
 }
 
 .confidence-feature-value {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   text-align: right;
   color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
 }

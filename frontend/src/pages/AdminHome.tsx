@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Button, Card, StatCard } from "../components";
+import { BookIcon, BuildingIcon, ChartIcon, GearIcon, UsersIcon } from "../components/icons";
 import {
   listUsers,
   listDepartments,
@@ -14,12 +15,12 @@ import { useAuth } from "../auth/AuthContext";
 
 type Section = "users" | "departments" | "knowledge-base" | "analytics" | "settings";
 
-const SECTIONS: { id: Section; label: string; available: boolean }[] = [
-  { id: "users", label: "Users", available: true },
-  { id: "departments", label: "Departments", available: true },
-  { id: "knowledge-base", label: "Knowledge base", available: true },
-  { id: "analytics", label: "Analytics", available: false },
-  { id: "settings", label: "Settings", available: false },
+const SECTIONS: { id: Section; label: string; hint: string; icon: typeof UsersIcon; available: boolean }[] = [
+  { id: "users", label: "Users", hint: "Roles & departments", icon: UsersIcon, available: true },
+  { id: "departments", label: "Departments", hint: "Confidence gates", icon: BuildingIcon, available: true },
+  { id: "knowledge-base", label: "Knowledge base", hint: "Source articles", icon: BookIcon, available: true },
+  { id: "analytics", label: "Analytics", hint: "Resolution metrics", icon: ChartIcon, available: false },
+  { id: "settings", label: "Settings", hint: "Workspace config", icon: GearIcon, available: false },
 ];
 
 const ROLE_LABEL: Record<string, string> = {
@@ -91,7 +92,7 @@ export default function AdminHome() {
         <div className="stat-grid">
           <StatCard label="Users" value={users.length} accent />
           <StatCard label="Departments" value={departments.length} />
-          <StatCard label="Knowledge base articles" value={articles.length} />
+          <StatCard label="Knowledge base articles" value={articles.length} tone="info" />
         </div>
       )}
 
@@ -104,7 +105,13 @@ export default function AdminHome() {
                 className={s.id === section ? "section-active" : ""}
                 onClick={() => setSection(s.id)}
               >
-                {s.label}
+                <span className="section-list-icon">
+                  <s.icon width={16} height={16} />
+                </span>
+                <span className="section-list-text">
+                  <span className="section-list-label">{s.label}</span>
+                  <span className="section-list-hint">{s.hint}</span>
+                </span>
                 {!s.available && <span className="section-soon">Soon</span>}
               </li>
             ))}
@@ -173,17 +180,24 @@ export default function AdminHome() {
                           <td>{articles.filter((a) => a.department_id === dept.id).length}</td>
                           <td>
                             <div className="threshold-editor">
-                              <input
-                                type="number"
-                                min={0}
-                                max={1}
-                                step={0.05}
-                                value={draft}
-                                aria-label={`Confidence threshold for ${dept.name}`}
-                                onChange={(e) =>
-                                  setThresholdDrafts((prev) => ({ ...prev, [dept.id]: e.target.value }))
-                                }
-                              />
+                              <div className="threshold-editor-control">
+                                <input
+                                  type="range"
+                                  min={0}
+                                  max={1}
+                                  step={0.05}
+                                  value={draft}
+                                  aria-label={`Confidence threshold for ${dept.name}`}
+                                  className="threshold-slider"
+                                  style={{ "--fill": `${Number(draft) * 100}%` } as CSSProperties}
+                                  onChange={(e) =>
+                                    setThresholdDrafts((prev) => ({ ...prev, [dept.id]: e.target.value }))
+                                  }
+                                />
+                                <span className={`threshold-readout tabular-nums${changed ? " threshold-readout-changed" : ""}`}>
+                                  {Math.round(Number(draft) * 100)}%
+                                </span>
+                              </div>
                               <Button
                                 variant="secondary"
                                 disabled={!changed || savingThresholdId === dept.id}

@@ -32,11 +32,15 @@
 .btn-primary {
   background: var(--color-primary);
   color: var(--color-primary-text);
-  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active:not(:disabled) {
+  background: var(--color-primary-active);
 }
 
 .btn-secondary {
