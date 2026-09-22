@@ -6,10 +6,12 @@ import {
   listDepartments,
   listKnowledgeBase,
   updateDepartmentThreshold,
+  getAnalyticsSummary,
   ApiError,
   type User,
   type Department,
   type KnowledgeBaseArticle,
+  type AnalyticsSummary,
 } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 
@@ -19,7 +21,7 @@ const SECTIONS: { id: Section; label: string; hint: string; icon: typeof UsersIc
   { id: "users", label: "Users", hint: "Roles & departments", icon: UsersIcon, available: true },
   { id: "departments", label: "Departments", hint: "Confidence gates", icon: BuildingIcon, available: true },
   { id: "knowledge-base", label: "Knowledge base", hint: "Source articles", icon: BookIcon, available: true },
-  { id: "analytics", label: "Analytics", hint: "Resolution metrics", icon: ChartIcon, available: false },
+  { id: "analytics", label: "Analytics", hint: "Resolution metrics", icon: ChartIcon, available: true },
   { id: "settings", label: "Settings", hint: "Workspace config", icon: GearIcon, available: false },
 ];
 
@@ -36,6 +38,7 @@ export default function AdminHome() {
   const [users, setUsers] = useState<User[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [articles, setArticles] = useState<KnowledgeBaseArticle[]>([]);
+  const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,11 +50,12 @@ export default function AdminHome() {
     if (!token) return;
     setLoading(true);
     setError(null);
-    Promise.all([listUsers(token), listDepartments(token), listKnowledgeBase(token)])
-      .then(([u, d, a]) => {
+    Promise.all([listUsers(token), listDepartments(token), listKnowledgeBase(token), getAnalyticsSummary(token)])
+      .then(([u, d, a, summary]) => {
         setUsers(u);
         setDepartments(d);
         setArticles(a);
+        setAnalytics(summary);
         setThresholdDrafts(Object.fromEntries(d.map((dept) => [dept.id, String(dept.confidence_threshold)])));
       })
       .catch((err) => setError(err instanceof ApiError ? err.message : "Could not load admin data"))
@@ -252,12 +256,120 @@ export default function AdminHome() {
           </Card>
         )}
 
-        {(section === "analytics" || section === "settings") && (
-          <Card title={section === "analytics" ? "Analytics" : "Settings"}>
-            <p className="placeholder-note">
-              Not built yet — {section === "analytics" ? "resolution/acceptance metrics land" : "workspace settings land"}{" "}
-              in a later week.
-            </p>
+        {section === "analytics" && (
+          <Card title="Analytics">
+            {loading && <p className="placeholder-note">Loading...</p>}
+            {error && <p className="form-error">{error}</p>}
+            {!loading && !error && analytics && (
+              <>
+                <div className="stat-grid">
+                  <StatCard label="Total tickets" value={analytics.total_tickets} accent />
+                  <StatCard
+                    label="Escalation rate"
+                    value={
+                      analytics.escalation_rate !== null ? `${Math.round(analytics.escalation_rate * 100)}%` : "—"
+                    }
+                  />
+                  <StatCard label="Draft in review" value={analytics.by_status.drafted ?? 0} tone="info" />
+                  <StatCard
+                    label="Escalated (open)"
+                    value={analytics.by_status.escalated ?? 0}
+                    tone={(analytics.by_status.escalated ?? 0) > 0 ? "danger" : undefined}
+                  />
+                </div>
+
+                <h4 className="draft-sources-heading">Confidence score distribution</h4>
+                <div className="confidence-histogram">
+                  {analytics.confidence_distribution.map((bucket) => {
+                    const max = Math.max(...analytics.confidence_distribution.map((b) => b.count), 1);
+                    return (
+                      <div key={bucket.label} className="confidence-histogram-col">
+                        <span className="confidence-histogram-count tabular-nums">{bucket.count}</span>
+                        <div className="confidence-histogram-track">
+                          <div
+                            className="confidence-histogram-bar"
+                            style={{ height: `${(bucket.count / max) * 100}%` }}
+                          />
+                        </div>
+                        <span className="confidence-histogram-label">{bucket.label.replace("%", "")}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <h4 className="draft-sources-heading">By department</h4>
+                <table className="ticket-table">
+                  <thead>
+                    <tr>
+                      <th>Department</th>
+                      <th>Tickets</th>
+                      <th>Avg confidence</th>
+                      <th>Escalation rate</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {analytics.by_department.map((dept) => (
+                      <tr key={dept.department_id}>
+                        <td className="ticket-table-subject">{dept.department_name}</td>
+                        <td>{dept.total_tickets}</td>
+                        <td>
+                          {dept.avg_confidence !== null ? `${Math.round(dept.avg_confidence * 100)}%` : "—"}
+                        </td>
+                        <td>
+                          {dept.escalation_rate !== null ? `${Math.round(dept.escalation_rate * 100)}%` : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <h4 className="draft-sources-heading">By engineer</h4>
+                {analytics.by_reviewer.length === 0 ? (
+                  <p className="placeholder-note">No department engineers on record yet.</p>
+                ) : (
+                  <table className="ticket-table">
+                    <thead>
+                      <tr>
+                        <th>Engineer</th>
+                        <th>Department</th>
+                        <th>Resolved</th>
+                        <th>In review</th>
+                        <th>Rejected</th>
+                        <th>Escalated</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {analytics.by_reviewer.map((reviewer) => (
+                        <tr key={reviewer.reviewer_id}>
+                          <td className="ticket-table-subject">{reviewer.reviewer_name}</td>
+                          <td>{reviewer.department_name}</td>
+                          <td>{reviewer.resolved}</td>
+                          <td>{reviewer.in_review}</td>
+                          <td>{reviewer.rejected}</td>
+                          <td>{reviewer.escalated}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+                <p className="placeholder-note draft-status-legend">
+                  "Resolved" counts a reviewer's Accept and Edit actions combined (both send the final
+                  response); "In review" is how many drafted tickets are currently waiting in that
+                  engineer's department queue, not assigned to them personally — a ticket has no
+                  specific reviewer until someone acts on it.
+                  {analytics.real_feedback.total === 0 &&
+                    " No real reviewer actions have been recorded yet, so these are all zero — they'll fill in as engineers actually review drafted tickets."}
+                  {" "}({analytics.synthetic_feedback.total} synthetic bootstrap feedback rows exist for
+                  confidence-model training and are intentionally excluded from this per-engineer view.)
+                </p>
+              </>
+            )}
+          </Card>
+        )}
+
+        {section === "settings" && (
+          <Card title="Settings">
+            <p className="placeholder-note">Not built yet — workspace settings land in a later week.</p>
           </Card>
         )}
       </div>
