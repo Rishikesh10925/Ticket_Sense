@@ -25,6 +25,7 @@ from app.schemas.analytics import (
     DepartmentBreakdown,
     FeedbackSourceSummary,
     ReviewActionCounts,
+    ReviewerBreakdown,
 )
 
 # app/routers/analytics.py -> repo_root/ai must be importable, to reuse the exact
@@ -112,10 +113,47 @@ async def get_analytics_summary(
         )
 
     feedback_rows = (
-        await db.execute(select(Feedback, Ticket, User.email).join(Ticket).join(User, Feedback.reviewer_id == User.id))
+        await db.execute(
+            select(Feedback, Ticket, User)
+            .join(Ticket, Feedback.ticket_id == Ticket.id)
+            .join(User, Feedback.reviewer_id == User.id)
+        )
     ).all()
-    real_rows = [(f, t) for f, t, email in feedback_rows if email != SYNTHETIC_REVIEWER_EMAIL]
-    synthetic_rows = [(f, t) for f, t, email in feedback_rows if email == SYNTHETIC_REVIEWER_EMAIL]
+    real_rows = [(f, t) for f, t, reviewer in feedback_rows if reviewer.email != SYNTHETIC_REVIEWER_EMAIL]
+    synthetic_rows = [(f, t) for f, t, reviewer in feedback_rows if reviewer.email == SYNTHETIC_REVIEWER_EMAIL]
+
+    # Per-engineer breakdown — excludes the synthetic-reviewer placeholder (it isn't
+    # a real engineer). `in_review` is the engineer's department queue count, not a
+    # per-reviewer figure: a ticket has no assigned reviewer until someone acts on
+    # it, so "how many are waiting" is only meaningful at the department level.
+    engineers = list(
+        await db.scalars(
+            select(User).where(User.role == "department_engineer", User.email != SYNTHETIC_REVIEWER_EMAIL)
+        )
+    )
+    dept_name_by_id = {d.id: d.name for d in departments}
+    in_review_by_dept = {
+        dept_id: sum(1 for t in dept_tickets if t.status == "drafted")
+        for dept_id, dept_tickets in tickets_by_dept.items()
+    }
+    actions_by_reviewer: dict[UUID, Counter] = {}
+    for feedback, _ in real_rows:
+        actions_by_reviewer.setdefault(feedback.reviewer_id, Counter())[feedback.action] += 1
+
+    by_reviewer = [
+        ReviewerBreakdown(
+            reviewer_id=engineer.id,
+            reviewer_name=engineer.full_name,
+            reviewer_email=engineer.email,
+            department_name=dept_name_by_id.get(engineer.department_id, "—"),
+            resolved=actions_by_reviewer.get(engineer.id, Counter()).get("accept", 0)
+            + actions_by_reviewer.get(engineer.id, Counter()).get("edit", 0),
+            rejected=actions_by_reviewer.get(engineer.id, Counter()).get("reject", 0),
+            escalated=actions_by_reviewer.get(engineer.id, Counter()).get("escalate", 0),
+            in_review=in_review_by_dept.get(engineer.department_id, 0),
+        )
+        for engineer in engineers
+    ]
 
     return AnalyticsSummary(
         total_tickets=len(all_tickets),
@@ -124,6 +162,7 @@ async def get_analytics_summary(
         escalation_rate=escalation_rate,
         confidence_distribution=confidence_distribution,
         by_department=by_department,
+        by_reviewer=by_reviewer,
         real_feedback=_feedback_summary(real_rows),
         synthetic_feedback=_feedback_summary(synthetic_rows),
     )

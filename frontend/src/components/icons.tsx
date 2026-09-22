@@ -161,14 +161,6 @@ export function UserCheckIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-export function PlusIcon(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg {...base(props)}>
-      <path d="M12 5v14M5 12h14" />
-    </svg>
-  );
-}
-
 export function CloseIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base(props)}>

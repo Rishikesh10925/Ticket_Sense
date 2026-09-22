@@ -991,6 +991,55 @@
   margin-top: 0;
 }
 
+/* ---------- Analytics ---------- */
+
+.confidence-histogram {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+  height: 120px;
+  padding: var(--space-md) 0 var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-lg);
+}
+
+.confidence-histogram-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  min-width: 0;
+}
+
+.confidence-histogram-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.confidence-histogram-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.confidence-histogram-bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  background: var(--color-primary);
+  transition: height 0.4s var(--ease-out, ease);
+}
+
+.confidence-histogram-label {
+  font-size: 10px;
+  color: var(--color-text-faint);
+  white-space: nowrap;
+}
+
 /* ---------- Admin ---------- */
 
 .engineer-layout,

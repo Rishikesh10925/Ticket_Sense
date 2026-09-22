@@ -249,3 +249,62 @@ export async function updateDepartmentThreshold(
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
   return res.json();
 }
+
+export interface ReviewActionCounts {
+  accept: number;
+  edit: number;
+  reject: number;
+  escalate: number;
+}
+
+export interface ConfidenceBucket {
+  label: string;
+  count: number;
+}
+
+export interface DepartmentBreakdown {
+  department_id: string;
+  department_name: string;
+  total_tickets: number;
+  scored_tickets: number;
+  escalation_rate: number | null;
+  avg_confidence: number | null;
+}
+
+export interface FeedbackSourceSummary {
+  total: number;
+  review_actions: ReviewActionCounts;
+  agreement_rate: number | null;
+}
+
+// `in_review` is the reviewer's department queue count (drafted tickets awaiting
+// anyone's action there), not a per-person figure — a ticket has no assigned
+// reviewer until someone acts on it. See backend/app/schemas/analytics.py.
+export interface ReviewerBreakdown {
+  reviewer_id: string;
+  reviewer_name: string;
+  reviewer_email: string;
+  department_name: string;
+  resolved: number;
+  rejected: number;
+  escalated: number;
+  in_review: number;
+}
+
+export interface AnalyticsSummary {
+  total_tickets: number;
+  by_status: Record<string, number>;
+  scored_tickets: number;
+  escalation_rate: number | null;
+  confidence_distribution: ConfidenceBucket[];
+  by_department: DepartmentBreakdown[];
+  by_reviewer: ReviewerBreakdown[];
+  real_feedback: FeedbackSourceSummary;
+  synthetic_feedback: FeedbackSourceSummary;
+}
+
+export async function getAnalyticsSummary(token: string): Promise<AnalyticsSummary> {
+  const res = await fetch(`${API_URL}/analytics/summary`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
