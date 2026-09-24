@@ -349,7 +349,9 @@ export default function TicketDetail() {
               ? "This ticket is being classified, routed, and drafted automatically."
               : isEscalated
                 ? "This ticket needed closer attention than an automatic draft could provide, and has been sent directly to an engineer to handle."
-                : "A department engineer has an AI-drafted reply for this ticket, based on retrieved evidence. They'll review it before anything is sent to you."}
+                : ticket.status === "drafted" && ticket.high_confidence_ready
+                  ? "Great news — we have a high-confidence resolution ready for this ticket. It's awaiting final approval from our support team before it's sent to you."
+                  : "A department engineer has an AI-drafted reply for this ticket, based on retrieved evidence. They'll review it before anything is sent to you."}
           </p>
         )}
       </Card>

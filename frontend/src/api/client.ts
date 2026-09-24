@@ -53,6 +53,11 @@ export interface Ticket {
   confidence_score: number | null;
   confidence_features: ConfidenceFeatures | null;
   confidence_threshold: number | null;
+  // True once a `drafted` ticket's score clears the (separate, customer-facing)
+  // 85% readiness bar — visible to every role, including end_user, since it reveals
+  // nothing about the actual score, only whether a human still needs to approve
+  // before this reaches them. See backend/app/schemas/tickets.py.
+  high_confidence_ready: boolean;
   created_at: string;
   updated_at: string;
 }
