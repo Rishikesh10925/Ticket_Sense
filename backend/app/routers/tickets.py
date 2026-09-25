@@ -243,8 +243,12 @@ async def get_ticket_evidence(
     db: AsyncSession = Depends(get_db),
 ):
     """Retrieved evidence passages for this ticket — department-scoped at the query
-    level (see ai/embeddings/retrieve.py), using the same access check as viewing the
-    ticket itself. Empty list if the ticket hasn't been routed to a department yet."""
+    level (see ai/embeddings/retrieve.py). Reviewer-only, same reasoning as hiding
+    confidence_score from end_user (see app/schemas/tickets.py's build_ticket_out):
+    this is the AI's own reasoning material (other customers' resolved tickets,
+    internal KB resolution steps), not something a customer should see about their
+    own ticket. Empty list if the ticket hasn't been routed to a department yet."""
+    _require_reviewer(current_user)
     ticket = await _get_ticket_or_403(ticket_id, current_user, db)
     return await get_evidence_for_ticket(db, ticket)
 
