@@ -1085,6 +1085,122 @@
   margin: 0;
 }
 
+/* ---------- Customer conversation thread ---------- */
+
+.ticket-thread {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-lg);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.ticket-thread-message {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.ticket-thread-avatar {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ticket-thread-avatar-you {
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+}
+
+.ticket-thread-avatar-support {
+  background: linear-gradient(155deg, var(--gradient-primary-mid), var(--gradient-primary-end));
+  color: #fff;
+}
+
+.ticket-thread-bubble {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-lg);
+  border-top-left-radius: 4px;
+  padding: var(--space-md);
+}
+
+.ticket-thread-bubble-support {
+  background: var(--color-primary-soft);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.ticket-thread-author {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-micro);
+  color: var(--color-text-faint);
+  margin-bottom: 6px;
+}
+
+.ticket-thread-bubble-support .ticket-thread-author {
+  color: var(--color-primary-hover);
+}
+
+.ticket-thread-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text);
+  white-space: pre-wrap;
+}
+
+.ticket-thread-time {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--color-text-faint);
+}
+
+.ticket-thread-waiting {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 44px;
+  padding: 12px 14px;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.ticket-thread-waiting svg {
+  flex-shrink: 0;
+  color: var(--color-info-strong);
+}
+
+.ticket-thread-waiting-escalated {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.ticket-thread-waiting-escalated svg {
+  color: var(--color-warning-strong);
+}
+
+@media (max-width: 480px) {
+  .ticket-thread-waiting {
+    margin-left: 0;
+  }
+}
+
 /* ---------- Analytics ---------- */
 
 .confidence-histogram {

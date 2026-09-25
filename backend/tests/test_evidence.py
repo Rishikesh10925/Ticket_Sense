@@ -70,6 +70,19 @@ def _embed_kb_articles() -> None:
     asyncio.run(_embed())
 
 
+def _admin_token(api, email: str) -> str:
+    async def _create():
+        engine = create_async_engine(settings.database_url)
+        session_factory = async_sessionmaker(engine, expire_on_commit=False)
+        async with session_factory() as db:
+            db.add(User(email=email, full_name="Admin", role="admin", hashed_password=hash_password("password123")))
+            await db.commit()
+        await engine.dispose()
+
+    asyncio.run(_create())
+    return api.post("/auth/login", data={"username": email, "password": "password123"}).json()["access_token"]
+
+
 def _make_engineer_sync(email: str, department_id: str) -> None:
     async def _create():
         engine = create_async_engine(settings.database_url)
@@ -91,20 +104,26 @@ def _make_engineer_sync(email: str, department_id: str) -> None:
 
 
 def test_evidence_empty_before_routing(api):
-    token = _register_and_login(api, "olga@example.com")
-    headers = {"Authorization": f"Bearer {token}"}
-
+    # Evidence is reviewer-only (see app/routers/tickets.py's _require_reviewer on
+    # this endpoint) — it's the AI's own reasoning material, not something the
+    # submitting end_user should see about their own ticket, so this checks the
+    # actual "empty before routing" behavior via an admin token instead, and
+    # confirms separately that the owning end_user is rejected outright.
+    end_user_token = _register_and_login(api, "olga@example.com")
     create_resp = api.post(
         "/tickets",
         data={"subject": "Some issue", "description": "Not yet classified"},
-        headers=headers,
+        headers={"Authorization": f"Bearer {end_user_token}"},
     )
     ticket_id = create_resp.json()["id"]
 
-    # No department yet in this test (no classifier artifacts seeded) — evidence
-    # should come back empty, not error.
-    resp = api.get(f"/tickets/{ticket_id}/evidence", headers=headers)
+    resp = api.get(f"/tickets/{ticket_id}/evidence", headers={"Authorization": f"Bearer {end_user_token}"})
+    assert resp.status_code == 403
+
+    admin_token = _admin_token(api, "olga_admin@example.com")
+    resp = api.get(f"/tickets/{ticket_id}/evidence", headers={"Authorization": f"Bearer {admin_token}"})
     assert resp.status_code == 200
+    assert resp.json() == []
 
 
 def test_evidence_returns_department_scoped_results(api):
@@ -136,8 +155,18 @@ def test_evidence_returns_department_scoped_results(api):
 
     asyncio.run(_route())
 
-    # End user (owner) can see the evidence.
+    # End user (owner) cannot see the evidence — reviewer-only.
     resp = api.get(f"/tickets/{ticket_id}/evidence", headers=headers)
+    assert resp.status_code == 403
+
+    # An engineer in the same department can.
+    _make_engineer_sync("engineer_same@example.com", department_id)
+    same_dept_token = api.post(
+        "/auth/login", data={"username": "engineer_same@example.com", "password": "password123"}
+    ).json()["access_token"]
+    resp = api.get(
+        f"/tickets/{ticket_id}/evidence", headers={"Authorization": f"Bearer {same_dept_token}"}
+    )
     assert resp.status_code == 200
     results = resp.json()
     assert len(results) == 1

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Card, ConfidenceIndicator, ReviewActions, Timeline, useToast } from "../components";
 import FormField from "../components/FormField";
-import { AlertTriangleIcon, CheckIcon } from "../components/icons";
+import { AlertTriangleIcon, CheckIcon, ClockIcon, LogoMark } from "../components/icons";
 import {
   getTicket,
   getTicketAttachment,
@@ -237,6 +237,59 @@ function renderDraftWithCitations(draft: string, citations: Citation[]): ReactNo
   });
 }
 
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || "?";
+}
+
+const WAITING_COPY: Record<string, string> = {
+  submitted: "Just received — classification starts in a moment.",
+  classified: "Classified. Routing to the right team now.",
+  routed: "Routed to the right team. Drafting a reply now.",
+  drafted: "A department engineer is reviewing a drafted reply for this.",
+  escalated: "This needed closer attention than an automatic draft could provide — an admin is arranging for someone to look at it directly.",
+  closed: "This ticket was closed without a written response.",
+};
+
+// The customer's own view of their ticket, styled as a conversation rather than a
+// technical readout — no AI draft, confidence score, or retrieved evidence ever
+// renders here (see showDraftPanel below and the reviewer-only /evidence endpoint),
+// just their own message and, once one exists, the actual response that was sent.
+function CustomerConversation({ ticket, user }: { ticket: Ticket; user: { full_name: string } }) {
+  const isReviewed = ticket.status === "reviewed" && ticket.final_response;
+
+  return (
+    <div className="ticket-thread">
+      <div className="ticket-thread-message">
+        <div className="ticket-thread-avatar ticket-thread-avatar-you">{initials(user.full_name)}</div>
+        <div className="ticket-thread-bubble">
+          <span className="ticket-thread-author">You</span>
+          <p className="ticket-thread-text">{ticket.description}</p>
+          <span className="ticket-thread-time">{new Date(ticket.created_at).toLocaleString()}</span>
+        </div>
+      </div>
+
+      {isReviewed ? (
+        <div className="ticket-thread-message">
+          <div className="ticket-thread-avatar ticket-thread-avatar-support">
+            <LogoMark width={18} height={18} />
+          </div>
+          <div className="ticket-thread-bubble ticket-thread-bubble-support">
+            <span className="ticket-thread-author">Support</span>
+            <p className="ticket-thread-text">{ticket.final_response}</p>
+            <span className="ticket-thread-time">{new Date(ticket.updated_at).toLocaleString()}</span>
+          </div>
+        </div>
+      ) : (
+        <div className={`ticket-thread-waiting${ticket.status === "escalated" ? " ticket-thread-waiting-escalated" : ""}`}>
+          {ticket.status === "escalated" ? <AlertTriangleIcon width={16} height={16} /> : <ClockIcon width={16} height={16} />}
+          <span>{WAITING_COPY[ticket.status] ?? "Working on it…"}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function TicketDetail() {
   const { id } = useParams<{ id: string }>();
   const { token, user } = useAuth();
@@ -276,8 +329,11 @@ export default function TicketDetail() {
     }
   }
 
+  // Reviewer-only endpoint (see app/routers/tickets.py's _require_reviewer on GET
+  // .../evidence) — an end_user would just get a 403, so this never calls it for
+  // that role in the first place rather than fetching-then-hiding an error.
   async function loadEvidence() {
-    if (!token || !id) return;
+    if (!token || !id || user?.role === "end_user") return;
     setEvidenceLoading(true);
     setEvidenceError(null);
     try {
@@ -410,27 +466,12 @@ export default function TicketDetail() {
           </div>
         )}
 
-        {!showDraftPanel && ticket.status === "reviewed" && ticket.final_response && (
-          <div className="final-response">
-            <span className="final-response-label">Response</span>
-            <p className="draft-text">{ticket.final_response}</p>
-          </div>
-        )}
-
-        {!showDraftPanel && ticket.status !== "reviewed" && (
-          <p className="placeholder-note">
-            {isDrafting
-              ? "This ticket is being classified, routed, and drafted automatically."
-              : isEscalated
-                ? "This ticket needed closer attention than an automatic draft could provide, and has been sent directly to an engineer to handle."
-                : ticket.status === "closed"
-                  ? "This ticket was closed without a written response."
-                  : "A department engineer has an AI-drafted reply for this ticket, based on retrieved evidence. They'll review it before anything is sent to you."}
-          </p>
-        )}
       </Card>
 
-      <div className="ticket-detail-side-by-side">
+      {!showDraftPanel && user && <CustomerConversation ticket={ticket} user={user} />}
+
+      {showDraftPanel && (
+        <div className="ticket-detail-side-by-side">
         <Card
           title="Relevant cases & evidence"
           actions={
@@ -470,7 +511,7 @@ export default function TicketDetail() {
           )}
         </Card>
 
-        {showDraftPanel && isEscalated && token && (
+        {isEscalated && token && (
           <Card title="Escalation">
             <EscalationDetails token={token} userId={user?.id} ticket={ticket} onDone={loadTicket} />
             {ticket.ai_draft_reply && (
@@ -484,7 +525,7 @@ export default function TicketDetail() {
           </Card>
         )}
 
-        {showDraftPanel && !isEscalated && (
+        {!isEscalated && (
           <Card
             title="AI draft reply"
             className={
@@ -555,6 +596,7 @@ export default function TicketDetail() {
           </Card>
         )}
       </div>
+      )}
     </div>
   );
 }
