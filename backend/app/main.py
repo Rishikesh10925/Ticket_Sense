@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import analytics, auth, departments, health, knowledge_base, tickets, users
+from app.routers import analytics, auth, departments, escalations, health, knowledge_base, messages, tickets, users
 
 app = FastAPI(title="TicketSense API", version="0.1.0")
 
@@ -21,3 +21,5 @@ app.include_router(tickets.router)
 app.include_router(users.router)
 app.include_router(knowledge_base.router)
 app.include_router(analytics.router)
+app.include_router(escalations.router)
+app.include_router(messages.router)

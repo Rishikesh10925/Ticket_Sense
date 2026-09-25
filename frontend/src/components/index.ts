@@ -1,7 +1,16 @@
 export { default as AttachmentInput } from "./AttachmentInput";
 export { default as Button } from "./Button";
+export { default as ChatWidget } from "./ChatWidget";
 export { default as ConfidenceIndicator } from "./ConfidenceIndicator";
+export { default as ConfirmDialog } from "./ConfirmDialog";
 export { default as Card } from "./Card";
 export { default as FormField } from "./FormField";
+export { default as NotificationBell } from "./NotificationBell";
 export { default as ReviewActions } from "./ReviewActions";
 export { default as StatCard } from "./StatCard";
+export { default as Timeline } from "./Timeline";
+export { default as ThemeToggle } from "./ThemeToggle";
+export { ToastProvider, useToast } from "./Toast";
+export { default as BarChart } from "./charts/BarChart";
+export { default as CalibrationChart } from "./charts/CalibrationChart";
+export { default as DonutChart } from "./charts/DonutChart";

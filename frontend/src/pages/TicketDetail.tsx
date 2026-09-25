@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Card, ConfidenceIndicator, ReviewActions } from "../components";
-import { AlertTriangleIcon } from "../components/icons";
+import { Button, Card, ConfidenceIndicator, ReviewActions, Timeline, useToast } from "../components";
+import FormField from "../components/FormField";
+import { AlertTriangleIcon, CheckIcon } from "../components/icons";
 import {
   getTicket,
   getTicketAttachment,
   getTicketEscalation,
   getTicketEvidence,
   listDepartments,
+  resolveEscalation,
   ApiError,
   type Ticket,
   type Evidence,
@@ -102,9 +104,23 @@ function AttachmentPreview({ token, ticket }: { token: string; ticket: Ticket })
 // persists them unconditionally at scoring time regardless of which way the gate went
 // (see app/services/pipeline.py), so the same rich confidence readout the draft panel
 // gets is already sitting right there, not something this view has to reconstruct.
-function EscalationDetails({ token, ticket }: { token: string; ticket: Ticket }) {
+function EscalationDetails({
+  token,
+  userId,
+  ticket,
+  onDone,
+}: {
+  token: string;
+  userId: string | undefined;
+  ticket: Ticket;
+  onDone: () => void;
+}) {
   const [escalation, setEscalation] = useState<Escalation | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [responseText, setResponseText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [resolveError, setResolveError] = useState<string | null>(null);
+  const { notify } = useToast();
 
   useEffect(() => {
     let active = true;
@@ -117,6 +133,23 @@ function EscalationDetails({ token, ticket }: { token: string; ticket: Ticket })
   }, [token, ticket.id]);
 
   const hadDraft = ticket.ai_draft_reply !== null;
+  const isAssignedToMe = escalation?.admin_decision === "approved" && escalation.escalated_to === userId;
+
+  async function handleResolve() {
+    setSubmitting(true);
+    setResolveError(null);
+    try {
+      await resolveEscalation(token, ticket.id, responseText);
+      notify("Response sent to the customer.", "success");
+      onDone();
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : "Could not submit the response";
+      setResolveError(message);
+      notify(message, "error");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div className="escalation-details">
@@ -128,7 +161,7 @@ function EscalationDetails({ token, ticket }: { token: string; ticket: Ticket })
           <p className="escalation-banner-title">Needs human investigation</p>
           <p className="escalation-banner-subtitle">
             {hadDraft
-              ? "A reviewer escalated this ticket after seeing the AI's draft — handle it directly, there's nothing left to approve."
+              ? "This ticket was sent back for a second opinion after a draft existed — handle it directly, there's nothing left to approve."
               : "The confidence gate sent this straight to a human — no AI draft was generated for it at all."}
           </p>
         </div>
@@ -150,6 +183,36 @@ function EscalationDetails({ token, ticket }: { token: string; ticket: Ticket })
         <div className="escalation-reason">
           <span className="escalation-reason-label">Reason</span>
           <p>{escalation.reason}</p>
+          <p className="escalation-admin-status">
+            {escalation.admin_decision === null && "Awaiting admin approval before this reaches an engineer."}
+            {escalation.admin_decision === "approved" &&
+              (isAssignedToMe
+                ? "Approved by admin — assigned to you. Write and send the response below."
+                : "Approved by admin and assigned to an engineer.")}
+            {escalation.admin_decision === "rejected" &&
+              `Closed by admin without routing to an engineer${escalation.admin_note ? `: ${escalation.admin_note}` : "."}`}
+          </p>
+        </div>
+      )}
+
+      {isAssignedToMe && (
+        <div className="review-actions">
+          <FormField label="Your response" htmlFor="escalation-response">
+            <textarea
+              id="escalation-response"
+              rows={6}
+              value={responseText}
+              onChange={(e) => setResponseText(e.target.value)}
+              placeholder="Write the response to send to the customer…"
+            />
+          </FormField>
+          {resolveError && <p className="form-error">{resolveError}</p>}
+          <div className="review-actions-buttons">
+            <Button disabled={submitting || !responseText.trim()} onClick={handleResolve}>
+              <CheckIcon />
+              {submitting ? "Sending…" : "Send response"}
+            </Button>
+          </div>
         </div>
       )}
     </div>
@@ -286,6 +349,10 @@ export default function TicketDetail() {
           {isDrafting && <span className="status-badge status-pending">working…</span>}
         </div>
 
+        <div className="ticket-detail-timeline">
+          <Timeline status={ticket.status} />
+        </div>
+
         <dl className="ticket-detail-fields">
           <div className="ticket-detail-field ticket-detail-field-wide">
             <dt>Description</dt>
@@ -343,14 +410,21 @@ export default function TicketDetail() {
           </div>
         )}
 
-        {!showDraftPanel && (
+        {!showDraftPanel && ticket.status === "reviewed" && ticket.final_response && (
+          <div className="final-response">
+            <span className="final-response-label">Response</span>
+            <p className="draft-text">{ticket.final_response}</p>
+          </div>
+        )}
+
+        {!showDraftPanel && ticket.status !== "reviewed" && (
           <p className="placeholder-note">
             {isDrafting
               ? "This ticket is being classified, routed, and drafted automatically."
               : isEscalated
                 ? "This ticket needed closer attention than an automatic draft could provide, and has been sent directly to an engineer to handle."
-                : ticket.status === "drafted" && ticket.high_confidence_ready
-                  ? "Great news — we have a high-confidence resolution ready for this ticket. It's awaiting final approval from our support team before it's sent to you."
+                : ticket.status === "closed"
+                  ? "This ticket was closed without a written response."
                   : "A department engineer has an AI-drafted reply for this ticket, based on retrieved evidence. They'll review it before anything is sent to you."}
           </p>
         )}
@@ -358,7 +432,7 @@ export default function TicketDetail() {
 
       <div className="ticket-detail-side-by-side">
         <Card
-          title="Retrieved evidence"
+          title="Relevant cases & evidence"
           actions={
             <Button variant="secondary" onClick={loadEvidence} disabled={evidenceLoading}>
               Refresh
@@ -398,7 +472,7 @@ export default function TicketDetail() {
 
         {showDraftPanel && isEscalated && token && (
           <Card title="Escalation">
-            <EscalationDetails token={token} ticket={ticket} />
+            <EscalationDetails token={token} userId={user?.id} ticket={ticket} onDone={loadTicket} />
             {ticket.ai_draft_reply && (
               <>
                 <h4 className="draft-sources-heading escalation-draft-heading">Draft at time of escalation</h4>
@@ -466,9 +540,15 @@ export default function TicketDetail() {
                   <ReviewActions token={token} ticket={ticket} onDone={loadTicket} />
                 )}
                 {ticket.status === "reviewed" && (
-                  <p className="placeholder-note draft-status-legend">
-                    This ticket has already been reviewed.
-                  </p>
+                  <div className="final-response">
+                    <span className="final-response-label">Sent to customer</span>
+                    <p className="draft-text">{ticket.final_response ?? "(no response text on record)"}</p>
+                    {ticket.final_response === ticket.ai_draft_reply && (
+                      <p className="placeholder-note draft-status-legend">
+                        Auto-resolved — this cleared the confidence bar before any engineer saw it.
+                      </p>
+                    )}
+                  </div>
                 )}
               </>
             )}
