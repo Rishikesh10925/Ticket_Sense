@@ -1,0 +1,4 @@
+# Shell scripts must keep LF endings regardless of the checking-out platform's
+# autocrlf setting — a CRLF-converted docker-entrypoint.sh fails with "bad
+# interpreter" when COPYed into the (Linux) Docker image.
+*.sh text eol=lf
