@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, StatCard } from "../components";
-import { listTickets, ApiError, type Ticket } from "../api/client";
+import { Card } from "../components";
+import { listTickets, getAnalyticsSummary, ApiError, type Ticket, type ReviewerBreakdown } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { statusLabel, statusBadgeClass } from "../statusLabels";
 
-const STATUSES = ["submitted", "classified", "routed", "drafted", "escalated", "reviewed", "closed"];
+const QUICK_FILTERS: { key: string; label: string }[] = [
+  { key: "", label: "All" },
+  { key: "drafted", label: "Draft in review" },
+  { key: "escalated", label: "Escalated" },
+  { key: "reviewed", label: "Reviewed" },
+];
 
 const SENTIMENT_CLASS: Record<string, string> = {
   positive: "sentiment-positive",
@@ -21,6 +26,7 @@ export default function EngineerQueue() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [myStats, setMyStats] = useState<ReviewerBreakdown | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -31,6 +37,16 @@ export default function EngineerQueue() {
       .catch((err) => setError(err instanceof ApiError ? err.message : "Could not load queue"))
       .finally(() => setLoading(false));
   }, [token, status]);
+
+  // Scoped server-side to just this engineer's own row (see GET /analytics/summary) —
+  // a personal record of what they've actually done, distinct from the queue below,
+  // which is just what's currently waiting.
+  useEffect(() => {
+    if (!token) return;
+    getAnalyticsSummary(token)
+      .then((summary) => setMyStats(summary.by_reviewer[0] ?? null))
+      .catch(() => setMyStats(null));
+  }, [token]);
 
   const highPriorityCount = tickets.filter((t) => t.priority === "high").length;
   const draftCount = tickets.filter((t) => t.status === "drafted").length;
@@ -45,117 +61,143 @@ export default function EngineerQueue() {
         </div>
       </div>
 
-      {!loading && !error && tickets.length > 0 && (
-        <div className="stat-grid">
-          <StatCard label="In queue" value={tickets.length} accent />
-          <StatCard label="High priority" value={highPriorityCount} tone={highPriorityCount > 0 ? "warning" : undefined} />
-          <StatCard label="Draft in review" value={draftCount} tone="info" />
-          <StatCard label="Escalated" value={escalatedCount} tone={escalatedCount > 0 ? "danger" : undefined} />
-        </div>
-      )}
+      <div className="engineer-layout">
+        <div className="engineer-side">
+          <Card title="Today">
+            <div className="workspace-stat-list">
+              <div className="workspace-stat-row">
+                <span>In queue</span>
+                <strong className="tabular-nums">{tickets.length}</strong>
+              </div>
+              <div className="workspace-stat-row">
+                <span>High priority</span>
+                <strong className={`tabular-nums${highPriorityCount > 0 ? " workspace-stat-warning" : ""}`}>
+                  {highPriorityCount}
+                </strong>
+              </div>
+              <div className="workspace-stat-row">
+                <span>Draft in review</span>
+                <strong className="tabular-nums">{draftCount}</strong>
+              </div>
+              <div className="workspace-stat-row">
+                <span>Escalated</span>
+                <strong className={`tabular-nums${escalatedCount > 0 ? " workspace-stat-danger" : ""}`}>
+                  {escalatedCount}
+                </strong>
+              </div>
+            </div>
+          </Card>
 
-      <Card
-        title="Tickets"
-        actions={
-          <select
-            className="select-filter"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            aria-label="Filter by status"
-          >
-            <option value="">All statuses</option>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {statusLabel(s)}
-              </option>
-            ))}
-          </select>
-        }
-      >
-        {loading && <p className="placeholder-note">Loading...</p>}
-        {error && <p className="form-error">{error}</p>}
-        {!loading && !error && tickets.length === 0 && (
-          <div className="empty-state">
-            <div className="empty-state-icon">✅</div>
-            <p className="empty-state-title">Queue is clear</p>
-            <p className="empty-state-desc">
-              {status ? `No tickets with status "${statusLabel(status)}"` : "No tickets in your queue right now."}
-            </p>
-          </div>
-        )}
-        {!loading && tickets.length > 0 && (
-          <table className="ticket-table ticket-table-dense">
-            <thead>
-              <tr>
-                <th>Subject</th>
-                <th>Priority</th>
-                <th>Sentiment</th>
-                <th className="col-right">Confidence</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tickets.map((ticket) => (
-                <tr
-                  key={ticket.id}
-                  className={`clickable-row${ticket.status === "escalated" ? " row-escalated" : ""}`}
-                  onClick={() => navigate(`/tickets/${ticket.id}`)}
+          {myStats && (
+            <Card title="My review record">
+              <div className="workspace-stat-list">
+                <div className="workspace-stat-row">
+                  <span>Resolved</span>
+                  <strong className="tabular-nums workspace-stat-success">{myStats.resolved}</strong>
+                </div>
+                <div className="workspace-stat-row">
+                  <span>Rejected</span>
+                  <strong className="tabular-nums">{myStats.rejected}</strong>
+                </div>
+                <div className="workspace-stat-row">
+                  <span>Escalated / doubted</span>
+                  <strong className="tabular-nums">{myStats.escalated}</strong>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          <Card title="Filter">
+            <div className="quick-filter-list">
+              {QUICK_FILTERS.map((f) => (
+                <button
+                  key={f.key}
+                  type="button"
+                  className={`quick-filter-btn${status === f.key ? " quick-filter-btn-active" : ""}`}
+                  onClick={() => setStatus(f.key)}
                 >
-                  <td className="ticket-table-subject">{ticket.subject}</td>
-                  <td>
-                    {ticket.priority ? (
-                      <span className={`glance glance-${ticket.priority}`}>
-                        <span className="glance-dot" />
-                        {ticket.priority}
-                      </span>
-                    ) : (
-                      <span className="placeholder-note">—</span>
-                    )}
-                  </td>
-                  <td>
-                    {ticket.sentiment ? (
-                      <span className={`sentiment-badge ${SENTIMENT_CLASS[ticket.sentiment] ?? ""}`}>
-                        {ticket.sentiment}
-                      </span>
-                    ) : (
-                      <span className="placeholder-note">—</span>
-                    )}
-                  </td>
-                  <td>
-                    {ticket.sentiment ? (
-                      <span
-                        className={`sentiment-dot sentiment-${ticket.sentiment}`}
-                        title={`Sentiment: ${ticket.sentiment}`}
-                        aria-label={`Sentiment: ${ticket.sentiment}`}
-                      />
-                    ) : (
-                      <span className="placeholder-note">—</span>
-                    )}
-                  </td>
-                  <td className="col-right">
-                    {ticket.confidence_score !== null && ticket.confidence_threshold !== null ? (
-                      <span
-                        className={`confidence-mini-badge tabular-nums ${
-                          ticket.confidence_score >= ticket.confidence_threshold
-                            ? "confidence-mini-pass"
-                            : "confidence-mini-fail"
-                        }`}
-                      >
-                        {Math.round(ticket.confidence_score * 100)}%
-                      </span>
-                    ) : (
-                      <span className="placeholder-note">—</span>
-                    )}
-                  </td>
-                  <td>
-                    <span className={statusBadgeClass(ticket.status)}>{statusLabel(ticket.status)}</span>
-                  </td>
-                </tr>
+                  {f.label}
+                </button>
               ))}
-            </tbody>
-          </table>
-        )}
-      </Card>
+            </div>
+          </Card>
+        </div>
+
+        <Card title="Tickets">
+          {loading && <p className="placeholder-note">Loading...</p>}
+          {error && <p className="form-error">{error}</p>}
+          {!loading && !error && tickets.length === 0 && (
+            <div className="empty-state">
+              <div className="empty-state-icon">✅</div>
+              <p className="empty-state-title">Queue is clear</p>
+              <p className="empty-state-desc">
+                {status ? `No tickets with status "${statusLabel(status)}"` : "No tickets in your queue right now."}
+              </p>
+            </div>
+          )}
+          {!loading && tickets.length > 0 && (
+            <table className="ticket-table ticket-table-dense">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Priority</th>
+                  <th>Sentiment</th>
+                  <th className="col-right">Confidence</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tickets.map((ticket) => (
+                  <tr
+                    key={ticket.id}
+                    className={`clickable-row${ticket.status === "escalated" ? " row-escalated" : ""}`}
+                    onClick={() => navigate(`/tickets/${ticket.id}`)}
+                  >
+                    <td className="ticket-table-subject">{ticket.subject}</td>
+                    <td>
+                      {ticket.priority ? (
+                        <span className={`glance glance-${ticket.priority}`}>
+                          <span className="glance-dot" />
+                          {ticket.priority}
+                        </span>
+                      ) : (
+                        <span className="placeholder-note">—</span>
+                      )}
+                    </td>
+                    <td>
+                      {ticket.sentiment ? (
+                        <span className={`sentiment-badge ${SENTIMENT_CLASS[ticket.sentiment] ?? ""}`}>
+                          {ticket.sentiment}
+                        </span>
+                      ) : (
+                        <span className="placeholder-note">—</span>
+                      )}
+                    </td>
+                    <td className="col-right">
+                      {ticket.confidence_score !== null && ticket.confidence_threshold !== null ? (
+                        <span
+                          className={`confidence-mini-badge tabular-nums ${
+                            ticket.confidence_score >= ticket.confidence_threshold
+                              ? "confidence-mini-pass"
+                              : "confidence-mini-fail"
+                          }`}
+                        >
+                          {Math.round(ticket.confidence_score * 100)}%
+                        </span>
+                      ) : (
+                        <span className="placeholder-note">—</span>
+                      )}
+                    </td>
+                    <td>
+                      <span className={statusBadgeClass(ticket.status)}>{statusLabel(ticket.status)}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </Card>
+      </div>
     </>
   );
 }

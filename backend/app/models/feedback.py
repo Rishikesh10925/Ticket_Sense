@@ -10,7 +10,9 @@ from app.models.base import Base, CreatedAtMixin, UUIDPKMixin
 class Feedback(UUIDPKMixin, CreatedAtMixin, Base):
     __tablename__ = "feedback"
     __table_args__ = (
-        CheckConstraint("action IN ('accept','edit','reject','escalate')", name="ck_feedback_action"),
+        CheckConstraint(
+            "action IN ('accept','edit','reject','escalate','doubt','resolve')", name="ck_feedback_action"
+        ),
     )
 
     ticket_id: Mapped[uuid.UUID] = mapped_column(

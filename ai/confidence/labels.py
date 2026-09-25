@@ -52,4 +52,13 @@ def label_from_feedback(action: str, ai_draft_reply: str | None, edited_reply: s
         return edit_change_ratio(ai_draft_reply, edited_reply) <= MINOR_EDIT_MAX_CHANGE_RATIO
     if action == "escalate":
         return False if ai_draft_reply is not None else None
+    if action == "doubt":
+        # Same reasoning as escalate: a drafted ticket the engineer wasn't confident
+        # enough to act on either way — the draft existed and wasn't trusted.
+        return False if ai_draft_reply is not None else None
+    if action == "resolve":
+        # An engineer's own hand-written response to an escalation that was never
+        # drafted by the AI at all — not a judgment on any AI output, so there's
+        # nothing here for the confidence model to learn from either way.
+        return None
     return None

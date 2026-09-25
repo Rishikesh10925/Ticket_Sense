@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { AttachmentInput, Button, Card, FormField, StatCard } from "../components";
+import { AttachmentInput, Button, Card, FormField, StatCard, useToast } from "../components";
 import { CloseIcon, PlusIcon } from "../components/icons";
 import { createTicket, listTickets, ApiError, type Ticket } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
@@ -21,7 +21,7 @@ export default function EndUserHome() {
   const [attachmentError, setAttachmentError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const { notify } = useToast();
 
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [ticketsLoading, setTicketsLoading] = useState(true);
@@ -71,7 +71,6 @@ export default function EndUserHome() {
     if (!token) return;
     setSubmitting(true);
     setSubmitError(null);
-    setSubmitSuccess(false);
     try {
       await createTicket(token, subject, description, attachment);
       setSubject("");
@@ -79,8 +78,7 @@ export default function EndUserHome() {
       setAttachment(null);
       setAttachmentError(null);
       setDrawerOpen(false);
-      setSubmitSuccess(true);
-      setTimeout(() => setSubmitSuccess(false), 4000);
+      notify("Ticket submitted — it'll appear in the list below in a moment.", "success");
       await loadTickets();
     } catch (err) {
       setSubmitError(err instanceof ApiError ? err.message : "Could not submit ticket");
@@ -113,12 +111,6 @@ export default function EndUserHome() {
           <StatCard label="Resolved" value={closedCount} tone="success" />
           <StatCard label="Total" value={tickets.length} />
         </div>
-      )}
-
-      {submitSuccess && (
-        <p className="info-banner info-banner-success">
-          Ticket submitted — it'll appear in the list below in a moment.
-        </p>
       )}
 
       <Card title="Tickets">

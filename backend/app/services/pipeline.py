@@ -22,6 +22,7 @@ from app.config import settings
 from app.database import SessionLocal
 from app.models import Department, Escalation, Ticket
 from app.models.department import DEFAULT_CONFIDENCE_THRESHOLD
+from app.schemas.tickets import CUSTOMER_READY_CONFIDENCE_THRESHOLD
 from app.services.ticket_lifecycle import TicketStatus, transition
 
 from generation.provider_factory import get_llm_provider  # noqa: E402
@@ -76,6 +77,14 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
                 ticket.ai_draft_reply = result.get("draft")
                 ticket.ai_draft_citations = result.get("citations") or []
                 ticket.status = transition(TicketStatus(ticket.status), TicketStatus.DRAFTED)
+
+                # Auto-resolution: a draft that clears the (separate, higher)
+                # customer-facing bar goes straight to the customer, no engineer ever
+                # sees it — no Feedback row is created, since no one reviewed it; see
+                # app/routers/tickets.py's _final_responses_for, which treats a
+                # `reviewed` ticket with zero Feedback rows as exactly this case.
+                if ticket.confidence_score >= CUSTOMER_READY_CONFIDENCE_THRESHOLD:
+                    ticket.status = transition(TicketStatus(ticket.status), TicketStatus.REVIEWED)
             else:
                 # Gate failed: no draft is generated or shown (docs/architecture.md's
                 # "Example" — "escalated ... with the draft withheld") — the ticket

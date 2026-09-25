@@ -6,6 +6,7 @@ export interface User {
   full_name: string;
   role: "end_user" | "department_engineer" | "admin";
   department_id: string | null;
+  is_active: boolean;
 }
 
 export interface Department {
@@ -53,11 +54,10 @@ export interface Ticket {
   confidence_score: number | null;
   confidence_features: ConfidenceFeatures | null;
   confidence_threshold: number | null;
-  // True once a `drafted` ticket's score clears the (separate, customer-facing)
-  // 85% readiness bar — visible to every role, including end_user, since it reveals
-  // nothing about the actual score, only whether a human still needs to approve
-  // before this reaches them. See backend/app/schemas/tickets.py.
-  high_confidence_ready: boolean;
+  // The actual text sent (or, for an auto-resolution, that would be sent) to the
+  // customer once status is "reviewed" — visible to every role, including end_user.
+  // Null for every other status. See backend/app/schemas/tickets.py.
+  final_response: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -84,11 +84,25 @@ export interface Escalation {
   reason: string;
   confidence_score: number | null;
   escalated_to: string | null;
+  admin_decision: "approved" | "rejected" | null;
+  admin_note: string | null;
   resolved_at: string | null;
   created_at: string;
 }
 
-export type FeedbackAction = "accept" | "edit" | "reject" | "escalate";
+export interface PendingEscalation {
+  id: string;
+  ticket_id: string;
+  ticket_subject: string;
+  department_id: string | null;
+  department_name: string | null;
+  priority: string | null;
+  reason: string;
+  confidence_score: number | null;
+  created_at: string;
+}
+
+export type FeedbackAction = "accept" | "edit" | "reject" | "escalate" | "doubt";
 
 export class ApiError extends Error {
   status: number;
@@ -210,6 +224,43 @@ export async function listUsers(token: string): Promise<User[]> {
   return res.json();
 }
 
+export async function createUser(
+  token: string,
+  body: { email: string; fullName: string; password: string; role: User["role"]; departmentId?: string | null }
+): Promise<User> {
+  const res = await fetch(`${API_URL}/users`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: body.email,
+      full_name: body.fullName,
+      password: body.password,
+      role: body.role,
+      department_id: body.departmentId ?? null,
+    }),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function updateUser(
+  token: string,
+  userId: string,
+  body: { departmentId?: string | null; isActive?: boolean }
+): Promise<User> {
+  const payload: Record<string, unknown> = {};
+  if (body.departmentId !== undefined) payload.department_id = body.departmentId;
+  if (body.isActive !== undefined) payload.is_active = body.isActive;
+
+  const res = await fetch(`${API_URL}/users/${userId}`, {
+    method: "PATCH",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
 export async function listKnowledgeBase(token: string): Promise<KnowledgeBaseArticle[]> {
   const res = await fetch(`${API_URL}/knowledge-base`, { headers: authHeaders(token) });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
@@ -241,6 +292,42 @@ export async function submitTicketFeedback(
   return res.json();
 }
 
+export async function resolveEscalation(token: string, ticketId: string, responseText: string): Promise<Ticket> {
+  const res = await fetch(`${API_URL}/tickets/${ticketId}/resolve-escalation`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ response_text: responseText }),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function listPendingEscalations(token: string): Promise<PendingEscalation[]> {
+  const res = await fetch(`${API_URL}/escalations/pending`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function approveEscalation(token: string, escalationId: string, engineerId: string): Promise<Escalation> {
+  const res = await fetch(`${API_URL}/escalations/${escalationId}/approve`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ engineer_id: engineerId }),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function rejectEscalation(token: string, escalationId: string, note: string): Promise<Escalation> {
+  const res = await fetch(`${API_URL}/escalations/${escalationId}/reject`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ note }),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
 export async function updateDepartmentThreshold(
   token: string,
   departmentId: string,
@@ -260,6 +347,8 @@ export interface ReviewActionCounts {
   edit: number;
   reject: number;
   escalate: number;
+  doubt: number;
+  resolve: number;
 }
 
 export interface ConfidenceBucket {
@@ -310,6 +399,79 @@ export interface AnalyticsSummary {
 
 export async function getAnalyticsSummary(token: string): Promise<AnalyticsSummary> {
   const res = await fetch(`${API_URL}/analytics/summary`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export interface CalibrationBucket {
+  label: string;
+  avg_predicted_confidence: number | null;
+  actual_agreement_rate: number | null;
+  count: number;
+}
+
+export interface DailyTrendPoint {
+  date: string;
+  avg_confidence: number;
+  agreement_rate: number;
+  count: number;
+}
+
+export interface ConfidenceModelReport {
+  total_labeled: number;
+  real_labeled: number;
+  synthetic_labeled: number;
+  overall_agreement_rate: number | null;
+  calibration: CalibrationBucket[];
+  daily_trend: DailyTrendPoint[];
+}
+
+export async function getConfidenceModelReport(token: string): Promise<ConfidenceModelReport> {
+  const res = await fetch(`${API_URL}/analytics/confidence-model`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+// ---------- Chat (admin <-> department_engineer only) ----------
+
+export interface ChatContact {
+  user_id: string;
+  full_name: string;
+  role: "admin" | "department_engineer";
+  department_name: string | null;
+  is_active: boolean;
+  last_message: string | null;
+  last_message_at: string | null;
+  unread_count: number;
+}
+
+export interface ChatMessage {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  body: string;
+  read_at: string | null;
+  created_at: string;
+}
+
+export async function listChatContacts(token: string): Promise<ChatContact[]> {
+  const res = await fetch(`${API_URL}/messages/contacts`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function getChatThread(token: string, otherUserId: string): Promise<ChatMessage[]> {
+  const res = await fetch(`${API_URL}/messages/thread/${otherUserId}`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function sendChatMessage(token: string, recipientId: string, body: string): Promise<ChatMessage> {
+  const res = await fetch(`${API_URL}/messages`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ recipient_id: recipientId, body }),
+  });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
   return res.json();
 }

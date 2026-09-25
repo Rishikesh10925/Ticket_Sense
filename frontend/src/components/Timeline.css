@@ -1,0 +1,84 @@
+.ticket-timeline {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.ticket-timeline-step {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 8px;
+}
+
+.ticket-timeline-step:last-child {
+  flex: 0 0 auto;
+}
+
+.ticket-timeline-step:not(:last-child)::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: var(--color-border);
+  border-radius: 1px;
+  margin-right: 8px;
+}
+
+.ticket-timeline-done:not(:last-child)::after {
+  background: var(--color-success-strong);
+}
+
+.ticket-timeline-dot {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-alt);
+  color: var(--color-text-faint);
+  border: 2px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.ticket-timeline-done .ticket-timeline-dot {
+  background: var(--color-success-strong);
+  border-color: var(--color-success-strong);
+  color: #fff;
+}
+
+.ticket-timeline-current .ticket-timeline-dot {
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.ticket-timeline-dot-warn {
+  background: var(--color-danger-bg) !important;
+  border-color: var(--color-danger-strong) !important;
+  color: var(--color-danger-strong) !important;
+  box-shadow: 0 0 0 3px var(--color-danger-bg) !important;
+}
+
+.ticket-timeline-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-faint);
+  white-space: nowrap;
+}
+
+.ticket-timeline-done .ticket-timeline-label,
+.ticket-timeline-current .ticket-timeline-label {
+  color: var(--color-text);
+}
+
+@media (max-width: 560px) {
+  .ticket-timeline-label {
+    display: none;
+  }
+}

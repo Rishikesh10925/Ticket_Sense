@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
-from app.schemas.tickets import CUSTOMER_READY_CONFIDENCE_THRESHOLD, build_ticket_out
+from app.schemas.tickets import build_ticket_out
 
 NOW = datetime.now(timezone.utc)
 
@@ -39,45 +39,30 @@ def _fake_ticket(**overrides) -> SimpleNamespace:
     return SimpleNamespace(**defaults)
 
 
-def test_high_confidence_ready_true_above_customer_threshold():
-    ticket = _fake_ticket(status="drafted", confidence_score=CUSTOMER_READY_CONFIDENCE_THRESHOLD + 0.01)
-    out = build_ticket_out(ticket, role="end_user")
-    assert out.high_confidence_ready is True
+def test_final_response_null_when_not_reviewed():
+    ticket = _fake_ticket(status="drafted")
+    out = build_ticket_out(ticket, role="end_user", final_response=None)
+    assert out.final_response is None
 
 
-def test_high_confidence_ready_false_at_exactly_the_gate_threshold_but_below_customer_bar():
-    # A ticket can clear its department's own (much lower) gate threshold and still
-    # not clear the separate, higher customer-facing readiness bar.
-    ticket = _fake_ticket(status="drafted", confidence_score=0.6, confidence_threshold=0.45)
-    out = build_ticket_out(ticket, role="end_user")
-    assert out.high_confidence_ready is False
+def test_final_response_visible_to_end_user_once_reviewed():
+    ticket = _fake_ticket(status="reviewed")
+    out = build_ticket_out(ticket, role="end_user", final_response="Restart the VPN client and retry.")
+    assert out.final_response == "Restart the VPN client and retry."
+    # The internal draft/score stay hidden from end_user exactly as before -- only
+    # the caller-computed final_response is customer-visible.
+    assert out.ai_draft_reply is None
+    assert out.confidence_score is None
 
 
-def test_high_confidence_ready_false_when_not_drafted():
-    # A high score on an already-reviewed or escalated ticket isn't "awaiting
-    # approval" — that phase is over — so this must not read as ready either.
-    ticket = _fake_ticket(status="reviewed", confidence_score=0.99)
-    out = build_ticket_out(ticket, role="end_user")
-    assert out.high_confidence_ready is False
-
-
-def test_high_confidence_ready_false_when_score_missing():
-    ticket = _fake_ticket(status="drafted", confidence_score=None)
-    out = build_ticket_out(ticket, role="end_user")
-    assert out.high_confidence_ready is False
-
-
-def test_high_confidence_ready_visible_to_end_user_despite_score_being_hidden():
-    ticket = _fake_ticket(status="drafted", confidence_score=0.9)
-    out = build_ticket_out(ticket, role="end_user")
-    assert out.high_confidence_ready is True
-    assert out.confidence_score is None  # the real score itself stays hidden
-    assert out.ai_draft_reply is None  # and so does the draft text
-
-
-def test_high_confidence_ready_also_set_for_engineer_and_admin_roles():
-    ticket = _fake_ticket(status="drafted", confidence_score=0.9)
+def test_final_response_also_visible_to_engineer_and_admin():
+    ticket = _fake_ticket(status="reviewed")
     for role in ("department_engineer", "admin"):
-        out = build_ticket_out(ticket, role=role)
-        assert out.high_confidence_ready is True
-        assert out.confidence_score == 0.9  # unlike end_user, these roles still see the real score
+        out = build_ticket_out(ticket, role=role, final_response="Restart the VPN client and retry.")
+        assert out.final_response == "Restart the VPN client and retry."
+
+
+def test_build_ticket_out_defaults_final_response_to_none_when_not_passed():
+    ticket = _fake_ticket(status="reviewed")
+    out = build_ticket_out(ticket, role="end_user")
+    assert out.final_response is None

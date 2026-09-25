@@ -91,6 +91,21 @@ def test_non_admin_cannot_read_analytics(api):
     assert resp.status_code == 403
 
 
+def test_engineer_can_read_analytics_but_only_sees_their_own_by_reviewer_row(api):
+    networking_id = _department_id_sync("Networking")
+    _make_engineer_sync("analytics_eng_self@example.com", "Self Engineer", networking_id)
+    _make_engineer_sync("analytics_eng_other@example.com", "Other Engineer", networking_id)
+    self_token = api.post(
+        "/auth/login", data={"username": "analytics_eng_self@example.com", "password": "password123"}
+    ).json()["access_token"]
+
+    resp = api.get("/analytics/summary", headers={"Authorization": f"Bearer {self_token}"})
+    assert resp.status_code == 200
+    by_reviewer = resp.json()["by_reviewer"]
+    assert len(by_reviewer) == 1
+    assert by_reviewer[0]["reviewer_email"] == "analytics_eng_self@example.com"
+
+
 def test_by_reviewer_reflects_real_actions_and_excludes_synthetic_placeholder(api):
     networking_id = _department_id_sync("Networking")
     admin_token = _admin_token(api, "analytics_admin@example.com")

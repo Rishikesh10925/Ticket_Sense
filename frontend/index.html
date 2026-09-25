@@ -14,6 +14,19 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Applied before React mounts so there's no flash of the wrong theme —
+      // an explicit choice (localStorage) wins, otherwise OS preference does,
+      // and the CSS in src/styles/tokens.css reacts to the same data-theme attribute.
+      (function () {
+        try {
+          var stored = localStorage.getItem("ticketsense_theme");
+          if (stored === "light" || stored === "dark") {
+            document.documentElement.dataset.theme = stored;
+          }
+        } catch (e) {}
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
