@@ -1,0 +1,23 @@
+name: Keep Render backend warm
+
+# Render's free tier spins the service down after ~15 minutes of no traffic, and the
+# next request pays a 10-45s cold-start cost — that's what made login "not work" (it
+# was actually just waiting on a dead server to wake up). Pinging /health well inside
+# that 15-minute window keeps it from ever spinning down, at no cost since this repo
+# is public (GitHub Actions minutes are free and unlimited here).
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend health endpoint
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" https://ticketsense-api.onrender.com/health)
+          echo "Health check responded: $status"
+          if [ "$status" != "200" ]; then
+            echo "::warning::Backend health check returned $status instead of 200"
+          fi
