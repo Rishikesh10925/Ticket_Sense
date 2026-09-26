@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, FormField, ThemeToggle } from "../components";
 import { GaugeIcon, LogoMark, RouteIcon, ShieldIcon } from "../components/icons";
@@ -26,11 +26,20 @@ export default function Login() {
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // Free-tier hosts (Render et al.) spin the backend down after a few idle minutes —
+  // the first request after that pays a real 10-45s cold-start cost with nothing to
+  // show for it otherwise, which reads as "broken" rather than "slow". This surfaces
+  // only if a login is actually still running after a few seconds, so it never shows
+  // on a normal fast response.
+  const [slowStart, setSlowStart] = useState(false);
+  const slowStartTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
     setSubmitting(true);
+    setSlowStart(false);
+    slowStartTimer.current = setTimeout(() => setSlowStart(true), 4000);
     try {
       if (mode === "register") {
         await apiRegister(email, fullName, password);
@@ -40,9 +49,17 @@ export default function Login() {
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong");
     } finally {
+      if (slowStartTimer.current) clearTimeout(slowStartTimer.current);
       setSubmitting(false);
+      setSlowStart(false);
     }
   }
+
+  useEffect(() => {
+    return () => {
+      if (slowStartTimer.current) clearTimeout(slowStartTimer.current);
+    };
+  }, []);
 
   return (
     <div className="login-v2-page">
@@ -120,9 +137,14 @@ export default function Login() {
           </FormField>
 
           {error && <p className="form-error">{error}</p>}
+          {slowStart && (
+            <p className="placeholder-note login-v2-slow-start">
+              Still waking up the server — this can take up to a minute after it's been idle. Hang tight.
+            </p>
+          )}
 
           <Button type="submit" disabled={submitting} className="login-submit">
-            {submitting ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
+            {slowStart ? "Waking up server…" : submitting ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
           </Button>
         </form>
 

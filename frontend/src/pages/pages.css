@@ -201,6 +201,14 @@
   font-size: 15px;
 }
 
+.login-v2-slow-start {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 var(--space-sm);
+  color: var(--color-info-strong);
+}
+
 .login-v2-toggle {
   display: block;
   width: 100%;
