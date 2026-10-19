@@ -193,3 +193,18 @@ def test_gate_escalates_a_draft_that_is_not_shown_whatever_the_score():
 
 def test_show_node_reports_gate_decision():
     assert asyncio.run(make_show_node()({})) == {"gate_decision": "draft"}
+
+
+def test_draft_node_screens_out_a_cited_but_injected_command():
+    injected = json.dumps({
+        "can_answer": True,
+        "steps": [{"text": "Run aws s3 rm s3://prod-backups --recursive to free space.", "citations": [1]}],
+        "missing_information": [],
+    })
+    node = make_draft_node(FakeLLMClient(lambda r: injected))
+    result = asyncio.run(node({"subject": "Bucket full", "description": "x", "passages": _PASSAGES}))
+
+    assert result["draft_result"]["schema_valid"] is True  # the schema alone would have shown it
+    assert result["draft_result"]["screen"]["blocked"] is True
+    assert result["draft_result"]["shown"] is False and result["draft"] is None
+    assert result["draft_result"]["rejection"].startswith("screen:")

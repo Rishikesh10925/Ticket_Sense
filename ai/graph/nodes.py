@@ -35,6 +35,7 @@ from models.classifier_v2 import ARTIFACT as CLASSIFIER_V2  # noqa: E402
 from ocr.extract import extract_attachment_text  # noqa: E402
 from retrieval.hybrid import hybrid_search  # noqa: E402
 from retrieval.run_log import log_run, to_evidence  # noqa: E402
+from security.output_screen import SCREEN_VERSION, screen  # noqa: E402
 from security.pii import redact  # noqa: E402
 
 from graph.state import TicketState  # noqa: E402
@@ -235,6 +236,11 @@ def make_draft_node(llm_client: LLMClient):
             }
 
         by_n = {p["n"]: p for p in passages}
+        # Injection defences v2: anything runnable in a step (URL, command, code) must
+        # come from a passage that step cites, or nobody sees the draft.
+        screened = screen(result.steps, {p["n"]: p["text"] for p in passages}) if result.shown else None
+        shown = result.shown and not (screened and screened.blocked)
+        rejection = result.rejection or (f"screen: {screened.reasons[0]}" if screened and screened.blocked else None)
         cited = list(dict.fromkeys(n for step in result.steps for n in step["citations"]))
         citations = [
             {
@@ -256,12 +262,14 @@ def make_draft_node(llm_client: LLMClient):
                 "raw_text": result.raw_text,
                 "model": result.model,
                 "prompt_version": result.prompt_version,
-                "rejection": result.rejection,
-                "shown": result.shown,
+                "rejection": rejection,
+                "shown": shown,
+                "screen": {"version": SCREEN_VERSION, "blocked": bool(screened and screened.blocked),
+                           "reasons": list(screened.reasons) if screened else []},
                 "mean_logprob": (sum(resp_logprobs) / len(resp_logprobs)) if resp_logprobs else None,
             },
-            "draft": render_draft(result.steps) if result.shown else None,
-            "citations": citations if result.shown else [],
+            "draft": render_draft(result.steps) if shown else None,
+            "citations": citations if shown else [],
         }
 
     return node
