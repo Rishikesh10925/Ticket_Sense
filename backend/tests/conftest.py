@@ -11,8 +11,8 @@ os.environ["DATABASE_URL"] = os.environ.get(
 )
 
 # No model server or NLI download in tests: offline extractive drafts, lexical claim check.
-os.environ.setdefault("LLM_CLIENT", "stub")
-os.environ.setdefault("GROUNDING_SCORER", "lexical")
+os.environ["LLM_CLIENT"] = "stub"
+os.environ["GROUNDING_SCORER"] = "lexical"
 
 import asyncpg  # noqa: E402
 import pytest  # noqa: E402
