@@ -20,6 +20,8 @@ node_modules/
 frontend/dist/
 frontend/.vite/
 *.tsbuildinfo
+frontend/test-results/
+frontend/playwright-report/
 
 # Editors / OS
 .vscode/
