@@ -5,6 +5,7 @@ import pytest
 from generation.llm import (
     CachedLLMClient,
     FakeLLMClient,
+    LLMError,
     LLMRequest,
     LLMResponse,
     OllamaClient,
@@ -74,3 +75,42 @@ def test_factory_wraps_in_cache_by_default(monkeypatch, tmp_path):
 def test_fake_client_json_roundtrip():
     resp = FakeLLMClient(responder=lambda r: json.dumps({"ok": True})).complete(LLMRequest(system="", user=""))
     assert resp.json() == {"ok": True}
+
+
+class _FlakyResponse:
+    def __init__(self, body: bytes):
+        self.body = body
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def read(self):
+        return self.body
+
+
+def test_ollama_retries_a_dropped_connection(monkeypatch):
+    calls = []
+
+    def urlopen(req, timeout):
+        calls.append(1)
+        if len(calls) < 3:
+            raise ConnectionResetError("server restarted")
+        return _FlakyResponse(b'{"message": {"content": "ok"}}')
+
+    monkeypatch.setattr("urllib.request.urlopen", urlopen)
+    client = OllamaClient(model="m", host="http://x", backoff_s=0)
+    assert client.complete(LLMRequest(system="s", user="u")).text == "ok"
+    assert len(calls) == 3
+
+
+def test_ollama_gives_up_after_the_retry_budget(monkeypatch):
+    def urlopen(req, timeout):
+        raise ConnectionResetError("down")
+
+    monkeypatch.setattr("urllib.request.urlopen", urlopen)
+    client = OllamaClient(model="m", host="http://x", retries=2, backoff_s=0)
+    with pytest.raises(LLMError, match="after 3 tries"):
+        client.complete(LLMRequest(system="s", user="u"))

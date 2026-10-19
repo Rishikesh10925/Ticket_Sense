@@ -14,9 +14,11 @@ their `seed` in the key, so five consistency samples are five distinct cache ent
 from __future__ import annotations
 
 import hashlib
+import http.client
 import json
 import math
 import os
+import re
 import sqlite3
 import threading
 import time
@@ -83,8 +85,19 @@ class OllamaClient(LLMClient):
     """Local open-weight model served by Ollama (ADR 002). Uses /api/chat with
     `format` set to the JSON Schema for structured output, and `logprobs` when asked."""
 
-    def __init__(self, model: str | None = None, host: str | None = None, timeout_s: float = 300.0):
+    def __init__(
+        self,
+        model: str | None = None,
+        host: str | None = None,
+        timeout_s: float = 300.0,
+        retries: int = 4,
+        backoff_s: float = 5.0,
+    ):
         self.model = model or os.environ.get("LLM_MODEL", "qwen2.5:7b-instruct")
+        # A long batch run must survive the server restarting (an Ollama auto-update
+        # killed the first benchmark run): retry dropped connections with backoff.
+        self.retries = retries
+        self.backoff_s = backoff_s
         self.host = (host or os.environ.get("OLLAMA_HOST", "http://localhost:11434")).rstrip("/")
         if not self.host.startswith("http"):
             self.host = "http://" + self.host
@@ -115,12 +128,16 @@ class OllamaClient(LLMClient):
         req = urllib.request.Request(
             f"{self.host}/api/chat", data=body, headers={"Content-Type": "application/json"}
         )
-        start = time.perf_counter()
-        try:
-            with urllib.request.urlopen(req, timeout=self.timeout_s) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-        except (urllib.error.URLError, TimeoutError) as exc:
-            raise LLMError(f"Ollama request to {self.host} failed: {exc}") from exc
+        for attempt in range(self.retries + 1):
+            start = time.perf_counter()
+            try:
+                with urllib.request.urlopen(req, timeout=self.timeout_s) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                break
+            except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException) as exc:
+                if attempt == self.retries:
+                    raise LLMError(f"Ollama request to {self.host} failed after {attempt + 1} tries: {exc}") from exc
+                time.sleep(self.backoff_s * 3**attempt)
         latency_ms = (time.perf_counter() - start) * 1000
 
         logprobs = None
@@ -155,6 +172,33 @@ class FakeLLMClient(LLMClient):
             model=self.model,
             token_logprobs=[-0.1] * max(1, len(text.split())) if request.logprobs else None,
         )
+
+
+_PASSAGE_RE = re.compile(r'<passage n="(\d+)"[^>]*>\n(.*?)\n</passage>', re.DOTALL)
+
+
+class ExtractiveStubClient(LLMClient):
+    """Offline drafter for CI, tests and machines without a GPU (LLM_CLIENT=stub).
+    Answers a drafting prompt with the first sentence of each evidence passage, cited
+    to that passage, in the drafting schema. It is not a model and is never used for
+    benchmark results."""
+
+    model = "extractive-stub"
+
+    def complete(self, request: LLMRequest) -> LLMResponse:
+        steps = []
+        for n, text in _PASSAGE_RE.findall(request.user)[:3]:
+            body = " ".join(line for line in text.splitlines() if not line.startswith("#")).strip()
+            sentence = re.split(r"(?<=[.!?])\s+", body)[0] if body else ""
+            if sentence:
+                steps.append({"text": sentence, "citations": [int(n)]})
+        out = {
+            "can_answer": bool(steps),
+            "steps": steps,
+            "missing_information": [] if steps else ["No evidence was found for this ticket."],
+        }
+        text = json.dumps(out)
+        return LLMResponse(text=text, model=self.model, token_logprobs=[-0.05] * 8 if request.logprobs else None)
 
 
 def cache_key(model: str, request: LLMRequest) -> str:
@@ -211,7 +255,7 @@ class CachedLLMClient(LLMClient):
         self._conn.close()
 
 
-_CLIENTS = {"ollama": OllamaClient, "fake": FakeLLMClient}
+_CLIENTS = {"ollama": OllamaClient, "fake": FakeLLMClient, "stub": ExtractiveStubClient}
 
 
 def get_llm_client(provider: str | None = None, model: str | None = None, cache: bool = True) -> LLMClient:
@@ -227,6 +271,7 @@ def get_llm_client(provider: str | None = None, model: str | None = None, cache:
 
 __all__ = [
     "CachedLLMClient",
+    "ExtractiveStubClient",
     "FakeLLMClient",
     "LLMClient",
     "LLMError",

@@ -10,6 +10,10 @@ os.environ["DATABASE_URL"] = os.environ.get(
     "postgresql+asyncpg://ticketsense:ticketsense@localhost:5432/ticketsense_test",
 )
 
+# No model server or NLI download in tests: offline extractive drafts, lexical claim check.
+os.environ["LLM_CLIENT"] = "stub"
+os.environ["GROUNDING_SCORER"] = "lexical"
+
 import asyncpg  # noqa: E402
 import pytest  # noqa: E402
 from alembic import command  # noqa: E402

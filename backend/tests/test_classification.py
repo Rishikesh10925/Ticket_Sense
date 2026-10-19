@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from app.config import settings
 from app.core.security import hash_password
 from app.models import Department, User
+from kb_seed import ensure_article
 
 
 def _register_and_login(api, email: str) -> str:
@@ -52,7 +53,9 @@ def _department_id_sync(name: str) -> str:
         await engine.dispose()
         return result
 
-    return asyncio.run(_get())
+    dept_id = asyncio.run(_get())
+    ensure_article(name)
+    return dept_id
 
 
 def test_ticket_auto_classified_and_routed(api):

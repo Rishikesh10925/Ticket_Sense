@@ -73,26 +73,18 @@ pipeline needs them at runtime). `models/classifier.py` loads them and exposes
 
 ## generation/
 
-Draft generation: `llm_interface.py` (the `LLMProvider` abstraction + the default
-`StubLLMProvider`, extractive not generative — **no paid LLM API key is available**,
-see [docs/draft-generation.md](../docs/draft-generation.md) before reading too much
-into groundedness results), `prompt.py` (builds the grounded, cited-answer prompt),
-and `groundedness.py` (verifies every citation maps to a real evidence item). See
-[docs/groundedness-review.md](../docs/groundedness-review.md) for the manual review of
-generated drafts (10/10 fully grounded — with the caveat that a fully honest read of
-what that does and doesn't mean is in the docs, not just the number).
+- `llm.py`: the provider-agnostic `LLMClient` (`OllamaClient` for the local GPU model,
+  `ExtractiveStubClient` for CI and GPU-less machines, `FakeLLMClient` for unit tests)
+  and `CachedLLMClient`, a SQLite response cache. See ADR 002.
+- `drafting.py`: structured, cited drafting with injection defences v1 (prompt
+  `draft-v1`). `generate_draft(client, ticket_text, attachment_text, passages)` returns
+  a `DraftResult` whose `shown` flag says whether an engineer may see it.
+- `measure_throughput.py`: the Week 1 tokens-per-second measurement.
 
-```python
-from generation.prompt import build_prompt
-from generation.llm_interface import StubLLMProvider
+## grounding/
 
-prompt = build_prompt(ticket.subject, ticket.description, evidence)
-draft = StubLLMProvider().generate(prompt, evidence)
-```
-
-`generation/provider_factory.py` adds `get_llm_provider(name)`, a config-driven lookup
-(`LLM_PROVIDER` in `.env`, only `"stub"` registered today) so callers never construct a
-provider class directly — see [docs/langgraph-pipeline.md](../docs/langgraph-pipeline.md).
+- `claims.py`: claim splitting and NLI entailment scoring; `check_draft(steps, passages)`.
+- `consistency.py`: self-consistency agreement across sampled drafts (baseline B3).
 
 ## graph/
 

@@ -58,7 +58,8 @@ jobs:
           --health-interval 5s --health-timeout 5s --health-retries 10
     env:
       TEST_DATABASE_URL: postgresql+asyncpg://ticketsense:ticketsense@localhost:5432/ticketsense_test
-      LLM_CLIENT: fake
+      LLM_CLIENT: stub
+      GROUNDING_SCORER: lexical
     defaults:
       run:
         working-directory: backend

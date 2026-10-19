@@ -25,28 +25,39 @@ All routes except `/health`, `/auth/register` and `/auth/login` need a bearer JW
 | GET | `/tickets?department=&status=&lane=` | any | live (`lane` planned W9) | List tickets the caller may see |
 | GET | `/tickets/{id}` | any | live | Ticket detail (end users never see drafts or evidence) |
 | GET | `/tickets/{id}/evidence` | engineer, admin | live | Ranked passages with scores |
-| GET | `/tickets/{id}/draft` | engineer, admin | planned (W5) | Structured draft, claims, citations, can-answer flag, per-claim support |
+| GET | `/tickets/{id}/draft` | engineer, admin | live | Structured draft, claims, citations, can-answer flag, per-claim support |
 | GET | `/tickets/{id}/decision` | engineer, admin | planned (W8) | Lane, calibrated score, thresholds used, top reasons, model and threshold versions |
 | POST | `/tickets/{id}/review` | engineer, admin | planned (W9; replaces `/feedback`) | Accept, edit, reject or escalate, with time taken and reason codes |
 | POST | `/tickets/{id}/feedback` | engineer, admin | live (deprecated in W9) | V1 review actions |
 
-### `GET /tickets/{id}/draft` (planned)
+### `GET /tickets/{id}/draft`
 
 ```json
 {
-  "draft_id": "uuid",
-  "can_answer": true,
+  "shown": true,
+  "lane": "draft",
   "steps": [
-    {"text": "Restart the VPN client.", "citations": [1],
-     "claims": [{"text": "Restart the VPN client", "support": 0.93}]}
+    {"text": "Restart the VPN client and sign in again.", "citations": [1]}
   ],
-  "missing_information": ["OS version"],
-  "groundedness": 0.88,
-  "weakest_claims": [{"text": "...", "support": 0.21}],
+  "missing_information": [],
+  "evidence": [
+    {"n": 1, "article_key": "NET-VPN-001", "title": "VPN client hangs while connecting", "text": "..."}
+  ],
+  "groundedness": 1.0,
+  "claims": [
+    {"step_index": 0, "claim_index": 0, "text": "Restart the VPN client and sign in again.", "cited": [1], "support": 0.97}
+  ],
+  "weakest": ["... the three lowest-support claims, same shape as claims ..."],
+  "model": "qwen2.5:7b-instruct",
   "prompt_version": "draft-v1",
-  "model": "qwen2.5:7b-instruct"
+  "created_at": "2026-11-16T10:00:00Z"
 }
 ```
+
+In the escalation lane `shown` is false, `lane` is `"escalate"`, and `steps`, `claims`,
+`weakest` and `groundedness` are empty: the engineer sees only the ranked evidence and
+`missing_information`. 404 until the pipeline has drafted the ticket. `lane` takes the
+three V2 values (`fast`, `assisted`, `escalate`) from Week 9.
 
 ### `POST /tickets/{id}/review` (planned)
 
@@ -74,8 +85,8 @@ All routes except `/health`, `/auth/register` and `/auth/login` need a bearer JW
 
 | Method | Path | Roles | Status | Purpose |
 |---|---|---|---|---|
-| GET | `/annotate/next` | annotator | planned (W4) | Next blinded draft: ticket, draft, cited evidence. Never the score, lane or signals |
-| POST | `/annotate/{assignment_id}` | annotator | planned (W4) | Label A/M/R/W, reason codes, time taken, rubric version |
+| GET | `/annotate/next` | annotator | live | Next blinded draft: ticket, draft, cited evidence. Never the score, lane or signals |
+| POST | `/annotate/{assignment_id}` | annotator | live | Label A/M/R/W, reason codes, time taken, rubric version |
 
 `annotator` is a restricted account type for outside reviewers. It is not a fourth
 product role: it cannot open tickets, queues or admin screens.

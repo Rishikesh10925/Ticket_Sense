@@ -35,10 +35,11 @@ class Settings(BaseSettings):
     upload_dir: str = "uploads"
     max_upload_size_mb: int = 10
 
-    # Selects the LLMProvider the draft-generation pipeline uses (see
-    # ai/generation/provider_factory.py). Only "stub" exists today — no paid LLM API
-    # key is available in this project's environment, see llm_interface.py.
-    llm_provider: str = "stub"
+    # The drafting LLM client (ai/generation/llm.py, ADR 002): "ollama" for the local
+    # GPU model, "stub" for an offline extractive drafter (CI, tests, no GPU).
+    llm_client: str = "ollama"
+    # Claim checker: "nli" (cross-encoder, the real one) or "lexical" (CI and tests).
+    grounding_scorer: str = "nli"
 
     @property
     def cors_origin_list(self) -> list[str]:

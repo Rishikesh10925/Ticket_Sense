@@ -2,12 +2,17 @@
 
 Each factory returns an async node function — `(TicketState) -> dict` — that closes
 over whatever per-run dependencies it needs (a request-scoped AsyncSession, the
-Department model, the selected LLMProvider). TicketState itself stays a plain dict of
-ticket data, not a place to smuggle non-serializable objects like a DB session through
-the graph. See docs/langgraph-pipeline.md and pipeline.py, which wires these into the
-actual StateGraph.
+Department model, the LLM client, the claim scorer). TicketState itself stays a plain
+dict of ticket data, not a place to smuggle non-serializable objects like a DB session
+through the graph. See docs/langgraph-pipeline.md and pipeline.py, which wires these
+into the actual StateGraph.
+
+Blueprint V2 §9 stages 1 to 5 (intake, classify, retrieve, draft, check) run for every
+ticket; the gate comes after the check because the claim scores are among its inputs.
 """
 
+import asyncio
+import os
 import re
 import sys
 from pathlib import Path
@@ -19,31 +24,54 @@ if str(_AI_DIR) not in sys.path:
 
 from sqlalchemy import select  # noqa: E402
 
-from retrieval.hybrid import hybrid_search  # noqa: E402
-from retrieval.run_log import log_run, to_evidence  # noqa: E402
-from generation.llm_interface import LLMProvider  # noqa: E402
-from generation.prompt import build_prompt  # noqa: E402
-from models.classifier import classify_ticket  # noqa: E402
-from ocr.extract import extract_attachment_text  # noqa: E402
 from confidence.features import compute_features  # noqa: E402
 from confidence.predict import predict_confidence  # noqa: E402
+from generation.drafting import Passage, generate_draft  # noqa: E402
+from generation.llm import LLMClient, LLMError  # noqa: E402
+from grounding.claims import Scorer, check_draft, nli_scorer  # noqa: E402
+from models.classifier import classify_ticket  # noqa: E402
+from ocr.extract import extract_attachment_text  # noqa: E402
+from retrieval.hybrid import hybrid_search  # noqa: E402
+from retrieval.run_log import log_run, to_evidence  # noqa: E402
 
 from graph.state import TicketState  # noqa: E402
 
-_CITATION_RE = re.compile(r"\[(\d+)\]")
+WEAKEST_CLAIMS = 3  # shown in the assisted lane (Blueprint V2 §9.1)
+_WORD = re.compile(r"[a-z0-9]+")
 
 
 def _augmented_description(state: TicketState) -> str:
     """The ticket description, with any extracted attachment text folded in — used
-    everywhere classify/retrieve/draft would otherwise read state["description"]
-    alone, so OCR/PDF/log text actually feeds into classification, retrieval, and
-    drafting rather than just sitting on the ticket record unused. See
-    docs/langgraph-pipeline.md."""
+    everywhere classify/retrieve would otherwise read state["description"] alone, so
+    OCR/PDF/log text actually feeds into classification and retrieval rather than just
+    sitting on the ticket record unused. See docs/langgraph-pipeline.md."""
     description = state["description"]
     attachment_text = state.get("attachment_text")
     if attachment_text:
         return f"{description}\n\n[Extracted from attachment]\n{attachment_text}"
     return description
+
+
+def lexical_scorer(pairs: list[tuple[str, str]]) -> list[float]:
+    """Share of the claim's words found in the passage. A cheap stand-in for the NLI
+    model in CI and tests (GROUNDING_SCORER=lexical); never used for reported results."""
+    scores = []
+    for premise, claim in pairs:
+        words = set(_WORD.findall(claim.lower()))
+        scores.append(len(words & set(_WORD.findall(premise.lower()))) / len(words) if words else 0.0)
+    return scores
+
+
+def get_scorer(name: str | None = None) -> Scorer:
+    name = name or os.environ.get("GROUNDING_SCORER", "nli")
+    return {"nli": nli_scorer, "lexical": lexical_scorer}[name]
+
+
+def render_draft(steps: list[dict]) -> str:
+    """The numbered reply text an engineer edits, with [n] citation markers."""
+    return "\n".join(
+        f"{i}. {step['text']} " + "".join(f"[{n}]" for n in step["citations"]) for i, step in enumerate(steps, start=1)
+    )
 
 
 def make_extract_node():
@@ -87,7 +115,7 @@ def make_retrieve_node(db):
         if department_id is None:
             # No department to scope the search to yet — same rule as
             # app/services/retrieval.py's get_evidence_for_ticket.
-            return {"evidence": []}
+            return {"evidence": [], "passages": [], "retrieval_run_id": None}
 
         # Hybrid retrieval over kb_chunks (keyword + dense, RRF, cross-encoder rerank),
         # department- and served-scoped in the SQL. Every run is logged with all
@@ -95,42 +123,116 @@ def make_retrieve_node(db):
         query_text = f"{state['subject']}\n\n{_augmented_description(state)}"
         result = await hybrid_search(db, query_text, UUID(department_id), k=5)
         ticket_id = state.get("ticket_id")
-        await log_run(db, result, UUID(ticket_id) if ticket_id else None)
+        run = await log_run(db, result, UUID(ticket_id) if ticket_id else None)
+        passages = [
+            {
+                "n": n,
+                "article_id": str(h.article_id),
+                "article_key": h.article_key,
+                "chunk_id": str(h.chunk_id),
+                "title": h.title,
+                "text": h.text,
+            }
+            for n, h in enumerate(result.hits, start=1)
+        ]
         return {
             "evidence": to_evidence(result),
+            "passages": passages,
+            "retrieval_run_id": str(run.id),
             "retrieval_probe": result.probe_top1_similarity,
         }
 
     return node
 
 
-def make_draft_node(llm_provider: LLMProvider):
+def make_draft_node(llm_client: LLMClient):
     async def node(state: TicketState) -> dict:
-        evidence = state.get("evidence") or []
-        prompt = build_prompt(state["subject"], _augmented_description(state), evidence)
-        draft = llm_provider.generate(prompt, evidence)
-
-        # Citations are read back out of the draft's own [n] markers rather than just
-        # echoing every retrieved item, so ai_draft_citations reflects what the draft
-        # actually cited (in the order it cited them) — see docs/langgraph-pipeline.md.
-        citations = []
-        seen: set[int] = set()
-        for match in _CITATION_RE.finditer(draft):
-            n = int(match.group(1))
-            if n in seen or not (1 <= n <= len(evidence)):
-                continue
-            seen.add(n)
-            item = evidence[n - 1]
-            citations.append(
-                {"source_type": item.source_type, "source_id": str(item.source_id), "title": item.title}
+        passages = state.get("passages") or []
+        try:
+            # The client call is blocking (HTTP to the model server); keep it off the loop.
+            result = await asyncio.to_thread(
+                generate_draft,
+                llm_client,
+                f"{state['subject']}\n\n{state['description']}",
+                state.get("attachment_text"),
+                [Passage(p["n"], p["title"], p["text"], p.get("article_key")) for p in passages],
             )
+        except LLMError as exc:
+            return {
+                "draft_result": {"schema_valid": False, "rejection": f"model unavailable: {exc}", "shown": False},
+                "draft": None,
+                "citations": [],
+            }
 
-        return {"draft": draft, "citations": citations, "gate_decision": "draft"}
+        by_n = {p["n"]: p for p in passages}
+        cited = list(dict.fromkeys(n for step in result.steps for n in step["citations"]))
+        citations = [
+            {
+                "n": n,
+                "source_type": "knowledge_base",
+                "source_id": by_n[n]["article_id"],
+                "article_key": by_n[n]["article_key"],
+                "title": by_n[n]["title"],
+            }
+            for n in cited
+        ]
+        resp_logprobs = result.token_logprobs or []
+        return {
+            "draft_result": {
+                "schema_valid": result.schema_valid,
+                "can_answer": result.can_answer,
+                "steps": result.steps,
+                "missing_information": result.missing_information,
+                "raw_text": result.raw_text,
+                "model": result.model,
+                "prompt_version": result.prompt_version,
+                "rejection": result.rejection,
+                "shown": result.shown,
+                "mean_logprob": (sum(resp_logprobs) / len(resp_logprobs)) if resp_logprobs else None,
+            },
+            "draft": render_draft(result.steps) if result.shown else None,
+            "citations": citations if result.shown else [],
+        }
+
+    return node
+
+
+def make_check_node(scorer: Scorer | None = None):
+    async def node(state: TicketState) -> dict:
+        draft = state.get("draft_result") or {}
+        if not draft.get("shown"):
+            return {"grounding": None}
+        passages = {p["n"]: p["text"] for p in state.get("passages") or []}
+        grounding = await asyncio.to_thread(check_draft, draft["steps"], passages, scorer or get_scorer())
+        claims = [
+            {
+                "step_index": c.step_index,
+                "claim_index": c.claim_index,
+                "text": c.text,
+                "cited": list(c.cited),
+                "support": c.support,
+            }
+            for c in grounding.claims
+        ]
+        return {
+            "grounding": {
+                "groundedness": grounding.groundedness,
+                "min_support": grounding.min_support,
+                "mean_support": grounding.mean_support,
+                "claims": claims,
+                "weakest": [
+                    {"step_index": c.step_index, "text": c.text, "support": c.support}
+                    for c in grounding.weakest(WEAKEST_CLAIMS)
+                ],
+            }
+        }
 
     return node
 
 
 def make_score_node(db, department_model, default_threshold: float):
+    """Interim V1 confidence score until the Week 8 confidence model replaces it."""
+
     async def node(state: TicketState) -> dict:
         features = compute_features(
             state.get("evidence") or [], state.get("ocr_confidence"), state.get("department_name")
@@ -154,20 +256,30 @@ def make_score_node(db, department_model, default_threshold: float):
 
 
 def gate_condition(state: TicketState) -> str:
-    """The Week 9 confidence gate: routes to "draft" if the score clears the
-    department's threshold, "escalate" otherwise — a LangGraph conditional edge
-    (see pipeline.py), not an if/else buried inside a node, so the routing decision
-    is visible in the graph definition itself (see docs/architecture.md's "Conditional
-    routing, not a fixed threshold call inside a node"). Score/threshold are computed
-    by the score node, which runs immediately before this — see docs/langgraph-pipeline.md
-    for why score comes before draft, not after."""
+    """Routes to "draft" (shown to the engineer) or "escalate" (no AI draft) — a
+    LangGraph conditional edge (see pipeline.py), not an if/else buried inside a node,
+    so the routing decision is visible in the graph definition itself.
+
+    A draft that failed the schema, or that says the evidence cannot answer the ticket,
+    always escalates (Blueprint V2 §9.1). Otherwise the score must clear the
+    department's threshold. The Week 9 gate replaces this with two LTT thresholds."""
+    draft = state.get("draft_result")
+    if draft is not None and not draft.get("shown"):
+        return "escalate"
     score = state.get("confidence_score")
     threshold = state.get("confidence_threshold")
     if score is None or threshold is None:
-        # Shouldn't happen (score always runs first), but fails open to drafting
-        # rather than crashing the pipeline on an unexpected state shape.
+        # Shouldn't happen (score always runs first), but fails open to showing the
+        # draft rather than crashing the pipeline on an unexpected state shape.
         return "draft"
     return "draft" if score >= threshold else "escalate"
+
+
+def make_show_node():
+    async def node(state: TicketState) -> dict:
+        return {"gate_decision": "draft"}
+
+    return node
 
 
 def make_escalate_node():

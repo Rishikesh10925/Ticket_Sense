@@ -2,7 +2,7 @@ import uuid
 
 from sqlalchemy import Boolean, CheckConstraint, Float, ForeignKey, ForeignKeyConstraint, Integer, String, Text
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, CreatedAtMixin, UUIDPKMixin
 
@@ -58,6 +58,10 @@ class Draft(UUIDPKMixin, CreatedAtMixin, Base):
     raw_text: Mapped[str] = mapped_column(Text(), nullable=False)
     groundedness: Mapped[float | None] = mapped_column(Float(), nullable=True)
 
+    claims: Mapped[list["DraftClaim"]] = relationship(
+        back_populates="draft", cascade="all, delete-orphan", order_by="(DraftClaim.step_index, DraftClaim.claim_index)"
+    )
+
 
 class DraftClaim(UUIDPKMixin, CreatedAtMixin, Base):
     """One atomic claim of a draft step, with the passages it cites and its entailment
@@ -73,3 +77,5 @@ class DraftClaim(UUIDPKMixin, CreatedAtMixin, Base):
     text: Mapped[str] = mapped_column(Text(), nullable=False)
     cited: Mapped[list[int]] = mapped_column(ARRAY(Integer()), nullable=False)
     support: Mapped[float | None] = mapped_column(Float(), nullable=True)
+
+    draft: Mapped[Draft] = relationship(back_populates="claims")
