@@ -36,6 +36,8 @@ db_data/
 # Downloaded/derived datasets (not committed — see data/README.md)
 data/raw/
 data/processed/
+# LLM response cache (regenerable; see ai/generation/llm.py)
+data/cache/
 
 # Uploaded ticket attachments (local dev storage)
 backend/uploads/
