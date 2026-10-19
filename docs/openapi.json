@@ -1,0 +1,2763 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "TicketSense API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register",
+        "operationId": "register_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__schemas__auth__UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_login_auth_login_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Me",
+        "operationId": "me_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__schemas__auth__UserOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/departments": {
+      "get": {
+        "tags": [
+          "departments"
+        ],
+        "summary": "List Departments",
+        "operationId": "list_departments_departments_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DepartmentOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Departments Departments Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/departments/{department_id}/threshold": {
+      "patch": {
+        "tags": [
+          "departments"
+        ],
+        "summary": "Update Department Threshold",
+        "description": "Sets the confidence score below which the Week 9 gate escalates a ticket for\nthis department instead of showing its draft to a reviewer. Existing tickets keep\nwhatever threshold was snapshotted onto them at scoring time (Ticket.\nconfidence_threshold) \u2014 this only changes what new tickets get.",
+        "operationId": "update_department_threshold_departments__department_id__threshold_patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "department_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Department Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepartmentThresholdUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepartmentOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets": {
+      "post": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "Create Ticket",
+        "operationId": "create_ticket_tickets_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_ticket_tickets_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "List Tickets",
+        "description": "The department-scoped ticket queue. A Department Engineer's own queue is just\nthis endpoint scoped to their department (see _visibility_filter); Admin can view\nany single department's queue with `?department_id=`, since Admin otherwise sees\nevery ticket. `?sort=priority` orders high -> medium -> low -> unclassified,\nmatching the Engineer queue UI's \"sortable by priority\" requirement.",
+        "operationId": "list_tickets_tickets_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          },
+          {
+            "name": "department_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Department Id"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TicketOut"
+                  },
+                  "title": "Response List Tickets Tickets Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets/{ticket_id}": {
+      "get": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "Get Ticket",
+        "operationId": "get_ticket_tickets__ticket_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets/{ticket_id}/attachment": {
+      "get": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "Get Ticket Attachment",
+        "description": "Streams the ticket's stored attachment back \u2014 same access check as viewing the\nticket itself. media_type isn't set explicitly: FileResponse infers it from the\nsaved filename's extension (preserved from upload, see create_ticket), which is\nmore precise than the coarse image/pdf/log bucket attachment_type stores.",
+        "operationId": "get_ticket_attachment_tickets__ticket_id__attachment_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets/{ticket_id}/evidence": {
+      "get": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "Get Ticket Evidence",
+        "description": "Retrieved evidence passages for this ticket \u2014 department-scoped at the query\nlevel (see ai/embeddings/retrieve.py). Reviewer-only, same reasoning as hiding\nconfidence_score from end_user (see app/schemas/tickets.py's build_ticket_out):\nthis is the AI's own reasoning material (other customers' resolved tickets,\ninternal KB resolution steps), not something a customer should see about their\nown ticket. Empty list if the ticket hasn't been routed to a department yet.",
+        "operationId": "get_ticket_evidence_tickets__ticket_id__evidence_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvidenceOut"
+                  },
+                  "title": "Response Get Ticket Evidence Tickets  Ticket Id  Evidence Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets/{ticket_id}/escalation": {
+      "get": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "Get Ticket Escalation",
+        "description": "The escalation record for a ticket the confidence gate (or a reviewer) sent\nstraight to a human \u2014 reviewer-only, same reasoning as hiding confidence_score\nfrom end_user (see app/schemas/tickets.py's build_ticket_out): the reason\nreferences the confidence score/threshold that triggered it, which is an AI\njudgment the end user never sees.",
+        "operationId": "get_ticket_escalation_tickets__ticket_id__escalation_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EscalationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets/{ticket_id}/feedback": {
+      "post": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "Submit Ticket Feedback",
+        "description": "Records a reviewer's Accept/Edit/Reject/Escalate/Doubt action on a drafted\nticket \u2014 the primary training signal for confidence-model retraining going\nforward (see docs/confidence-labelling-guide.md). Only valid on a ticket\ncurrently `drafted`: there's nothing to review before that, and reviewing twice\nwould silently overwrite the first reviewer's record. `edit`/`reject` intentionally\nleave `Ticket.ai_draft_reply` untouched \u2014 that's the AI's actual original output,\nan audit trail; the reviewer's edited text or rejection reason lives on the\n`Feedback` row instead, never overwriting what the AI produced. `doubt` (like\n`escalate`) sends the ticket back into the admin approval queue instead of\ndeciding it \u2014 see app/routers/escalations.py \u2014 for an engineer who isn't sure how\nto handle it rather than confidently escalating or rejecting.",
+        "operationId": "submit_ticket_feedback_tickets__ticket_id__feedback_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets/{ticket_id}/resolve-escalation": {
+      "post": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "Resolve Escalation",
+        "description": "Closes out an admin-approved escalation with the engineer's own hand-written\nresponse \u2014 there was never an AI draft to accept/edit/reject here (see\napp/routers/escalations.py's approve endpoint, which is what put this ticket in\nthe assigned engineer's queue in the first place). Recorded as a `resolve`\nFeedback row so it still shows up in that engineer's analytics as a resolved\nticket, but labels.py excludes it from confidence-model training \u2014 it's not a\njudgment on any AI output.",
+        "operationId": "resolve_escalation_tickets__ticket_id__resolve_escalation_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EscalationResolve"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "List Users",
+        "operationId": "list_users_users_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/app__schemas__users__UserOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Users Users Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Create User",
+        "description": "Admin-provisioned account creation \u2014 the only way to onboard a\ndepartment_engineer or admin (see app/routers/auth.py::register, which is\ndeliberately end_user-only). Previously this required the seed_demo_users.py\nscript; this closes that gap for the Week 10 admin user-management screen.",
+        "operationId": "create_user_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__schemas__users__UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/users/{user_id}": {
+      "patch": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Update User",
+        "description": "Role/department reassignment and activate/deactivate. `is_active=False`\ndoesn't delete anything \u2014 it just makes get_current_user reject that user's\ntoken on their next request (see app/dependencies.py), so their existing\ntickets/feedback stay intact.",
+        "operationId": "update_user_users__user_id__patch",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__schemas__users__UserOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/knowledge-base": {
+      "get": {
+        "tags": [
+          "knowledge-base"
+        ],
+        "summary": "List Knowledge Base",
+        "operationId": "list_knowledge_base_knowledge_base_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/KnowledgeBaseOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Knowledge Base Knowledge Base Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "knowledge-base"
+        ],
+        "summary": "Create Knowledge Base Article",
+        "description": "Admin-authored knowledge-base articles, in addition to the seeded ones from\ndb/seed/knowledge_base/ (ai/embeddings/embed_knowledge_base.py). Embeds the new\narticle's content immediately using the same model/normalization as that script \u2014\na KB row with no embedding row would be invisible to retrieve_evidence (Week 5),\nso this can't just insert the row and leave embedding for a later batch job.",
+        "operationId": "create_knowledge_base_article_knowledge_base_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/KnowledgeBaseCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KnowledgeBaseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/summary": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Analytics Summary",
+        "description": "Admin sees everything. A department_engineer can call this too (their own\nresolved/rejected/escalated/in_review numbers, for their own dashboard), but the\nsystem-wide and by_department/by_reviewer breakdowns aren't department-scoped\nfor them here \u2014 that's fine, since none of it is sensitive (every number is\nalready an aggregate, not tied to a specific customer or ticket), but by_reviewer\nis narrowed to just their own row below so they don't see other engineers'\nindividual performance.",
+        "operationId": "get_analytics_summary_analytics_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsSummary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/confidence-model": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Confidence Model Report",
+        "description": "How well the confidence score actually predicts human agreement \u2014 a\nreliability diagram (calibration) plus a day-by-day trend, both built from\nevery Feedback row with a resolvable label (see labels.label_from_feedback)\non a ticket that was actually scored. Real and synthetic bootstrap feedback are\npooled here (unlike /summary's real_feedback/synthetic_feedback split) because\ncalibration is a property of the model's whole training signal, not of who\nprovided it \u2014 total_labeled's real/synthetic breakdown is reported alongside so\nthe split is still visible, not hidden.",
+        "operationId": "get_confidence_model_report_analytics_confidence_model_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfidenceModelReport"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/escalations/pending": {
+      "get": {
+        "tags": [
+          "escalations"
+        ],
+        "summary": "List Pending Escalations",
+        "description": "Every escalation an admin hasn't approved or rejected yet, newest first. Only\nthe *latest* escalation per ticket matters \u2014 a ticket doubted twice (doubt ->\nadmin rejects -> somehow escalated again) would otherwise show stale rows for a\nticket that's already moved on, so this keeps only each ticket's most recent one.",
+        "operationId": "list_pending_escalations_escalations_pending_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PendingEscalationOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Pending Escalations Escalations Pending Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/escalations/{escalation_id}/approve": {
+      "post": {
+        "tags": [
+          "escalations"
+        ],
+        "summary": "Approve Escalation",
+        "description": "Approves the escalation and assigns it to a specific department_engineer, who\ncan then resolve it via POST /tickets/{id}/resolve-escalation. The ticket's own\nstatus stays `escalated` \u2014 approval doesn't change what stage the ticket is at,\nonly who's now responsible for it (see app/routers/tickets.py's\n_visibility_filter, which is what actually puts it in that engineer's queue).",
+        "operationId": "approve_escalation_escalations__escalation_id__approve_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "escalation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Escalation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EscalationApprove"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EscalationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/escalations/{escalation_id}/reject": {
+      "post": {
+        "tags": [
+          "escalations"
+        ],
+        "summary": "Reject Escalation",
+        "description": "Admin decides this escalation doesn't need routing to an engineer at all\n(e.g. a duplicate, or something the customer needs to resolve on their own) \u2014\ncloses the ticket directly, with no response ever generated. Distinct from\napproving-then-an-engineer-rejecting: there's no draft here to reject, and no\nengineer is ever involved.",
+        "operationId": "reject_escalation_escalations__escalation_id__reject_post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "escalation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Escalation Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EscalationReject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EscalationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/contacts": {
+      "get": {
+        "tags": [
+          "messages"
+        ],
+        "summary": "List Contacts",
+        "description": "Every account on the other side of the admin/engineer divide, each annotated\nwith that conversation's last message and unread count (both null/zero for a\ncontact never messaged yet) \u2014 active conversations sort first, so the widget\nopens on what's actually waiting on you.",
+        "operationId": "list_contacts_messages_contacts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ChatContactOut"
+                  },
+                  "type": "array",
+                  "title": "Response List Contacts Messages Contacts Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/messages/thread/{other_user_id}": {
+      "get": {
+        "tags": [
+          "messages"
+        ],
+        "summary": "Get Thread",
+        "operationId": "get_thread_messages_thread__other_user_id__get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "other_user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Other User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MessageOut"
+                  },
+                  "title": "Response Get Thread Messages Thread  Other User Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages": {
+      "post": {
+        "tags": [
+          "messages"
+        ],
+        "summary": "Send Message",
+        "operationId": "send_message_messages_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnalyticsSummary": {
+        "properties": {
+          "total_tickets": {
+            "type": "integer",
+            "title": "Total Tickets"
+          },
+          "by_status": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "By Status"
+          },
+          "scored_tickets": {
+            "type": "integer",
+            "title": "Scored Tickets"
+          },
+          "escalation_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Escalation Rate"
+          },
+          "confidence_distribution": {
+            "items": {
+              "$ref": "#/components/schemas/ConfidenceBucket"
+            },
+            "type": "array",
+            "title": "Confidence Distribution"
+          },
+          "by_department": {
+            "items": {
+              "$ref": "#/components/schemas/DepartmentBreakdown"
+            },
+            "type": "array",
+            "title": "By Department"
+          },
+          "by_reviewer": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewerBreakdown"
+            },
+            "type": "array",
+            "title": "By Reviewer"
+          },
+          "real_feedback": {
+            "$ref": "#/components/schemas/FeedbackSourceSummary"
+          },
+          "synthetic_feedback": {
+            "$ref": "#/components/schemas/FeedbackSourceSummary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_tickets",
+          "by_status",
+          "scored_tickets",
+          "escalation_rate",
+          "confidence_distribution",
+          "by_department",
+          "by_reviewer",
+          "real_feedback",
+          "synthetic_feedback"
+        ],
+        "title": "AnalyticsSummary"
+      },
+      "Body_create_ticket_tickets_post": {
+        "properties": {
+          "subject": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Subject"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Description"
+          },
+          "attachment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attachment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "subject",
+          "description"
+        ],
+        "title": "Body_create_ticket_tickets_post"
+      },
+      "Body_login_auth_login_post": {
+        "properties": {
+          "grant_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^password$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grant Type"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "title": "Password"
+          },
+          "scope": {
+            "type": "string",
+            "title": "Scope",
+            "default": ""
+          },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id"
+          },
+          "client_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "format": "password",
+            "title": "Client Secret"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "Body_login_auth_login_post"
+      },
+      "CalibrationBucket": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "avg_predicted_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Predicted Confidence"
+          },
+          "actual_agreement_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Agreement Rate"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "avg_predicted_confidence",
+          "actual_agreement_rate",
+          "count"
+        ],
+        "title": "CalibrationBucket",
+        "description": "One decile of predicted confidence, e.g. '70-80%', against what actually\nhappened for tickets scored in that range \u2014 a standard reliability-diagram\nbucket. A well-calibrated model has actual_agreement_rate tracking close to\nthe bucket's own range; count is 0 (both rates null) for a decile nothing has\nlanded in yet."
+      },
+      "ChatContactOut": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "User Id"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "department_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Name"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "last_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message"
+          },
+          "last_message_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Message At"
+          },
+          "unread_count": {
+            "type": "integer",
+            "title": "Unread Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "full_name",
+          "role",
+          "department_name",
+          "is_active",
+          "last_message",
+          "last_message_at",
+          "unread_count"
+        ],
+        "title": "ChatContactOut",
+        "description": "One entry in the chat widget's contact list \u2014 the other staff account plus\nenough of the conversation's own state (last message, unread count) that the\nwidget can render a thread list without a second request per contact."
+      },
+      "ConfidenceBucket": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "count"
+        ],
+        "title": "ConfidenceBucket"
+      },
+      "ConfidenceModelReport": {
+        "properties": {
+          "total_labeled": {
+            "type": "integer",
+            "title": "Total Labeled"
+          },
+          "real_labeled": {
+            "type": "integer",
+            "title": "Real Labeled"
+          },
+          "synthetic_labeled": {
+            "type": "integer",
+            "title": "Synthetic Labeled"
+          },
+          "overall_agreement_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Overall Agreement Rate"
+          },
+          "calibration": {
+            "items": {
+              "$ref": "#/components/schemas/CalibrationBucket"
+            },
+            "type": "array",
+            "title": "Calibration"
+          },
+          "daily_trend": {
+            "items": {
+              "$ref": "#/components/schemas/DailyTrendPoint"
+            },
+            "type": "array",
+            "title": "Daily Trend"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_labeled",
+          "real_labeled",
+          "synthetic_labeled",
+          "overall_agreement_rate",
+          "calibration",
+          "daily_trend"
+        ],
+        "title": "ConfidenceModelReport",
+        "description": "The confidence model's own health, as distinct from AnalyticsSummary's\nticket/engineer-operations view \u2014 built from every scored ticket with a\nfeedback-derived label (see ai/confidence/labels.py::label_from_feedback),\nreal and synthetic bootstrap combined, since both are what the model was\nactually trained and calibrated against."
+      },
+      "DailyTrendPoint": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "avg_confidence": {
+            "type": "number",
+            "title": "Avg Confidence"
+          },
+          "agreement_rate": {
+            "type": "number",
+            "title": "Agreement Rate"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "avg_confidence",
+          "agreement_rate",
+          "count"
+        ],
+        "title": "DailyTrendPoint"
+      },
+      "DepartmentBreakdown": {
+        "properties": {
+          "department_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Department Id"
+          },
+          "department_name": {
+            "type": "string",
+            "title": "Department Name"
+          },
+          "total_tickets": {
+            "type": "integer",
+            "title": "Total Tickets"
+          },
+          "scored_tickets": {
+            "type": "integer",
+            "title": "Scored Tickets"
+          },
+          "escalation_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Escalation Rate"
+          },
+          "avg_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "department_id",
+          "department_name",
+          "total_tickets",
+          "scored_tickets",
+          "escalation_rate",
+          "avg_confidence"
+        ],
+        "title": "DepartmentBreakdown"
+      },
+      "DepartmentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "confidence_threshold": {
+            "type": "number",
+            "title": "Confidence Threshold"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "confidence_threshold"
+        ],
+        "title": "DepartmentOut"
+      },
+      "DepartmentThresholdUpdate": {
+        "properties": {
+          "confidence_threshold": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence Threshold"
+          }
+        },
+        "type": "object",
+        "required": [
+          "confidence_threshold"
+        ],
+        "title": "DepartmentThresholdUpdate"
+      },
+      "EscalationApprove": {
+        "properties": {
+          "engineer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Engineer Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "engineer_id"
+        ],
+        "title": "EscalationApprove"
+      },
+      "EscalationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "ticket_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ticket Id"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "confidence_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence Score"
+          },
+          "escalated_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Escalated To"
+          },
+          "admin_decision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Admin Decision"
+          },
+          "admin_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Admin Note"
+          },
+          "resolved_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resolved At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticket_id",
+          "reason",
+          "confidence_score",
+          "escalated_to",
+          "admin_decision",
+          "admin_note",
+          "resolved_at",
+          "created_at"
+        ],
+        "title": "EscalationOut"
+      },
+      "EscalationReject": {
+        "properties": {
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "note"
+        ],
+        "title": "EscalationReject"
+      },
+      "EscalationResolve": {
+        "properties": {
+          "response_text": {
+            "type": "string",
+            "title": "Response Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "response_text"
+        ],
+        "title": "EscalationResolve"
+      },
+      "EvidenceOut": {
+        "properties": {
+          "source_type": {
+            "type": "string",
+            "title": "Source Type"
+          },
+          "source_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Source Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "snippet": {
+            "type": "string",
+            "title": "Snippet"
+          },
+          "distance": {
+            "type": "number",
+            "title": "Distance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source_type",
+          "source_id",
+          "title",
+          "snippet",
+          "distance"
+        ],
+        "title": "EvidenceOut"
+      },
+      "FeedbackCreate": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "accept",
+              "edit",
+              "reject",
+              "escalate",
+              "doubt"
+            ],
+            "title": "Action"
+          },
+          "edited_reply": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited Reply"
+          },
+          "reject_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reject Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "FeedbackCreate"
+      },
+      "FeedbackSourceSummary": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "review_actions": {
+            "$ref": "#/components/schemas/ReviewActionCounts"
+          },
+          "agreement_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agreement Rate"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "review_actions",
+          "agreement_rate"
+        ],
+        "title": "FeedbackSourceSummary",
+        "description": "One reviewer-feedback source's own summary \u2014 kept separate for real vs.\nsynthetic (see ai/confidence/labels.py's SYNTHETIC_REVIEWER_EMAIL) rather than\nblended into one number, since synthetic bootstrap rows currently far outnumber\nreal ones and a blended rate would be dominated by data nobody actually decided."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "KnowledgeBaseCreate": {
+        "properties": {
+          "department_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Department Id"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Content"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "department_id",
+          "title",
+          "content"
+        ],
+        "title": "KnowledgeBaseCreate"
+      },
+      "KnowledgeBaseOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "department_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Department Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "department_id",
+          "title",
+          "source_url",
+          "updated_at"
+        ],
+        "title": "KnowledgeBaseOut"
+      },
+      "MessageCreate": {
+        "properties": {
+          "recipient_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Recipient Id"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          }
+        },
+        "type": "object",
+        "required": [
+          "recipient_id",
+          "body"
+        ],
+        "title": "MessageCreate"
+      },
+      "MessageOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "sender_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Sender Id"
+          },
+          "recipient_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Recipient Id"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "read_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Read At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "sender_id",
+          "recipient_id",
+          "body",
+          "read_at",
+          "created_at"
+        ],
+        "title": "MessageOut"
+      },
+      "PendingEscalationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "ticket_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ticket Id"
+          },
+          "ticket_subject": {
+            "type": "string",
+            "title": "Ticket Subject"
+          },
+          "department_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Id"
+          },
+          "department_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Name"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "confidence_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence Score"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticket_id",
+          "ticket_subject",
+          "department_id",
+          "department_name",
+          "priority",
+          "reason",
+          "confidence_score",
+          "created_at"
+        ],
+        "title": "PendingEscalationOut",
+        "description": "One row in the admin approval queue \u2014 the escalation plus enough of its\nticket's own context (subject, department, priority) that admin doesn't need a\nsecond request per row just to render the list."
+      },
+      "RegisterRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "full_name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Full Name"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 8,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "full_name",
+          "password"
+        ],
+        "title": "RegisterRequest"
+      },
+      "ReviewActionCounts": {
+        "properties": {
+          "accept": {
+            "type": "integer",
+            "title": "Accept",
+            "default": 0
+          },
+          "edit": {
+            "type": "integer",
+            "title": "Edit",
+            "default": 0
+          },
+          "reject": {
+            "type": "integer",
+            "title": "Reject",
+            "default": 0
+          },
+          "escalate": {
+            "type": "integer",
+            "title": "Escalate",
+            "default": 0
+          },
+          "doubt": {
+            "type": "integer",
+            "title": "Doubt",
+            "default": 0
+          },
+          "resolve": {
+            "type": "integer",
+            "title": "Resolve",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "ReviewActionCounts"
+      },
+      "ReviewerBreakdown": {
+        "properties": {
+          "reviewer_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Reviewer Id"
+          },
+          "reviewer_name": {
+            "type": "string",
+            "title": "Reviewer Name"
+          },
+          "reviewer_email": {
+            "type": "string",
+            "title": "Reviewer Email"
+          },
+          "department_name": {
+            "type": "string",
+            "title": "Department Name"
+          },
+          "resolved": {
+            "type": "integer",
+            "title": "Resolved"
+          },
+          "rejected": {
+            "type": "integer",
+            "title": "Rejected"
+          },
+          "escalated": {
+            "type": "integer",
+            "title": "Escalated"
+          },
+          "in_review": {
+            "type": "integer",
+            "title": "In Review"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reviewer_id",
+          "reviewer_name",
+          "reviewer_email",
+          "department_name",
+          "resolved",
+          "rejected",
+          "escalated",
+          "in_review"
+        ],
+        "title": "ReviewerBreakdown",
+        "description": "One department_engineer's own record \u2014 excludes the synthetic-reviewer\nplaceholder (see SYNTHETIC_REVIEWER_EMAIL), since that account isn't a real\nengineer and blending it in would misattribute bootstrap data to a person.\n`resolved` is accept + edit + resolve combined (all three end a ticket, whether\nit had a draft or not); `rejected` is reject; `escalated` is escalate + doubt\ncombined (both send a ticket back without the engineer deciding it).\n`in_review` is *not* per-reviewer data \u2014 it's the current `drafted` count for\nthat engineer's department queue (shared by whoever reviews there), included\nhere so the table reads as one complete row per engineer rather than requiring\na second lookup against by_department."
+      },
+      "TicketOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "submitted_by": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Submitted By"
+          },
+          "department_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Id"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "attachment_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attachment Path"
+          },
+          "attachment_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attachment Type"
+          },
+          "attachment_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attachment Text"
+          },
+          "ocr_confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ocr Confidence"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "sentiment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sentiment"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "ai_draft_reply": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Draft Reply"
+          },
+          "ai_draft_citations": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Draft Citations"
+          },
+          "confidence_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence Score"
+          },
+          "confidence_features": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence Features"
+          },
+          "confidence_threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence Threshold"
+          },
+          "final_response": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Response"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "submitted_by",
+          "department_id",
+          "subject",
+          "description",
+          "attachment_path",
+          "attachment_type",
+          "attachment_text",
+          "ocr_confidence",
+          "priority",
+          "sentiment",
+          "status",
+          "ai_draft_reply",
+          "ai_draft_citations",
+          "confidence_score",
+          "confidence_features",
+          "confidence_threshold",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "TicketOut"
+      },
+      "TokenResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token"
+        ],
+        "title": "TokenResponse"
+      },
+      "UserCreate": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "end_user",
+              "department_engineer",
+              "admin"
+            ],
+            "title": "Role"
+          },
+          "department_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "full_name",
+          "password",
+          "role"
+        ],
+        "title": "UserCreate",
+        "description": "Admin-only account creation for the two roles that can't self-register via\nPOST /auth/register (see app/routers/auth.py) \u2014 department_engineer and admin.\nBefore this existed, the only way to onboard a new engineer was the\nseed_demo_users.py script, which isn't something an admin can run in production."
+      },
+      "UserUpdate": {
+        "properties": {
+          "role": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "end_user",
+                  "department_engineer",
+                  "admin"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "department_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Id"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "title": "UserUpdate",
+        "description": "Partial update \u2014 role/department reassignment and activate/deactivate.\nAll fields optional; only the ones provided are changed."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "app__schemas__auth__UserOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "department_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "full_name",
+          "role"
+        ],
+        "title": "UserOut"
+      },
+      "app__schemas__users__UserOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "full_name": {
+            "type": "string",
+            "title": "Full Name"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "department_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Department Id"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "full_name",
+          "role",
+          "department_id",
+          "is_active"
+        ],
+        "title": "UserOut"
+      }
+    },
+    "securitySchemes": {
+      "OAuth2PasswordBearer": {
+        "type": "oauth2",
+        "flows": {
+          "password": {
+            "scopes": {},
+            "tokenUrl": "auth/login"
+          }
+        }
+      }
+    }
+  }
+}
