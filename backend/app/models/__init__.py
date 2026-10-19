@@ -1,3 +1,4 @@
+from app.models.annotation import AnnotationAssignment, Annotator, Label
 from app.models.base import Base
 from app.models.department import Department
 from app.models.draft import BenchmarkTicket, Draft, DraftClaim
@@ -12,6 +13,8 @@ from app.models.ticket import Ticket
 from app.models.user import User
 
 __all__ = [
+    "AnnotationAssignment",
+    "Annotator",
     "Base",
     "BenchmarkTicket",
     "Department",
@@ -22,6 +25,7 @@ __all__ = [
     "Feedback",
     "KBChunk",
     "KnowledgeBase",
+    "Label",
     "Message",
     "RetrievalHit",
     "RetrievalRun",
