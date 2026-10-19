@@ -8,6 +8,7 @@
     python tasks.py openapi     write docs/openapi.json from the running app
     python tasks.py reproduce   regenerate every evaluation table and figure
     python tasks.py demo        seed demo users and sample tickets
+    python tasks.py e2e         browser end-to-end tests against the running stack
 """
 
 from __future__ import annotations
@@ -75,7 +76,11 @@ def demo() -> None:
     run("uv", "run", "python", "-m", "app.scripts.seed_demo_users", cwd=BACKEND)
 
 
-TASKS = {f.__name__: f for f in (setup, up, lint, test, openapi, reproduce, demo)}
+def e2e() -> None:
+    run("npx", "playwright", "test", cwd=ROOT / "frontend")
+
+
+TASKS = {f.__name__: f for f in (setup, up, lint, test, openapi, reproduce, demo, e2e)}
 
 if __name__ == "__main__":
     if len(sys.argv) != 2 or sys.argv[1] not in TASKS:

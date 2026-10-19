@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { getMe, login as apiLogin, type User } from "../api/client";
+import { ApiError, getMe, login as apiLogin, type User } from "../api/client";
 
 const TOKEN_KEY = "ticketsense_token";
 
@@ -26,9 +26,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     getMe(token)
       .then(setUser)
-      .catch(() => {
-        localStorage.removeItem(TOKEN_KEY);
-        setToken(null);
+      .catch((err) => {
+        // Only a rejected token ends the session. A network error -- including the
+        // fetch the browser aborts when the page reloads or navigates mid-request --
+        // used to clear the stored token too, silently logging the user out.
+        if (err instanceof ApiError && err.status === 401) {
+          localStorage.removeItem(TOKEN_KEY);
+          setToken(null);
+        }
         setUser(null);
       })
       .finally(() => setLoading(false));
