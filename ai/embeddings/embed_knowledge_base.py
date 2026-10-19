@@ -35,10 +35,12 @@ BACKEND_DIR = Path(__file__).resolve().parents[2] / "backend"
 sys.path.insert(0, str(BACKEND_DIR))
 
 from app.database import SessionLocal  # noqa: E402
-from app.models import Department, Embedding, KnowledgeBase  # noqa: E402
+from app.models import Department, Embedding, KBChunk, KnowledgeBase  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))  # ai/
 from benchmark.kb import parse_article  # noqa: E402
+from benchmark.taxonomy import load_taxonomy  # noqa: E402
+from chunking import chunk_article  # noqa: E402
 
 KB_DIR = Path(__file__).resolve().parents[2] / "data" / "kb"
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
@@ -59,9 +61,12 @@ async def main(prune_stale: bool = False) -> None:
     print(f"loading {MODEL_NAME} ...")
     model = SentenceTransformer(MODEL_NAME)
 
+    topic_names = {t.id: t.name for t in load_taxonomy().topics}
+
     async with SessionLocal() as db:
         department_cache: dict[str, Department] = {}
         embedded = 0
+        n_chunks = 0
         produced: set[str] = set()
         kept_ids: set = set()
 
@@ -117,6 +122,23 @@ async def main(prune_stale: bool = False) -> None:
                         embedding=vector,
                     )
                 )
+
+                # Section chunks with dense + full-text vectors (kb_chunks, migration 0012).
+                await db.execute(delete(KBChunk).where(KBChunk.knowledge_base_id == article.id))
+                chunks = chunk_article(parsed.title, topic_names.get(parsed.topic or ""), parsed.sections)
+                chunk_vectors = model.encode([c.text for c in chunks], normalize_embeddings=True) if chunks else []
+                for chunk, chunk_vector in zip(chunks, chunk_vectors):
+                    db.add(
+                        KBChunk(
+                            knowledge_base_id=article.id,
+                            chunk_index=chunk.index,
+                            sections=",".join(chunk.sections),
+                            text=chunk.text,
+                            n_tokens=chunk.n_tokens,
+                            embedding=chunk_vector.tolist(),
+                        )
+                    )
+                n_chunks += len(chunks)
                 embedded += 1
                 print(f"embedded: {department_name}/{parsed.id or title}{'' if parsed.served else ' (withheld)'}")
 
@@ -134,7 +156,7 @@ async def main(prune_stale: bool = False) -> None:
 
         await db.commit()
 
-    print(f"\n{embedded} articles embedded.")
+    print(f"\n{embedded} articles embedded, {n_chunks} chunks written to kb_chunks.")
 
 
 if __name__ == "__main__":
