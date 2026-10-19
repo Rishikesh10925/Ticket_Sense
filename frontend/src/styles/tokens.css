@@ -86,6 +86,14 @@
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
 
+  /* Lanes (ADR 004): always paired with a shape in LaneBadge, never colour alone. */
+  --lane-fast: #15803d;
+  --lane-fast-bg: #dcfce7;
+  --lane-assisted: #a16207;
+  --lane-assisted-bg: #fef3c7;
+  --lane-escalate: #475569;
+  --lane-escalate-bg: #e2e8f0;
+
   color-scheme: light;
 }
 
@@ -97,6 +105,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
+
+    --lane-fast: #4ade80;
+    --lane-fast-bg: rgba(74, 222, 128, 0.14);
+    --lane-assisted: #fbbf24;
+    --lane-assisted-bg: rgba(251, 191, 36, 0.14);
+    --lane-escalate: #cbd5e1;
+    --lane-escalate-bg: rgba(203, 213, 225, 0.12);
 
     --color-primary: #6366f1;
     --color-primary-hover: #818cf8;
@@ -145,6 +160,13 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
+
+  --lane-fast: #4ade80;
+  --lane-fast-bg: rgba(74, 222, 128, 0.14);
+  --lane-assisted: #fbbf24;
+  --lane-assisted-bg: rgba(251, 191, 36, 0.14);
+  --lane-escalate: #cbd5e1;
+  --lane-escalate-bg: rgba(203, 213, 225, 0.12);
 
   --color-primary: #6366f1;
   --color-primary-hover: #818cf8;

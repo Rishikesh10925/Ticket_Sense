@@ -5,6 +5,7 @@ export { default as ConfidenceIndicator } from "./ConfidenceIndicator";
 export { default as ConfirmDialog } from "./ConfirmDialog";
 export { default as Card } from "./Card";
 export { default as FormField } from "./FormField";
+export { default as LaneBadge, type Lane } from "./LaneBadge";
 export { default as NotificationBell } from "./NotificationBell";
 export { default as ReviewActions } from "./ReviewActions";
 export { default as StatCard } from "./StatCard";
