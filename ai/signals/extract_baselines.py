@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
 sys.path.insert(0, str(ROOT / "ai"))
 
+from generation.drafting import DRAFT_PROMPT_VERSION  # noqa: E402
 from signals.baselines import BASELINE_VERSION, DraftSignals  # noqa: E402
 
 FIELDS = ["draft_id", "ticket_id", "group_id", "top1_similarity", "top1_rerank", "groundedness"]
@@ -77,7 +78,7 @@ def read_csv(path: Path) -> list[DraftSignals]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--benchmark-version", default="v1")
-    parser.add_argument("--prompt-version", default="draft-v1")
+    parser.add_argument("--prompt-version", default=DRAFT_PROMPT_VERSION)
     parser.add_argument("--out", default="data/signals/baselines_v1.csv")
     args = parser.parse_args()
     signals, unlogged = asyncio.run(extract(args.benchmark_version, args.prompt_version))

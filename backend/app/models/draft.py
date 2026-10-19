@@ -113,3 +113,16 @@ class JudgeVerdict(UUIDPKMixin, CreatedAtMixin, Base):
     rationale: Mapped[str] = mapped_column(Text(), nullable=False)
     model: Mapped[str] = mapped_column(String(64), nullable=False)
     prompt_version: Mapped[str] = mapped_column(String(32), nullable=False)
+
+
+class SignalVector(UUIDPKMixin, CreatedAtMixin, Base):
+    """The confidence model's inputs for one draft (migration 0019; ai/signals/features.py)."""
+
+    __tablename__ = "signal_vectors"
+    __table_args__ = (UniqueConstraint("draft_id", "feature_version", name="uq_signal_vectors_draft_version"),)
+
+    draft_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("drafts.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    feature_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    features: Mapped[dict] = mapped_column(JSONB(), nullable=False)

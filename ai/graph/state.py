@@ -34,6 +34,8 @@ class TicketState(TypedDict, total=False):
     passages: list[dict]  # numbered evidence the drafter saw: n, article_id, article_key, chunk_id, title, text
     draft_result: dict | None  # structured draft: schema_valid, can_answer, steps, rejection, shown, ...
     grounding: dict | None  # claim check: groundedness, min/mean support, claims, weakest
+    retrieval_candidates: list[dict]  # every fused candidate with its ranks and scores
+    signals: dict | None  # the signal vector (ai/signals/features.py)
     draft: str | None  # rendered reply text, only when the draft is shown
     citations: list[dict]
     confidence_score: float | None

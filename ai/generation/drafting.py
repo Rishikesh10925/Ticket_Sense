@@ -29,7 +29,7 @@ from dataclasses import dataclass, field
 
 from generation.llm import LLMClient, LLMRequest
 
-DRAFT_PROMPT_VERSION = "draft-v1"
+DRAFT_PROMPT_VERSION = "draft-v2"
 MAX_STEPS = 8
 _TAGS = ("ticket", "attachment", "evidence", "passage", "instructions", "system")
 _TAG_RE = re.compile(r"</?\s*(" + "|".join(_TAGS) + r")\b[^>]*>", re.IGNORECASE)
@@ -59,7 +59,9 @@ SCHEMA = {
                 "type": "object",
                 "properties": {
                     "text": {"type": "string"},
-                    "citations": {"type": "array", "items": {"type": "integer"}},
+                    # minItems 1 (draft-v2): with constrained decoding the model cannot emit an
+                    # uncited step; draft-v1 lost 6% of drafts to "step without citation".
+                    "citations": {"type": "array", "items": {"type": "integer"}, "minItems": 1},
                 },
                 "required": ["text", "citations"],
             },

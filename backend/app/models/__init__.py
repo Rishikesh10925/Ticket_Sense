@@ -1,7 +1,7 @@
 from app.models.annotation import AnnotationAssignment, Annotator, Label
 from app.models.base import Base
 from app.models.department import Department
-from app.models.draft import BenchmarkTicket, Draft, DraftClaim, JudgeVerdict
+from app.models.draft import BenchmarkTicket, Draft, DraftClaim, JudgeVerdict, SignalVector
 from app.models.embedding import Embedding
 from app.models.escalation import Escalation
 from app.models.feedback import Feedback
@@ -21,6 +21,7 @@ __all__ = [
     "Draft",
     "DraftClaim",
     "JudgeVerdict",
+    "SignalVector",
     "Embedding",
     "Escalation",
     "Feedback",

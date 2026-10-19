@@ -25,7 +25,7 @@ from app.config import settings
 from app.database import SessionLocal
 from app.models import Department, Escalation, Ticket
 from app.models.department import DEFAULT_CONFIDENCE_THRESHOLD
-from app.models.draft import Draft, DraftClaim
+from app.models.draft import Draft, DraftClaim, SignalVector
 from app.services.ticket_lifecycle import TicketStatus, transition
 
 from generation.llm import get_llm_client  # noqa: E402
@@ -135,6 +135,14 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
             draft_row = _draft_row(ticket.id, result)
             if draft_row is not None:
                 db.add(draft_row)
+                signals = result.get("signals")
+                if signals:
+                    await db.flush()
+                    db.add(
+                        SignalVector(
+                            draft_id=draft_row.id, feature_version=signals["feature_version"], features=signals
+                        )
+                    )
 
             # score/threshold/features are the full log of "what the gate saw" — see
             # docs/langgraph-pipeline.md for why no separate decision-log table was added.

@@ -208,3 +208,27 @@ def test_draft_node_screens_out_a_cited_but_injected_command():
     assert result["draft_result"]["screen"]["blocked"] is True
     assert result["draft_result"]["shown"] is False and result["draft"] is None
     assert result["draft_result"]["rejection"].startswith("screen:")
+
+
+def test_signals_node_builds_the_vector_from_pipeline_state():
+    from graph.nodes import make_signals_node
+    from signals.features import FEATURE_NAMES
+
+    state = {
+        "subject": "VPN broken",
+        "description": "Can't connect, error 619",
+        "retrieval_candidates": [
+            {"article_key": "NET-VPN-001", "keyword_rank": 1, "dense_rank": 1, "dense_score": 0.8,
+             "fused_score": 0.03, "rerank_score": 3.0, "final_rank": 1, "updated_at": "2026-08-01T00:00:00+00:00",
+             "text": "Restart the VPN client."},
+        ],
+        "draft_result": {"steps": [{"text": "Restart the VPN client.", "citations": [1]}], "can_answer": True,
+                         "schema_valid": True, "missing_information": []},
+        "grounding": {"claims": [{"support": 0.95, "cited": [1]}]},
+        "retrieval_probe": 0.35,
+        "classification": {"department": {"max_prob": 0.88, "entropy": 0.3}},
+    }
+    signals = asyncio.run(make_signals_node()(state))["signals"]
+    assert set(FEATURE_NAMES) <= set(signals)
+    assert signals["gr_supported_share"] == 1.0 and signals["rt_probe_margin"] == 0.45
+    assert signals["tk_has_error_code"] == 1.0
