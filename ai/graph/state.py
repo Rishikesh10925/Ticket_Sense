@@ -25,7 +25,11 @@ class TicketState(TypedDict, total=False):
     sentiment: str | None
     evidence: list[Any]  # list[embeddings.retrieve.EvidenceResult]
     retrieval_probe: float | None  # best dense match in another department (routing signal)
-    draft: str | None
+    retrieval_run_id: str | None
+    passages: list[dict]  # numbered evidence the drafter saw: n, article_id, article_key, chunk_id, title, text
+    draft_result: dict | None  # structured draft: schema_valid, can_answer, steps, rejection, shown, ...
+    grounding: dict | None  # claim check: groundedness, min/mean support, claims, weakest
+    draft: str | None  # rendered reply text, only when the draft is shown
     citations: list[dict]
     confidence_score: float | None
     confidence_features: dict | None
