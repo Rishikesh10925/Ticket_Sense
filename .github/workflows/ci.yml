@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # gitleaks scans the pushed commit range and needs full history
       - uses: astral-sh/setup-uv@v6
       - name: Ruff
         run: uvx ruff@0.14.0 check backend ai data

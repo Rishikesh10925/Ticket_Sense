@@ -44,3 +44,4 @@ data/cache/
 
 # Uploaded ticket attachments (local dev storage)
 backend/uploads/
+.coverage
