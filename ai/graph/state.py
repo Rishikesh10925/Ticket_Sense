@@ -24,6 +24,7 @@ class TicketState(TypedDict, total=False):
     priority: str | None
     sentiment: str | None
     evidence: list[Any]  # list[embeddings.retrieve.EvidenceResult]
+    retrieval_probe: float | None  # best dense match in another department (routing signal)
     draft: str | None
     citations: list[dict]
     confidence_score: float | None

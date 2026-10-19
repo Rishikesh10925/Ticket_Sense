@@ -37,3 +37,13 @@ def test_long_resolution_is_split_at_steps():
     assert len(chunks) > 2
     assert all(c.n_tokens <= 125 for c in chunks)
     assert all(estimate_tokens(c.text) == c.n_tokens for c in chunks)
+
+
+def test_free_text_is_chunked_when_no_template_sections():
+    from chunking import chunk_markdown
+
+    body = " ".join(f"Sentence number {i} about the printer queue." for i in range(80))
+    chunks = chunk_markdown("Printer help", None, body, max_tokens=120)
+    assert len(chunks) > 1 and all(c.sections == ("text",) and c.n_tokens <= 125 for c in chunks)
+    templ = chunk_markdown("T", "x", "## Symptom\nA\n\n## Resolution steps\n1. B\n2. C")
+    assert templ[0].sections == ("Symptom", "Resolution steps")

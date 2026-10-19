@@ -82,3 +82,24 @@ def chunk_article(title: str, topic_name: str | None, sections: dict[str, str], 
         blocks.append(block)
     flush()
     return chunks
+
+
+_HEADING = re.compile(r"^##\s+(.+?)\s*$", re.MULTILINE)
+
+
+def chunk_markdown(title: str, topic_name: str | None, body: str, max_tokens: int = MAX_TOKENS) -> list[Chunk]:
+    """Chunk free-form markdown (for example an article an admin types in the UI). Uses
+    the template sections when present; otherwise splits the whole text by sentences."""
+    heads = list(_HEADING.finditer(body))
+    sections = {
+        h.group(1).strip(): body[h.end(): heads[i + 1].start() if i + 1 < len(heads) else len(body)].strip()
+        for i, h in enumerate(heads)
+    }
+    if any(name in sections for name in CHUNK_SECTIONS):
+        return chunk_article(title, topic_name, sections, max_tokens)
+    header = f"{title} ({topic_name})" if topic_name else title
+    parts = _split_long("text", body.strip(), max_tokens - estimate_tokens(header))
+    return [
+        Chunk(i, ("text",), f"{header}\n{part}", estimate_tokens(f"{header}\n{part}"))
+        for i, part in enumerate(p for p in parts if p)
+    ]

@@ -163,3 +163,30 @@ def test_admin_threshold_must_be_within_zero_one(api):
         headers={"Authorization": f"Bearer {admin_token}"},
     )
     assert resp.status_code == 422
+
+
+def test_admin_created_article_is_chunked_for_hybrid_retrieval(api):
+    from app.models import KBChunk
+
+    dept_id = _department_id_sync("Networking")
+    _create_admin_sync("admin_kb_chunks@example.com")
+    token = api.post(
+        "/auth/login", data={"username": "admin_kb_chunks@example.com", "password": "password123"}
+    ).json()["access_token"]
+    resp = api.post(
+        "/knowledge-base",
+        json={"department_id": dept_id, "title": "Printer offline", "content": "Restart the print spooler. " * 40},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 201
+
+    async def _count():
+        engine = create_async_engine(settings.database_url)
+        session_factory = async_sessionmaker(engine, expire_on_commit=False)
+        async with session_factory() as db:
+            rows = list(await db.scalars(select(KBChunk).where(KBChunk.knowledge_base_id == resp.json()["id"])))
+        await engine.dispose()
+        return rows
+
+    chunks = asyncio.run(_count())
+    assert chunks and all(c.text.startswith("Printer offline") for c in chunks)
