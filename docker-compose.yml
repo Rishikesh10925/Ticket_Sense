@@ -28,6 +28,8 @@ services:
       # Local GPU model served by Ollama on the host (ADR 002).
       OLLAMA_HOST: ${OLLAMA_HOST_FROM_DOCKER:-http://host.docker.internal:11434}
       LLM_MODEL: ${LLM_MODEL:-qwen2.5:7b-instruct}
+      LLM_CLIENT: ${LLM_CLIENT:-ollama}
+      GROUNDING_SCORER: ${GROUNDING_SCORER:-nli}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:

@@ -17,6 +17,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import sqlite3
 import threading
 import time
@@ -157,6 +158,33 @@ class FakeLLMClient(LLMClient):
         )
 
 
+_PASSAGE_RE = re.compile(r'<passage n="(\d+)"[^>]*>\n(.*?)\n</passage>', re.DOTALL)
+
+
+class ExtractiveStubClient(LLMClient):
+    """Offline drafter for CI, tests and machines without a GPU (LLM_CLIENT=stub).
+    Answers a drafting prompt with the first sentence of each evidence passage, cited
+    to that passage, in the drafting schema. It is not a model and is never used for
+    benchmark results."""
+
+    model = "extractive-stub"
+
+    def complete(self, request: LLMRequest) -> LLMResponse:
+        steps = []
+        for n, text in _PASSAGE_RE.findall(request.user)[:3]:
+            body = " ".join(line for line in text.splitlines() if not line.startswith("#")).strip()
+            sentence = re.split(r"(?<=[.!?])\s+", body)[0] if body else ""
+            if sentence:
+                steps.append({"text": sentence, "citations": [int(n)]})
+        out = {
+            "can_answer": bool(steps),
+            "steps": steps,
+            "missing_information": [] if steps else ["No evidence was found for this ticket."],
+        }
+        text = json.dumps(out)
+        return LLMResponse(text=text, model=self.model, token_logprobs=[-0.05] * 8 if request.logprobs else None)
+
+
 def cache_key(model: str, request: LLMRequest) -> str:
     material = json.dumps({"model": model, **asdict(request)}, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(material.encode("utf-8")).hexdigest()
@@ -211,7 +239,7 @@ class CachedLLMClient(LLMClient):
         self._conn.close()
 
 
-_CLIENTS = {"ollama": OllamaClient, "fake": FakeLLMClient}
+_CLIENTS = {"ollama": OllamaClient, "fake": FakeLLMClient, "stub": ExtractiveStubClient}
 
 
 def get_llm_client(provider: str | None = None, model: str | None = None, cache: bool = True) -> LLMClient:
@@ -227,6 +255,7 @@ def get_llm_client(provider: str | None = None, model: str | None = None, cache:
 
 __all__ = [
     "CachedLLMClient",
+    "ExtractiveStubClient",
     "FakeLLMClient",
     "LLMClient",
     "LLMError",
