@@ -856,7 +856,7 @@
           "knowledge-base"
         ],
         "summary": "Create Knowledge Base Article",
-        "description": "Admin-authored knowledge-base articles, in addition to the seeded ones from\ndb/seed/knowledge_base/ (ai/embeddings/embed_knowledge_base.py). Embeds the new\narticle's content immediately using the same model/normalization as that script \u2014\na KB row with no embedding row would be invisible to retrieve_evidence (Week 5),\nso this can't just insert the row and leave embedding for a later batch job.",
+        "description": "Admin-authored knowledge-base articles, in addition to the seeded ones from\ndata/kb/ (ai/embeddings/embed_knowledge_base.py). Embeds the new\narticle's content immediately using the same model/normalization as that script \u2014\na KB row with no embedding row would be invisible to retrieve_evidence (Week 5),\nso this can't just insert the row and leave embedding for a later batch job.",
         "operationId": "create_knowledge_base_article_knowledge_base_post",
         "requestBody": {
           "content": {

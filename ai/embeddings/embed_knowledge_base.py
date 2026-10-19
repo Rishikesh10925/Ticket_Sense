@@ -1,6 +1,6 @@
 """Generate embeddings for the authored knowledge-base articles.
 
-Reads every db/seed/knowledge_base/<department>/*.md article, upserts it into the
+Reads every data/kb/<department>/*.md article, upserts it into the
 `knowledge_base` table, embeds its content with sentence-transformers/all-MiniLM-L6-v2
 (384-dim, matching backend/app/models/embedding.py's EMBEDDING_DIM and
 docs/architecture.md), and stores the result in the `embeddings` table. Safe to re-run —
@@ -27,7 +27,7 @@ sys.path.insert(0, str(BACKEND_DIR))
 from app.database import SessionLocal  # noqa: E402
 from app.models import Department, Embedding, KnowledgeBase  # noqa: E402
 
-KB_DIR = Path(__file__).resolve().parents[2] / "db" / "seed" / "knowledge_base"
+KB_DIR = Path(__file__).resolve().parents[2] / "data" / "kb"
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 FOLDER_TO_DEPARTMENT = {

@@ -7,7 +7,7 @@ both build on.
 
 ## Two evidence sources
 
-1. **Knowledge base** — the 60 authored articles (`db/seed/knowledge_base/`), embedded
+1. **Knowledge base** — the 60 authored articles (`data/kb/`), embedded
    by `ai/embeddings/embed_knowledge_base.py` since Week 3.
 2. **Resolved tickets** — new this week. No real resolved-ticket history exists yet
    (the review/drafting workflow that would produce one isn't built until a later

@@ -3,7 +3,7 @@
 ## embeddings/embed_knowledge_base.py
 
 Generates embeddings for the authored knowledge-base articles in
-`db/seed/knowledge_base/`, using `sentence-transformers/all-MiniLM-L6-v2` (384-dim,
+`data/kb/`, using `sentence-transformers/all-MiniLM-L6-v2` (384-dim,
 matching `backend/app/models/embedding.py`). Upserts into the `knowledge_base` and
 `embeddings` tables — safe to re-run.
 
