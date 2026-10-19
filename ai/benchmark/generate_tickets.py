@@ -67,6 +67,26 @@ C2_KINDS = {
     "such as a new feature, a custom report, training, or advice on a purchase.",
 }
 
+# Out-of-scope C2 requests: plausible things to ask a department that no KB article covers.
+# Rotated per department so 60 C2 scenarios do not collapse into near-duplicates.
+C2_THEMES = {
+    "SAP": ["a new custom report of monthly sales by region", "training on an SAP module they have never used",
+            "adding a new field to a standard SAP screen", "help understanding a business figure in a report",
+            "archiving documents older than ten years", "a new approval workflow for their team"],
+    "Networking": ["a faster internet plan for their home", "network cabling for a new building wing",
+                   "advice on buying a mesh router for home", "a wall screen showing network status",
+                   "connecting a smart TV in the canteen", "Wi-Fi in the car park"],
+    "Cloud": ["advice on which cloud provider is cheapest", "a GPU cluster for a research project",
+              "hosting their personal website", "cloud certification training",
+              "comparing serverless frameworks", "a new cloud region in another country for a future project"],
+    "Database": ["designing a data model for a new app", "choosing between two database products",
+                 "SQL training for analysts", "a data warehouse for the marketing team",
+                 "turning shared spreadsheets into a database", "a nightly export to a partner's server"],
+    "HR": ["an employee discount programme with a local gym", "a complaint about a colleague's behaviour",
+           "budget for a team outing", "relocating to an office in another country",
+           "a six-month sabbatical", "changing their job title"],
+}
+
 SYSTEM = (
     "You write realistic IT helpdesk tickets for a synthetic benchmark. Write as the employee "
     "who has the problem, in the first person. Never mention knowledge-base articles, never give "
@@ -93,6 +113,7 @@ class Scenario:
     priority: str
     article: Article | None
     c2_kind: str | None = None
+    theme: str | None = None
     difficulty: dict = field(default_factory=dict)
 
 
@@ -186,6 +207,8 @@ def build_prompt(s: Scenario, persona: str, target_words: int = 55) -> str:
     if s.type == "C2":
         assert s.c2_kind is not None
         lines.append(C2_KINDS[s.c2_kind])
+        if s.theme:
+            lines.append(f"The request is about: {s.theme}.")
     if s.difficulty.get("vague"):
         lines.append("Be vague: leave out error messages and exact names.")
     if s.difficulty.get("multi_issue"):
@@ -259,6 +282,11 @@ def plan_scenarios(n_tickets: int, seed: int = 13, departments: set[str] | None 
                     priority=rng.choices(list(PRIORITY_WEIGHTS), weights=list(PRIORITY_WEIGHTS.values()))[0],
                     article=article,
                     c2_kind=("vague", "out_of_scope")[i % 2] if ticket_type == "C2" else None,
+                    theme=(
+                        C2_THEMES[dept][(i // 2) % len(C2_THEMES[dept])]
+                        if ticket_type == "C2" and i % 2 == 1 and dept in C2_THEMES
+                        else None
+                    ),
                     difficulty=_difficulty(rng, ticket_type),
                 )
             )
