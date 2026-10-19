@@ -32,7 +32,9 @@ SEED = 2026
 def _embedder():
     from sentence_transformers import SentenceTransformer
 
-    return SentenceTransformer(EMBED_MODEL)
+    from devices import device
+
+    return SentenceTransformer(EMBED_MODEL, device=device("embed"))
 
 
 def embed(texts: list[str]) -> np.ndarray:

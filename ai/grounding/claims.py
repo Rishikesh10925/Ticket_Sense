@@ -80,7 +80,12 @@ def _windows(passage: str) -> list[str]:
 def _cross_encoder():
     from sentence_transformers import CrossEncoder
 
-    return CrossEncoder(NLI_MODEL)
+    from devices import device
+
+    model = CrossEncoder(NLI_MODEL, device=device("nli"))
+    if str(model.model.device).startswith("cuda"):
+        model.model.half()  # half the memory; scores agree with fp32 to about 1e-3
+    return model
 
 
 def nli_scorer(pairs: list[tuple[str, str]]) -> list[float]:

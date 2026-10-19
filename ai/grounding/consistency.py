@@ -41,7 +41,9 @@ class Consistency:
 def _model():
     from sentence_transformers import SentenceTransformer
 
-    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+    from devices import device
+
+    return SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2", device=device("embed"))
 
 
 def embed(texts: list[str]) -> np.ndarray:
