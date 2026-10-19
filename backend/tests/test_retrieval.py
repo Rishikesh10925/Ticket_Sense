@@ -54,7 +54,7 @@ def _embed_articles() -> None:
         import importlib
 
         embed_kb = importlib.import_module("embed_knowledge_base")
-        # embed_knowledge_base.main() reads from db/seed/knowledge_base/ on disk, which
+        # embed_knowledge_base.main() reads from data/kb/ on disk, which
         # doesn't match this test's ad-hoc articles — call the model + insert directly
         # instead of reusing main().
         from sentence_transformers import SentenceTransformer

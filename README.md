@@ -203,8 +203,9 @@ TicketSense/
 │   ├── Dockerfile
 │   └── pyproject.toml
 ├── db/
-│   ├── migrations/        Alembic migration environment and versions
-│   └── seed/knowledge_base/  Authored KB articles, all 5 departments (60 articles)
+│   └── migrations/        Alembic migration environment and versions
+├── data/
+│   └── kb/                Knowledge-base articles (the documents RAG retrieves and cites)
 ├── ai/
 │   ├── embeddings/         KB + resolved-ticket embeddings, retrieval, Recall@K eval
 │   ├── models/             Department/priority/sentiment classifier training + packaging
@@ -234,7 +235,7 @@ TicketSense/
 |---|---|
 | `backend/` | FastAPI service — models, routers, and config for the API |
 | `db/migrations/` | Alembic migration environment (schema definitions live as SQLAlchemy models in `backend/app/models/`) |
-| `db/seed/knowledge_base/` | Authored knowledge-base articles, one department per subfolder |
+| `data/kb/` | Authored knowledge-base articles, one department per subfolder |
 | `ai/embeddings/` | Embeds the knowledge base and resolved tickets, department-scoped retrieval, Recall@K evaluation |
 | `ai/models/` | Trains and packages the department/priority/sentiment classifiers |
 | `ai/generation/` | Draft-generation prompt, LLM-provider abstraction + factory (default: deterministic/extractive), groundedness check |
@@ -409,7 +410,7 @@ cd ..
 uv run --project backend python ai/embeddings/embed_knowledge_base.py
 ```
 
-Embeds all 60 authored knowledge-base articles (`db/seed/knowledge_base/`) with
+Embeds all 60 authored knowledge-base articles (`data/kb/`) with
 `sentence-transformers/all-MiniLM-L6-v2` and stores them in the `knowledge_base` and
 `embeddings` tables. See [ai/README.md](ai/README.md). Kept as an optional `ai` extra
 (pulls in `torch`) rather than a default backend dependency.
@@ -495,7 +496,7 @@ feature/confidence-model
 - Public IT-support ticket dataset identified, verified, and downloadable locally ([docs/dataset-research.md](docs/dataset-research.md), `data/download_dataset.py`)
 - Literature reviewed on RAG, confidence calibration, and human-AI deferral ([docs/literature-review.md](docs/literature-review.md))
 - Knowledge-base article outline drafted across all five target departments ([docs/knowledge-base-outline.md](docs/knowledge-base-outline.md))
-- Full knowledge base authored — all 5 departments, 60 articles total (`db/seed/knowledge_base/`; SAP/Networking/Cloud/HR recovered from an earlier prototype's git history, Database authored fresh)
+- Full knowledge base authored — all 5 departments, 60 articles total (`data/kb/`; SAP/Networking/Cloud/HR recovered from an earlier prototype's git history, Database authored fresh)
 - Knowledge-base embeddings generated with `sentence-transformers/all-MiniLM-L6-v2` (`ai/embeddings/embed_knowledge_base.py`) — verified with a real similarity-search query against the stored vectors
 - Confidence-model outcome labelling guide drafted for Weeks 8–11 ([docs/confidence-labelling-guide.md](docs/confidence-labelling-guide.md)) — design only, no data to label yet
 - Public dataset cleaned and structured into the project's schema, and split 70/15/15 for classification ([docs/dataset-cleaning.md](docs/dataset-cleaning.md), [docs/split-strategy.md](docs/split-strategy.md)) — honestly limited to 2 of 5 departments given what the source dataset actually contains

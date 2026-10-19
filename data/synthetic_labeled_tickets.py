@@ -3,7 +3,7 @@
 The public dataset identified in docs/dataset-research.md has real examples for only
 2 of 5 departments (Networking, HR — see docs/dataset-cleaning.md) and no sentiment
 field at all. This script closes both gaps with hand-authored tickets: 2 per
-db/seed/knowledge_base/ article (120 total, 24 per department), phrased the way an end
+data/kb/ article (120 total, 24 per department), phrased the way an end
 user would actually write it rather than like the KB's own SOP text, each labeled with
 department/priority/sentiment.
 

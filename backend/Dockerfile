@@ -22,6 +22,7 @@ RUN pip install --no-cache-dir "/app/backend[ai]"
 
 COPY ai ./ai
 COPY db ./db
+COPY data/kb ./data/kb
 
 WORKDIR /app/backend
 RUN chmod +x docker-entrypoint.sh

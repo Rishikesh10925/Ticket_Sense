@@ -51,7 +51,7 @@ async def create_knowledge_base_article(
     db: AsyncSession = Depends(get_db),
 ) -> KnowledgeBase:
     """Admin-authored knowledge-base articles, in addition to the seeded ones from
-    db/seed/knowledge_base/ (ai/embeddings/embed_knowledge_base.py). Embeds the new
+    data/kb/ (ai/embeddings/embed_knowledge_base.py). Embeds the new
     article's content immediately using the same model/normalization as that script —
     a KB row with no embedding row would be invisible to retrieve_evidence (Week 5),
     so this can't just insert the row and leave embedding for a later batch job."""
