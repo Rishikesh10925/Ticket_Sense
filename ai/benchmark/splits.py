@@ -80,7 +80,9 @@ def check_manifest(records: Iterable[dict], assignment: dict[str, str]) -> list[
 
 
 def file_sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    """SHA-256 of the file with LF line endings, so a Windows checkout (CRLF) and a
+    Linux one hash the same."""
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def write_manifest(tickets_path: Path, out_path: Path, seed: int = 2026) -> dict:

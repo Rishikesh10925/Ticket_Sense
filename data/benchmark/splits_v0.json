@@ -1,6 +1,6 @@
 {
  "tickets_file": "data/benchmark/tickets_v0.jsonl",
- "tickets_sha256": "e9d7c627a3907fef870307272a7cba8ae86c200e41924aaff8dd3f628c8dc33b",
+ "tickets_sha256": "c7743faf0554d1b88d0992365d52a26f28b864db83e5bc774e92f98b3d9abd08",
  "seed": 2026,
  "counts": {
   "calib": 16,
