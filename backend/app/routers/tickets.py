@@ -53,8 +53,7 @@ def _visibility_filter(current_user: User):
 
 
 async def _final_responses_for(db: AsyncSession, tickets: list[Ticket]) -> dict[uuid.UUID, str]:
-    """The actual text that was (or, for an auto-resolution, would be) sent to the
-    customer for each `reviewed` ticket in `tickets` — see TicketOut.final_response.
+    """The actual text sent to the customer for each `reviewed` ticket in `tickets` — see TicketOut.final_response.
     Batched into one query rather than per-ticket, since list_tickets can return many
     reviewed tickets at once."""
     reviewed_ids = [t.id for t in tickets if t.status == TicketStatus.REVIEWED]
@@ -75,12 +74,6 @@ async def _final_responses_for(db: AsyncSession, tickets: list[Ticket]) -> dict[
             responses[feedback.ticket_id] = feedback.edited_reply
         else:  # accept
             responses[feedback.ticket_id] = tickets_by_id[feedback.ticket_id].ai_draft_reply
-
-    # A reviewed ticket with no matching feedback row at all was auto-resolved (see
-    # app/services/pipeline.py) — its own draft is the response, unedited.
-    for ticket_id in reviewed_ids:
-        if ticket_id not in responses:
-            responses[ticket_id] = tickets_by_id[ticket_id].ai_draft_reply
 
     return responses
 

@@ -3,15 +3,6 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-# The auto-resolution bar: a `drafted` ticket whose score clears this is sent straight
-# to the customer with no human ever reviewing it (see app/services/pipeline.py) —
-# deliberately separate from a department's own gate threshold
-# (Department.confidence_threshold, which only decides draft vs. escalate). Below the
-# gate threshold, a ticket never even gets a draft; between the gate threshold and this
-# one, a real engineer reviews it (see docs/architecture.md for why that band still
-# gets a human); at or above this one, nothing does.
-CUSTOMER_READY_CONFIDENCE_THRESHOLD = 0.85
-
 
 class TicketCreate(BaseModel):
     subject: str = Field(min_length=1, max_length=255)
@@ -37,12 +28,10 @@ class TicketOut(BaseModel):
     confidence_features: dict | None
     confidence_threshold: float | None
     # Computed by the caller (see _final_responses_for in app/routers/tickets.py), not
-    # a real column — the actual text that was (or, for an auto-resolution, would be)
-    # sent to the customer once status is `reviewed`. Unlike ai_draft_reply, this is
-    # deliberately visible to every role including end_user: it's the one AI-touched
-    # piece of text a customer is *meant* to see, since a human either wrote/approved
-    # it (an engineer's accept/edit/resolve) or the ticket cleared the auto-resolution
-    # bar outright.
+    # a real column — the actual text sent to the customer once status is `reviewed`.
+    # Unlike ai_draft_reply, this is deliberately visible to every role including
+    # end_user: it's the one AI-touched piece of text a customer is *meant* to see,
+    # since a human wrote or approved it (an engineer's accept/edit/resolve).
     final_response: str | None = None
     created_at: datetime
     updated_at: datetime

@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.config import settings
 from app.core.security import hash_password
-from app.models import Department, Feedback, Ticket, User
+from app.models import Department, Feedback, User
 
 
 def _register_and_login(api, email: str) -> str:
@@ -79,24 +79,6 @@ def _admin_token(api, email: str) -> str:
     return api.post("/auth/login", data={"username": email, "password": "password123"}).json()["access_token"]
 
 
-def _mark_ticket_reviewed_with_no_feedback_sync(ticket_id: str) -> None:
-    """Simulates what pipeline.py's auto-resolution actually does: a `drafted`
-    ticket moves straight to `reviewed` with zero Feedback rows. Used here instead of
-    forcing a real score >= 0.85 through the model, which isn't deterministically
-    controllable through the public API."""
-
-    async def _update():
-        engine = create_async_engine(settings.database_url)
-        session_factory = async_sessionmaker(engine, expire_on_commit=False)
-        async with session_factory() as db:
-            ticket = await db.get(Ticket, ticket_id)
-            ticket.status = "reviewed"
-            await db.commit()
-        await engine.dispose()
-
-    asyncio.run(_update())
-
-
 def _wait_for_status(api, token: str, ticket_id: str, target_statuses: tuple[str, ...], tries: int = 15) -> dict:
     """The pipeline runs as a genuine background task, not synchronously with the
     POST that starts it -- normally fast enough that an immediate GET already sees
@@ -136,13 +118,10 @@ def _submit_and_force_escalation(api, customer_token: str, admin_token: str, dep
     return ticket_id
 
 
-def test_auto_resolved_ticket_shows_final_response_to_customer(api):
-    """Simulates pipeline.py's auto-resolution (score >= the customer-facing 0.85
-    bar skips the engineer entirely) by directly moving a real drafted ticket to
-    `reviewed` with no Feedback row -- forcing an actual >=0.85 score isn't
-    deterministically possible through the public API, but this exercises the exact
-    downstream behavior that matters: _final_responses_for treats a `reviewed`
-    ticket with zero feedback as "the draft itself was the response"."""
+def test_drafted_ticket_waits_for_a_human_and_shows_no_response_to_customer(api):
+    """There is no auto-resolution (Blueprint V2: a human always decides). However high
+    the confidence score, a drafted ticket stays `drafted` until an engineer acts, and
+    the customer sees neither the draft nor a final response in the meantime."""
     _department_id_sync("Networking")  # must exist before the classifier can route into it
     customer_token = _register_and_login(api, "approval_customer_auto@example.com")
     resp = api.post(
@@ -154,16 +133,12 @@ def test_auto_resolved_ticket_shows_final_response_to_customer(api):
 
     admin_token = _admin_token(api, "approval_admin_auto@example.com")
     ticket = _wait_for_status(api, admin_token, ticket_id, ("drafted", "escalated"))
-    assert ticket["status"] == "drafted"
-    original_draft = ticket["ai_draft_reply"]
-    assert original_draft
-
-    _mark_ticket_reviewed_with_no_feedback_sync(ticket_id)
+    assert ticket["status"] in ("drafted", "escalated")
 
     customer_view = api.get(f"/tickets/{ticket_id}", headers={"Authorization": f"Bearer {customer_token}"}).json()
-    assert customer_view["status"] == "reviewed"
-    assert customer_view["final_response"] == original_draft
-    assert customer_view["ai_draft_reply"] is None  # still hidden -- final_response is the customer-facing copy
+    assert customer_view["status"] != "reviewed"
+    assert customer_view["final_response"] is None
+    assert customer_view["ai_draft_reply"] is None
 
 
 def test_escalated_ticket_not_visible_to_unassigned_engineer_in_same_department(api):

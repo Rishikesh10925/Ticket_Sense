@@ -15,9 +15,8 @@ class TicketStatus(StrEnum):
 # confidence gate (Week 9): ROUTED can advance to either DRAFTED (the gate passed —
 # confidence_score >= confidence_threshold) or ESCALATED (the gate failed, no draft is
 # shown to a human — see docs/langgraph-pipeline.md). DRAFTED can advance to REVIEWED
-# (a reviewer accepted/edited/rejected the draft, or the confidence score cleared the
-# separate auto-resolution bar with no reviewer at all — see app/services/pipeline.py)
-# or ESCALATED (a reviewer chose to escalate/doubt a drafted ticket instead of acting
+# (a reviewer accepted/edited/rejected the draft — there is no auto-resolution, a human
+# always decides) or ESCALATED (a reviewer chose to escalate/doubt a drafted ticket instead of acting
 # on it — see app/routers/tickets.py's feedback endpoint). ESCALATED can now also
 # reach REVIEWED directly: once an admin approves the escalation and assigns it to a
 # specific engineer (see app/routers/escalations.py), that engineer resolves it with
