@@ -26,12 +26,11 @@ TICKETS = Path(__file__).resolve().parents[3] / "data" / "benchmark" / "tickets_
 KB = Path(__file__).resolve().parents[3] / "data" / "kb"
 
 
-def _article_text(article_id: str) -> tuple[str, str]:
-    path = next(KB.glob(f"*/{article_id}.md"))
-    text = path.read_text(encoding="utf-8")
-    title = next(line.split(":", 1)[1].strip() for line in text.splitlines() if line.startswith("title:"))
-    body = text.split("## Resolution steps", 1)[1].split("## Warnings", 1)[0].strip()
-    return title, body
+def _article(article_id: str):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "ai"))
+    from benchmark.kb import parse_article
+
+    return parse_article(next(KB.glob(f"*/{article_id}.md")))
 
 
 async def clear(db) -> None:
@@ -70,8 +69,8 @@ async def main() -> None:
                 priority=r["priority"], type=r["type"], gold_articles=r["gold_articles"], split="demo",
             ))
             await db.flush()
-            title, steps_text = _article_text(r["gold_articles"][0])
-            steps = [s.split(". ", 1)[-1].strip() for s in steps_text.split("\n") if s[:1].isdigit()][:3]
+            article = _article(r["gold_articles"][0])
+            title, steps_text, steps = article.title, article.sections["Resolution steps"], article.steps[:3]
             draft = Draft(
                 benchmark_ticket_id=r["ticket_id"], benchmark_version=DEMO_VERSION, model="demo-fixture",
                 prompt_version="demo", schema_valid=True, can_answer=r["type"] != "C1",
