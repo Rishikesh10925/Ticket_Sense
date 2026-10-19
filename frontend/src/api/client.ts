@@ -373,7 +373,7 @@ export async function submitTicketFeedback(
   token: string,
   id: string,
   action: FeedbackAction,
-  details: { editedReply?: string; rejectReason?: string } = {}
+  details: { editedReply?: string; rejectReason?: string; reasonCodes?: ReasonCode[]; timeTakenMs?: number } = {}
 ): Promise<Ticket> {
   const res = await fetch(`${API_URL}/tickets/${id}/feedback`, {
     method: "POST",
@@ -382,6 +382,8 @@ export async function submitTicketFeedback(
       action,
       edited_reply: details.editedReply ?? null,
       reject_reason: details.rejectReason ?? null,
+      reason_codes: details.reasonCodes ?? [],
+      time_taken_ms: details.timeTakenMs ?? null,
     }),
   });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
