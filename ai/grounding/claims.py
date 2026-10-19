@@ -90,6 +90,26 @@ def nli_scorer(pairs: list[tuple[str, str]]) -> list[float]:
     return [float(p[ENTAILMENT_INDEX]) for p in probs]
 
 
+_NORM_DROP = re.compile(r"[`*_\"'“”‘’]|^\s*\d+[.)]\s+|(?<=\n)\s*\d+[.)]\s+")
+_NORM_SPACE = re.compile(r"[\s.;:,]+")
+
+
+def _normalise(text: str) -> str:
+    """Lower case, without markdown quoting, list numbers or punctuation runs, so a step
+    copied from a numbered resolution step still matches its source."""
+    return _NORM_SPACE.sub(" ", _NORM_DROP.sub("", text.lower())).strip()
+
+
+def verbatim_supported(claim: str, passage: str) -> bool:
+    """True if the claim appears word for word in the passage (after normalisation).
+    A quote of the evidence is entailed by definition, and the NLI model is unreliable on
+    command-plus-instruction sentences (it scored "Run `ipconfig /all` and check ..." at
+    0.001 against a passage containing exactly that sentence). Exact containment only, so
+    an inserted "do not" can never pass this way."""
+    c = _normalise(claim)
+    return len(c.split()) >= 3 and f" {c} " in f" {_normalise(passage)} "
+
+
 def check_draft(steps: Sequence[dict], passages: dict[int, str], scorer: Scorer = nli_scorer) -> Grounding:
     """`steps` as produced by generation.drafting ({"text", "citations"}); `passages` maps
     passage number -> passage text. A claim citing no existing passage gets support 0."""
@@ -110,6 +130,9 @@ def check_draft(steps: Sequence[dict], passages: dict[int, str], scorer: Scorer 
     best = [0.0] * len(claims)
     for owner, score in zip(owners, scores):
         best[owner] = max(best[owner], score)
+    for idx, (_, _, claim, cited) in enumerate(claims):
+        if any(verbatim_supported(claim, passages[n]) for n in cited):
+            best[idx] = 1.0
 
     scored = tuple(ClaimScore(si, ci, text, cited, round(best[i], 4)) for i, (si, ci, text, cited) in enumerate(claims))
     if not scored:
