@@ -9,7 +9,7 @@ from app.models.base import Base, CreatedAtMixin, UUIDPKMixin
 
 class User(UUIDPKMixin, CreatedAtMixin, Base):
     __tablename__ = "users"
-    __table_args__ = (CheckConstraint("role IN ('end_user','department_engineer','admin')", name="ck_users_role"),)
+    __table_args__ = (CheckConstraint("role IN ('end_user','department_engineer','admin','annotator')", name="ck_users_role"),)
 
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../components";
 import { listTickets, getAnalyticsSummary, ApiError, type Ticket, type ReviewerBreakdown } from "../api/client";
@@ -22,21 +23,23 @@ export default function EngineerQueue() {
   const { token } = useAuth();
   const navigate = useNavigate();
 
-  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [status, setStatus] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [myStats, setMyStats] = useState<ReviewerBreakdown | null>(null);
 
-  useEffect(() => {
-    if (!token) return;
-    setLoading(true);
-    setError(null);
-    listTickets(token, { status: status || undefined, sort: "priority" })
-      .then(setTickets)
-      .catch((err) => setError(err instanceof ApiError ? err.message : "Could not load queue"))
-      .finally(() => setLoading(false));
-  }, [token, status]);
+  // Polls every 15 s so tickets the pipeline routes here appear without a reload.
+  const queue = useQuery({
+    queryKey: ["queue", status],
+    queryFn: () => listTickets(token!, { status: status || undefined, sort: "priority" }),
+    enabled: !!token,
+    refetchInterval: 15_000,
+  });
+  const tickets: Ticket[] = queue.data ?? [];
+  const loading = queue.isPending;
+  const error = queue.error
+    ? queue.error instanceof ApiError
+      ? queue.error.message
+      : "Could not load queue"
+    : null;
 
   // Scoped server-side to just this engineer's own row (see GET /analytics/summary) —
   // a personal record of what they've actually done, distinct from the queue below,

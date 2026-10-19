@@ -1,0 +1,25 @@
+.lane-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lane-fast {
+  color: var(--lane-fast);
+  background: var(--lane-fast-bg);
+}
+
+.lane-assisted {
+  color: var(--lane-assisted);
+  background: var(--lane-assisted-bg);
+}
+
+.lane-escalate {
+  color: var(--lane-escalate);
+  background: var(--lane-escalate-bg);
+}

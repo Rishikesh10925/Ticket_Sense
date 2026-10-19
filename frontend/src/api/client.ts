@@ -4,7 +4,7 @@ export interface User {
   id: string;
   email: string;
   full_name: string;
-  role: "end_user" | "department_engineer" | "admin";
+  role: "end_user" | "department_engineer" | "admin" | "annotator";
   department_id: string | null;
   is_active: boolean;
 }
@@ -151,6 +151,57 @@ export async function getMe(token: string): Promise<User> {
   const res = await fetch(`${API_URL}/auth/me`, { headers: authHeaders(token) });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
   return res.json();
+}
+
+// --- Annotation (outside reviewers; blinded, see docs/annotation-tool.md) ---------
+
+export type RubricLabel = "A" | "M" | "R" | "W";
+export const REASON_CODES = [
+  "wrong_source",
+  "outdated_source",
+  "missing_step",
+  "invented_step",
+  "did_not_address_question",
+  "tone",
+  "formatting",
+  "other",
+] as const;
+export type ReasonCode = (typeof REASON_CODES)[number];
+
+export interface AnnotationItem {
+  assignment_id: string;
+  progress: { done: number; total: number };
+  rubric_version: string;
+  ticket: { subject: string; body: string; attachment_text: string | null };
+  draft: {
+    can_answer: boolean | null;
+    steps: { text: string; citations: number[] }[];
+    missing_information: string[];
+  };
+  evidence: { n: number; title: string; text: string }[];
+}
+
+export interface LabelSubmission {
+  label?: RubricLabel;
+  reason_codes: ReasonCode[];
+  note?: string;
+  skipped_reason?: string;
+  time_taken_ms: number;
+}
+
+export async function getNextAnnotation(token: string): Promise<AnnotationItem | null> {
+  const res = await fetch(`${API_URL}/annotate/next`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function submitAnnotation(token: string, assignmentId: string, body: LabelSubmission): Promise<void> {
+  const res = await fetch(`${API_URL}/annotate/${assignmentId}`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
 }
 
 export async function createTicket(
