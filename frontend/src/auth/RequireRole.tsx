@@ -5,6 +5,7 @@ const ROLE_HOME: Record<string, string> = {
   end_user: "/end-user",
   department_engineer: "/engineer",
   admin: "/admin",
+  annotator: "/annotate",
 };
 
 export default function RequireRole({ role }: { role: string }) {

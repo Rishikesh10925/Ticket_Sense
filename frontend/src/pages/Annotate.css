@@ -1,0 +1,180 @@
+.annotate {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 16px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.annotate-bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-md, 16px);
+}
+
+.annotate-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-surface-alt);
+  overflow: hidden;
+}
+
+.annotate-progress span {
+  display: block;
+  height: 100%;
+  background: var(--color-primary);
+}
+
+.annotate-timer {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.annotate-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--space-md, 16px);
+  align-items: start;
+}
+
+.annotate-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md, 16px);
+}
+
+.annotate-subject {
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.annotate-body {
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.annotate-log {
+  margin-top: 12px;
+  padding: 10px;
+  background: var(--color-surface-alt);
+  border-radius: 6px;
+  font-size: 0.85em;
+  overflow-x: auto;
+}
+
+.annotate-steps {
+  margin: 0;
+  padding-left: 1.25em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.annotate-cite {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.85em;
+}
+
+.annotate-flag,
+.annotate-missing {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.annotate-passage + .annotate-passage {
+  border-top: 1px solid var(--color-border);
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.annotate-passage-title {
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.annotate-passage p {
+  white-space: pre-wrap;
+  font-size: 0.9em;
+  margin: 4px 0 0;
+}
+
+.annotate-labels {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.annotate-label {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.annotate-label input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.annotate-label:focus-within {
+  outline: 2px solid var(--color-primary);
+}
+
+.annotate-label.selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.annotate-label small {
+  display: block;
+  color: var(--color-text-muted);
+}
+
+.annotate-label-key {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-faint);
+}
+
+.annotate-reasons {
+  margin-top: 12px;
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+
+.annotate-reasons legend {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.annotate-note {
+  width: 100%;
+  min-height: 60px;
+  margin-top: 12px;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.annotate-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .annotate-grid,
+  .annotate-labels {
+    grid-template-columns: 1fr;
+  }
+}

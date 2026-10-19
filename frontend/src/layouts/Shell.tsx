@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import { LogoMark, LogoutIcon, QueueIcon, ShieldIcon, TicketIcon } from "../components/icons";
+import { EditIcon, LogoMark, LogoutIcon, QueueIcon, ShieldIcon, TicketIcon } from "../components/icons";
 import { ChatWidget, NotificationBell, ThemeToggle } from "../components";
 import "./Shell.css";
 
@@ -8,18 +8,21 @@ const ROLE_HOME: Record<string, { to: string; label: string; icon: typeof Ticket
   end_user: { to: "/end-user", label: "My Tickets", icon: TicketIcon },
   department_engineer: { to: "/engineer", label: "Queue", icon: QueueIcon },
   admin: { to: "/admin", label: "Admin", icon: ShieldIcon },
+  annotator: { to: "/annotate", label: "Labelling", icon: EditIcon },
 };
 
 const ROLE_DISPLAY: Record<string, string> = {
   end_user: "End User",
   department_engineer: "Department Engineer",
   admin: "Admin",
+  annotator: "Reviewer",
 };
 
 const ROLE_TAG: Record<string, string> = {
   end_user: "USER",
   department_engineer: "ENG",
   admin: "ADMIN",
+  annotator: "REV",
 };
 
 function initials(name: string): string {
