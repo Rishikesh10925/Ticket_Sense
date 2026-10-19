@@ -90,3 +90,17 @@ pseudonym. Reviewers see synthetic tickets only.
 - Progress per reviewer and per batch.
 - Cohen's kappa on the overlap set (target at least 0.6; at least 0.5 at the Week 7 checkpoint).
 - Judge-human agreement on the 600 labelled drafts.
+
+## v1 status (Week 6)
+
+- Planner: `backend/app/services/assignments.py` (pure, seeded; tested for two distinct
+  reviewers per overlap draft, load balanced within one item, shuffled positions, and
+  overlap spread over strata).
+- Batches: `python -m app.scripts.assign_annotations plan --batch sprint1 --drafts <ids.txt>
+  --overlap 150 --seed 2026`. Later batches queue after a reviewer's existing items. The
+  seed and counts are written to `data/annotation/<batch>.json`.
+- Adjudication: `python -m app.scripts.assign_annotations adjudicate --batch adjud1`
+  sends every overlap draft whose two labels disagree on `acceptable` to a third
+  reviewer who has not seen it.
+- Migration 0017: one assignment per (draft, annotator), enforced by the database.
+- Timer, keyboard labels and blinding were already in v0.
