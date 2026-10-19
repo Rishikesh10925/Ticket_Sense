@@ -521,6 +521,55 @@
         }
       }
     },
+    "/tickets/{ticket_id}/draft": {
+      "get": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "Get Ticket Draft",
+        "description": "The latest structured draft for a ticket, with numbered evidence and per-claim\nsupport, for the reviewer workbench. Reviewer-only, like the evidence endpoint.\nA draft the gate did not show (escalation lane) comes back with `shown: false`,\nno steps and no claims: the engineer sees only the evidence (Blueprint V2 \u00a79.1).",
+        "operationId": "get_ticket_draft_tickets__ticket_id__draft_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tickets/{ticket_id}/escalation": {
       "get": {
         "tags": [
@@ -1228,6 +1277,99 @@
           }
         ]
       }
+    },
+    "/annotate/next": {
+      "get": {
+        "tags": [
+          "annotate"
+        ],
+        "summary": "Next Item",
+        "operationId": "next_item_annotate_next_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AnnotationItem"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Next Item Annotate Next Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/annotate/{assignment_id}": {
+      "post": {
+        "tags": [
+          "annotate"
+        ],
+        "summary": "Submit Label",
+        "operationId": "submit_label_annotate__assignment_id__post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "assignment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Assignment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LabelIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Submit Label Annotate  Assignment Id  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1301,6 +1443,51 @@
           "synthetic_feedback"
         ],
         "title": "AnalyticsSummary"
+      },
+      "AnnotationItem": {
+        "properties": {
+          "assignment_id": {
+            "type": "string",
+            "title": "Assignment Id"
+          },
+          "progress": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Progress"
+          },
+          "rubric_version": {
+            "type": "string",
+            "title": "Rubric Version"
+          },
+          "ticket": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ticket"
+          },
+          "draft": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Draft"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "assignment_id",
+          "progress",
+          "rubric_version",
+          "ticket",
+          "draft",
+          "evidence"
+        ],
+        "title": "AnnotationItem"
       },
       "Body_create_ticket_tickets_post": {
         "properties": {
@@ -1699,6 +1886,192 @@
         ],
         "title": "DepartmentThresholdUpdate"
       },
+      "DraftClaimOut": {
+        "properties": {
+          "step_index": {
+            "type": "integer",
+            "title": "Step Index"
+          },
+          "claim_index": {
+            "type": "integer",
+            "title": "Claim Index"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "cited": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Cited"
+          },
+          "support": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Support"
+          }
+        },
+        "type": "object",
+        "required": [
+          "step_index",
+          "claim_index",
+          "text",
+          "cited",
+          "support"
+        ],
+        "title": "DraftClaimOut"
+      },
+      "DraftOut": {
+        "properties": {
+          "shown": {
+            "type": "boolean",
+            "title": "Shown"
+          },
+          "lane": {
+            "type": "string",
+            "title": "Lane"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/DraftStepOut"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "missing_information": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Information"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/DraftPassageOut"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "groundedness": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Groundedness"
+          },
+          "claims": {
+            "items": {
+              "$ref": "#/components/schemas/DraftClaimOut"
+            },
+            "type": "array",
+            "title": "Claims"
+          },
+          "weakest": {
+            "items": {
+              "$ref": "#/components/schemas/DraftClaimOut"
+            },
+            "type": "array",
+            "title": "Weakest"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "prompt_version": {
+            "type": "string",
+            "title": "Prompt Version"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "shown",
+          "lane",
+          "steps",
+          "missing_information",
+          "evidence",
+          "groundedness",
+          "claims",
+          "weakest",
+          "model",
+          "prompt_version",
+          "created_at"
+        ],
+        "title": "DraftOut",
+        "description": "The structured draft for the reviewer workbench (Blueprint V2 \u00a79.1).\n\n`shown` is false in the escalation lane: steps, claims and groundedness are then\nwithheld and only the ranked evidence and the reason are returned."
+      },
+      "DraftPassageOut": {
+        "properties": {
+          "n": {
+            "type": "integer",
+            "title": "N"
+          },
+          "article_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article Key"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "n",
+          "article_key",
+          "title",
+          "text"
+        ],
+        "title": "DraftPassageOut"
+      },
+      "DraftStepOut": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "citations": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Citations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "citations"
+        ],
+        "title": "DraftStepOut"
+      },
       "EscalationApprove": {
         "properties": {
           "engineer_id": {
@@ -2020,6 +2393,38 @@
             "type": "string",
             "format": "date-time",
             "title": "Updated At"
+          },
+          "article_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article Key"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Topic"
+          },
+          "served": {
+            "type": "boolean",
+            "title": "Served",
+            "default": true
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version",
+            "default": 1
           }
         },
         "type": "object",
@@ -2031,6 +2436,79 @@
           "updated_at"
         ],
         "title": "KnowledgeBaseOut"
+      },
+      "LabelIn": {
+        "properties": {
+          "label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "A",
+                  "M",
+                  "R",
+                  "W"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "wrong_source",
+                "outdated_source",
+                "missing_step",
+                "invented_step",
+                "did_not_address_question",
+                "tone",
+                "formatting",
+                "other"
+              ]
+            },
+            "type": "array",
+            "title": "Reason Codes"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "skipped_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skipped Reason"
+          },
+          "time_taken_ms": {
+            "type": "integer",
+            "maximum": 3600000.0,
+            "minimum": 0.0,
+            "title": "Time Taken Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "time_taken_ms"
+        ],
+        "title": "LabelIn"
       },
       "MessageCreate": {
         "properties": {
@@ -2546,7 +3024,8 @@
             "enum": [
               "end_user",
               "department_engineer",
-              "admin"
+              "admin",
+              "annotator"
             ],
             "title": "Role"
           },
@@ -2582,7 +3061,8 @@
                 "enum": [
                   "end_user",
                   "department_engineer",
-                  "admin"
+                  "admin",
+                  "annotator"
                 ]
               },
               {

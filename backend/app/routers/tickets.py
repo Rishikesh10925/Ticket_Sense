@@ -6,11 +6,14 @@ from fastapi import status as http_status
 from fastapi.responses import FileResponse
 from sqlalchemy import and_, case, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.config import settings
 from app.database import get_db
 from app.dependencies import get_current_user
 from app.models import Escalation, Feedback, Ticket, User
+from app.models.draft import Draft
+from app.schemas.drafts import DraftOut
 from app.schemas.escalations import EscalationOut, EscalationResolve
 from app.schemas.evidence import EvidenceOut
 from app.schemas.feedback import FeedbackCreate
@@ -251,6 +254,51 @@ async def get_ticket_evidence(
     _require_reviewer(current_user)
     ticket = await _get_ticket_or_403(ticket_id, current_user, db)
     return await get_evidence_for_ticket(db, ticket)
+
+
+WEAKEST_CLAIMS = 3
+
+
+@router.get("/{ticket_id}/draft", response_model=DraftOut)
+async def get_ticket_draft(
+    ticket_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> DraftOut:
+    """The latest structured draft for a ticket, with numbered evidence and per-claim
+    support, for the reviewer workbench. Reviewer-only, like the evidence endpoint.
+    A draft the gate did not show (escalation lane) comes back with `shown: false`,
+    no steps and no claims: the engineer sees only the evidence (Blueprint V2 §9.1)."""
+    _require_reviewer(current_user)
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+    draft = await db.scalar(
+        select(Draft)
+        .where(Draft.ticket_id == ticket.id)
+        .options(selectinload(Draft.claims))
+        .order_by(Draft.created_at.desc())
+        .limit(1)
+    )
+    if draft is None:
+        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="No draft for this ticket yet")
+
+    shown = ticket.ai_draft_reply is not None
+    claims = [
+        {"step_index": c.step_index, "claim_index": c.claim_index, "text": c.text, "cited": c.cited, "support": c.support}
+        for c in draft.claims
+    ] if shown else []
+    return DraftOut(
+        shown=shown,
+        lane="draft" if shown else "escalate",
+        steps=draft.steps if shown else [],
+        missing_information=draft.missing_information,
+        evidence=draft.evidence,
+        groundedness=draft.groundedness if shown else None,
+        claims=claims,
+        weakest=sorted(claims, key=lambda c: c["support"] if c["support"] is not None else 0.0)[:WEAKEST_CLAIMS],
+        model=draft.model,
+        prompt_version=draft.prompt_version,
+        created_at=draft.created_at,
+    )
 
 
 def _require_reviewer(current_user: User) -> None:
