@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.dependencies import require_role
-from app.models import Department, Embedding, KnowledgeBase, User
+from app.models import Department, Embedding, KBChunk, KnowledgeBase, User
 from app.schemas.knowledge_base import KnowledgeBaseCreate, KnowledgeBaseOut
 
 # app/routers/knowledge_base.py -> repo_root/ai must be importable, same pattern as
@@ -70,6 +70,23 @@ async def create_knowledge_base_article(
 
     vector = _get_model().encode(body.content, normalize_embeddings=True).tolist()
     db.add(Embedding(knowledge_base_id=article.id, chunk_index=0, chunk_text=body.content, embedding=vector))
+
+    # Hybrid retrieval reads kb_chunks; without these rows the new article is invisible.
+    from embeddings.chunking import chunk_markdown
+
+    chunks = chunk_markdown(body.title, None, body.content)
+    vectors = _get_model().encode([c.text for c in chunks], normalize_embeddings=True) if chunks else []
+    for chunk, chunk_vector in zip(chunks, vectors):
+        db.add(
+            KBChunk(
+                knowledge_base_id=article.id,
+                chunk_index=chunk.index,
+                sections=",".join(chunk.sections),
+                text=chunk.text,
+                n_tokens=chunk.n_tokens,
+                embedding=chunk_vector.tolist(),
+            )
+        )
 
     await db.commit()
     await db.refresh(article)
