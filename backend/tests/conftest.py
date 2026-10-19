@@ -1,12 +1,45 @@
 import asyncio
+import os
+from pathlib import Path
 
-import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine
+# Tests truncate every app table, so they must never run against the dev database.
+# Point the app at a dedicated test database *before* app.config is imported (env vars
+# take precedence over .env in pydantic-settings). CI sets TEST_DATABASE_URL itself.
+os.environ["DATABASE_URL"] = os.environ.get(
+    "TEST_DATABASE_URL",
+    "postgresql+asyncpg://ticketsense:ticketsense@localhost:5432/ticketsense_test",
+)
 
-from app.config import settings
-from app.main import app
+import asyncpg  # noqa: E402
+import pytest  # noqa: E402
+from alembic import command  # noqa: E402
+from alembic.config import Config  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy import make_url, text  # noqa: E402
+from sqlalchemy.ext.asyncio import create_async_engine  # noqa: E402
+
+from app.config import settings  # noqa: E402
+from app.main import app  # noqa: E402
+
+
+async def _ensure_test_database() -> None:
+    url = make_url(settings.database_url)
+    conn = await asyncpg.connect(
+        user=url.username, password=url.password, host=url.host, port=url.port or 5432, database="postgres"
+    )
+    try:
+        exists = await conn.fetchval("SELECT 1 FROM pg_database WHERE datname = $1", url.database)
+        if not exists:
+            await conn.execute(f'CREATE DATABASE "{url.database}"')
+    finally:
+        await conn.close()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _migrated_test_database():
+    asyncio.run(_ensure_test_database())
+    command.upgrade(Config(str(Path(__file__).resolve().parents[1] / "alembic.ini")), "head")
+    yield
 
 
 async def _truncate() -> None:
