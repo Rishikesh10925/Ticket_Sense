@@ -3,6 +3,7 @@ from app.models.department import Department
 from app.models.embedding import Embedding
 from app.models.escalation import Escalation
 from app.models.feedback import Feedback
+from app.models.kb_chunk import KBChunk
 from app.models.knowledge_base import KnowledgeBase
 from app.models.message import Message
 from app.models.ticket import Ticket
@@ -14,6 +15,7 @@ __all__ = [
     "Embedding",
     "Escalation",
     "Feedback",
+    "KBChunk",
     "KnowledgeBase",
     "Message",
     "Ticket",
