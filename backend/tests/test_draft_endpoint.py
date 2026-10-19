@@ -92,3 +92,24 @@ def test_no_draft_yet_is_404(api):
 
     resp = api.get(f"/tickets/{ticket_id}/draft", headers={"Authorization": f"Bearer {admin}"})
     assert resp.status_code == 404
+
+
+def test_a_drafted_ticket_stores_its_signal_vector(api):
+    from sqlalchemy import text
+
+    _department_id_sync("Networking")
+    ticket_id = _vpn_ticket(api, _register_and_login(api, "signals_customer@example.com"))
+
+    async def _vector():
+        engine = create_async_engine(settings.database_url)
+        async with engine.connect() as conn:
+            row = (await conn.execute(text(
+                "SELECT s.feature_version, s.features FROM signal_vectors s JOIN drafts d ON d.id = s.draft_id "
+                "WHERE d.ticket_id = :t"), {"t": ticket_id})).one()
+        await engine.dispose()
+        return row
+
+    version, features = asyncio.run(_vector())
+    assert version == "features-v1"
+    assert features["ret_top1_fused"] is not None and features["rt_dept_max_prob"] is not None
+    assert features["gr_n_steps"] >= 1

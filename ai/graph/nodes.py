@@ -37,6 +37,7 @@ from retrieval.hybrid import hybrid_search  # noqa: E402
 from retrieval.run_log import log_run, to_evidence  # noqa: E402
 from security.output_screen import SCREEN_VERSION, screen  # noqa: E402
 from security.pii import redact  # noqa: E402
+from signals.features import Candidate, SignalInput, extract  # noqa: E402
 
 from graph.state import TicketState  # noqa: E402
 
@@ -206,9 +207,25 @@ def make_retrieve_node(db):
             }
             for n, h in enumerate(result.hits, start=1)
         ]
+        final_rank = {h.chunk_id: n for n, h in enumerate(result.hits, start=1)}
+        candidates = [
+            {
+                "article_key": h.article_key,
+                "keyword_rank": h.keyword_rank,
+                "dense_rank": h.dense_rank,
+                "dense_score": h.dense_score,
+                "fused_score": h.fused_score,
+                "rerank_score": h.rerank_score,
+                "final_rank": final_rank.get(h.chunk_id),
+                "updated_at": h.updated_at.isoformat() if h.updated_at else None,
+                "text": h.text,
+            }
+            for h in (result.candidates or result.hits)
+        ]
         return {
             "evidence": to_evidence(result),
             "passages": passages,
+            "retrieval_candidates": candidates,
             "retrieval_run_id": str(run.id),
             "retrieval_probe": result.probe_top1_similarity,
         }
@@ -304,6 +321,37 @@ def make_check_node(scorer: Scorer | None = None):
                 ],
             }
         }
+
+    return node
+
+
+def make_signals_node():
+    """Blueprint V2 §9 stage 6: assemble the signal vector the confidence model reads."""
+
+    async def node(state: TicketState) -> dict:
+        from datetime import datetime
+
+        draft = state.get("draft_result") or {}
+        grounding = state.get("grounding") or {}
+        candidates = [
+            Candidate(**{**c, "updated_at": datetime.fromisoformat(c["updated_at"]) if c.get("updated_at") else None})
+            for c in state.get("retrieval_candidates") or []
+        ]
+        features = extract(
+            SignalInput(
+                candidates=candidates,
+                steps=draft.get("steps") or [],
+                claims=grounding.get("claims") or [],
+                can_answer=draft.get("can_answer"),
+                schema_valid=bool(draft.get("schema_valid")),
+                missing_information=draft.get("missing_information") or [],
+                ticket_text=f"{_subject(state)}\n\n{_description(state)}",
+                attachment_text=_attachment(state),
+                probe_top1=state.get("retrieval_probe"),
+                classification=state.get("classification"),
+            )
+        )
+        return {"signals": features}
 
     return node
 
