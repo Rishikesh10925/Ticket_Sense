@@ -15,6 +15,7 @@ import asyncio
 import os
 import re
 import sys
+from functools import lru_cache
 from pathlib import Path
 from uuid import UUID
 
@@ -30,6 +31,7 @@ from generation.drafting import Passage, generate_draft  # noqa: E402
 from generation.llm import LLMClient, LLMError  # noqa: E402
 from grounding.claims import Scorer, check_draft, nli_scorer  # noqa: E402
 from models.classifier import classify_ticket  # noqa: E402
+from models.classifier_v2 import ARTIFACT as CLASSIFIER_V2  # noqa: E402
 from ocr.extract import extract_attachment_text  # noqa: E402
 from retrieval.hybrid import hybrid_search  # noqa: E402
 from retrieval.run_log import log_run, to_evidence  # noqa: E402
@@ -120,13 +122,48 @@ def make_redact_node():
     return node
 
 
+@lru_cache(maxsize=1)
+def _classifier_v2():
+    """Classifier v2 (Week 4): embeddings plus TF-IDF, trained on the benchmark train
+    split. None if the artifact is absent, in which case the V1 models route."""
+    if not CLASSIFIER_V2.exists():
+        return None
+    from models.classifier_v2 import TicketClassifier
+
+    return TicketClassifier.load(CLASSIFIER_V2)
+
+
+def _uncertainty(prediction) -> dict:
+    return {
+        "label": prediction.label,
+        "max_prob": round(prediction.max_prob, 4),
+        "entropy": round(prediction.entropy, 4),
+        "probabilities": {k: round(v, 4) for k, v in prediction.probabilities.items()},
+    }
+
+
 def make_classify_node():
+    """Department and priority from classifier v2, with its uncertainty (maximum class
+    probability and normalised entropy) kept in state as a confidence signal (Blueprint
+    V2 §9 stage 2). Sentiment still comes from the V1 model, which v2 does not replace."""
+
     async def node(state: TicketState) -> dict:
-        result = classify_ticket(_subject(state), _augmented_description(state))
+        subject, description = _subject(state), _augmented_description(state)
+        v1 = classify_ticket(subject, description)
+        classifier = _classifier_v2()
+        if classifier is None:
+            return {"department_name": v1.department, "priority": v1.priority, "sentiment": v1.sentiment,
+                    "classification": None}
+        prediction = (await asyncio.to_thread(classifier.predict, [f"{subject}\n\n{description}"]))[0]
         return {
-            "department_name": result.department,
-            "priority": result.priority,
-            "sentiment": result.sentiment,
+            "department_name": prediction["department"].label,
+            "priority": prediction["priority"].label,
+            "sentiment": v1.sentiment,
+            "classification": {
+                "model": "classifier-v2",
+                "department": _uncertainty(prediction["department"]),
+                "priority": _uncertainty(prediction["priority"]),
+            },
         }
 
     return node

@@ -1,0 +1,435 @@
+{
+  "data_sha256": "d555615a0da7387004c78f99bf1b1fc38bf0fb6b0939d09352f040c0ab6e5f4c",
+  "n_train": 824,
+  "n_val": 135,
+  "department": {
+    "selected": "embedding+tfidf",
+    "val": {
+      "embedding": {
+        "macro_f1": 0.8944,
+        "accuracy": 0.8963,
+        "hard_macro_f1": 0.8929,
+        "per_class": {
+          "Cloud": {
+            "precision": 1.0,
+            "recall": 0.75,
+            "f1": 0.8571,
+            "support": 24
+          },
+          "Database": {
+            "precision": 0.913,
+            "recall": 0.7778,
+            "f1": 0.84,
+            "support": 27
+          },
+          "HR": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 27
+          },
+          "Networking": {
+            "precision": 0.8182,
+            "recall": 1.0,
+            "f1": 0.9,
+            "support": 27
+          },
+          "SAP": {
+            "precision": 0.8235,
+            "recall": 0.9333,
+            "f1": 0.875,
+            "support": 30
+          }
+        },
+        "confusion": {
+          "labels": [
+            "Cloud",
+            "Database",
+            "HR",
+            "Networking",
+            "SAP"
+          ],
+          "matrix": [
+            [
+              18,
+              0,
+              0,
+              6,
+              0
+            ],
+            [
+              0,
+              21,
+              0,
+              0,
+              6
+            ],
+            [
+              0,
+              0,
+              27,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              27,
+              0
+            ],
+            [
+              0,
+              2,
+              0,
+              0,
+              28
+            ]
+          ]
+        },
+        "mean_max_prob_correct": 0.8108,
+        "mean_max_prob_wrong": 0.5322,
+        "mean_entropy_correct": 0.3789,
+        "mean_entropy_wrong": 0.7001
+      },
+      "embedding+tfidf": {
+        "macro_f1": 0.9105,
+        "accuracy": 0.9111,
+        "hard_macro_f1": 0.9057,
+        "per_class": {
+          "Cloud": {
+            "precision": 1.0,
+            "recall": 0.7917,
+            "f1": 0.8837,
+            "support": 24
+          },
+          "Database": {
+            "precision": 0.9167,
+            "recall": 0.8148,
+            "f1": 0.8627,
+            "support": 27
+          },
+          "HR": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 27
+          },
+          "Networking": {
+            "precision": 0.871,
+            "recall": 1.0,
+            "f1": 0.931,
+            "support": 27
+          },
+          "SAP": {
+            "precision": 0.8235,
+            "recall": 0.9333,
+            "f1": 0.875,
+            "support": 30
+          }
+        },
+        "confusion": {
+          "labels": [
+            "Cloud",
+            "Database",
+            "HR",
+            "Networking",
+            "SAP"
+          ],
+          "matrix": [
+            [
+              19,
+              0,
+              0,
+              4,
+              1
+            ],
+            [
+              0,
+              22,
+              0,
+              0,
+              5
+            ],
+            [
+              0,
+              0,
+              27,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              27,
+              0
+            ],
+            [
+              0,
+              2,
+              0,
+              0,
+              28
+            ]
+          ]
+        },
+        "mean_max_prob_correct": 0.7871,
+        "mean_max_prob_wrong": 0.5161,
+        "mean_entropy_correct": 0.4172,
+        "mean_entropy_wrong": 0.7489
+      }
+    },
+    "unseen_topics": {
+      "macro_f1": 0.8287,
+      "accuracy": 0.8057,
+      "hard_macro_f1": 0.7945,
+      "per_class": {
+        "Cloud": {
+          "precision": 0.9365,
+          "recall": 0.5673,
+          "f1": 0.7066,
+          "support": 104
+        },
+        "Database": {
+          "precision": 0.5278,
+          "recall": 0.8444,
+          "f1": 0.6496,
+          "support": 45
+        },
+        "HR": {
+          "precision": 0.8958,
+          "recall": 0.9556,
+          "f1": 0.9247,
+          "support": 45
+        },
+        "Networking": {
+          "precision": 0.9184,
+          "recall": 1.0,
+          "f1": 0.9574,
+          "support": 45
+        },
+        "SAP": {
+          "precision": 0.8431,
+          "recall": 0.9773,
+          "f1": 0.9053,
+          "support": 44
+        }
+      },
+      "confusion": {
+        "labels": [
+          "Cloud",
+          "Database",
+          "HR",
+          "Networking",
+          "SAP"
+        ],
+        "matrix": [
+          [
+            59,
+            34,
+            5,
+            3,
+            3
+          ],
+          [
+            3,
+            38,
+            0,
+            0,
+            4
+          ],
+          [
+            0,
+            0,
+            43,
+            1,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            45,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            43
+          ]
+        ]
+      },
+      "mean_max_prob_correct": 0.7307,
+      "mean_max_prob_wrong": 0.6392,
+      "mean_entropy_correct": 0.5058,
+      "mean_entropy_wrong": 0.5733
+    }
+  },
+  "priority": {
+    "selected": "embedding+tfidf",
+    "val": {
+      "embedding": {
+        "macro_f1": 0.3666,
+        "accuracy": 0.3778,
+        "hard_macro_f1": 0.3867,
+        "per_class": {
+          "high": {
+            "precision": 0.2881,
+            "recall": 0.5152,
+            "f1": 0.3696,
+            "support": 33
+          },
+          "low": {
+            "precision": 0.2857,
+            "recall": 0.2778,
+            "f1": 0.2817,
+            "support": 36
+          },
+          "medium": {
+            "precision": 0.5854,
+            "recall": 0.3636,
+            "f1": 0.4486,
+            "support": 66
+          }
+        },
+        "confusion": {
+          "labels": [
+            "high",
+            "low",
+            "medium"
+          ],
+          "matrix": [
+            [
+              17,
+              7,
+              9
+            ],
+            [
+              18,
+              10,
+              8
+            ],
+            [
+              24,
+              18,
+              24
+            ]
+          ]
+        },
+        "mean_max_prob_correct": 0.6128,
+        "mean_max_prob_wrong": 0.6327,
+        "mean_entropy_correct": 0.7731,
+        "mean_entropy_wrong": 0.7359
+      },
+      "embedding+tfidf": {
+        "macro_f1": 0.402,
+        "accuracy": 0.4148,
+        "hard_macro_f1": 0.4302,
+        "per_class": {
+          "high": {
+            "precision": 0.3542,
+            "recall": 0.5152,
+            "f1": 0.4198,
+            "support": 33
+          },
+          "low": {
+            "precision": 0.3438,
+            "recall": 0.3056,
+            "f1": 0.3235,
+            "support": 36
+          },
+          "medium": {
+            "precision": 0.5091,
+            "recall": 0.4242,
+            "f1": 0.4628,
+            "support": 66
+          }
+        },
+        "confusion": {
+          "labels": [
+            "high",
+            "low",
+            "medium"
+          ],
+          "matrix": [
+            [
+              17,
+              4,
+              12
+            ],
+            [
+              10,
+              11,
+              15
+            ],
+            [
+              21,
+              17,
+              28
+            ]
+          ]
+        },
+        "mean_max_prob_correct": 0.6003,
+        "mean_max_prob_wrong": 0.6167,
+        "mean_entropy_correct": 0.7882,
+        "mean_entropy_wrong": 0.7626
+      }
+    },
+    "unseen_topics": {
+      "macro_f1": 0.4025,
+      "accuracy": 0.4064,
+      "hard_macro_f1": 0.3913,
+      "per_class": {
+        "high": {
+          "precision": 0.224,
+          "recall": 0.549,
+          "f1": 0.3182,
+          "support": 51
+        },
+        "low": {
+          "precision": 0.4848,
+          "recall": 0.4,
+          "f1": 0.4384,
+          "support": 80
+        },
+        "medium": {
+          "precision": 0.5978,
+          "recall": 0.3618,
+          "f1": 0.4508,
+          "support": 152
+        }
+      },
+      "confusion": {
+        "labels": [
+          "high",
+          "low",
+          "medium"
+        ],
+        "matrix": [
+          [
+            28,
+            12,
+            11
+          ],
+          [
+            22,
+            32,
+            26
+          ],
+          [
+            75,
+            22,
+            55
+          ]
+        ]
+      },
+      "mean_max_prob_correct": 0.6177,
+      "mean_max_prob_wrong": 0.5982,
+      "mean_entropy_correct": 0.7633,
+      "mean_entropy_wrong": 0.7768
+    }
+  }
+}

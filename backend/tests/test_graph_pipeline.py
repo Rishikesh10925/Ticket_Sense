@@ -151,7 +151,11 @@ def test_classify_node_returns_prediction_fields():
         node({"subject": "VPN not connecting from home", "description": "Client hangs on connect"})
     )
 
-    assert set(result) == {"department_name", "priority", "sentiment"}
+    assert set(result) == {"department_name", "priority", "sentiment", "classification"}
+    dept = result["classification"]["department"]
+    assert dept["label"] == result["department_name"]
+    assert 0 < dept["max_prob"] <= 1 and 0 <= dept["entropy"] <= 1
+    assert abs(sum(dept["probabilities"].values()) - 1) < 1e-3
     assert result["department_name"]
 
 

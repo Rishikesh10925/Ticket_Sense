@@ -23,11 +23,11 @@ from sklearn.metrics import confusion_matrix, f1_score, precision_recall_fscore_
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "ai"))
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 
 from benchmark.splits import file_sha256  # noqa: E402
-from classifier_v2 import TargetModel, TicketClassifier, embed, entropy_normalised  # noqa: E402
-from train_baseline_v2 import is_hard, load_split, ticket_text  # noqa: E402
+from models.classifier_v2 import TargetModel, TicketClassifier, embed, entropy_normalised  # noqa: E402
+from models.train_baseline_v2 import is_hard, load_split, ticket_text  # noqa: E402
 
 TARGETS = ("department", "priority")
 
