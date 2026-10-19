@@ -1,7 +1,7 @@
 import uuid
 
-from sqlalchemy import CheckConstraint, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import CheckConstraint, ForeignKey, Integer, String, Text
+from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, CreatedAtMixin, UUIDPKMixin
@@ -22,3 +22,6 @@ class Feedback(UUIDPKMixin, CreatedAtMixin, Base):
     action: Mapped[str] = mapped_column(String(20), nullable=False)
     edited_reply: Mapped[str | None] = mapped_column(Text(), nullable=True)
     reject_reason: Mapped[str | None] = mapped_column(Text(), nullable=True)
+    # Workbench (Week 7, migration 0020): structured reasons and decision time.
+    reason_codes: Mapped[list[str]] = mapped_column(ARRAY(String(32)), nullable=False, server_default="{}")
+    time_taken_ms: Mapped[int | None] = mapped_column(Integer(), nullable=True)

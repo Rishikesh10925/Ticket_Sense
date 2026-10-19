@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "./Button";
 import FormField from "./FormField";
 import { CheckIcon, EditIcon, XIcon, ArrowUpRightIcon, QuestionIcon } from "./icons";
 import { useToast } from "./Toast";
-import { submitTicketFeedback, ApiError, type FeedbackAction, type Ticket } from "../api/client";
+import {
+  submitTicketFeedback,
+  ApiError,
+  REASON_CODES,
+  type FeedbackAction,
+  type ReasonCode,
+  type Ticket,
+} from "../api/client";
 
 const ACTION_TOAST: Record<FeedbackAction, string> = {
   accept: "Draft accepted and sent to the customer.",
@@ -21,6 +28,50 @@ interface ReviewActionsProps {
 
 type Mode = "idle" | "editing" | "rejecting" | "doubting";
 
+const REASON_LABEL: Record<ReasonCode, string> = {
+  wrong_source: "Wrong source",
+  outdated_source: "Outdated source",
+  missing_step: "Missing step",
+  invented_step: "Invented step",
+  did_not_address_question: "Missed the question",
+  tone: "Tone",
+  formatting: "Formatting",
+  other: "Other",
+};
+
+function ReasonChips({ value, onChange }: { value: ReasonCode[]; onChange: (v: ReasonCode[]) => void }) {
+  return (
+    <div className="reason-chips" role="group" aria-label="Reason codes">
+      {REASON_CODES.map((code) => {
+        const on = value.includes(code);
+        return (
+          <button
+            key={code}
+            type="button"
+            className={on ? "reason-chip reason-chip-on" : "reason-chip"}
+            aria-pressed={on}
+            onClick={() => onChange(on ? value.filter((c) => c !== code) : [...value, code])}
+          >
+            {REASON_LABEL[code]}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// Time from the draft appearing to the decision: the handling-time outcome of the
+// Week 11 user study (Blueprint V2 H4). Shown so the engineer knows it is measured.
+function useDecisionTimer() {
+  const started = useRef(performance.now());
+  const [seconds, setSeconds] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setSeconds(Math.floor((performance.now() - started.current) / 1000)), 1000);
+    return () => clearInterval(t);
+  }, []);
+  return { seconds, elapsedMs: () => Math.round(performance.now() - started.current) };
+}
+
 // Accept / Edit / Reject / Escalate on a drafted ticket — the primary training signal
 // for confidence-model retraining going forward (docs/confidence-labelling-guide.md).
 // See app/routers/tickets.py's submit_ticket_feedback: edit/reject never overwrite the
@@ -31,6 +82,8 @@ export default function ReviewActions({ token, ticket, onDone }: ReviewActionsPr
   const [editedReply, setEditedReply] = useState(ticket.ai_draft_reply ?? "");
   const [rejectReason, setRejectReason] = useState("");
   const [doubtNote, setDoubtNote] = useState("");
+  const [reasonCodes, setReasonCodes] = useState<ReasonCode[]>([]);
+  const timer = useDecisionTimer();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { notify } = useToast();
@@ -39,7 +92,11 @@ export default function ReviewActions({ token, ticket, onDone }: ReviewActionsPr
     setSubmitting(true);
     setError(null);
     try {
-      await submitTicketFeedback(token, ticket.id, action, details);
+      await submitTicketFeedback(token, ticket.id, action, {
+        ...details,
+        reasonCodes,
+        timeTakenMs: timer.elapsedMs(),
+      });
       setMode("idle");
       notify(ACTION_TOAST[action], action === "reject" ? "info" : "success");
       onDone();
@@ -63,6 +120,8 @@ export default function ReviewActions({ token, ticket, onDone }: ReviewActionsPr
             onChange={(e) => setEditedReply(e.target.value)}
           />
         </FormField>
+        <p className="reason-chips-label">What did you have to fix? (optional)</p>
+        <ReasonChips value={reasonCodes} onChange={setReasonCodes} />
         {error && <p className="form-error">{error}</p>}
         <div className="review-actions-buttons">
           <Button
@@ -127,11 +186,13 @@ export default function ReviewActions({ token, ticket, onDone }: ReviewActionsPr
             placeholder="e.g. Incorrect resolution steps, missing context…"
           />
         </FormField>
+        <p className="reason-chips-label">Reason codes (at least one)</p>
+        <ReasonChips value={reasonCodes} onChange={setReasonCodes} />
         {error && <p className="form-error">{error}</p>}
         <div className="review-actions-buttons">
           <Button
             variant="danger"
-            disabled={submitting || !rejectReason.trim()}
+            disabled={submitting || !rejectReason.trim() || reasonCodes.length === 0}
             onClick={() => act("reject", { rejectReason })}
           >
             <XIcon />
@@ -148,6 +209,9 @@ export default function ReviewActions({ token, ticket, onDone }: ReviewActionsPr
   return (
     <div className="review-actions">
       {error && <p className="form-error">{error}</p>}
+      <p className="decision-timer" aria-live="off" title="Time since the draft opened; recorded with your decision">
+        Reviewing for {Math.floor(timer.seconds / 60)}:{String(timer.seconds % 60).padStart(2, "0")}
+      </p>
       <div className="review-actions-buttons">
         <Button disabled={submitting} onClick={() => act("accept")}>
           <CheckIcon />

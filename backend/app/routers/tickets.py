@@ -371,6 +371,8 @@ async def submit_ticket_feedback(
             action=body.action,
             edited_reply=body.edited_reply,
             reject_reason=body.reject_reason,
+            reason_codes=list(dict.fromkeys(body.reason_codes)),
+            time_taken_ms=body.time_taken_ms,
         )
     )
 

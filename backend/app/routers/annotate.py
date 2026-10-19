@@ -17,15 +17,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.dependencies import require_role
+from app.schemas.reason_codes import ReasonCode
 from app.models import AnnotationAssignment, Annotator, BenchmarkTicket, Draft, Label, User
 
 router = APIRouter(prefix="/annotate", tags=["annotate"])
 
 RUBRIC_VERSION = "v1"
-REASON_CODES = Literal[
-    "wrong_source", "outdated_source", "missing_step", "invented_step",
-    "did_not_address_question", "tone", "formatting", "other",
-]
+REASON_CODES = ReasonCode
 
 
 class AnnotationItem(BaseModel):
