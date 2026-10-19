@@ -19,6 +19,10 @@ class TicketState(TypedDict, total=False):
     attachment_type: str | None
     attachment_text: str | None
     ocr_confidence: float | None
+    redacted_subject: str  # PII-redacted copies: the only text models and logs see
+    redacted_description: str
+    redacted_attachment: str | None
+    redaction_map: dict[str, str]  # placeholder -> original; stored on the ticket, never logged
     department_name: str | None
     department_id: str | None
     priority: str | None

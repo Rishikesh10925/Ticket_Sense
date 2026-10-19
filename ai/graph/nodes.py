@@ -33,6 +33,7 @@ from models.classifier import classify_ticket  # noqa: E402
 from ocr.extract import extract_attachment_text  # noqa: E402
 from retrieval.hybrid import hybrid_search  # noqa: E402
 from retrieval.run_log import log_run, to_evidence  # noqa: E402
+from security.pii import redact  # noqa: E402
 
 from graph.state import TicketState  # noqa: E402
 
@@ -40,13 +41,25 @@ WEAKEST_CLAIMS = 3  # shown in the assisted lane (Blueprint V2 §9.1)
 _WORD = re.compile(r"[a-z0-9]+")
 
 
+def _subject(state: TicketState) -> str:
+    return state.get("redacted_subject", state["subject"])
+
+
+def _description(state: TicketState) -> str:
+    return state.get("redacted_description", state["description"])
+
+
+def _attachment(state: TicketState) -> str | None:
+    return state.get("redacted_attachment", state.get("attachment_text"))
+
+
 def _augmented_description(state: TicketState) -> str:
-    """The ticket description, with any extracted attachment text folded in — used
-    everywhere classify/retrieve would otherwise read state["description"] alone, so
+    """The (redacted) ticket description, with any extracted attachment text folded in —
+    used everywhere classify/retrieve would otherwise read the description alone, so
     OCR/PDF/log text actually feeds into classification and retrieval rather than just
     sitting on the ticket record unused. See docs/langgraph-pipeline.md."""
-    description = state["description"]
-    attachment_text = state.get("attachment_text")
+    description = _description(state)
+    attachment_text = _attachment(state)
     if attachment_text:
         return f"{description}\n\n[Extracted from attachment]\n{attachment_text}"
     return description
@@ -87,9 +100,29 @@ def make_extract_node():
     return node
 
 
+def make_redact_node():
+    """Blueprint V2 §9 stage 1: PII is redacted before any model call or log. Every
+    later node reads only the redacted fields; the map stays in state for the service
+    to store on the ticket row."""
+
+    async def node(state: TicketState) -> dict:
+        mapping: dict[str, str] = {}
+        subject = redact(state["subject"], mapping).text
+        description = redact(state["description"], mapping).text
+        attachment = redact(state.get("attachment_text"), mapping).text or None
+        return {
+            "redacted_subject": subject,
+            "redacted_description": description,
+            "redacted_attachment": attachment,
+            "redaction_map": mapping,
+        }
+
+    return node
+
+
 def make_classify_node():
     async def node(state: TicketState) -> dict:
-        result = classify_ticket(state["subject"], _augmented_description(state))
+        result = classify_ticket(_subject(state), _augmented_description(state))
         return {
             "department_name": result.department,
             "priority": result.priority,
@@ -120,7 +153,7 @@ def make_retrieve_node(db):
         # Hybrid retrieval over kb_chunks (keyword + dense, RRF, cross-encoder rerank),
         # department- and served-scoped in the SQL. Every run is logged with all
         # candidate scores, and the evidence endpoint reads that log back.
-        query_text = f"{state['subject']}\n\n{_augmented_description(state)}"
+        query_text = f"{_subject(state)}\n\n{_augmented_description(state)}"
         result = await hybrid_search(db, query_text, UUID(department_id), k=5)
         ticket_id = state.get("ticket_id")
         run = await log_run(db, result, UUID(ticket_id) if ticket_id else None)
@@ -153,8 +186,8 @@ def make_draft_node(llm_client: LLMClient):
             result = await asyncio.to_thread(
                 generate_draft,
                 llm_client,
-                f"{state['subject']}\n\n{state['description']}",
-                state.get("attachment_text"),
+                f"{_subject(state)}\n\n{_description(state)}",
+                _attachment(state),
                 [Passage(p["n"], p["title"], p["text"], p.get("article_key")) for p in passages],
             )
         except LLMError as exc:
