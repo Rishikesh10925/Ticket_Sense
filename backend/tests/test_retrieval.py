@@ -34,6 +34,15 @@ def _seed_departments_and_articles() -> dict[str, str]:
                     content="VPN client hangs on connecting and never gets in.",
                 )
             )
+            # Withheld topic (served=False): exists for C1 reference answers only.
+            db.add(
+                KnowledgeBase(
+                    department_id=networking.id,
+                    title="VPN Gateway Certificate Expired",
+                    content="VPN not connecting from home because the gateway certificate expired.",
+                    served=False,
+                )
+            )
             db.add(
                 KnowledgeBase(
                     department_id=hr.id,
@@ -98,6 +107,8 @@ def test_retrieval_is_department_scoped(api):
     networking_results = asyncio.run(_query(department_ids["networking"]))
     assert len(networking_results) == 1
     assert networking_results[0].title == "VPN Client Not Connecting"
+    # The withheld article is the closest match of all, yet never surfaces.
+    assert all(r.title != "VPN Gateway Certificate Expired" for r in networking_results)
 
     # retrieve_evidence has no relevance threshold — it always returns the department's
     # top-k, however poor the match. The real assertion is that HR-scoped retrieval

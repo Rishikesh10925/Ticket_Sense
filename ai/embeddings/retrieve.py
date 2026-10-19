@@ -72,7 +72,9 @@ async def retrieve_evidence(
             KnowledgeBase.updated_at,
         )
         .join(KnowledgeBase, Embedding.knowledge_base_id == KnowledgeBase.id)
-        .where(KnowledgeBase.department_id == department_id)
+        # Department scope and served-only both live in the SQL (Blueprint §10, §11.4):
+        # withheld-topic articles exist for C1 reference answers but are never evidence.
+        .where(KnowledgeBase.department_id == department_id, KnowledgeBase.served.is_(True))
         .order_by(distance)
         .limit(k)
     )
