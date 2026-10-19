@@ -14,6 +14,7 @@ their `seed` in the key, so five consistency samples are five distinct cache ent
 from __future__ import annotations
 
 import hashlib
+import http.client
 import json
 import math
 import os
@@ -84,8 +85,19 @@ class OllamaClient(LLMClient):
     """Local open-weight model served by Ollama (ADR 002). Uses /api/chat with
     `format` set to the JSON Schema for structured output, and `logprobs` when asked."""
 
-    def __init__(self, model: str | None = None, host: str | None = None, timeout_s: float = 300.0):
+    def __init__(
+        self,
+        model: str | None = None,
+        host: str | None = None,
+        timeout_s: float = 300.0,
+        retries: int = 4,
+        backoff_s: float = 5.0,
+    ):
         self.model = model or os.environ.get("LLM_MODEL", "qwen2.5:7b-instruct")
+        # A long batch run must survive the server restarting (an Ollama auto-update
+        # killed the first benchmark run): retry dropped connections with backoff.
+        self.retries = retries
+        self.backoff_s = backoff_s
         self.host = (host or os.environ.get("OLLAMA_HOST", "http://localhost:11434")).rstrip("/")
         if not self.host.startswith("http"):
             self.host = "http://" + self.host
@@ -116,12 +128,16 @@ class OllamaClient(LLMClient):
         req = urllib.request.Request(
             f"{self.host}/api/chat", data=body, headers={"Content-Type": "application/json"}
         )
-        start = time.perf_counter()
-        try:
-            with urllib.request.urlopen(req, timeout=self.timeout_s) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-        except (urllib.error.URLError, TimeoutError) as exc:
-            raise LLMError(f"Ollama request to {self.host} failed: {exc}") from exc
+        for attempt in range(self.retries + 1):
+            start = time.perf_counter()
+            try:
+                with urllib.request.urlopen(req, timeout=self.timeout_s) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                break
+            except (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException) as exc:
+                if attempt == self.retries:
+                    raise LLMError(f"Ollama request to {self.host} failed after {attempt + 1} tries: {exc}") from exc
+                time.sleep(self.backoff_s * 3**attempt)
         latency_ms = (time.perf_counter() - start) * 1000
 
         logprobs = None
