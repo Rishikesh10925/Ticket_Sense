@@ -59,7 +59,6 @@ def _embed_articles() -> None:
         # instead of reusing main().
         from sentence_transformers import SentenceTransformer
 
-        from app.database import SessionLocal
         from app.models import Embedding
 
         model = SentenceTransformer(embed_kb.MODEL_NAME)

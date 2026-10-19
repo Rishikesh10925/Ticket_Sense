@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.config import settings
 from app.core.security import hash_password
-from app.models import Department, Feedback, User
+from app.models import Department, User
 
 
 def _register_and_login(api, email: str) -> str:

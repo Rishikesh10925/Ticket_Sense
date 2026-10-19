@@ -137,7 +137,7 @@ def test_low_confidence_ticket_is_escalated_with_no_draft(api):
 
 
 def test_escalation_endpoint_404_when_not_escalated(api):
-    networking_id = _department_id_sync("Networking")
+    _department_id_sync("Networking")
     admin_token = _admin_token(api, "gate_admin_404@example.com")
 
     token = _register_and_login(api, "gate_user_404@example.com")
@@ -303,7 +303,7 @@ def test_feedback_requires_drafted_status(api):
 
 
 def test_feedback_requires_reviewer_role(api):
-    networking_id = _department_id_sync("Networking")
+    _department_id_sync("Networking")
     token = _register_and_login(api, "gate_user_norole@example.com")
     resp = api.post(
         "/tickets",
