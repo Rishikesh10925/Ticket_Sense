@@ -54,7 +54,7 @@ export interface Ticket {
   confidence_score: number | null;
   confidence_features: ConfidenceFeatures | null;
   confidence_threshold: number | null;
-  // The actual text sent (or, for an auto-resolution, that would be sent) to the
+  // The actual text an engineer sent to the
   // customer once status is "reviewed" — visible to every role, including end_user.
   // Null for every other status. See backend/app/schemas/tickets.py.
   final_response: string | null;

@@ -13,30 +13,22 @@ import {
 import { useAuth } from "../../auth/AuthContext";
 import { useToast } from "../../components";
 
-// Mirrors backend/app/schemas/tickets.py's CUSTOMER_READY_CONFIDENCE_THRESHOLD — the
-// one boundary every department shares and can't change from here, unlike the
-// per-department slider below it.
-const AUTO_RESOLVE_PERCENT = 85;
-
 // A live picture of what a given threshold actually does to a ticket, since a bare
-// "55%" slider doesn't tell an admin what happens on either side of that line. Three
-// zones, always in the same order and colors as confidence rises: admin has to
-// decide -> an engineer reviews -> nothing, it just goes out.
+// "55%" slider doesn't tell an admin what happens on either side of that line. Every
+// draft is decided by a human: below the threshold the draft is withheld and the
+// ticket goes to the Approvals queue; at or above it an engineer reviews the draft.
+// (The three-lane V2 gate replaces this screen in Weeks 8-9.)
 function ZoneBar({ thresholdPercent }: { thresholdPercent: number }) {
   const clamped = Math.min(Math.max(thresholdPercent, 0), 100);
-  const adminWidth = Math.min(clamped, AUTO_RESOLVE_PERCENT);
-  const engineerWidth = Math.max(0, AUTO_RESOLVE_PERCENT - clamped);
-  const autoWidth = 100 - AUTO_RESOLVE_PERCENT;
 
   return (
     <div
       className="zone-bar"
       role="img"
-      aria-label={`Below ${clamped}% goes to admin approval, ${clamped}% to ${AUTO_RESOLVE_PERCENT}% goes to an engineer, ${AUTO_RESOLVE_PERCENT}% and up auto-resolves`}
+      aria-label={`Below ${clamped}% goes to admin approval, ${clamped}% and up goes to an engineer`}
     >
-      <div className="zone-bar-segment zone-bar-admin" style={{ width: `${adminWidth}%` }} />
-      <div className="zone-bar-segment zone-bar-engineer" style={{ width: `${engineerWidth}%` }} />
-      <div className="zone-bar-segment zone-bar-auto" style={{ width: `${autoWidth}%` }} />
+      <div className="zone-bar-segment zone-bar-admin" style={{ width: `${clamped}%` }} />
+      <div className="zone-bar-segment zone-bar-engineer" style={{ width: `${100 - clamped}%` }} />
     </div>
   );
 }
@@ -47,18 +39,11 @@ function ZoneLegend({ thresholdPercent }: { thresholdPercent: number }) {
     <ul className="zone-legend">
       <li className="zone-legend-admin">
         <span className="zone-legend-dot" />
-        <strong>0–{clamped}%</strong> goes to your Approvals queue
+        <strong>0–{clamped}%</strong> goes to your Approvals queue, no draft shown
       </li>
       <li className="zone-legend-engineer">
         <span className="zone-legend-dot" />
-        <strong>
-          {clamped}–{AUTO_RESOLVE_PERCENT}%
-        </strong>{" "}
-        goes to an engineer to review
-      </li>
-      <li className="zone-legend-auto">
-        <span className="zone-legend-dot" />
-        <strong>{AUTO_RESOLVE_PERCENT}–100%</strong> auto-resolves straight to the customer
+        <strong>{clamped}–100%</strong> goes to an engineer to review the draft
       </li>
     </ul>
   );

@@ -586,7 +586,7 @@ export default function TicketDetail() {
                     <p className="draft-text">{ticket.final_response ?? "(no response text on record)"}</p>
                     {ticket.final_response === ticket.ai_draft_reply && (
                       <p className="placeholder-note draft-status-legend">
-                        Auto-resolved — this cleared the confidence bar before any engineer saw it.
+                        Accepted unchanged by an engineer.
                       </p>
                     )}
                   </div>

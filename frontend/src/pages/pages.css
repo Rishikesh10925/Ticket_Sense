@@ -1641,10 +1641,6 @@
   background: var(--color-info-strong);
 }
 
-.zone-bar-auto {
-  background: var(--color-success-strong);
-}
-
 .zone-legend {
   list-style: none;
   margin: var(--space-sm) 0 0;
@@ -1680,10 +1676,6 @@
 
 .zone-legend-engineer .zone-legend-dot {
   background: var(--color-info-strong);
-}
-
-.zone-legend-auto .zone-legend-dot {
-  background: var(--color-success-strong);
 }
 
 @media (max-width: 640px) {
