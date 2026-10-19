@@ -73,6 +73,19 @@ def load_taxonomy(path: Path = TAXONOMY_PATH) -> Taxonomy:
     return Taxonomy(raw["version"], raw["articles_per_topic"], tuple(topics))
 
 
+def _converted_slugs(kb_dir: Path) -> set[str]:
+    """`<folder>/<slug>` of V1 articles already converted to the V2 template, read from
+    each V2 article's `legacy:` front-matter field."""
+    converted = set()
+    for path in kb_dir.glob("*/*.md"):
+        head = path.read_text(encoding="utf-8").split("\n---", 1)[0]
+        if head.startswith("---"):
+            meta = yaml.safe_load(head[3:]) or {}
+            if meta.get("legacy"):
+                converted.add(f"{path.parent.name}/{meta['legacy']}")
+    return converted
+
+
 def validate(tax: Taxonomy, kb_dir: Path = KB_DIR) -> list[str]:
     """Problems with the taxonomy; empty means valid."""
     problems: list[str] = []
@@ -91,6 +104,7 @@ def validate(tax: Taxonomy, kb_dir: Path = KB_DIR) -> list[str]:
     if len(tax.withheld()) != 6:
         problems.append(f"{len(tax.withheld())} withheld topics, expected 6")
 
+    converted = _converted_slugs(kb_dir) if kb_dir.exists() else set()
     seen: dict[str, str] = {}
     for t in tax.topics:
         for slug in t.existing:
@@ -98,11 +112,12 @@ def validate(tax: Taxonomy, kb_dir: Path = KB_DIR) -> list[str]:
             if key in seen:
                 problems.append(f"{key} mapped to both {seen[key]} and {t.id}")
             seen[key] = t.id
-            if kb_dir.exists() and not (kb_dir / t.folder / f"{slug}.md").exists():
-                problems.append(f"{key}.md does not exist")
+            if kb_dir.exists() and key not in converted and not (kb_dir / t.folder / f"{slug}.md").exists():
+                problems.append(f"{key}.md does not exist and was not converted")
     if kb_dir.exists():
-        on_disk = {f"{p.parent.name}/{p.stem}" for p in kb_dir.glob("*/*.md")}
-        for unmapped in sorted(on_disk - set(seen)):
+        # V1 files keep their slug names; V2 files are named by article id (SAP-ACC-001).
+        v1_on_disk = {f"{p.parent.name}/{p.stem}" for p in kb_dir.glob("*/*.md") if not p.stem[:1].isupper()}
+        for unmapped in sorted(v1_on_disk - set(seen)):
             problems.append(f"{unmapped}.md is not mapped to any topic")
     return problems
 
