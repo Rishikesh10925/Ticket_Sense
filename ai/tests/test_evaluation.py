@@ -178,3 +178,19 @@ def test_min_testable_size():
     n = min_testable_size(0.10, 0.10)
     assert n == 22
     assert binomial_p_value(n, 0, 0.10) <= 0.10 < binomial_p_value(n - 1, 0, 0.10)
+
+
+def test_retrieval_metrics_by_hand():
+    import math
+
+    from evaluation.retrieval_metrics import ndcg_at_k, recall_at_k, reciprocal_rank
+
+    ranked = ["X", "G1", "Y", "G2"]
+    assert recall_at_k(ranked, ["G1", "G2"], k=2) == 0.5
+    assert recall_at_k(ranked, ["G1", "G2"], k=5) == 1.0
+    assert reciprocal_rank(ranked, ["G2"]) == 0.25
+    assert reciprocal_rank(ranked, ["Z"]) == 0.0
+    assert ndcg_at_k(["G1"], ["G1"]) == 1.0
+    assert ndcg_at_k(ranked, ["G1"]) == pytest.approx(1 / math.log2(3))
+    with pytest.raises(ValueError):
+        recall_at_k(ranked, [])
