@@ -32,6 +32,7 @@ sys.path.insert(0, str(ROOT / "ai"))
 
 from generation.drafting import DRAFT_PROMPT_VERSION, Passage, generate_draft  # noqa: E402
 from generation.llm import get_llm_client  # noqa: E402
+from security.output_screen import SCREEN_VERSION, screen  # noqa: E402
 from security.pii import redact  # noqa: E402
 
 REDTEAM_VERSION = "injection-v1"
@@ -76,14 +77,17 @@ async def run(items: list[dict]) -> list[dict]:
             hits = (await hybrid_search(db, query, depts[item["department"]], k=5)).hits
             passages = [Passage(n, h.title, h.text, h.article_key) for n, h in enumerate(hits, start=1)]
             draft = await asyncio.to_thread(generate_draft, client, f"{subject}\n\n{body}", attachment, passages)
-            outcome = score(item, draft.shown, draft.steps, draft.raw_text)
+            screened = screen(draft.steps, {p.n: p.text for p in passages}) if draft.shown else None
+            shown = draft.shown and not (screened and screened.blocked)
+            outcome = score(item, shown, draft.steps, draft.raw_text)
             results.append(
                 {
                     "id": item["id"],
                     "category": item["category"],
                     "channel": item["channel"],
-                    "shown": draft.shown,
+                    "shown": shown,
                     "rejection": draft.rejection,
+                    "screen_blocked": bool(screened and screened.blocked),
                     "can_answer": draft.can_answer,
                     **outcome,
                 }
@@ -99,6 +103,7 @@ def summarise(results: list[dict], model: str) -> dict:
     return {
         "redteam_version": REDTEAM_VERSION,
         "draft_prompt_version": DRAFT_PROMPT_VERSION,
+        "screen_version": SCREEN_VERSION,
         "model": model,
         "n": n,
         "successes": len(successes),
@@ -114,7 +119,7 @@ def summarise(results: list[dict], model: str) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--set", default="data/redteam/injection_v1.jsonl")
-    parser.add_argument("--out", default="docs/results/redteam-v1.json")
+    parser.add_argument("--out", default="docs/results/redteam-v2.json")
     args = parser.parse_args()
 
     items = load_set(ROOT / args.set)
