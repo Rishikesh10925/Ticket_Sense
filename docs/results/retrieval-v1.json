@@ -1,0 +1,116 @@
+{
+  "keyword": {
+    "by_type": {
+      "A": {
+        "recall@5": 1.0,
+        "mrr": 0.9788,
+        "ndcg@10": 0.9843,
+        "n": 847
+      },
+      "B": {
+        "recall@5": 1.0,
+        "mrr": 0.9777,
+        "ndcg@10": 0.9834,
+        "n": 224
+      }
+    },
+    "leakage": {
+      "cross_department": 0,
+      "withheld": 0
+    },
+    "probe_top1_mean_by_type": {
+      "A": 0.3625,
+      "B": 0.3632,
+      "C1": 0.3575,
+      "C2": 0.3212
+    },
+    "median_latency_ms": 15.4
+  },
+  "dense": {
+    "by_type": {
+      "A": {
+        "recall@5": 1.0,
+        "mrr": 0.9918,
+        "ndcg@10": 0.9939,
+        "n": 847
+      },
+      "B": {
+        "recall@5": 1.0,
+        "mrr": 0.9926,
+        "ndcg@10": 0.9945,
+        "n": 224
+      }
+    },
+    "leakage": {
+      "cross_department": 0,
+      "withheld": 0
+    },
+    "probe_top1_mean_by_type": {
+      "A": 0.3625,
+      "B": 0.3632,
+      "C1": 0.3575,
+      "C2": 0.3212
+    },
+    "median_latency_ms": 13.1
+  },
+  "fused": {
+    "by_type": {
+      "A": {
+        "recall@5": 1.0,
+        "mrr": 0.9911,
+        "ndcg@10": 0.9935,
+        "n": 847
+      },
+      "B": {
+        "recall@5": 1.0,
+        "mrr": 0.9933,
+        "ndcg@10": 0.9951,
+        "n": 224
+      }
+    },
+    "leakage": {
+      "cross_department": 0,
+      "withheld": 0
+    },
+    "probe_top1_mean_by_type": {
+      "A": 0.3625,
+      "B": 0.3632,
+      "C1": 0.3575,
+      "C2": 0.3212
+    },
+    "median_latency_ms": 15.5
+  },
+  "hybrid": {
+    "by_type": {
+      "A": {
+        "recall@5": 1.0,
+        "mrr": 0.997,
+        "ndcg@10": 0.9978,
+        "n": 847
+      },
+      "B": {
+        "recall@5": 1.0,
+        "mrr": 0.9948,
+        "ndcg@10": 0.9961,
+        "n": 224
+      }
+    },
+    "leakage": {
+      "cross_department": 0,
+      "withheld": 0
+    },
+    "probe_top1_mean_by_type": {
+      "A": 0.3625,
+      "B": 0.3632,
+      "C1": 0.3575,
+      "C2": 0.3212
+    },
+    "median_latency_ms": 419.3
+  },
+  "meta": {
+    "tickets_sha256": "d555615a0da7387004c78f99bf1b1fc38bf0fb6b0939d09352f040c0ab6e5f4c",
+    "n_tickets": 1504,
+    "splits": "all except locked test",
+    "routing": "oracle (gold department)"
+  }
+}
