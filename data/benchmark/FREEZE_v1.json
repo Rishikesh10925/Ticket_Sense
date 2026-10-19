@@ -1,0 +1,47 @@
+{
+  "benchmark_version": "v1",
+  "frozen_on": "2026-10-19",
+  "status": "provisional: 0/120 KB articles human-reviewed",
+  "generator": {
+    "prompt_version": "ticket-v2",
+    "model": "qwen2.5:7b-instruct",
+    "attempts_rejected": 209,
+    "paraphrases_dropped": 28
+  },
+  "counts": {
+    "tickets": 1775,
+    "scenarios": 596,
+    "by_type": {
+      "A": 975,
+      "B": 265,
+      "C1": 355,
+      "C2": 180
+    },
+    "by_department": {
+      "Cloud": 356,
+      "Database": 351,
+      "HR": 350,
+      "Networking": 344,
+      "SAP": 374
+    },
+    "by_split": {
+      "calib": 262,
+      "test": 271,
+      "train": 824,
+      "unseen": 283,
+      "val": 135
+    },
+    "with_attachment": 277
+  },
+  "kb": {
+    "articles": 120,
+    "reviewed": 0,
+    "combined_sha256": "ca7747b1a830b39180c5a15918228e2cbb0a44da4a94eecc1be5b7e6d5f795d8"
+  },
+  "sha256": {
+    "tickets": "d555615a0da7387004c78f99bf1b1fc38bf0fb6b0939d09352f040c0ab6e5f4c",
+    "splits": "6a6d512679de03ea4fe4ef269c21e21ae43b835d21736038cae550d70d4bd928",
+    "taxonomy": "f4c90e1a076a3a79cf396e37f0210eba524c6021f34652d0150a480ad1c7e4f6"
+  },
+  "split_seed": 2026
+}

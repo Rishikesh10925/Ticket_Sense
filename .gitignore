@@ -47,3 +47,6 @@ data/cache/
 # Uploaded ticket attachments (local dev storage)
 backend/uploads/
 .coverage
+
+# Week 3 baseline models: rebuilt by ai/models/train_baseline_v2.py, not used at runtime.
+ai/models/artifacts/v2/baseline_*.joblib
