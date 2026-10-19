@@ -27,6 +27,9 @@ frontend/.vite/
 .DS_Store
 Thumbs.db
 *.log
+# Test fixtures and benchmark attachments are real data, not logs.
+!data/sample_screenshots/*.log
+!data/benchmark/**/*.log
 *.tmp
 *.swp
 

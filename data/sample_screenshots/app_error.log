@@ -1,0 +1,5 @@
+2026-08-30T09:12:01Z INFO  app.worker: starting nightly backup job
+2026-08-30T09:12:04Z ERROR app.storage: PutObject failed for finance-reports/aug-2026.csv
+2026-08-30T09:12:04Z ERROR app.storage: QuotaExceededException: bucket quota of 500GB exceeded (current usage: 512.3GB)
+2026-08-30T09:12:04Z WARN  app.worker: backup job aborted after 1 failed upload
+2026-08-30T09:12:05Z INFO  app.worker: job finished with status=FAILED
