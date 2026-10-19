@@ -1,0 +1,69 @@
+{
+  "n_train": 824,
+  "n_val": 135,
+  "n_val_hard": 75,
+  "department": {
+    "val_macro_f1": 0.7606,
+    "val_accuracy": 0.763,
+    "val_hard_macro_f1": 0.724,
+    "per_class": {
+      "Cloud": {
+        "precision": 0.9333,
+        "recall": 0.5833,
+        "f1-score": 0.7179,
+        "support": 24.0
+      },
+      "Database": {
+        "precision": 0.6774,
+        "recall": 0.7778,
+        "f1-score": 0.7241,
+        "support": 27.0
+      },
+      "HR": {
+        "precision": 1.0,
+        "recall": 0.963,
+        "f1-score": 0.9811,
+        "support": 27.0
+      },
+      "Networking": {
+        "precision": 0.65,
+        "recall": 0.963,
+        "f1-score": 0.7761,
+        "support": 27.0
+      },
+      "SAP": {
+        "precision": 0.6957,
+        "recall": 0.5333,
+        "f1-score": 0.6038,
+        "support": 30.0
+      }
+    }
+  },
+  "priority": {
+    "val_macro_f1": 0.3128,
+    "val_accuracy": 0.3556,
+    "val_hard_macro_f1": 0.3272,
+    "per_class": {
+      "high": {
+        "precision": 0.3077,
+        "recall": 0.2424,
+        "f1-score": 0.2712,
+        "support": 33.0
+      },
+      "low": {
+        "precision": 0.2258,
+        "recall": 0.1944,
+        "f1-score": 0.209,
+        "support": 36.0
+      },
+      "medium": {
+        "precision": 0.4231,
+        "recall": 0.5,
+        "f1-score": 0.4583,
+        "support": 66.0
+      }
+    }
+  },
+  "data_sha256": "d555615a0da7387004c78f99bf1b1fc38bf0fb6b0939d09352f040c0ab6e5f4c",
+  "model": "tfidf(1,2)+logreg(balanced)"
+}
