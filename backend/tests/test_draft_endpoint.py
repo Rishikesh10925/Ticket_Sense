@@ -44,7 +44,7 @@ def test_engineer_sees_cited_steps_evidence_and_claim_support(api):
     assert draft["claims"] and all(c["support"] is not None for c in draft["claims"])
     assert draft["groundedness"] is not None
     assert len(draft["weakest"]) <= 3
-    assert draft["prompt_version"] == "draft-v1"
+    assert draft["prompt_version"] == "draft-v2"
 
 
 def test_customer_cannot_read_the_draft(api):
