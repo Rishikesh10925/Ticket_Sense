@@ -29,6 +29,7 @@ from app.models.draft import Draft, DraftClaim
 from app.services.ticket_lifecycle import TicketStatus, transition
 
 from generation.llm import get_llm_client  # noqa: E402
+from security.pii import REDACTOR_VERSION, restore  # noqa: E402
 from graph.nodes import get_scorer  # noqa: E402
 from graph.pipeline import build_pipeline  # noqa: E402
 
@@ -106,6 +107,18 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
         )
 
         ticket.attachment_text = result.get("attachment_text")
+        ticket.redacted_text = "\n\n".join(
+            part
+            for part in (
+                result.get("redacted_subject"),
+                result.get("redacted_description"),
+                result.get("redacted_attachment"),
+            )
+            if part
+        )
+        redaction_map = result.get("redaction_map") or {}
+        ticket.redaction_map = redaction_map
+        ticket.redactor_version = REDACTOR_VERSION
         ticket.ocr_confidence = result.get("ocr_confidence")
 
         ticket.priority = result.get("priority")
@@ -130,7 +143,9 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
             ticket.confidence_threshold = result.get("confidence_threshold")
 
             if result.get("gate_decision") == "draft":
-                ticket.ai_draft_reply = result.get("draft")
+                # The model only saw placeholders; the engineer's copy gets the real
+                # values back. The stored draft row keeps the placeholders.
+                ticket.ai_draft_reply = restore(result.get("draft") or "", redaction_map) or None
                 ticket.ai_draft_citations = result.get("citations") or []
                 ticket.status = transition(TicketStatus(ticket.status), TicketStatus.DRAFTED)
 

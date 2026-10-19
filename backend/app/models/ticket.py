@@ -42,6 +42,11 @@ class Ticket(UUIDPKMixin, CreatedAtMixin, Base):
     priority: Mapped[str | None] = mapped_column(String(10), nullable=True)
     sentiment: Mapped[str | None] = mapped_column(String(10), nullable=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, server_default="submitted", index=True)
+    # PII-redacted subject, description and attachment text: the only text models and
+    # logs saw (ai/security/pii.py, migration 0016). The map restores the originals.
+    redacted_text: Mapped[str | None] = mapped_column(Text(), nullable=True)
+    redaction_map: Mapped[dict | None] = mapped_column(JSONB(), nullable=True)
+    redactor_version: Mapped[str | None] = mapped_column(String(16), nullable=True)
     ai_draft_reply: Mapped[str | None] = mapped_column(Text(), nullable=True)
     # [{"source_type": ..., "source_id": ..., "title": ...}, ...] — the evidence the
     # draft actually cited, in citation-number order. See docs/langgraph-pipeline.md.
