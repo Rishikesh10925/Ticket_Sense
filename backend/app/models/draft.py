@@ -1,6 +1,17 @@
 import uuid
 
-from sqlalchemy import Boolean, CheckConstraint, Float, ForeignKey, ForeignKeyConstraint, Integer, String, Text
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Computed,
+    Float,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -79,3 +90,26 @@ class DraftClaim(UUIDPKMixin, CreatedAtMixin, Base):
     support: Mapped[float | None] = mapped_column(Float(), nullable=True)
 
     draft: Mapped[Draft] = relationship(back_populates="claims")
+
+
+class JudgeVerdict(UUIDPKMixin, CreatedAtMixin, Base):
+    """The LLM judge's rubric label for a draft (migration 0018). Kept apart from human
+    `labels`: judge labels are training volume only, never a headline number."""
+
+    __tablename__ = "judge_verdicts"
+    __table_args__ = (
+        CheckConstraint("label IN ('A','M','R','W')", name="ck_judge_verdicts_label"),
+        UniqueConstraint("draft_id", "model", "prompt_version", name="uq_judge_verdicts_draft_model_prompt"),
+    )
+
+    draft_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("drafts.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    label: Mapped[str] = mapped_column(String(1), nullable=False)
+    acceptable: Mapped[bool | None] = mapped_column(Boolean(), Computed("label IN ('A','M')", persisted=True))
+    critical_problem: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+    missing_key_facts: Mapped[list] = mapped_column(JSONB(), nullable=False)
+    contradicted_key_facts: Mapped[list] = mapped_column(JSONB(), nullable=False)
+    rationale: Mapped[str] = mapped_column(Text(), nullable=False)
+    model: Mapped[str] = mapped_column(String(64), nullable=False)
+    prompt_version: Mapped[str] = mapped_column(String(32), nullable=False)
