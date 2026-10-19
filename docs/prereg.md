@@ -1,6 +1,6 @@
 # Pre-registration
 
-- Status: **DRAFT v0 (Week 1)**. Committed and tagged `prereg-v1` in Week 3, before any
+- Status: **v1, tagged `prereg-v1` on 2026-10-19 (Week 3)**, before any
   human labels are collected. After the tag, this file changes only through the
   amendment log at the bottom.
 - Owner: Shivaganesh. Source: Blueprint V2 §6, §14, §15.
@@ -22,10 +22,12 @@ training volume and are reported with their agreement against humans.
 
 ## Data and splits
 
-Benchmark v1 (frozen and hashed in Week 3): about 1,800 tickets of types A (55%), B (15%),
-C1 unseen topic (20%), C2 out of domain or vague (10%). Splits are grouped by scenario:
-train about 900, validation 150, calibration 250 (200 human-labelled), locked test 250
-(all human-labelled), and an unseen-topic set (all C1). The locked test set is read only
+Benchmark v1, frozen 2026-10-19 ([FREEZE_v1.json](../data/benchmark/FREEZE_v1.json), tickets
+SHA-256 recorded there): 1,775 tickets from 596 scenarios, of types A 975 (54.9%), B 265
+(14.9%), C1 unseen topic 355 (20.0%), C2 out of domain or vague 180 (10.1%). Splits are
+grouped by gold article (leakage unit): train 824, validation 135, calibration 262 (200
+human-labelled), locked test 271 (250 human-labelled, stratified), and unseen 283 (all C1).
+Every evaluation run first checks `freeze.py verify`. The locked test set is read only
 through `ai/evaluation`, exactly once, in Week 10.
 
 ## Methods compared
@@ -61,4 +63,8 @@ fast lane, and the false-escalation rate. Slices: ticket type, department, seen/
 
 | Date | Change | Reason |
 |---|---|---|
-| — | — | — |
+| 2026-10-19 | Tagged `prereg-v1` with the frozen counts above (1,775 rather than about 1,800 tickets; test 271 and calibration 262 rather than 250). | Exact numbers from the freeze; 28 paraphrases failed generation quality checks and were dropped. |
+
+Standing rule: if the human fact-check of the KB changes an article, the tickets written
+from it are regenerated, the benchmark is refrozen as v1.1, and the change is logged
+here *before* any human label is collected on the affected tickets.

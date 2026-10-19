@@ -1,8 +1,9 @@
-# Datasheet: TicketSense Benchmark v1 (draft)
+# Datasheet: TicketSense Benchmark v1
 
 Format after Gebru et al., "Datasheets for Datasets" (Blueprint ref. [19]). Owner:
-Shivaganesh. Status: **draft**; counts and hashes are filled in at the Week 3 freeze
-([freeze record](../data/benchmark/FREEZE_v1.json)).
+Shivaganesh. Status: **frozen 2026-10-19, provisional** until the 120 KB articles are
+human fact-checked (0/120 at freeze). Hashes and counts: [freeze record](../data/benchmark/FREEZE_v1.json);
+check them with `python ai/benchmark/freeze.py verify --version v1`.
 
 ## Motivation
 
@@ -19,7 +20,17 @@ Shivaganesh. Status: **draft**; counts and hashes are filled in at the Week 3 fr
 - **Instances.** Synthetic IT and HR support tickets (subject, body, optional pasted log)
   plus a synthetic knowledge base of 120 articles in five departments (SAP, Networking,
   Cloud, Database, HR), six topics each.
-- **Size.** About 1,800 tickets (exact count in the freeze record).
+- **Size.** 1,775 tickets from 596 scenarios (target 1,800: 28 paraphrases failed every
+  quality retry and were dropped rather than kept; 209 attempts were rejected and
+  regenerated). 277 tickets include a pasted log.
+
+| Type | Tickets | Share | | Department | Tickets |
+|---|---|---|---|---|---|
+| A | 975 | 54.9% | | SAP | 374 |
+| B | 265 | 14.9% | | Cloud | 356 |
+| C1 | 355 | 20.0% | | Database | 351 |
+| C2 | 180 | 10.1% | | HR | 350 |
+| | | | | Networking | 344 |
 - **Types, by construction.**
 
 | Type | Share | Meaning | Correct behaviour |
@@ -35,7 +46,8 @@ Shivaganesh. Status: **draft**; counts and hashes are filled in at the Week 3 fr
 - **Grouping.** `group_id` identifies a scenario (one source plus one situation), whose
   three paraphrases share it. Splits use the gold article as the leakage unit
   ([split-manifest.md](split-manifest.md)).
-- **Splits.** train, val, calib, test (locked; read once in Week 10), unseen (C1 only).
+- **Splits.** train 824, val 135, calib 262, test 271 (locked; read once in Week 10),
+  unseen 283 (C1 only). Split seed 2026; manifest `data/benchmark/splits_v1.json`.
 - **Missing information.** Human acceptability labels are added later (600 drafts, Weeks 7 to 8).
 - **Confidential or personal data.** None. All names, systems and policies are fictional.
   Organisation-specific policies (notice periods, limits) describe a fictional company.
@@ -74,8 +86,11 @@ None beyond the controls above. Raw generator output is the dataset.
 - **Synthetic and easier than real data** (risk R4). Ticket phrasing comes from one 7B
   model, and paraphrases of one scenario are similar. Results show relative differences
   between methods, not production accuracy.
-- **Generator leakage.** A ticket may still hint at the fix in wording shorter than the
-  5-word copy check.
+- **Generator leakage.** A ticket may still hint at the cause or fix in its own words,
+  which the 5-word copy check cannot catch (spot check at freeze: an A ticket on SAP date
+  formats says the setting is "personal, independent of Windows regional config", which
+  is the article's cause). This makes type A easier; the Week 4 retrieval evaluation
+  measures how much (risk R4).
 - **Fact-checking.** Article accuracy depends on the human review status recorded at freeze.
 - **Vague C2 tickets** can, rarely, still match a served topic. The validator cannot
   detect this; human labels can.
