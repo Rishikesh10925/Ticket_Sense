@@ -1,7 +1,18 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, CheckConstraint, Computed, DateTime, ForeignKey, Integer, String, Text, true
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Computed,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    true,
+)
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -23,6 +34,9 @@ class Annotator(UUIDPKMixin, CreatedAtMixin, Base):
 
 class AnnotationAssignment(UUIDPKMixin, CreatedAtMixin, Base):
     __tablename__ = "annotation_assignments"
+    __table_args__ = (
+        UniqueConstraint("draft_id", "annotator_id", name="uq_annotation_assignments_draft_annotator"),
+    )
 
     draft_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("drafts.id", ondelete="CASCADE"), nullable=False
