@@ -38,9 +38,10 @@ from generation.llm import LLMClient, LLMRequest, get_llm_client  # noqa: E402
 
 STYLE_PROFILE = Path(__file__).resolve().parents[2] / "data" / "benchmark" / "style_profile.json"
 MAX_ATTEMPTS = 3
+_JSON_SPILL = re.compile(r'"\s*:|(?:attachment_text|uncovered_question|body_sentences)')
 COPY_NGRAM = 5
 
-PROMPT_VERSION = "ticket-v1"
+PROMPT_VERSION = "ticket-v2"
 TYPE_SHARES = {"A": 0.55, "B": 0.15, "C1": 0.20, "C2": 0.10}
 PARAPHRASES_PER_SCENARIO = 3
 PRIORITY_WEIGHTS = {"low": 0.25, "medium": 0.45, "high": 0.30}
@@ -59,8 +60,9 @@ PRIORITY_HINTS = {
     "high": "The user is blocked, or a deadline or several people depend on it.",
 }
 C2_KINDS = {
-    "vague": "The user gives almost no detail: no error text, no system name beyond the department area, "
-    "nothing an engineer could act on without asking questions.",
+    "vague": "The user gives almost no detail: no error text, and they do NOT say which action failed "
+    "(not logging in, not printing, not posting, not connecting). They only say that something in this "
+    "department's area is wrong or 'acting weird', so an engineer must ask questions before helping.",
     "out_of_scope": "The user asks for something this department does not have a support article for, "
     "such as a new feature, a custom report, training, or advice on a purchase.",
 }
@@ -149,6 +151,18 @@ def copies_article(text: str, article: Article | None, n: int = COPY_NGRAM) -> b
     return bool(_ngrams(text, n) & _ngrams(hidden, n))
 
 
+def sentences_for(target_words: int) -> int:
+    """Sentence count that yields about `target_words` (roughly 11 words per sentence)."""
+    return max(2, round(target_words / 11))
+
+
+def schema_for(target_words: int) -> dict:
+    k = sentences_for(target_words)
+    props = {key: value for key, value in SCHEMA["properties"].items() if key != "body"}
+    props["body_sentences"] = {"type": "array", "items": {"type": "string"}, "minItems": k, "maxItems": k + 1}
+    return {"type": "object", "properties": props, "required": ["subject", "body_sentences"]}
+
+
 def type_quotas(n_tickets: int) -> dict[str, int]:
     """Ticket count per type summing exactly to n (largest remainder)."""
     raw = {t: n_tickets * share for t, share in TYPE_SHARES.items()}
@@ -178,12 +192,14 @@ def build_prompt(s: Scenario, persona: str, target_words: int = 55) -> str:
         lines.append("Mention a second, unrelated small annoyance in passing (one sentence).")
     if s.difficulty.get("has_log"):
         lines.append(
-            "Put 3 to 8 lines of the log or error output the user copied into `attachment_text` "
-            "(timestamps and messages consistent with the problem)."
+            "Put 3 to 8 lines of raw log or error output the user copied into `attachment_text`: "
+            "timestamps in 2026, error codes and messages exactly as a system prints them. The log must "
+            "NOT explain the cause or mention a fix."
         )
     else:
         lines.append("Leave `attachment_text` empty.")
-    lines.append(f"Length: subject 3 to 8 words; body about {target_words} words (count them).")
+    lines.append(f"Length: subject 3 to 8 words. Write the body as {sentences_for(target_words)} full "
+                 f"sentences in `body_sentences` (about {target_words} words in total).")
     return "\n\n".join(lines)
 
 
@@ -257,7 +273,7 @@ def _attempt(client: LLMClient, s: Scenario, persona: str, target_words: int, se
             temperature=0.8,
             max_tokens=600,
             seed=seed,
-            json_schema=SCHEMA,
+            json_schema=schema_for(target_words),
         )
     )
     try:
@@ -265,14 +281,18 @@ def _attempt(client: LLMClient, s: Scenario, persona: str, target_words: int, se
     except json.JSONDecodeError:
         return None
     subject = " ".join(str(out.get("subject", "")).split())
-    body = str(out.get("body", "")).strip()
+    sentences = [" ".join(str(x).split()) for x in out.get("body_sentences", [])]
+    # Small models sometimes spill JSON into a sentence ('attachment_text": ""'); drop those.
+    body = " ".join(x for x in sentences if x and not _JSON_SPILL.search(x))
     uncovered = str(out.get("uncovered_question") or "").strip()
     if not subject or not body or (s.type == "B" and not uncovered.endswith("?")):
         return None
+    attachment = str(out.get("attachment_text") or "").strip()
     if copies_article(f"{subject} {body} {uncovered}", s.article):
         return None
-    return {"subject": subject, "body": body, "uncovered": uncovered,
-            "attachment": str(out.get("attachment_text") or "").strip()}
+    if attachment and copies_article(attachment, s.article, n=4):
+        return None  # a pasted log must not contain the diagnosis
+    return {"subject": subject, "body": body, "uncovered": uncovered, "attachment": attachment}
 
 
 def generate(

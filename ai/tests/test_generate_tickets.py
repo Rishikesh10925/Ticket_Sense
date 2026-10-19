@@ -49,7 +49,7 @@ def test_generate_builds_typed_records_and_appends_b_question():
     def responder(req):
         return json.dumps({
             "subject": "Problem with SAP today",
-            "body": "Something in SAP is not working as I expected this morning, can you help me please.",
+            "body_sentences": ["Something in SAP is not working as I expected this morning.", "Can you help me please?"],
             "attachment_text": "",
             "uncovered_question": "How long does this usually take?",
         })
@@ -63,7 +63,7 @@ def test_generate_builds_typed_records_and_appends_b_question():
         else:
             assert r.uncovered_question is None
         assert (r.gold_articles == []) == (r.type == "C2")
-        assert r.prompt_version == "ticket-v1"
+        assert r.prompt_version == "ticket-v2"
 
 
 def test_generate_rejects_tickets_that_copy_the_solution():
@@ -73,7 +73,7 @@ def test_generate_rejects_tickets_that_copy_the_solution():
 
     def responder(req):
         calls["n"] += 1
-        return json.dumps({"subject": "Help", "body": leak, "uncovered_question": "Why?"})
+        return json.dumps({"subject": "Help", "body_sentences": [leak], "uncovered_question": "Why?"})
 
     stats: dict = {}
     records = generate([scenario], FakeLLMClient(responder), 3, stats=stats)
