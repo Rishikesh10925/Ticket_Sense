@@ -3,6 +3,7 @@ export { default as Button } from "./Button";
 export { default as ChatWidget } from "./ChatWidget";
 export { default as ConfidenceIndicator } from "./ConfidenceIndicator";
 export { default as ConfirmDialog } from "./ConfirmDialog";
+export { default as DraftPanel } from "./DraftPanel";
 export { default as Card } from "./Card";
 export { default as FormField } from "./FormField";
 export { default as LaneBadge, type Lane } from "./LaneBadge";

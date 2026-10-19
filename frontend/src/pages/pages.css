@@ -843,6 +843,14 @@
   }
 }
 
+/* After drafting, the draft panel carries its own side-by-side evidence column, so the
+   cards stack full width instead. */
+.ticket-detail-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
 .evidence-list {
   list-style: none;
   margin: 0;

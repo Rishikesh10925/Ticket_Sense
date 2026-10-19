@@ -24,8 +24,11 @@ export interface ConfidenceFeatures {
 }
 
 export interface Citation {
+  // Passage number the draft cites as [n]; absent on V1 drafts, which numbered by position.
+  n?: number;
   source_type: "knowledge_base" | "resolved_ticket";
   source_id: string;
+  article_key?: string | null;
   title: string;
 }
 
@@ -261,6 +264,48 @@ export async function getTicketAttachment(token: string, id: string): Promise<Bl
   const res = await fetch(`${API_URL}/tickets/${id}/attachment`, { headers: authHeaders(token) });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
   return res.blob();
+}
+
+export interface DraftStep {
+  text: string;
+  citations: number[];
+}
+
+export interface DraftPassage {
+  n: number;
+  article_key: string | null;
+  title: string;
+  text: string;
+}
+
+export interface DraftClaim {
+  step_index: number;
+  claim_index: number;
+  text: string;
+  cited: number[];
+  support: number | null;
+}
+
+// GET /tickets/{id}/draft (docs/api-contract.md). In the escalation lane `shown` is
+// false and steps/claims are empty: the engineer sees the evidence only.
+export interface TicketDraft {
+  shown: boolean;
+  lane: "draft" | "escalate" | "fast" | "assisted";
+  steps: DraftStep[];
+  missing_information: string[];
+  evidence: DraftPassage[];
+  groundedness: number | null;
+  claims: DraftClaim[];
+  weakest: DraftClaim[];
+  model: string;
+  prompt_version: string;
+  created_at: string;
+}
+
+export async function getTicketDraft(token: string, id: string): Promise<TicketDraft> {
+  const res = await fetch(`${API_URL}/tickets/${id}/draft`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
 }
 
 export async function getTicketEvidence(token: string, id: string): Promise<Evidence[]> {

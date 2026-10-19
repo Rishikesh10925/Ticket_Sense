@@ -1,0 +1,148 @@
+.draft-panel-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.draft-panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--space-lg);
+}
+
+@media (max-width: 900px) {
+  .draft-panel-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.draft-steps {
+  margin: 0 0 var(--space-md);
+  padding-left: 1.4em;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-text);
+}
+
+.draft-steps li + li {
+  margin-top: var(--space-xs);
+}
+
+/* An unsupported claim is underlined and tinted, never colour alone: the dashed line
+   reads in greyscale and for colour-blind reviewers. */
+.claim-unsupported {
+  background: var(--color-warning-bg);
+  text-decoration: underline dashed var(--color-warning-strong);
+  text-underline-offset: 3px;
+  border-radius: 2px;
+  cursor: help;
+}
+
+.citation-chip {
+  display: inline-block;
+  min-width: 1.6em;
+  margin: 0 2px;
+  padding: 0 4px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 4px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.5;
+  vertical-align: 1px;
+  cursor: pointer;
+}
+
+.citation-chip:hover,
+.citation-chip:focus-visible,
+.citation-chip-active {
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border-color: var(--color-primary);
+}
+
+.draft-weakest,
+.draft-missing {
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-left: 3px solid var(--color-warning-strong);
+  background: var(--color-surface-alt);
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.draft-missing {
+  border-left-color: var(--color-info-strong);
+}
+
+.draft-weakest h4,
+.draft-missing h4,
+.draft-evidence-heading {
+  margin: 0 0 var(--space-xs);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.draft-weakest ul,
+.draft-missing ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.draft-support {
+  color: var(--color-warning);
+  font-weight: 700;
+}
+
+.draft-passages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.draft-passage {
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  margin-bottom: var(--space-sm);
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.draft-passage-active {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.draft-passage-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 13px;
+}
+
+.draft-passage-n {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.draft-passage-text {
+  margin: var(--space-xs) 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  color: var(--color-text-muted);
+}
+
+.draft-provenance {
+  margin: var(--space-md) 0 0;
+  font-size: 11px;
+  color: var(--color-text-faint);
+}
