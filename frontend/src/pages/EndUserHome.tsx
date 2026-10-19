@@ -207,8 +207,8 @@ export default function EndUserHome() {
                 {attachmentError && <p className="form-error">{attachmentError}</p>}
 
                 <p className="placeholder-note">
-                  Your ticket is classified, routed to the right team, and drafted into a
-                  reply automatically — check "My tickets" in a few seconds.
+                  Your ticket is classified and routed to the right team in a few seconds.
+                  An engineer reviews it and replies — follow it under "My tickets".
                 </p>
 
                 {submitError && <p className="form-error">{submitError}</p>}
