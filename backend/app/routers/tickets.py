@@ -19,7 +19,14 @@ from app.services.pipeline import run_ticket_pipeline
 from app.services.retrieval import get_evidence_for_ticket
 from app.services.ticket_lifecycle import TicketStatus, transition
 
-router = APIRouter(prefix="/tickets", tags=["tickets"])
+async def _no_annotators(current_user: User = Depends(get_current_user)) -> None:
+    """Outside reviewers (role "annotator") label benchmark drafts through /annotate
+    only; they never create, list or open real tickets (docs/annotation-tool.md)."""
+    if current_user.role == "annotator":
+        raise HTTPException(status_code=http_status.HTTP_403_FORBIDDEN, detail="Annotator accounts cannot use tickets")
+
+
+router = APIRouter(prefix="/tickets", tags=["tickets"], dependencies=[Depends(_no_annotators)])
 
 _PRIORITY_RANK = case({"high": 3, "medium": 2, "low": 1}, value=Ticket.priority, else_=0)
 
