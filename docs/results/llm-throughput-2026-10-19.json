@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-19",
+  "command": "uv run --project backend python ai/generation/measure_throughput.py --n 10",
+  "gpu": "NVIDIA GeForce RTX 5050 Laptop GPU, 8 GB",
+  "gpu_memory_used_mib": 5248,
+  "model": "qwen2.5:7b-instruct",
+  "calls": 10,
+  "mean_latency_s": 3.38,
+  "mean_completion_tokens": 53.2,
+  "tokens_per_s": 15.7,
+  "schema_valid": "10/10",
+  "logprobs_returned": "10/10"
+}

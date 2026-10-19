@@ -10,6 +10,10 @@ class KnowledgeBaseOut(BaseModel):
     title: str
     source_url: str | None
     updated_at: datetime
+    article_key: str | None = None
+    topic: str | None = None
+    served: bool = True
+    version: int = 1
 
     model_config = {"from_attributes": True}
 
