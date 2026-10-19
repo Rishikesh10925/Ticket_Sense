@@ -1,0 +1,109 @@
+# TicketSense topic taxonomy v1 (Week 1, Shivaganesh). Blueprint V2 §11.2 to §11.4.
+#
+# Five departments x six topics = 30 topics, about four articles each (120 authored).
+# `withheld: true` topics are left out of the served knowledge base: their articles exist
+# in the full KB only, and type C1 (unseen-topic) tickets are written from them.
+#
+# Six withheld topics on five departments: the blueprint says "six of the 30 topics (one
+# per department)", which cannot both hold. We withhold one topic per department plus a
+# second Cloud topic, because Cloud is co-authored (R and A each own three Cloud topics),
+# so each Cloud author owns exactly one withheld topic. Result: 24 withheld articles,
+# 96 served, matching §11.4.
+#
+# `existing` lists the V1 articles in data/kb/<dept>/ that map onto each topic; they are
+# converted to the V2 template (docs/kb-article-template.md) rather than rewritten.
+# Article ids are <DEPT>-<TOPIC>-<NNN>, e.g. NET-VPN-001.
+
+version: 1
+articles_per_topic: 4
+
+departments:
+  - name: SAP
+    code: SAP
+    folder: sap
+    authors: [S]
+    topics:
+      - {id: sap-access, code: ACC, name: "User access and authorisations", withheld: false,
+         existing: [locked-user-account, missing-tcode-authorization]}
+      - {id: sap-procurement, code: PO, name: "Purchasing and goods receipt", withheld: false,
+         existing: [me023-error-goods-receipt, po-blocked-for-approval]}
+      - {id: sap-materials, code: MAT, name: "Materials and number ranges", withheld: false,
+         existing: [material-locked-by-user, number-range-exhausted]}
+      - {id: sap-interfaces, code: INT, name: "Batch jobs and IDocs", withheld: false,
+         existing: [batch-job-stuck, idoc-status-51]}
+      - {id: sap-system, code: SYS, name: "GUI, dumps and printing", withheld: false,
+         existing: [gui-connection-timeout, short-dump-st22, print-output-missing-sp01]}
+      - {id: sap-finance, code: FI, name: "Finance postings and currency", withheld: true,
+         existing: [incorrect-exchange-rate-fi]}
+
+  - name: Networking
+    code: NET
+    folder: networking
+    authors: [R]
+    topics:
+      - {id: net-vpn, code: VPN, name: "VPN connectivity", withheld: false,
+         existing: [vpn-not-connecting, site-to-site-vpn-down]}
+      - {id: net-wifi, code: WIFI, name: "Wireless access", withheld: false,
+         existing: [wifi-dropping-office, guest-wifi-access]}
+      - {id: net-addressing, code: DNS, name: "DHCP and DNS", withheld: false,
+         existing: [dns-internal-hostname-fail, no-ip-dhcp-limited]}
+      - {id: net-firewall, code: FW, name: "Firewall and proxy", withheld: false,
+         existing: [firewall-port-request, proxy-blocking-site]}
+      - {id: net-performance, code: PERF, name: "Call quality and file shares", withheld: false,
+         existing: [video-call-latency, mapped-drive-inaccessible]}
+      - {id: net-switching, code: SW, name: "Wired ports and VLANs", withheld: true,
+         existing: [new-desk-vlan-port, switch-port-error-disabled]}
+
+  - name: Cloud
+    code: CLD
+    folder: cloud
+    authors: [R, A]
+    topics:
+      - {id: cloud-iam, code: IAM, name: "Identity, SSO and permissions", withheld: false, author: R,
+         existing: [iam-permission-request, sso-console-login-failure]}
+      - {id: cloud-storage, code: STO, name: "Object storage", withheld: false, author: R,
+         existing: [s3-access-denied, storage-quota-exceeded, lifecycle-policy-retention]}
+      - {id: cloud-cost, code: COST, name: "Cost and billing alerts", withheld: true, author: R,
+         existing: [cost-spike-alert]}
+      - {id: cloud-compute, code: VM, name: "Virtual machines and snapshots", withheld: false, author: A,
+         existing: [ec2-ssh-unreachable, snapshot-restore-request]}
+      - {id: cloud-traffic, code: LB, name: "Load balancers and certificates", withheld: false, author: A,
+         existing: [load-balancer-health-check-failing, tls-certificate-expiring]}
+      - {id: cloud-provisioning, code: ENV, name: "Environments and managed services", withheld: true, author: A,
+         existing: [new-environment-provisioning, database-connection-timeout]}
+
+  - name: Database
+    code: DB
+    folder: database
+    authors: [A]
+    topics:
+      - {id: db-connectivity, code: CONN, name: "Connections and pools", withheld: false,
+         existing: [connection-pool-exhausted, db-connection-timeout-app]}
+      - {id: db-locking, code: LOCK, name: "Locks and deadlocks", withheld: false,
+         existing: [deadlock-detected-rollback, orphaned-lock-blocking-table]}
+      - {id: db-performance, code: PERF, name: "Query performance and indexes", withheld: false,
+         existing: [slow-query-performance, index-corruption-repair]}
+      - {id: db-storage, code: STO, name: "Disk space and backups", withheld: false,
+         existing: [disk-space-critical, backup-restore-request]}
+      - {id: db-change, code: CHG, name: "Access requests and schema changes", withheld: false,
+         existing: [db-access-permission-request, schema-migration-failed]}
+      - {id: db-replication, code: HA, name: "Replication and failover", withheld: true,
+         existing: [replication-lag-alert, failover-not-triggering]}
+
+  - name: HR
+    code: HR
+    folder: hr
+    authors: [S]
+    topics:
+      - {id: hr-leave, code: LV, name: "Leave and holidays", withheld: false,
+         existing: [apply-for-leave, leave-policy-overview, public-holiday-calendar]}
+      - {id: hr-payroll, code: PAY, name: "Payroll and timesheets", withheld: false,
+         existing: [payroll-payslip-access, timesheet-submission]}
+      - {id: hr-benefits, code: BEN, name: "Benefits and insurance", withheld: false,
+         existing: [benefits-enrollment-window, insurance-claim-process]}
+      - {id: hr-lifecycle, code: LIFE, name: "Onboarding and exit", withheld: false,
+         existing: [onboarding-checklist, resignation-notice-period]}
+      - {id: hr-policy, code: POL, name: "Workplace policy and reviews", withheld: false,
+         existing: [wfh-hybrid-policy, performance-review-cycle]}
+      - {id: hr-expenses, code: EXP, name: "Expenses and reimbursement", withheld: true,
+         existing: [expense-reimbursement]}
