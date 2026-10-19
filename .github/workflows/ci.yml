@@ -20,7 +20,7 @@ jobs:
       - name: Ruff
         run: uvx ruff@0.14.0 check backend ai data
       - name: Mypy (typed research packages)
-        run: uvx mypy@1.18.2 --ignore-missing-imports --follow-imports=silent ai/generation/llm.py
+        run: uvx mypy@1.18.2 --ignore-missing-imports --follow-imports=silent ai/generation/llm.py ai/evaluation
       - name: Secret scan
         uses: gitleaks/gitleaks-action@v2
         env:
@@ -39,7 +39,7 @@ jobs:
           uv venv
           uv pip install numpy scipy pandas scikit-learn pytest pytest-cov
       - name: ai/ unit tests (no database, no model server)
-        run: .venv/bin/pytest ai/tests -q --cov=ai/generation --cov-report=term
+        run: .venv/bin/pytest ai/tests -q --cov=ai/evaluation --cov=ai/generation --cov-report=term
 
   backend:
     runs-on: ubuntu-latest
