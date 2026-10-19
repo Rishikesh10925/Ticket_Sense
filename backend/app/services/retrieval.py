@@ -1,6 +1,6 @@
-"""Thin wrapper around ai/embeddings/retrieve.py's department-scoped retrieval
-function, for the backend to call without needing to know ai/'s import path itself.
-See docs/retrieval.md and app/routers/tickets.py's evidence endpoint.
+"""Evidence for a ticket, read back from the retrieval run the pipeline logged
+(ai/retrieval/run_log.py, migration 0013), so an engineer sees exactly the passages the
+draft and the confidence model used. See app/routers/tickets.py's evidence endpoint.
 """
 
 import sys
@@ -15,17 +15,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Ticket
 
-from embeddings.retrieve import EvidenceResult, retrieve_evidence  # noqa: E402
+from embeddings.retrieve import EvidenceResult  # noqa: E402
+from retrieval.run_log import logged_evidence  # noqa: E402
 
 __all__ = ["EvidenceResult", "get_evidence_for_ticket"]
 
 
 async def get_evidence_for_ticket(db: AsyncSession, ticket: Ticket, k: int = 5) -> list[EvidenceResult]:
-    """No evidence to retrieve until the ticket has been routed to a department —
-    returns an empty list rather than guessing, since there's no department to scope
-    the search to yet (see docs/ticket-lifecycle.md)."""
+    """Empty until the pipeline has routed the ticket and logged a retrieval run."""
     if ticket.department_id is None:
         return []
-
-    query_text = f"{ticket.subject}\n\n{ticket.description}"
-    return await retrieve_evidence(db, query_text, ticket.department_id, k=k)
+    return (await logged_evidence(db, ticket.id))[:k]

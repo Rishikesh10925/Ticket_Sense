@@ -9,8 +9,10 @@ from app.config import settings
 from app.core.security import hash_password
 from app.models import Department, KnowledgeBase, User
 
-AI_EMBEDDINGS_DIR = Path(__file__).resolve().parents[2] / "ai" / "embeddings"
+AI_DIR = Path(__file__).resolve().parents[2] / "ai"
+AI_EMBEDDINGS_DIR = AI_DIR / "embeddings"
 sys.path.insert(0, str(AI_EMBEDDINGS_DIR))
+sys.path.insert(0, str(AI_DIR))
 
 
 def _register_and_login(api, email: str) -> str:
@@ -49,7 +51,7 @@ def _embed_kb_articles() -> None:
         from sentence_transformers import SentenceTransformer
 
         from app.database import SessionLocal
-        from app.models import Embedding
+        from app.models import Embedding, KBChunk
         from retrieve import MODEL_NAME
 
         model = SentenceTransformer(MODEL_NAME)
@@ -62,6 +64,17 @@ def _embed_kb_articles() -> None:
                         knowledge_base_id=article.id,
                         chunk_index=0,
                         chunk_text=article.content,
+                        embedding=vector,
+                    )
+                )
+                # Hybrid retrieval searches kb_chunks (migration 0012).
+                db.add(
+                    KBChunk(
+                        knowledge_base_id=article.id,
+                        chunk_index=0,
+                        sections="text",
+                        text=f"{article.title}\n{article.content}",
+                        n_tokens=20,
                         embedding=vector,
                     )
                 )
@@ -139,10 +152,14 @@ def test_evidence_returns_department_scoped_results(api):
     )
     ticket_id = create_resp.json()["id"]
 
-    # Manually route it (no trained classifier artifacts in this test env) to the
-    # seeded department, simulating what the Week 4 background task would do.
+    # Manually route it to the seeded department and run + log retrieval exactly as the
+    # pipeline's retrieve node does; the endpoint reads that logged run back.
     async def _route():
+        import uuid
+
         from app.models import Ticket
+        from retrieval.hybrid import hybrid_search
+        from retrieval.run_log import log_run
 
         engine = create_async_engine(settings.database_url)
         session_factory = async_sessionmaker(engine, expire_on_commit=False)
@@ -150,6 +167,8 @@ def test_evidence_returns_department_scoped_results(api):
             ticket = await db.get(Ticket, ticket_id)
             ticket.department_id = department_id
             ticket.status = "routed"
+            result = await hybrid_search(db, "VPN not connecting from home", uuid.UUID(department_id))
+            await log_run(db, result, ticket.id)
             await db.commit()
         await engine.dispose()
 

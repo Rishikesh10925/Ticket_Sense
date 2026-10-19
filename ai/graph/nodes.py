@@ -19,7 +19,8 @@ if str(_AI_DIR) not in sys.path:
 
 from sqlalchemy import select  # noqa: E402
 
-from embeddings.retrieve import retrieve_evidence  # noqa: E402
+from retrieval.hybrid import hybrid_search  # noqa: E402
+from retrieval.run_log import log_run, to_evidence  # noqa: E402
 from generation.llm_interface import LLMProvider  # noqa: E402
 from generation.prompt import build_prompt  # noqa: E402
 from models.classifier import classify_ticket  # noqa: E402
@@ -88,9 +89,17 @@ def make_retrieve_node(db):
             # app/services/retrieval.py's get_evidence_for_ticket.
             return {"evidence": []}
 
+        # Hybrid retrieval over kb_chunks (keyword + dense, RRF, cross-encoder rerank),
+        # department- and served-scoped in the SQL. Every run is logged with all
+        # candidate scores, and the evidence endpoint reads that log back.
         query_text = f"{state['subject']}\n\n{_augmented_description(state)}"
-        evidence = await retrieve_evidence(db, query_text, UUID(department_id), k=5)
-        return {"evidence": evidence}
+        result = await hybrid_search(db, query_text, UUID(department_id), k=5)
+        ticket_id = state.get("ticket_id")
+        await log_run(db, result, UUID(ticket_id) if ticket_id else None)
+        return {
+            "evidence": to_evidence(result),
+            "retrieval_probe": result.probe_top1_similarity,
+        }
 
     return node
 
