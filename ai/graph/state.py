@@ -27,6 +27,7 @@ class TicketState(TypedDict, total=False):
     department_id: str | None
     priority: str | None
     sentiment: str | None
+    classification: dict | None  # classifier v2 labels with max_prob, entropy, probabilities
     evidence: list[Any]  # list[embeddings.retrieve.EvidenceResult]
     retrieval_probe: float | None  # best dense match in another department (routing signal)
     retrieval_run_id: str | None
