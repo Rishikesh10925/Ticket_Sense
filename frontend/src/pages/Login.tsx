@@ -1,8 +1,20 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, FormField } from "../components";
+import { Button, FormField, ThemeToggle } from "../components";
+import { GaugeIcon, LogoMark, RouteIcon, ShieldIcon } from "../components/icons";
 import { register as apiRegister, ApiError } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+
+const HIGHLIGHTS = [
+  { icon: RouteIcon, label: "Auto-routed", text: "Classified and routed to the right team instantly" },
+  { icon: GaugeIcon, label: "Confidence gate", text: "An independent model scores every AI draft" },
+  { icon: ShieldIcon, label: "Human backstop", text: "Anything uncertain goes to a person, not the customer" },
+];
+
+// Real department names — not usage stats — so this stays honest per the "no
+// fake/hardcoded analytics" rule while still giving the login page something
+// concrete to say about the product's actual coverage.
+const DEPARTMENTS = ["Cloud", "Database", "HR", "Networking", "SAP"];
 
 export default function Login() {
   const { login } = useAuth();
@@ -14,11 +26,20 @@ export default function Login() {
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // Free-tier hosts (Render et al.) spin the backend down after a few idle minutes —
+  // the first request after that pays a real 10-45s cold-start cost with nothing to
+  // show for it otherwise, which reads as "broken" rather than "slow". This surfaces
+  // only if a login is actually still running after a few seconds, so it never shows
+  // on a normal fast response.
+  const [slowStart, setSlowStart] = useState(false);
+  const slowStartTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
     setSubmitting(true);
+    setSlowStart(false);
+    slowStartTimer.current = setTimeout(() => setSlowStart(true), 4000);
     try {
       if (mode === "register") {
         await apiRegister(email, fullName, password);
@@ -28,21 +49,66 @@ export default function Login() {
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Something went wrong");
     } finally {
+      if (slowStartTimer.current) clearTimeout(slowStartTimer.current);
       setSubmitting(false);
+      setSlowStart(false);
     }
   }
 
+  useEffect(() => {
+    return () => {
+      if (slowStartTimer.current) clearTimeout(slowStartTimer.current);
+    };
+  }, []);
+
   return (
-    <div className="login-page">
-      <Card title={mode === "login" ? "Log in" : "Create an End User account"}>
-        <form onSubmit={handleSubmit}>
+    <div className="login-v2-page">
+      <div className="login-v2-theme-toggle">
+        <ThemeToggle />
+      </div>
+      <div className="login-v2-grid" aria-hidden="true" />
+      <div className="login-v2-glow login-v2-glow-a" aria-hidden="true" />
+      <div className="login-v2-glow login-v2-glow-b" aria-hidden="true" />
+      <div className="login-v2-glow login-v2-glow-c" aria-hidden="true" />
+
+      <span className="login-v2-eyebrow">AI-Powered Ticket Routing</span>
+
+      <div className="login-v2-card">
+        <div className="login-v2-brand">
+          <span className="login-v2-brand-mark">
+            <LogoMark width={30} height={30} />
+          </span>
+          <span>TicketSense</span>
+        </div>
+
+        <h1>{mode === "login" ? "Welcome back" : "Create your account"}</h1>
+        <p className="login-v2-subtitle">
+          {mode === "login"
+            ? "Log in to submit and track your support tickets."
+            : "Set up an End User account to start submitting tickets."}
+        </p>
+
+        <ul className="login-v2-icon-row">
+          {HIGHLIGHTS.map((h) => (
+            <li key={h.label} title={h.text}>
+              <span className="login-v2-icon-badge">
+                <h.icon width={16} height={16} />
+              </span>
+              <span>{h.label}</span>
+            </li>
+          ))}
+        </ul>
+
+        <form onSubmit={handleSubmit} className="login-v2-form">
           <FormField label="Email" htmlFor="email">
             <input
               id="email"
               type="email"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoFocus
             />
           </FormField>
 
@@ -50,6 +116,7 @@ export default function Login() {
             <FormField label="Full name" htmlFor="fullName">
               <input
                 id="fullName"
+                placeholder="Jane Doe"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
@@ -61,6 +128,7 @@ export default function Login() {
             <input
               id="password"
               type="password"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               minLength={8}
@@ -69,25 +137,39 @@ export default function Login() {
           </FormField>
 
           {error && <p className="form-error">{error}</p>}
+          {slowStart && (
+            <p className="placeholder-note login-v2-slow-start">
+              Still waking up the server — this can take up to a minute after it's been idle. Hang tight.
+            </p>
+          )}
 
-          <Button type="submit" disabled={submitting}>
-            {mode === "login" ? "Log in" : "Register"}
+          <Button type="submit" disabled={submitting} className="login-submit">
+            {slowStart ? "Waking up server…" : submitting ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
           </Button>
         </form>
 
         <button
           type="button"
-          className="link-button"
+          className="link-button login-v2-toggle"
           onClick={() => {
             setMode(mode === "login" ? "register" : "login");
             setError(null);
           }}
         >
-          {mode === "login"
-            ? "New End User? Create an account"
-            : "Already have an account? Log in"}
+          {mode === "login" ? "New End User? Create an account" : "Already have an account? Log in"}
         </button>
-      </Card>
+      </div>
+
+      <div className="login-v2-departments">
+        <span>Routes tickets across</span>
+        <div className="login-v2-dept-chips">
+          {DEPARTMENTS.map((d) => (
+            <span key={d} className="login-v2-dept-chip">
+              {d}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

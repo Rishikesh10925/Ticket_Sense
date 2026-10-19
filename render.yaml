@@ -1,0 +1,29 @@
+databases:
+  - name: ticketsense-db
+    databaseName: ticketsense
+    user: ticketsense
+    plan: free
+    postgresMajorVersion: 16
+
+services:
+  - type: web
+    name: ticketsense-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ticketsense-db
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      # Set this to the deployed Vercel URL once the frontend project exists
+      # (https://<your-project>.vercel.app, no trailing slash) — comma-separate
+      # multiple origins if you add a custom domain later.
+      - key: CORS_ORIGINS
+        value: http://localhost:5173

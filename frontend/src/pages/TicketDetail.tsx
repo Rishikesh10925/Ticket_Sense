@@ -1,28 +1,298 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Card } from "../components";
+import { Button, Card, ConfidenceIndicator, ReviewActions, Timeline, useToast } from "../components";
+import FormField from "../components/FormField";
+import { AlertTriangleIcon, CheckIcon, ClockIcon, LogoMark } from "../components/icons";
 import {
   getTicket,
+  getTicketAttachment,
+  getTicketEscalation,
   getTicketEvidence,
   listDepartments,
+  resolveEscalation,
   ApiError,
   type Ticket,
   type Evidence,
+  type Citation,
+  type Escalation,
 } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
+import { statusLabel, statusBadgeClass } from "../statusLabels";
 
 const UNROUTED_STATUSES = ["submitted", "classified"];
+// The pipeline (classify -> route -> retrieve -> draft, see docs/langgraph-pipeline.md)
+// runs as a single background task, so this only ever needs a couple of polls in
+// practice — but it polls through every pre-draft status, not just the pre-route ones,
+// so the draft panel picks up the moment it's ready rather than stopping at "routed".
+const PENDING_DRAFT_STATUSES = ["submitted", "classified", "routed"];
 const POLL_INTERVAL_MS = 2000;
-const MAX_POLLS = 15; // ~30s — classification normally finishes in a few seconds
+const MAX_POLLS = 15; // ~30s — the pipeline normally finishes in a few seconds
 
 const SOURCE_LABEL: Record<Evidence["source_type"], string> = {
   knowledge_base: "Knowledge Base",
   resolved_ticket: "Resolved Ticket",
 };
 
+// A resolved ticket's snippet is stored as "subject\n\ndescription" (see
+// ai/embeddings/embed_resolved_tickets.py), and item.title already shows the subject
+// — without this, the body repeats it verbatim on its own first line. A knowledge-base
+// snippet is the article's raw markdown (see db/seed/knowledge_base/), which likewise
+// opens with a "# Title" line duplicating item.title and a "**Department:** X" line
+// duplicating the department badge already shown above it.
+function evidenceBody(item: Evidence): string {
+  let text = item.snippet;
+  if (item.source_type === "resolved_ticket") {
+    const [, ...rest] = text.split("\n\n");
+    if (rest.length > 0) text = rest.join("\n\n");
+  } else {
+    text = text
+      .replace(/^#\s+.*\n+/, "")
+      .replace(/^\*\*Department:\*\*.*\n+/, "")
+      .replace(/^#{1,6}\s+/gm, "")
+      .replace(/\*\*(.+?)\*\*/g, "$1");
+  }
+  return text.trim();
+}
+
+const ATTACHMENT_TYPE_LABEL: Record<string, string> = {
+  image: "Image",
+  pdf: "PDF",
+  log: "Log/text",
+};
+
+// Fetches the attachment as a blob and builds an object URL for it — the endpoint is
+// auth-gated (same per-ticket access check as the ticket itself), so it can't be used
+// as a plain <img src>/<a href>. Shows an inline preview for images, a "view" link
+// for PDF/log attachments (the browser handles opening those itself).
+function AttachmentPreview({ token, ticket }: { token: string; ticket: Ticket }) {
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    let objectUrl: string | null = null;
+    getTicketAttachment(token, ticket.id)
+      .then((blob) => {
+        if (!active) return;
+        objectUrl = URL.createObjectURL(blob);
+        setBlobUrl(objectUrl);
+      })
+      .catch(() => active && setLoadError("Could not load the attachment file."));
+    return () => {
+      active = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [token, ticket.id]);
+
+  if (loadError) return <p className="form-error">{loadError}</p>;
+  if (!blobUrl) return <p className="placeholder-note">Loading attachment…</p>;
+
+  if (ticket.attachment_type === "image") {
+    return <img src={blobUrl} alt="Ticket attachment" className="attachment-image-preview" />;
+  }
+  return (
+    <a href={blobUrl} target="_blank" rel="noreferrer" className="link-button">
+      View attachment ({ticket.attachment_path?.split("/").pop()})
+    </a>
+  );
+}
+
+// Fetches the escalation record for a ticket the gate (or a reviewer) sent straight
+// to a human — reviewer-only endpoint, same as this component's caller already gates
+// rendering on (see showDraftPanel below). The score/threshold/feature breakdown
+// shown here come straight off `ticket`, not the escalation record — the pipeline
+// persists them unconditionally at scoring time regardless of which way the gate went
+// (see app/services/pipeline.py), so the same rich confidence readout the draft panel
+// gets is already sitting right there, not something this view has to reconstruct.
+function EscalationDetails({
+  token,
+  userId,
+  ticket,
+  onDone,
+}: {
+  token: string;
+  userId: string | undefined;
+  ticket: Ticket;
+  onDone: () => void;
+}) {
+  const [escalation, setEscalation] = useState<Escalation | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [responseText, setResponseText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [resolveError, setResolveError] = useState<string | null>(null);
+  const { notify } = useToast();
+
+  useEffect(() => {
+    let active = true;
+    getTicketEscalation(token, ticket.id)
+      .then((e) => active && setEscalation(e))
+      .catch((err) => active && setError(err instanceof ApiError ? err.message : "Could not load escalation details"));
+    return () => {
+      active = false;
+    };
+  }, [token, ticket.id]);
+
+  const hadDraft = ticket.ai_draft_reply !== null;
+  const isAssignedToMe = escalation?.admin_decision === "approved" && escalation.escalated_to === userId;
+
+  async function handleResolve() {
+    setSubmitting(true);
+    setResolveError(null);
+    try {
+      await resolveEscalation(token, ticket.id, responseText);
+      notify("Response sent to the customer.", "success");
+      onDone();
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : "Could not submit the response";
+      setResolveError(message);
+      notify(message, "error");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <div className="escalation-details">
+      <div className="escalation-banner">
+        <span className="escalation-banner-icon">
+          <AlertTriangleIcon />
+        </span>
+        <div>
+          <p className="escalation-banner-title">Needs human investigation</p>
+          <p className="escalation-banner-subtitle">
+            {hadDraft
+              ? "This ticket was sent back for a second opinion after a draft existed — handle it directly, there's nothing left to approve."
+              : "The confidence gate sent this straight to a human — no AI draft was generated for it at all."}
+          </p>
+        </div>
+      </div>
+
+      {ticket.confidence_score !== null && ticket.confidence_threshold !== null && ticket.confidence_features !== null && (
+        <div className="confidence-section escalation-confidence">
+          <ConfidenceIndicator
+            score={ticket.confidence_score}
+            threshold={ticket.confidence_threshold}
+            features={ticket.confidence_features}
+          />
+        </div>
+      )}
+
+      {error && <p className="form-error">{error}</p>}
+      {!error && !escalation && <p className="placeholder-note">Loading escalation reason…</p>}
+      {escalation && (
+        <div className="escalation-reason">
+          <span className="escalation-reason-label">Reason</span>
+          <p>{escalation.reason}</p>
+          <p className="escalation-admin-status">
+            {escalation.admin_decision === null && "Awaiting admin approval before this reaches an engineer."}
+            {escalation.admin_decision === "approved" &&
+              (isAssignedToMe
+                ? "Approved by admin — assigned to you. Write and send the response below."
+                : "Approved by admin and assigned to an engineer.")}
+            {escalation.admin_decision === "rejected" &&
+              `Closed by admin without routing to an engineer${escalation.admin_note ? `: ${escalation.admin_note}` : "."}`}
+          </p>
+        </div>
+      )}
+
+      {isAssignedToMe && (
+        <div className="review-actions">
+          <FormField label="Your response" htmlFor="escalation-response">
+            <textarea
+              id="escalation-response"
+              rows={6}
+              value={responseText}
+              onChange={(e) => setResponseText(e.target.value)}
+              placeholder="Write the response to send to the customer…"
+            />
+          </FormField>
+          {resolveError && <p className="form-error">{resolveError}</p>}
+          <div className="review-actions-buttons">
+            <Button disabled={submitting || !responseText.trim()} onClick={handleResolve}>
+              <CheckIcon />
+              {submitting ? "Sending…" : "Send response"}
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const CITATION_RE = /(\[\d+\])/g;
+
+// Renders the draft's inline [n] markers as small linked badges instead of plain
+// text, and lets a reader hover one to see which source it points to without
+// cross-referencing the sources list by number themselves.
+function renderDraftWithCitations(draft: string, citations: Citation[]): ReactNode {
+  return draft.split(CITATION_RE).map((part, i) => {
+    const match = /^\[(\d+)\]$/.exec(part);
+    if (!match) return <span key={i}>{part}</span>;
+    const citation = citations[Number(match[1]) - 1];
+    return (
+      <sup key={i} className="citation-marker" title={citation?.title ?? "Unknown source"}>
+        {part}
+      </sup>
+    );
+  });
+}
+
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || "?";
+}
+
+const WAITING_COPY: Record<string, string> = {
+  submitted: "Just received — classification starts in a moment.",
+  classified: "Classified. Routing to the right team now.",
+  routed: "Routed to the right team. Drafting a reply now.",
+  drafted: "A department engineer is reviewing a drafted reply for this.",
+  escalated: "This needed closer attention than an automatic draft could provide — an admin is arranging for someone to look at it directly.",
+  closed: "This ticket was closed without a written response.",
+};
+
+// The customer's own view of their ticket, styled as a conversation rather than a
+// technical readout — no AI draft, confidence score, or retrieved evidence ever
+// renders here (see showDraftPanel below and the reviewer-only /evidence endpoint),
+// just their own message and, once one exists, the actual response that was sent.
+function CustomerConversation({ ticket, user }: { ticket: Ticket; user: { full_name: string } }) {
+  const isReviewed = ticket.status === "reviewed" && ticket.final_response;
+
+  return (
+    <div className="ticket-thread">
+      <div className="ticket-thread-message">
+        <div className="ticket-thread-avatar ticket-thread-avatar-you">{initials(user.full_name)}</div>
+        <div className="ticket-thread-bubble">
+          <span className="ticket-thread-author">You</span>
+          <p className="ticket-thread-text">{ticket.description}</p>
+          <span className="ticket-thread-time">{new Date(ticket.created_at).toLocaleString()}</span>
+        </div>
+      </div>
+
+      {isReviewed ? (
+        <div className="ticket-thread-message">
+          <div className="ticket-thread-avatar ticket-thread-avatar-support">
+            <LogoMark width={18} height={18} />
+          </div>
+          <div className="ticket-thread-bubble ticket-thread-bubble-support">
+            <span className="ticket-thread-author">Support</span>
+            <p className="ticket-thread-text">{ticket.final_response}</p>
+            <span className="ticket-thread-time">{new Date(ticket.updated_at).toLocaleString()}</span>
+          </div>
+        </div>
+      ) : (
+        <div className={`ticket-thread-waiting${ticket.status === "escalated" ? " ticket-thread-waiting-escalated" : ""}`}>
+          {ticket.status === "escalated" ? <AlertTriangleIcon width={16} height={16} /> : <ClockIcon width={16} height={16} />}
+          <span>{WAITING_COPY[ticket.status] ?? "Working on it…"}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function TicketDetail() {
   const { id } = useParams<{ id: string }>();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
 
   const [ticket, setTicket] = useState<Ticket | null>(null);
@@ -59,8 +329,11 @@ export default function TicketDetail() {
     }
   }
 
+  // Reviewer-only endpoint (see app/routers/tickets.py's _require_reviewer on GET
+  // .../evidence) — an end_user would just get a 403, so this never calls it for
+  // that role in the first place rather than fetching-then-hiding an error.
   async function loadEvidence() {
-    if (!token || !id) return;
+    if (!token || !id || user?.role === "end_user") return;
     setEvidenceLoading(true);
     setEvidenceError(null);
     try {
@@ -85,7 +358,7 @@ export default function TicketDetail() {
   }, [token, id]);
 
   useEffect(() => {
-    if (!ticket || !UNROUTED_STATUSES.includes(ticket.status)) return;
+    if (!ticket || !PENDING_DRAFT_STATUSES.includes(ticket.status)) return;
     if (pollCount.current >= MAX_POLLS) return;
 
     const timer = setTimeout(async () => {
@@ -105,9 +378,16 @@ export default function TicketDetail() {
   if (!ticket) return null;
 
   const isClassifying = UNROUTED_STATUSES.includes(ticket.status);
+  const isDrafting = PENDING_DRAFT_STATUSES.includes(ticket.status);
+  const isEscalated = ticket.status === "escalated";
+  // A department_engineer/admin sees the real draft once it exists; an end_user never
+  // does (the API nulls both fields for that role — see build_ticket_out), so the
+  // draft panel itself is engineer/admin-only rather than showing a permanently-empty
+  // card to someone who structurally can't see the draft.
+  const showDraftPanel = user?.role !== "end_user";
 
   return (
-    <div className="ticket-detail-layout">
+    <div className="ticket-detail-page">
       <Card
         title={ticket.subject}
         actions={
@@ -117,88 +397,206 @@ export default function TicketDetail() {
         }
       >
         <div className="ticket-detail-badges">
-          <span className="status-badge">{ticket.status}</span>
+          <span className={statusBadgeClass(ticket.status)}>{statusLabel(ticket.status)}</span>
           {ticket.priority && (
             <span className={`priority-badge priority-${ticket.priority}`}>{ticket.priority}</span>
           )}
           {ticket.sentiment && <span className="status-badge">{ticket.sentiment}</span>}
-          {isClassifying && <span className="status-badge status-pending">classifying…</span>}
+          {isDrafting && <span className="status-badge status-pending">working…</span>}
+        </div>
+
+        <div className="ticket-detail-timeline">
+          <Timeline status={ticket.status} />
         </div>
 
         <dl className="ticket-detail-fields">
-          <dt>Description</dt>
-          <dd>{ticket.description}</dd>
+          <div className="ticket-detail-field ticket-detail-field-wide">
+            <dt>Description</dt>
+            <dd>{ticket.description}</dd>
+          </div>
 
-          <dt>Department</dt>
-          <dd>
-            {ticket.department_id
-              ? departmentNames[ticket.department_id] ?? ticket.department_id
-              : "Not yet routed"}
-          </dd>
+          <div className="ticket-detail-field">
+            <dt>Department</dt>
+            <dd>
+              {ticket.department_id
+                ? departmentNames[ticket.department_id] ?? ticket.department_id
+                : "Not yet routed"}
+            </dd>
+          </div>
 
-          <dt>Priority</dt>
-          <dd>{ticket.priority ?? "Not yet classified"}</dd>
+          <div className="ticket-detail-field">
+            <dt>Priority</dt>
+            <dd>{ticket.priority ?? "Not yet classified"}</dd>
+          </div>
 
-          <dt>Sentiment</dt>
-          <dd>{ticket.sentiment ?? "Not yet classified"}</dd>
+          <div className="ticket-detail-field">
+            <dt>Sentiment</dt>
+            <dd>{ticket.sentiment ?? "Not yet classified"}</dd>
+          </div>
 
-          {ticket.attachment_path && (
-            <>
-              <dt>Attachment</dt>
-              <dd>
-                {ticket.attachment_type} — {ticket.attachment_path.split("/").pop()}
-              </dd>
-            </>
-          )}
-
-          <dt>Submitted</dt>
-          <dd>{new Date(ticket.created_at).toLocaleString()}</dd>
+          <div className="ticket-detail-field">
+            <dt>Submitted</dt>
+            <dd>{new Date(ticket.created_at).toLocaleString()}</dd>
+          </div>
         </dl>
 
-        <p className="placeholder-note">
-          The AI draft reply, confidence score, and accept/edit/reject/escalate actions
-          are not built yet.
-        </p>
+        {ticket.attachment_path && token && (
+          <div className="attachment-section">
+            <div className="attachment-section-header">
+              <strong>Attachment</strong>
+              <span className="status-badge">
+                {ATTACHMENT_TYPE_LABEL[ticket.attachment_type ?? ""] ?? ticket.attachment_type}
+              </span>
+              {ticket.attachment_type === "image" && ticket.ocr_confidence !== null && (
+                <span className="status-badge">
+                  OCR confidence: {(ticket.ocr_confidence * 100).toFixed(0)}%
+                </span>
+              )}
+            </div>
+
+            <AttachmentPreview token={token} ticket={ticket} />
+
+            {ticket.attachment_text ? (
+              <p className="attachment-extracted-text">{ticket.attachment_text}</p>
+            ) : isDrafting ? (
+              <p className="placeholder-note">Extracting text from the attachment…</p>
+            ) : (
+              <p className="placeholder-note">No text could be extracted from this attachment.</p>
+            )}
+          </div>
+        )}
+
       </Card>
 
-      <Card
-        title="Retrieved evidence"
-        actions={
-          <Button variant="secondary" onClick={loadEvidence} disabled={evidenceLoading}>
-            Refresh
-          </Button>
-        }
-      >
-        {evidenceLoading && <p className="placeholder-note">Loading evidence...</p>}
-        {evidenceError && <p className="form-error">{evidenceError}</p>}
-        {!evidenceLoading && !evidenceError && isClassifying && (
-          <p className="placeholder-note">
-            This ticket hasn't been routed to a department yet, so there's no evidence
-            to show. It updates automatically once classification finishes.
-          </p>
+      {!showDraftPanel && user && <CustomerConversation ticket={ticket} user={user} />}
+
+      {showDraftPanel && (
+        <div className="ticket-detail-side-by-side">
+        <Card
+          title="Relevant cases & evidence"
+          actions={
+            <Button variant="secondary" onClick={loadEvidence} disabled={evidenceLoading}>
+              Refresh
+            </Button>
+          }
+        >
+          {evidenceLoading && <p className="placeholder-note">Loading evidence...</p>}
+          {evidenceError && <p className="form-error">{evidenceError}</p>}
+          {!evidenceLoading && !evidenceError && isClassifying && (
+            <p className="placeholder-note">
+              This ticket hasn't been routed to a department yet, so there's no evidence
+              to show. It updates automatically once classification finishes.
+            </p>
+          )}
+          {!evidenceLoading && !evidenceError && !isClassifying && evidence.length === 0 && (
+            <p className="placeholder-note">No matching evidence found for this ticket.</p>
+          )}
+          {!evidenceLoading && !evidenceError && evidence.length > 0 && (
+            <ul className="evidence-list">
+              {evidence.map((item) => (
+                <li key={`${item.source_type}-${item.source_id}`} className="evidence-item">
+                  <div className="evidence-item-header">
+                    <span className="status-badge">{SOURCE_LABEL[item.source_type]}</span>
+                    {ticket.department_id && (
+                      <span className="status-badge">
+                        {departmentNames[ticket.department_id] ?? "—"}
+                      </span>
+                    )}
+                  </div>
+                  <strong>{item.title}</strong>
+                  <p className="evidence-snippet">{evidenceBody(item)}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+
+        {isEscalated && token && (
+          <Card title="Escalation">
+            <EscalationDetails token={token} userId={user?.id} ticket={ticket} onDone={loadTicket} />
+            {ticket.ai_draft_reply && (
+              <>
+                <h4 className="draft-sources-heading escalation-draft-heading">Draft at time of escalation</h4>
+                <p className="draft-text">
+                  {renderDraftWithCitations(ticket.ai_draft_reply, ticket.ai_draft_citations ?? [])}
+                </p>
+              </>
+            )}
+          </Card>
         )}
-        {!evidenceLoading && !evidenceError && !isClassifying && evidence.length === 0 && (
-          <p className="placeholder-note">No matching evidence found for this ticket.</p>
-        )}
-        {!evidenceLoading && !evidenceError && evidence.length > 0 && (
-          <ul className="evidence-list">
-            {evidence.map((item) => (
-              <li key={`${item.source_type}-${item.source_id}`} className="evidence-item">
-                <div className="evidence-item-header">
-                  <span className="status-badge">{SOURCE_LABEL[item.source_type]}</span>
-                  {ticket.department_id && (
-                    <span className="status-badge">
-                      {departmentNames[ticket.department_id] ?? "—"}
-                    </span>
+
+        {!isEscalated && (
+          <Card
+            title="AI draft reply"
+            className={
+              ticket.confidence_score !== null && ticket.confidence_threshold !== null
+                ? ticket.confidence_score >= ticket.confidence_threshold
+                  ? "card-gate-pass"
+                  : "card-gate-fail"
+                : undefined
+            }
+          >
+            {isClassifying && (
+              <p className="placeholder-note">
+                Not routed to a department yet — drafting starts once retrieval has
+                somewhere to search.
+              </p>
+            )}
+            {!isClassifying && isDrafting && (
+              <p className="placeholder-note">Generating a grounded draft from the retrieved evidence…</p>
+            )}
+            {!isDrafting && !ticket.ai_draft_reply && (
+              <p className="placeholder-note">No draft is available for this ticket.</p>
+            )}
+            {ticket.ai_draft_reply && (
+              <>
+                {ticket.confidence_score !== null &&
+                  ticket.confidence_features !== null &&
+                  ticket.confidence_threshold !== null && (
+                    <div className="confidence-section">
+                      <ConfidenceIndicator
+                        score={ticket.confidence_score}
+                        threshold={ticket.confidence_threshold}
+                        features={ticket.confidence_features}
+                      />
+                    </div>
                   )}
-                </div>
-                <strong>{item.title}</strong>
-                <p className="evidence-snippet">{item.snippet}</p>
-              </li>
-            ))}
-          </ul>
+                <p className="draft-text">
+                  {renderDraftWithCitations(ticket.ai_draft_reply, ticket.ai_draft_citations ?? [])}
+                </p>
+                {ticket.ai_draft_citations && ticket.ai_draft_citations.length > 0 && (
+                  <>
+                    <h4 className="draft-sources-heading">Sources</h4>
+                    <ol className="draft-sources-list">
+                      {ticket.ai_draft_citations.map((citation, i) => (
+                        <li key={`${citation.source_type}-${citation.source_id}`}>
+                          <span className="status-badge">{SOURCE_LABEL[citation.source_type]}</span>{" "}
+                          [{i + 1}] {citation.title}
+                        </li>
+                      ))}
+                    </ol>
+                  </>
+                )}
+                {ticket.status === "drafted" && token && (
+                  <ReviewActions token={token} ticket={ticket} onDone={loadTicket} />
+                )}
+                {ticket.status === "reviewed" && (
+                  <div className="final-response">
+                    <span className="final-response-label">Sent to customer</span>
+                    <p className="draft-text">{ticket.final_response ?? "(no response text on record)"}</p>
+                    {ticket.final_response === ticket.ai_draft_reply && (
+                      <p className="placeholder-note draft-status-legend">
+                        Auto-resolved — this cleared the confidence bar before any engineer saw it.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </Card>
         )}
-      </Card>
+      </div>
+      )}
     </div>
   );
 }

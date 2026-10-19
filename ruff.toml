@@ -1,0 +1,9 @@
+line-length = 120
+target-version = "py312"
+extend-exclude = ["data/raw", "data/processed", "frontend"]
+
+[lint]
+select = ["E", "F", "W"]
+# ai/ modules are loaded by putting ai/ on sys.path before importing them (see
+# docs/architecture.md, "ai/ packaging"), so imports after that line are expected.
+ignore = ["E402", "E501"]

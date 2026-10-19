@@ -96,7 +96,6 @@ def _report_to_markdown(name: str, report: dict, n_train: int, n_test: int) -> s
 
 def main() -> None:
     train_public = pd.read_csv(DATA_DIR / "tickets_train.csv")
-    val_public = pd.read_csv(DATA_DIR / "tickets_val.csv")
     test_public = pd.read_csv(DATA_DIR / "tickets_test.csv")
 
     synthetic = pd.read_csv(DATA_DIR / "synthetic_tickets.csv")

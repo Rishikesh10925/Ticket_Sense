@@ -6,11 +6,27 @@ export interface User {
   full_name: string;
   role: "end_user" | "department_engineer" | "admin";
   department_id: string | null;
+  is_active: boolean;
 }
 
 export interface Department {
   id: string;
   name: string;
+  confidence_threshold: number;
+}
+
+export interface ConfidenceFeatures {
+  retrieval_relevance: number;
+  ticket_resolution_similarity: number;
+  document_freshness: number;
+  ocr_confidence: number;
+  category_risk: number;
+}
+
+export interface Citation {
+  source_type: "knowledge_base" | "resolved_ticket";
+  source_id: string;
+  title: string;
 }
 
 export interface Ticket {
@@ -21,9 +37,27 @@ export interface Ticket {
   description: string;
   attachment_path: string | null;
   attachment_type: string | null;
+  // Set once the pipeline's extract node has run — null while still processing, and
+  // also null if extraction found no readable text. Unlike ai_draft_reply, visible to
+  // every role that can see the ticket (see build_ticket_out).
+  attachment_text: string | null;
+  ocr_confidence: number | null;
   priority: string | null;
   sentiment: string | null;
   status: string;
+  // Null for the end_user role even once a draft exists — see
+  // app/schemas/tickets.py's build_ticket_out.
+  ai_draft_reply: string | null;
+  ai_draft_citations: Citation[] | null;
+  // Null for the end_user role, same reason as the draft fields above — a confidence
+  // judgment about a draft no one shows them is meaningless to expose.
+  confidence_score: number | null;
+  confidence_features: ConfidenceFeatures | null;
+  confidence_threshold: number | null;
+  // The actual text sent (or, for an auto-resolution, that would be sent) to the
+  // customer once status is "reviewed" — visible to every role, including end_user.
+  // Null for every other status. See backend/app/schemas/tickets.py.
+  final_response: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -35,6 +69,40 @@ export interface Evidence {
   snippet: string;
   distance: number;
 }
+
+export interface KnowledgeBaseArticle {
+  id: string;
+  department_id: string;
+  title: string;
+  source_url: string | null;
+  updated_at: string;
+}
+
+export interface Escalation {
+  id: string;
+  ticket_id: string;
+  reason: string;
+  confidence_score: number | null;
+  escalated_to: string | null;
+  admin_decision: "approved" | "rejected" | null;
+  admin_note: string | null;
+  resolved_at: string | null;
+  created_at: string;
+}
+
+export interface PendingEscalation {
+  id: string;
+  ticket_id: string;
+  ticket_subject: string;
+  department_id: string | null;
+  department_name: string | null;
+  priority: string | null;
+  reason: string;
+  confidence_score: number | null;
+  created_at: string;
+}
+
+export type FeedbackAction = "accept" | "edit" | "reject" | "escalate" | "doubt";
 
 export class ApiError extends Error {
   status: number;
@@ -135,8 +203,275 @@ export async function listDepartments(token: string): Promise<Department[]> {
   return res.json();
 }
 
+export async function getTicketAttachment(token: string, id: string): Promise<Blob> {
+  // The endpoint is auth-gated (same per-ticket access check as the ticket itself),
+  // so it can't be used as a plain <img src>/<a href> URL — the caller fetches the
+  // blob and builds an object URL from it instead.
+  const res = await fetch(`${API_URL}/tickets/${id}/attachment`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.blob();
+}
+
 export async function getTicketEvidence(token: string, id: string): Promise<Evidence[]> {
   const res = await fetch(`${API_URL}/tickets/${id}/evidence`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function listUsers(token: string): Promise<User[]> {
+  const res = await fetch(`${API_URL}/users`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function createUser(
+  token: string,
+  body: { email: string; fullName: string; password: string; role: User["role"]; departmentId?: string | null }
+): Promise<User> {
+  const res = await fetch(`${API_URL}/users`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: body.email,
+      full_name: body.fullName,
+      password: body.password,
+      role: body.role,
+      department_id: body.departmentId ?? null,
+    }),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function updateUser(
+  token: string,
+  userId: string,
+  body: { departmentId?: string | null; isActive?: boolean }
+): Promise<User> {
+  const payload: Record<string, unknown> = {};
+  if (body.departmentId !== undefined) payload.department_id = body.departmentId;
+  if (body.isActive !== undefined) payload.is_active = body.isActive;
+
+  const res = await fetch(`${API_URL}/users/${userId}`, {
+    method: "PATCH",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function listKnowledgeBase(token: string): Promise<KnowledgeBaseArticle[]> {
+  const res = await fetch(`${API_URL}/knowledge-base`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function getTicketEscalation(token: string, id: string): Promise<Escalation> {
+  const res = await fetch(`${API_URL}/tickets/${id}/escalation`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function submitTicketFeedback(
+  token: string,
+  id: string,
+  action: FeedbackAction,
+  details: { editedReply?: string; rejectReason?: string } = {}
+): Promise<Ticket> {
+  const res = await fetch(`${API_URL}/tickets/${id}/feedback`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action,
+      edited_reply: details.editedReply ?? null,
+      reject_reason: details.rejectReason ?? null,
+    }),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function resolveEscalation(token: string, ticketId: string, responseText: string): Promise<Ticket> {
+  const res = await fetch(`${API_URL}/tickets/${ticketId}/resolve-escalation`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ response_text: responseText }),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function listPendingEscalations(token: string): Promise<PendingEscalation[]> {
+  const res = await fetch(`${API_URL}/escalations/pending`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function approveEscalation(token: string, escalationId: string, engineerId: string): Promise<Escalation> {
+  const res = await fetch(`${API_URL}/escalations/${escalationId}/approve`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ engineer_id: engineerId }),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function rejectEscalation(token: string, escalationId: string, note: string): Promise<Escalation> {
+  const res = await fetch(`${API_URL}/escalations/${escalationId}/reject`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ note }),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function updateDepartmentThreshold(
+  token: string,
+  departmentId: string,
+  confidenceThreshold: number
+): Promise<Department> {
+  const res = await fetch(`${API_URL}/departments/${departmentId}/threshold`, {
+    method: "PATCH",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ confidence_threshold: confidenceThreshold }),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export interface ReviewActionCounts {
+  accept: number;
+  edit: number;
+  reject: number;
+  escalate: number;
+  doubt: number;
+  resolve: number;
+}
+
+export interface ConfidenceBucket {
+  label: string;
+  count: number;
+}
+
+export interface DepartmentBreakdown {
+  department_id: string;
+  department_name: string;
+  total_tickets: number;
+  scored_tickets: number;
+  escalation_rate: number | null;
+  avg_confidence: number | null;
+}
+
+export interface FeedbackSourceSummary {
+  total: number;
+  review_actions: ReviewActionCounts;
+  agreement_rate: number | null;
+}
+
+// `in_review` is the reviewer's department queue count (drafted tickets awaiting
+// anyone's action there), not a per-person figure — a ticket has no assigned
+// reviewer until someone acts on it. See backend/app/schemas/analytics.py.
+export interface ReviewerBreakdown {
+  reviewer_id: string;
+  reviewer_name: string;
+  reviewer_email: string;
+  department_name: string;
+  resolved: number;
+  rejected: number;
+  escalated: number;
+  in_review: number;
+}
+
+export interface AnalyticsSummary {
+  total_tickets: number;
+  by_status: Record<string, number>;
+  scored_tickets: number;
+  escalation_rate: number | null;
+  confidence_distribution: ConfidenceBucket[];
+  by_department: DepartmentBreakdown[];
+  by_reviewer: ReviewerBreakdown[];
+  real_feedback: FeedbackSourceSummary;
+  synthetic_feedback: FeedbackSourceSummary;
+}
+
+export async function getAnalyticsSummary(token: string): Promise<AnalyticsSummary> {
+  const res = await fetch(`${API_URL}/analytics/summary`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export interface CalibrationBucket {
+  label: string;
+  avg_predicted_confidence: number | null;
+  actual_agreement_rate: number | null;
+  count: number;
+}
+
+export interface DailyTrendPoint {
+  date: string;
+  avg_confidence: number;
+  agreement_rate: number;
+  count: number;
+}
+
+export interface ConfidenceModelReport {
+  total_labeled: number;
+  real_labeled: number;
+  synthetic_labeled: number;
+  overall_agreement_rate: number | null;
+  calibration: CalibrationBucket[];
+  daily_trend: DailyTrendPoint[];
+}
+
+export async function getConfidenceModelReport(token: string): Promise<ConfidenceModelReport> {
+  const res = await fetch(`${API_URL}/analytics/confidence-model`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+// ---------- Chat (admin <-> department_engineer only) ----------
+
+export interface ChatContact {
+  user_id: string;
+  full_name: string;
+  role: "admin" | "department_engineer";
+  department_name: string | null;
+  is_active: boolean;
+  last_message: string | null;
+  last_message_at: string | null;
+  unread_count: number;
+}
+
+export interface ChatMessage {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  body: string;
+  read_at: string | null;
+  created_at: string;
+}
+
+export async function listChatContacts(token: string): Promise<ChatContact[]> {
+  const res = await fetch(`${API_URL}/messages/contacts`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function getChatThread(token: string, otherUserId: string): Promise<ChatMessage[]> {
+  const res = await fetch(`${API_URL}/messages/thread/${otherUserId}`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function sendChatMessage(token: string, recipientId: string, body: string): Promise<ChatMessage> {
+  const res = await fetch(`${API_URL}/messages`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ recipient_id: recipientId, body }),
+  });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
   return res.json();
 }

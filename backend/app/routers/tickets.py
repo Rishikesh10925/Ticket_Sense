@@ -3,17 +3,21 @@ from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, UploadFile
 from fastapi import status as http_status
-from sqlalchemy import case, select
+from fastapi.responses import FileResponse
+from sqlalchemy import and_, case, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.database import get_db
 from app.dependencies import get_current_user
-from app.models import Ticket, User
+from app.models import Escalation, Feedback, Ticket, User
+from app.schemas.escalations import EscalationOut, EscalationResolve
 from app.schemas.evidence import EvidenceOut
-from app.schemas.tickets import TicketOut
-from app.services.classification import classify_and_route
+from app.schemas.feedback import FeedbackCreate
+from app.schemas.tickets import TicketOut, build_ticket_out
+from app.services.pipeline import run_ticket_pipeline
 from app.services.retrieval import get_evidence_for_ticket
+from app.services.ticket_lifecycle import TicketStatus, transition
 
 router = APIRouter(prefix="/tickets", tags=["tickets"])
 
@@ -29,12 +33,49 @@ _ATTACHMENT_TYPES = {
 
 
 def _visibility_filter(current_user: User):
-    """Each role sees a different slice of tickets — see docs/architecture.md."""
+    """Each role sees a different slice of tickets — see docs/architecture.md. An
+    escalated ticket is a special case for department_engineer: it's gated behind
+    admin approval (see app/routers/escalations.py) rather than visible department-
+    wide, so an engineer only sees one once an admin has specifically assigned it to
+    them (Escalation.escalated_to) — every other status still just needs the
+    department to match, exactly as before."""
     if current_user.role == "admin":
         return None
     if current_user.role == "department_engineer":
-        return Ticket.department_id == current_user.department_id
+        assigned_escalation_ids = select(Escalation.ticket_id).where(
+            Escalation.escalated_to == current_user.id
+        )
+        return and_(
+            Ticket.department_id == current_user.department_id,
+            or_(Ticket.status != "escalated", Ticket.id.in_(assigned_escalation_ids)),
+        )
     return Ticket.submitted_by == current_user.id
+
+
+async def _final_responses_for(db: AsyncSession, tickets: list[Ticket]) -> dict[uuid.UUID, str]:
+    """The actual text sent to the customer for each `reviewed` ticket in `tickets` — see TicketOut.final_response.
+    Batched into one query rather than per-ticket, since list_tickets can return many
+    reviewed tickets at once."""
+    reviewed_ids = [t.id for t in tickets if t.status == TicketStatus.REVIEWED]
+    if not reviewed_ids:
+        return {}
+
+    tickets_by_id = {t.id: t for t in tickets}
+    feedback_rows = list(
+        await db.scalars(
+            select(Feedback).where(Feedback.ticket_id.in_(reviewed_ids), Feedback.action.in_(("accept", "edit", "resolve")))
+        )
+    )
+    responses: dict[uuid.UUID, str] = {}
+    for feedback in feedback_rows:
+        if feedback.action == "edit":
+            responses[feedback.ticket_id] = feedback.edited_reply
+        elif feedback.action == "resolve":
+            responses[feedback.ticket_id] = feedback.edited_reply
+        else:  # accept
+            responses[feedback.ticket_id] = tickets_by_id[feedback.ticket_id].ai_draft_reply
+
+    return responses
 
 
 @router.post("", response_model=TicketOut, status_code=http_status.HTTP_201_CREATED)
@@ -45,7 +86,7 @@ async def create_ticket(
     attachment: UploadFile | None = None,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> Ticket:
+) -> TicketOut:
     attachment_path: str | None = None
     attachment_type: str | None = None
 
@@ -80,8 +121,8 @@ async def create_ticket(
     await db.commit()
     await db.refresh(ticket)
 
-    background_tasks.add_task(classify_and_route, ticket.id)
-    return ticket
+    background_tasks.add_task(run_ticket_pipeline, ticket.id)
+    return build_ticket_out(ticket, current_user.role)
 
 
 @router.get("", response_model=list[TicketOut])
@@ -92,7 +133,7 @@ async def list_tickets(
     sort: str | None = None,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> list[Ticket]:
+) -> list[TicketOut]:
     """The department-scoped ticket queue. A Department Engineer's own queue is just
     this endpoint scoped to their department (see _visibility_filter); Admin can view
     any single department's queue with `?department_id=`, since Admin otherwise sees
@@ -116,8 +157,9 @@ async def list_tickets(
     else:
         query = query.order_by(Ticket.created_at.desc())
 
-    result = await db.scalars(query)
-    return list(result)
+    tickets = list(await db.scalars(query))
+    final_responses = await _final_responses_for(db, tickets)
+    return [build_ticket_out(t, current_user.role, final_responses.get(t.id)) for t in tickets]
 
 
 async def _get_ticket_or_403(ticket_id: uuid.UUID, current_user: User, db: AsyncSession) -> Ticket:
@@ -127,11 +169,30 @@ async def _get_ticket_or_403(ticket_id: uuid.UUID, current_user: User, db: Async
 
     if current_user.role == "end_user" and ticket.submitted_by != current_user.id:
         raise HTTPException(status_code=http_status.HTTP_403_FORBIDDEN, detail="Not permitted")
-    if (
-        current_user.role == "department_engineer"
-        and ticket.department_id != current_user.department_id
-    ):
-        raise HTTPException(status_code=http_status.HTTP_403_FORBIDDEN, detail="Not permitted")
+    if current_user.role == "department_engineer":
+        if ticket.department_id != current_user.department_id:
+            raise HTTPException(status_code=http_status.HTTP_403_FORBIDDEN, detail="Not permitted")
+        if ticket.status == "escalated":
+            # Same rule as _visibility_filter: an escalated ticket is gated behind
+            # admin approval, so an engineer only reaches it once specifically
+            # assigned — being in the right department alone isn't enough here.
+            # The one exception: whoever just escalated/doubted it themselves can
+            # still see their own escalation record immediately after — that's
+            # confirming their own action, not new information reaching them, and
+            # not the same as the ticket sitting in their active queue.
+            latest_feedback = await db.scalar(
+                select(Feedback.reviewer_id)
+                .where(Feedback.ticket_id == ticket.id, Feedback.action.in_(("escalate", "doubt")))
+                .order_by(Feedback.created_at.desc())
+                .limit(1)
+            )
+            assigned = await db.scalar(
+                select(Escalation.id).where(
+                    Escalation.ticket_id == ticket.id, Escalation.escalated_to == current_user.id
+                )
+            )
+            if assigned is None and latest_feedback != current_user.id:
+                raise HTTPException(status_code=http_status.HTTP_403_FORBIDDEN, detail="Not permitted")
 
     return ticket
 
@@ -141,8 +202,31 @@ async def get_ticket(
     ticket_id: uuid.UUID,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
-) -> Ticket:
-    return await _get_ticket_or_403(ticket_id, current_user, db)
+) -> TicketOut:
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+    final_responses = await _final_responses_for(db, [ticket])
+    return build_ticket_out(ticket, current_user.role, final_responses.get(ticket.id))
+
+
+@router.get("/{ticket_id}/attachment")
+async def get_ticket_attachment(
+    ticket_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> FileResponse:
+    """Streams the ticket's stored attachment back — same access check as viewing the
+    ticket itself. media_type isn't set explicitly: FileResponse infers it from the
+    saved filename's extension (preserved from upload, see create_ticket), which is
+    more precise than the coarse image/pdf/log bucket attachment_type stores."""
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+    if ticket.attachment_path is None:
+        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="No attachment on this ticket")
+
+    attachment_path = Path(ticket.attachment_path)
+    if not attachment_path.is_file():
+        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="Attachment file not found")
+
+    return FileResponse(attachment_path, filename=attachment_path.name)
 
 
 @router.get("/{ticket_id}/evidence", response_model=list[EvidenceOut])
@@ -152,7 +236,165 @@ async def get_ticket_evidence(
     db: AsyncSession = Depends(get_db),
 ):
     """Retrieved evidence passages for this ticket — department-scoped at the query
-    level (see ai/embeddings/retrieve.py), using the same access check as viewing the
-    ticket itself. Empty list if the ticket hasn't been routed to a department yet."""
+    level (see ai/embeddings/retrieve.py). Reviewer-only, same reasoning as hiding
+    confidence_score from end_user (see app/schemas/tickets.py's build_ticket_out):
+    this is the AI's own reasoning material (other customers' resolved tickets,
+    internal KB resolution steps), not something a customer should see about their
+    own ticket. Empty list if the ticket hasn't been routed to a department yet."""
+    _require_reviewer(current_user)
     ticket = await _get_ticket_or_403(ticket_id, current_user, db)
     return await get_evidence_for_ticket(db, ticket)
+
+
+def _require_reviewer(current_user: User) -> None:
+    if current_user.role not in ("department_engineer", "admin"):
+        raise HTTPException(
+            status_code=http_status.HTTP_403_FORBIDDEN,
+            detail="Only a department engineer or admin can review a ticket",
+        )
+
+
+@router.get("/{ticket_id}/escalation", response_model=EscalationOut)
+async def get_ticket_escalation(
+    ticket_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Escalation:
+    """The escalation record for a ticket the confidence gate (or a reviewer) sent
+    straight to a human — reviewer-only, same reasoning as hiding confidence_score
+    from end_user (see app/schemas/tickets.py's build_ticket_out): the reason
+    references the confidence score/threshold that triggered it, which is an AI
+    judgment the end user never sees."""
+    _require_reviewer(current_user)
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+    escalation = await db.scalar(
+        select(Escalation).where(Escalation.ticket_id == ticket.id).order_by(Escalation.created_at.desc())
+    )
+    if escalation is None:
+        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="This ticket has not been escalated")
+    return escalation
+
+
+@router.post("/{ticket_id}/feedback", response_model=TicketOut, status_code=http_status.HTTP_201_CREATED)
+async def submit_ticket_feedback(
+    ticket_id: uuid.UUID,
+    body: FeedbackCreate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> TicketOut:
+    """Records a reviewer's Accept/Edit/Reject/Escalate/Doubt action on a drafted
+    ticket — the primary training signal for confidence-model retraining going
+    forward (see docs/confidence-labelling-guide.md). Only valid on a ticket
+    currently `drafted`: there's nothing to review before that, and reviewing twice
+    would silently overwrite the first reviewer's record. `edit`/`reject` intentionally
+    leave `Ticket.ai_draft_reply` untouched — that's the AI's actual original output,
+    an audit trail; the reviewer's edited text or rejection reason lives on the
+    `Feedback` row instead, never overwriting what the AI produced. `doubt` (like
+    `escalate`) sends the ticket back into the admin approval queue instead of
+    deciding it — see app/routers/escalations.py — for an engineer who isn't sure how
+    to handle it rather than confidently escalating or rejecting.
+    """
+    _require_reviewer(current_user)
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+
+    if ticket.status != TicketStatus.DRAFTED:
+        raise HTTPException(
+            status_code=http_status.HTTP_409_CONFLICT,
+            detail=f"Ticket must be 'drafted' to record reviewer feedback (currently '{ticket.status}')",
+        )
+    if body.action == "edit" and not body.edited_reply:
+        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail="edited_reply is required for the 'edit' action")
+    if body.action == "reject" and not body.reject_reason:
+        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail="reject_reason is required for the 'reject' action")
+    if body.action == "doubt" and not body.reject_reason:
+        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail="reject_reason is required for the 'doubt' action (used as the note for the admin queue)")
+
+    db.add(
+        Feedback(
+            ticket_id=ticket.id,
+            reviewer_id=current_user.id,
+            action=body.action,
+            edited_reply=body.edited_reply,
+            reject_reason=body.reject_reason,
+        )
+    )
+
+    if body.action in ("escalate", "doubt"):
+        ticket.status = transition(TicketStatus(ticket.status), TicketStatus.ESCALATED)
+        reason = (
+            "Engineer escalated after reviewing the draft"
+            if body.action == "escalate"
+            else f"Engineer doubted this draft: {body.reject_reason}"
+        )
+        db.add(
+            Escalation(
+                ticket_id=ticket.id,
+                reason=reason,
+                confidence_score=ticket.confidence_score,
+            )
+        )
+    else:
+        ticket.status = transition(TicketStatus(ticket.status), TicketStatus.REVIEWED)
+
+    await db.commit()
+    await db.refresh(ticket)
+    final_responses = await _final_responses_for(db, [ticket])
+    return build_ticket_out(ticket, current_user.role, final_responses.get(ticket.id))
+
+
+def _require_assigned_engineer_or_admin(current_user: User, escalation: Escalation) -> None:
+    if current_user.role == "admin":
+        return
+    if current_user.role == "department_engineer" and escalation.escalated_to == current_user.id:
+        return
+    raise HTTPException(
+        status_code=http_status.HTTP_403_FORBIDDEN,
+        detail="Only the engineer this escalation was assigned to (or an admin) can resolve it",
+    )
+
+
+@router.post("/{ticket_id}/resolve-escalation", response_model=TicketOut, status_code=http_status.HTTP_201_CREATED)
+async def resolve_escalation(
+    ticket_id: uuid.UUID,
+    body: EscalationResolve,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> TicketOut:
+    """Closes out an admin-approved escalation with the engineer's own hand-written
+    response — there was never an AI draft to accept/edit/reject here (see
+    app/routers/escalations.py's approve endpoint, which is what put this ticket in
+    the assigned engineer's queue in the first place). Recorded as a `resolve`
+    Feedback row so it still shows up in that engineer's analytics as a resolved
+    ticket, but labels.py excludes it from confidence-model training — it's not a
+    judgment on any AI output."""
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+
+    if ticket.status != TicketStatus.ESCALATED:
+        raise HTTPException(
+            status_code=http_status.HTTP_409_CONFLICT,
+            detail=f"Ticket must be 'escalated' to resolve it this way (currently '{ticket.status}')",
+        )
+    escalation = await db.scalar(
+        select(Escalation).where(Escalation.ticket_id == ticket.id).order_by(Escalation.created_at.desc())
+    )
+    if escalation is None or escalation.admin_decision != "approved":
+        raise HTTPException(
+            status_code=http_status.HTTP_409_CONFLICT,
+            detail="This escalation hasn't been approved and assigned by an admin yet",
+        )
+    _require_assigned_engineer_or_admin(current_user, escalation)
+
+    db.add(
+        Feedback(
+            ticket_id=ticket.id,
+            reviewer_id=current_user.id,
+            action="resolve",
+            edited_reply=body.response_text,
+        )
+    )
+    ticket.status = transition(TicketStatus(ticket.status), TicketStatus.REVIEWED)
+
+    await db.commit()
+    await db.refresh(ticket)
+    final_responses = await _final_responses_for(db, [ticket])
+    return build_ticket_out(ticket, current_user.role, final_responses.get(ticket.id))

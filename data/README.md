@@ -60,3 +60,21 @@ uv run --project ../backend python seed_synthetic_tickets.py --reset  # replace 
 
 Requires the five departments to already exist
 (`backend/app/scripts/seed_demo_users.py`) and `DATABASE_URL` configured.
+
+## make_sample_screenshots.py
+
+Writes the hand-crafted sample "screenshots" in `sample_screenshots/` (five PNGs, one
+PDF, one log file) used by `docs/ocr-evaluation.md` and
+`backend/tests/test_ocr_extract.py`. No real user screenshots exist for this project,
+so these are built with Pillow to resemble real failure modes per department — the
+same honest-substitute approach as `synthetic_labeled_tickets.py`. The committed files
+in `sample_screenshots/` are the actual test fixtures; re-run this only to regenerate
+them.
+
+```bash
+pip install fpdf2   # only needed to regenerate the PDF sample
+uv run --project ../backend python make_sample_screenshots.py
+```
+
+Requires Windows fonts (Segoe UI, Consolas) at the path hardcoded in the script —
+adjust `FONT_DIR` if regenerating elsewhere.
