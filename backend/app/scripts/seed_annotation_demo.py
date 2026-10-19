@@ -42,6 +42,7 @@ async def clear(db) -> None:
     if user is not None:
         await db.execute(delete(Annotator).where(Annotator.user_id == user.id))
         await db.delete(user)
+    await db.flush()  # deletes must reach the database before the demo user is re-inserted
 
 
 async def main() -> None:
