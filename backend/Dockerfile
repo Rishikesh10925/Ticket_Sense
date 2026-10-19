@@ -7,8 +7,9 @@ WORKDIR /app
 # and db/migrations/env.py's `parents[2] / "backend"` both assume this same shape
 # locally (see those files' own comments), so the image mirrors it instead of
 # special-casing container paths.
-COPY backend/pyproject.toml backend/alembic.ini backend/docker-entrypoint.sh ./backend/
-COPY backend/app ./backend/app
+# Dependencies first, application code last: a code change then reuses the cached
+# torch / sentence-transformers layers instead of reinstalling them (minutes vs seconds).
+COPY backend/pyproject.toml ./backend/
 # CPU-only torch/torchvision, installed *before* the [ai] extra below — easyocr and
 # sentence-transformers both depend on torch, and left to its own resolution pip
 # pulls the default CUDA build plus several GB of nvidia-* packages neither of them
@@ -18,7 +19,13 @@ RUN pip install --no-cache-dir torch torchvision --index-url https://download.py
 # .[ai]: the live evidence endpoint (app/services/retrieval.py) needs
 # sentence-transformers at runtime now, not just for the one-off embedding scripts —
 # same reasoning as scikit-learn moving to core deps in Week 4 for classification.
-RUN pip install --no-cache-dir "/app/backend[ai]"
+# Install the dependency set only (hatchling needs the package dir to exist to build).
+RUN mkdir -p /app/backend/app && touch /app/backend/app/__init__.py \
+    && pip install --no-cache-dir "/app/backend[ai]" \
+    && pip uninstall -y ticketsense-backend
+
+COPY backend/alembic.ini backend/docker-entrypoint.sh ./backend/
+COPY backend/app ./backend/app
 
 COPY ai ./ai
 COPY db ./db
