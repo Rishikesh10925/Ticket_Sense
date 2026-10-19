@@ -2,3 +2,6 @@
 # autocrlf setting — a CRLF-converted docker-entrypoint.sh fails with "bad
 # interpreter" when COPYed into the (Linux) Docker image.
 *.sh text eol=lf
+# Frozen benchmark data is hashed; keep it byte-identical on every platform.
+data/benchmark/*.jsonl text eol=lf
+data/benchmark/*.json text eol=lf
