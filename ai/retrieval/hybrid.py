@@ -66,14 +66,18 @@ class RetrievalResult:
 def _embedder():
     from sentence_transformers import SentenceTransformer
 
-    return SentenceTransformer(EMBED_MODEL)
+    from devices import device
+
+    return SentenceTransformer(EMBED_MODEL, device=device("embed"))
 
 
 @lru_cache(maxsize=1)
 def _reranker():
     from sentence_transformers import CrossEncoder
 
-    return CrossEncoder(RERANK_MODEL)
+    from devices import device
+
+    return CrossEncoder(RERANK_MODEL, device=device("rerank"))
 
 
 def or_tsquery(query: str) -> str:
