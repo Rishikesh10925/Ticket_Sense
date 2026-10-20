@@ -1,0 +1,358 @@
+{
+ "labels": "judge",
+ "model_version": "confidence-v1",
+ "features": [
+  "ret_top1_fused",
+  "ret_topk_fused_mean",
+  "ret_fused_gap12",
+  "ret_distinct_articles",
+  "ret_top1_agree",
+  "ret_top5_overlap",
+  "ret_top1_dense",
+  "rr_top1",
+  "rr_spread",
+  "rr_gap12",
+  "gr_supported_share",
+  "gr_min_support",
+  "gr_mean_support",
+  "gr_cited_step_share",
+  "gr_can_answer",
+  "gr_schema_valid",
+  "gr_n_steps",
+  "gr_n_claims",
+  "gr_n_missing",
+  "cs_agreement",
+  "rt_dept_max_prob",
+  "rt_dept_entropy",
+  "rt_probe_top1",
+  "rt_probe_margin",
+  "ev_cited_age_days_max",
+  "ev_cited_words_mean",
+  "ev_cited_has_warning",
+  "tk_words",
+  "tk_questions",
+  "tk_has_error_code",
+  "tk_has_log",
+  "cat_department_rate",
+  "cat_topic_rate"
+ ],
+ "status": "PROVISIONAL (LLM-judge labels)",
+ "n": {
+  "train": 824,
+  "val": 135,
+  "calib": 262,
+  "unseen": 283
+ },
+ "candidates": {
+  "logreg": {
+   "chosen_params": {
+    "C": 0.1
+   },
+   "cv": [
+    {
+     "params": {
+      "C": 0.03
+     },
+     "cv_aurc": 0.0907
+    },
+    {
+     "params": {
+      "C": 0.1
+     },
+     "cv_aurc": 0.0885
+    },
+    {
+     "params": {
+      "C": 0.3
+     },
+     "cv_aurc": 0.0887
+    },
+    {
+     "params": {
+      "C": 1.0
+     },
+     "cv_aurc": 0.0888
+    },
+    {
+     "params": {
+      "C": 3.0
+     },
+     "cv_aurc": 0.0889
+    }
+   ],
+   "val_uncalibrated": {
+    "aurc": 0.2568,
+    "e_aurc": 0.2232,
+    "auroc_unacceptable": 0.5648,
+    "ece": 0.1979,
+    "brier": 0.2183
+   }
+  },
+  "xgboost": {
+   "chosen_params": {
+    "n_estimators": 100,
+    "max_depth": 3,
+    "learning_rate": 0.05
+   },
+   "cv": [
+    {
+     "params": {
+      "n_estimators": 100,
+      "max_depth": 2,
+      "learning_rate": 0.05
+     },
+     "cv_aurc": 0.0818
+    },
+    {
+     "params": {
+      "n_estimators": 100,
+      "max_depth": 2,
+      "learning_rate": 0.1
+     },
+     "cv_aurc": 0.0808
+    },
+    {
+     "params": {
+      "n_estimators": 100,
+      "max_depth": 3,
+      "learning_rate": 0.05
+     },
+     "cv_aurc": 0.0805
+    },
+    {
+     "params": {
+      "n_estimators": 100,
+      "max_depth": 3,
+      "learning_rate": 0.1
+     },
+     "cv_aurc": 0.0858
+    },
+    {
+     "params": {
+      "n_estimators": 100,
+      "max_depth": 4,
+      "learning_rate": 0.05
+     },
+     "cv_aurc": 0.0812
+    },
+    {
+     "params": {
+      "n_estimators": 100,
+      "max_depth": 4,
+      "learning_rate": 0.1
+     },
+     "cv_aurc": 0.0824
+    },
+    {
+     "params": {
+      "n_estimators": 300,
+      "max_depth": 2,
+      "learning_rate": 0.05
+     },
+     "cv_aurc": 0.0815
+    },
+    {
+     "params": {
+      "n_estimators": 300,
+      "max_depth": 2,
+      "learning_rate": 0.1
+     },
+     "cv_aurc": 0.0853
+    },
+    {
+     "params": {
+      "n_estimators": 300,
+      "max_depth": 3,
+      "learning_rate": 0.05
+     },
+     "cv_aurc": 0.0853
+    },
+    {
+     "params": {
+      "n_estimators": 300,
+      "max_depth": 3,
+      "learning_rate": 0.1
+     },
+     "cv_aurc": 0.0897
+    },
+    {
+     "params": {
+      "n_estimators": 300,
+      "max_depth": 4,
+      "learning_rate": 0.05
+     },
+     "cv_aurc": 0.0848
+    },
+    {
+     "params": {
+      "n_estimators": 300,
+      "max_depth": 4,
+      "learning_rate": 0.1
+     },
+     "cv_aurc": 0.0888
+    }
+   ],
+   "val_uncalibrated": {
+    "aurc": 0.1511,
+    "e_aurc": 0.1175,
+    "auroc_unacceptable": 0.6734,
+    "ece": 0.1613,
+    "brier": 0.1871
+   }
+  }
+ },
+ "chosen": "xgboost",
+ "val": {
+  "aurc": 0.1511,
+  "e_aurc": 0.1175,
+  "auroc_unacceptable": 0.6734,
+  "ece": 0.0833,
+  "brier": 0.1731
+ },
+ "val_reliability": {
+  "bin_edges": [
+   0.0,
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5,
+   0.6,
+   0.7,
+   0.8,
+   0.9,
+   1.0
+  ],
+  "mean_confidence": [
+   null,
+   null,
+   null,
+   null,
+   null,
+   0.5649,
+   0.6494,
+   0.7452,
+   0.8502,
+   null
+  ],
+  "accuracy": [
+   null,
+   null,
+   null,
+   null,
+   null,
+   0.0,
+   0.6071,
+   0.875,
+   0.7917,
+   null
+  ],
+  "counts": [
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0,
+   3.0,
+   28.0,
+   32.0,
+   72.0,
+   0.0
+  ]
+ },
+ "thresholds": {
+  "fast": {
+   "threshold": null,
+   "n_shown": 0,
+   "n_unacceptable": 0,
+   "coverage": 0.0
+  },
+  "assisted": {
+   "threshold": 0.05,
+   "n_shown": 262,
+   "n_unacceptable": 61,
+   "coverage": 1.0
+  }
+ },
+ "lanes_val": {
+  "fast": {
+   "share": 0.0,
+   "unacceptable_rate": null,
+   "n": 0
+  },
+  "assisted": {
+   "share": 0.8593,
+   "unacceptable_rate": 0.2069,
+   "n": 116
+  },
+  "escalate": {
+   "share": 0.1407,
+   "unacceptable_rate": 0.4737,
+   "n": 19
+  }
+ },
+ "lanes_unseen": {
+  "fast": {
+   "share": 0.0,
+   "unacceptable_rate": null,
+   "n": 0
+  },
+  "assisted": {
+   "share": 0.5336,
+   "unacceptable_rate": 1.0,
+   "n": 151
+  },
+  "escalate": {
+   "share": 0.4664,
+   "unacceptable_rate": 0.9848,
+   "n": 132
+  }
+ },
+ "example_reasons": [
+  {
+   "ticket_id": "T-00066",
+   "score": 0.652,
+   "reasons": [
+    "topic often needs rework",
+    "gr_n_claims",
+    "old evidence"
+   ]
+  },
+  {
+   "ticket_id": "T-00067",
+   "score": 0.732,
+   "reasons": [
+    "topic often needs rework",
+    "a weakly supported claim",
+    "old evidence"
+   ]
+  },
+  {
+   "ticket_id": "T-00068",
+   "score": 0.621,
+   "reasons": [
+    "topic often needs rework",
+    "a weakly supported claim",
+    "old evidence"
+   ]
+  },
+  {
+   "ticket_id": "T-00126",
+   "score": 0.866,
+   "reasons": [
+    "a weakly supported claim",
+    "keyword and dense results differ",
+    "uncertain routing"
+   ]
+  },
+  {
+   "ticket_id": "T-00127",
+   "score": 0.847,
+   "reasons": [
+    "uncertain routing",
+    "a weakly supported claim",
+    "uncertain routing"
+   ]
+  }
+ ]
+}
