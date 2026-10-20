@@ -37,3 +37,18 @@ def test_v1_article_still_parses(tmp_path):
     path.write_text("# Old Title\n\n**Department:** HR\n\n## Issue\nx\n", encoding="utf-8")
     a = parse_article(path)
     assert not a.is_v2 and a.title == "Old Title" and a.retrieval_text().startswith("# Old Title")
+
+
+def test_only_a_second_team_member_counts_as_human_review():
+    from pathlib import Path
+
+    from benchmark.kb import Article, is_human_reviewed
+
+    def art(author, reviewer):
+        a = Article(path=Path("x.md"), title="t", body="", meta={"id": "X", "author": author, "reviewer": reviewer})
+        return a
+
+    assert is_human_reviewed(art("S", "R"))
+    assert not is_human_reviewed(art("S", "S"))  # the author cannot review their own article
+    assert not is_human_reviewed(art("S", "Claude"))  # an AI fact-check is recorded, not counted
+    assert not is_human_reviewed(art("S", None))

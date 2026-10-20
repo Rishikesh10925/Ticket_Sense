@@ -143,11 +143,30 @@ def validate_article(article: Article, taxonomy: Taxonomy) -> list[str]:
     return problems
 
 
+TEAM = {"R", "A", "S"}
+
+
+def is_human_reviewed(article: Article) -> bool:
+    """A second team member (not the author) is named in `reviewer`. The blueprint's
+    review is a human one (§11.2 to §11.3); any other value, such as an AI assistant that
+    fact-checked the article, is recorded honestly but does not count here."""
+    reviewer = str(article.meta.get("reviewer") or "")
+    return reviewer in TEAM and reviewer != article.meta.get("author")
+
+
+def is_ai_reviewed(article: Article) -> bool:
+    reviewer = article.meta.get("reviewer")
+    return bool(reviewer) and str(reviewer) not in TEAM
+
+
 def review_status(articles: list[Article]) -> tuple[int, int]:
-    """(V2 articles, of which human-reviewed). An article counts as reviewed only when a
-    second team member is named in `reviewer` (docs/kb-article-template.md checklist)."""
+    """(V2 articles, of which human-reviewed by a second team member)."""
     v2 = [a for a in articles if a.is_v2]
-    return len(v2), sum(1 for a in v2 if a.meta.get("reviewer"))
+    return len(v2), sum(1 for a in v2 if is_human_reviewed(a))
+
+
+def ai_review_count(articles: list[Article]) -> int:
+    return sum(1 for a in articles if a.is_v2 and is_ai_reviewed(a))
 
 
 if __name__ == "__main__":
@@ -155,6 +174,7 @@ if __name__ == "__main__":
     articles = load_articles()
     v2_problems = [p for a in articles if a.is_v2 for p in validate_article(a, tax)]
     n_v2, n_reviewed = review_status(articles)
-    print(f"{len(articles)} articles on disk: {n_v2} in V2 template ({n_reviewed} human-reviewed), "
+    print(f"{len(articles)} articles on disk: {n_v2} in V2 template ({n_reviewed} human-reviewed, "
+          f"{ai_review_count(articles)} AI-checked only), "
           f"{len(articles) - n_v2} V1 awaiting conversion")
     print("\n".join(v2_problems) if v2_problems else "all V2 articles valid")

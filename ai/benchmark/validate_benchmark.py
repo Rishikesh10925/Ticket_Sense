@@ -21,7 +21,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from benchmark.generate_tickets import TYPE_SHARES  # noqa: E402
-from benchmark.kb import Article, load_articles, review_status  # noqa: E402
+from benchmark.kb import Article, ai_review_count, load_articles, review_status  # noqa: E402
 from benchmark.splits import check_manifest, file_sha256  # noqa: E402
 
 SHARE_TOLERANCE = 0.03
@@ -105,7 +105,8 @@ def main() -> int:
     n_v2, n_reviewed = review_status(articles)
     review_ok = n_reviewed == n_v2 and n_v2 > 0
     print(f"{len(records)} tickets, types {dict(sorted(Counter(r['type'] for r in records).items()))}")
-    print(f"KB human review: {n_reviewed}/{n_v2} articles reviewed" + ("" if review_ok else "  [PENDING]"))
+    print(f"KB human review: {n_reviewed}/{n_v2} articles reviewed" + ("" if review_ok else "  [PENDING]")
+          + f"; AI fact-check only: {ai_review_count(articles)}")
     if args.require_review and not review_ok:
         problems.append("KB articles not all human-reviewed (--require-review)")
     for p in problems:
