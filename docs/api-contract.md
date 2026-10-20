@@ -26,7 +26,7 @@ All routes except `/health`, `/auth/register` and `/auth/login` need a bearer JW
 | GET | `/tickets/{id}` | any | live | Ticket detail (end users never see drafts or evidence) |
 | GET | `/tickets/{id}/evidence` | engineer, admin | live | Ranked passages with scores |
 | GET | `/tickets/{id}/draft` | engineer, admin | live | Structured draft, claims, citations, can-answer flag, per-claim support |
-| GET | `/tickets/{id}/decision` | engineer, admin | planned (W8) | Lane, calibrated score, thresholds used, top reasons, model and threshold versions |
+| GET | `/tickets/{id}/decision` | engineer, admin | live (W8; routing still V1 until W9) | Lane, calibrated score, thresholds used, top reasons, model and threshold versions |
 | POST | `/tickets/{id}/review` | engineer, admin | planned (W9; replaces `/feedback`) | Accept, edit, reject or escalate, with time taken and reason codes |
 | POST | `/tickets/{id}/feedback` | engineer, admin | live (deprecated in W9) | V1 review actions |
 

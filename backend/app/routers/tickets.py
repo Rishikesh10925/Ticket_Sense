@@ -13,6 +13,8 @@ from app.database import get_db
 from app.dependencies import get_current_user
 from app.models import Escalation, Feedback, Ticket, User
 from app.models.draft import Draft
+from app.models.gate import GateDecision, GateThresholds
+from app.schemas.decision import DecisionOut
 from app.schemas.drafts import DraftOut
 from app.schemas.escalations import EscalationOut, EscalationResolve
 from app.schemas.evidence import EvidenceOut
@@ -298,6 +300,42 @@ async def get_ticket_draft(
         model=draft.model,
         prompt_version=draft.prompt_version,
         created_at=draft.created_at,
+    )
+
+
+@router.get("/{ticket_id}/decision", response_model=DecisionOut)
+async def get_ticket_decision(
+    ticket_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> DecisionOut:
+    """The confidence gate's lane, calibrated score, top reasons and the threshold set
+    used for the ticket's latest draft. Reviewer-only: an end user never sees scores."""
+    _require_reviewer(current_user)
+    ticket = await _get_ticket_or_403(ticket_id, current_user, db)
+    row = (
+        await db.execute(
+            select(GateDecision, GateThresholds)
+            .join(Draft, Draft.id == GateDecision.draft_id)
+            .outerjoin(GateThresholds, GateThresholds.id == GateDecision.thresholds_id)
+            .where(Draft.ticket_id == ticket.id)
+            .order_by(GateDecision.created_at.desc())
+            .limit(1)
+        )
+    ).first()
+    if row is None:
+        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="No gate decision for this ticket yet")
+    decision, thresholds = row
+    return DecisionOut(
+        lane=decision.lane,
+        score=decision.score,
+        reasons=decision.reasons,
+        model_version=decision.model_version,
+        thresholds_version=thresholds.version if thresholds else None,
+        label_source=thresholds.label_source if thresholds else None,
+        fast_threshold=thresholds.fast_threshold if thresholds else None,
+        assisted_threshold=thresholds.assisted_threshold if thresholds else None,
+        created_at=decision.created_at,
     )
 
 
