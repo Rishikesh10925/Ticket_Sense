@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Groundedness audit</title>
+<style>
+  :root {
+    --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --muted: #64748b; --border: #e2e8f0;
+    --primary: #4f46e5; --primary-soft: #eef2ff; --mark: #fef08a;
+    --ok: #15803d; --ok-bg: #dcfce7; --bad: #b91c1c; --bad-bg: #fee2e2; --unc: #a16207; --unc-bg: #fef3c7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b1120; --surface: #131c31; --text: #e2e8f0; --muted: #94a3b8; --border: #1e293b;
+      --primary: #818cf8; --primary-soft: #1e1b4b; --mark: #713f12;
+      --ok: #4ade80; --ok-bg: #14532d; --bad: #f87171; --bad-bg: #450a0a; --unc: #fbbf24; --unc-bg: #422006;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 system-ui, sans-serif; }
+  header { position: sticky; top: 0; background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 10px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; z-index: 1; }
+  header h1 { font-size: 16px; margin: 0 auto 0 0; }
+  .bar { height: 6px; background: var(--border); border-radius: 3px; width: 200px; overflow: hidden; }
+  .bar > div { height: 100%; background: var(--primary); width: 0; }
+  button, label.btn { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer; }
+  button.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+  main { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  .start { text-align: center; padding: 60px 16px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+  .card h2 { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .claim { font-size: 18px; font-weight: 600; }
+  .passage { white-space: pre-wrap; max-height: 60vh; overflow: auto; font-size: 14px; }
+  mark { background: var(--mark); color: inherit; border-radius: 2px; }
+  .meta { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+  .choices { display: flex; gap: 10px; margin: 16px 0 8px; flex-wrap: wrap; }
+  .choices button { flex: 1; min-width: 160px; padding: 12px; font-weight: 600; }
+  .choices .sup.on { background: var(--ok-bg); color: var(--ok); border-color: var(--ok); }
+  .choices .not.on { background: var(--bad-bg); color: var(--bad); border-color: var(--bad); }
+  .choices .unc.on { background: var(--unc-bg); color: var(--unc); border-color: var(--unc); }
+  kbd { font: 12px ui-monospace, monospace; border: 1px solid var(--border); border-radius: 3px; padding: 0 4px; }
+  input[type=text] { width: 100%; font: inherit; padding: 6px 8px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--surface); color: var(--text); }
+  .nav { display: flex; gap: 8px; justify-content: space-between; margin-top: 12px; flex-wrap: wrap; }
+  .help { color: var(--muted); font-size: 13px; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Groundedness audit</h1>
+  <span id="count" class="help"></span>
+  <div class="bar"><div id="progress"></div></div>
+  <button id="export" class="primary hidden">Download finished CSV</button>
+</header>
+<main>
+  <section id="start" class="start">
+    <h2>Open your worksheet</h2>
+    <p class="help">Choose <b>docs/audit/audit_v1_R.csv</b> (or your own member file).<br>
+      Nothing leaves your computer. Progress is saved in this browser as you go.</p>
+    <label class="btn primary">Choose CSV file<input id="file" type="file" accept=".csv" hidden></label>
+  </section>
+
+  <section id="work" class="hidden">
+    <div class="meta" id="where"></div>
+    <div class="grid">
+      <div class="card">
+        <h2>Claim from the AI draft</h2>
+        <div class="claim" id="claim"></div>
+        <div class="choices">
+          <button class="sup" data-v="supported"><kbd>1</kbd> Supported</button>
+          <button class="not" data-v="not_supported"><kbd>2</kbd> Not supported</button>
+          <button class="unc" data-v="unclear"><kbd>3</kbd> Unclear</button>
+        </div>
+        <input id="note" type="text" placeholder="Note (optional; needed for Unclear)">
+        <div class="nav">
+          <button id="prev">← Previous</button>
+          <button id="nextOpen">Next unlabelled</button>
+          <button id="next">Next →</button>
+        </div>
+        <p class="help">Does the cited passage say this? Reworded is fine. Anything extra
+          (a command, number, setting, step) is <b>not supported</b>. Judge only against the passage.
+          Highlighted words appear in both.</p>
+      </div>
+      <div class="card">
+        <h2>Cited passage</h2>
+        <div class="passage" id="passage"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  let rows = [], header = [], fileName = "", i = 0;
+  const key = () => "audit:" + fileName;
+
+  // RFC 4180 CSV: quoted fields may contain commas, quotes ("") and newlines.
+  function parseCSV(text) {
+    const out = []; let row = [], field = "", q = false;
+    for (let k = 0; k < text.length; k++) {
+      const c = text[k];
+      if (q) {
+        if (c === '"' && text[k + 1] === '"') { field += '"'; k++; }
+        else if (c === '"') q = false;
+        else field += c;
+      } else if (c === '"') q = true;
+      else if (c === ",") { row.push(field); field = ""; }
+      else if (c === "\n" || c === "\r") {
+        if (c === "\r" && text[k + 1] === "\n") k++;
+        row.push(field); out.push(row); row = []; field = "";
+      } else field += c;
+    }
+    if (field !== "" || row.length) { row.push(field); out.push(row); }
+    return out.filter((r) => r.length > 1 || r[0] !== "");
+  }
+  const toCSV = (table) => table.map((r) => r.map((v) => /[",\n\r]/.test(v ?? "") ? '"' + String(v).replace(/"/g, '""') + '"' : (v ?? "")).join(",")).join("\r\n") + "\r\n";
+
+  const col = (name) => header.indexOf(name);
+  const STOP = new Set(("the and for that this with from your you are not was but can has have its into then than " +
+    "will when what which who all any any new use used using also only them they their there been were each " +
+    "does did after before about over under more most some such very just ask asks").split(" "));
+  const words = (s) => new Set((s.toLowerCase().match(/[a-z0-9_\/.-]{3,}/g) || []).filter((w) => !STOP.has(w)));
+  const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+  function highlight(passage, claim) {
+    const w = words(claim);
+    return esc(passage).replace(/[A-Za-z0-9_\/.-]{3,}/g, (m) => w.has(m.toLowerCase()) ? "<mark>" + m + "</mark>" : m);
+  }
+
+  function save() {
+    try { localStorage.setItem(key(), JSON.stringify(rows.map((r) => [r[col("human")], r[col("note")]]))); } catch (e) {}
+  }
+  function restore() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(key()) || "null");
+      if (saved && saved.length === rows.length) saved.forEach(([h, n], k) => {
+        if (!rows[k][col("human")]) rows[k][col("human")] = h || "";
+        if (!rows[k][col("note")]) rows[k][col("note")] = n || "";
+      });
+    } catch (e) {}
+  }
+
+  function render() {
+    const r = rows[i];
+    $("where").textContent = `Claim ${i + 1} of ${rows.length} · ticket ${r[col("ticket_id")]} · step ${r[col("step")]}`;
+    $("claim").textContent = r[col("claim")];
+    $("passage").innerHTML = highlight(r[col("cited_passages")], r[col("claim")]);
+    $("passage").scrollTop = 0;
+    $("note").value = r[col("note")] || "";
+    document.querySelectorAll(".choices button").forEach((b) => b.classList.toggle("on", b.dataset.v === r[col("human")]));
+    const done = rows.filter((x) => x[col("human")]).length;
+    $("count").textContent = `${done} / ${rows.length} labelled`;
+    $("progress").style.width = (100 * done / rows.length) + "%";
+    $("export").classList.toggle("hidden", done === 0);
+  }
+
+  function choose(v) {
+    rows[i][col("human")] = v;
+    rows[i][col("note")] = $("note").value;
+    save();
+    if (v === "unclear" && !$("note").value.trim()) { render(); $("note").focus(); return; }
+    if (i < rows.length - 1) i++;
+    render();
+  }
+
+  $("file").addEventListener("change", async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    fileName = f.name;
+    const table = parseCSV((await f.text()).replace(/^﻿/, ""));
+    header = table[0]; rows = table.slice(1);
+    if (col("claim") < 0 || col("human") < 0 || col("cited_passages") < 0) { alert("This is not an audit worksheet."); return; }
+    rows.forEach((r) => { while (r.length < header.length) r.push(""); });
+    restore();
+    i = Math.max(0, rows.findIndex((r) => !r[col("human")]));
+    $("start").classList.add("hidden"); $("work").classList.remove("hidden");
+    render();
+  });
+
+  document.querySelectorAll(".choices button").forEach((b) => b.addEventListener("click", () => choose(b.dataset.v)));
+  $("note").addEventListener("input", () => { rows[i][col("note")] = $("note").value; save(); });
+  $("prev").onclick = () => { if (i > 0) { i--; render(); } };
+  $("next").onclick = () => { if (i < rows.length - 1) { i++; render(); } };
+  $("nextOpen").onclick = () => { const k = rows.findIndex((r, n) => n > i && !r[col("human")]); if (k >= 0) { i = k; render(); } };
+  $("export").onclick = () => {
+    const blob = new Blob([toCSV([header, ...rows])], { type: "text/csv" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = fileName; a.click();
+  };
+  document.addEventListener("keydown", (e) => {
+    if (!rows.length || e.target.id === "note") return;
+    if (e.key === "1") choose("supported");
+    else if (e.key === "2") choose("not_supported");
+    else if (e.key === "3") choose("unclear");
+    else if (e.key === "ArrowLeft") $("prev").click();
+    else if (e.key === "ArrowRight") $("next").click();
+  });
+})();
+</script>
+</body>
+</html>
