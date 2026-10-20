@@ -1,0 +1,18 @@
+{
+  "benchmark_version": "v1",
+  "amendment": 1,
+  "date": "2026-10-20",
+  "changed_articles": [
+    "SAP-MAT-002",
+    "SAP-PO-002",
+    "SAP-PO-004"
+  ],
+  "reason": "AI-assisted fact-check of the 24 SAP articles (2026-10-20) found three inaccuracies: release by an absent approver (workflow substitute or another holder of the release code), how a quantity block is released after the goods receipt (MRBR run, not automatic), and number range objects opened in their transaction. Steps and key facts corrected; symptom and cause unchanged, so no ticket changes.",
+  "tickets_unchanged": true,
+  "kb": {
+    "articles": 120,
+    "reviewed": 0,
+    "ai_checked_only": 24,
+    "combined_sha256": "faa88e3d7e297dd91526187f5eb5b111d9c5d24a93c9f9f69b8c2e659048de31"
+  }
+}
