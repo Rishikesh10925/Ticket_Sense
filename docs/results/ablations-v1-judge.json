@@ -1,0 +1,121 @@
+{
+ "labels": "judge",
+ "model": "xgboost",
+ "params": {
+  "n_estimators": 100,
+  "max_depth": 2,
+  "learning_rate": 0.1
+ },
+ "full_val_aurc": 0.1492,
+ "status": "PROVISIONAL (LLM-judge labels)",
+ "ablations": [
+  {
+   "dropped": "retrieval",
+   "n_features": 7,
+   "val_aurc": 0.1342,
+   "delta_aurc": -0.015,
+   "delta_ci95": [
+    -0.0362,
+    0.0005
+   ],
+   "helps": false,
+   "hurts": false
+  },
+  {
+   "dropped": "reranker",
+   "n_features": 3,
+   "val_aurc": 0.1623,
+   "delta_aurc": 0.013,
+   "delta_ci95": [
+    -0.0025,
+    0.0345
+   ],
+   "helps": false,
+   "hurts": false
+  },
+  {
+   "dropped": "grounding",
+   "n_features": 9,
+   "val_aurc": 0.1454,
+   "delta_aurc": -0.0039,
+   "delta_ci95": [
+    -0.0272,
+    0.0192
+   ],
+   "helps": false,
+   "hurts": false
+  },
+  {
+   "dropped": "consistency",
+   "n_features": 1,
+   "val_aurc": 0.1352,
+   "delta_aurc": -0.0141,
+   "delta_ci95": [
+    -0.0329,
+    -0.0011
+   ],
+   "helps": false,
+   "hurts": true
+  },
+  {
+   "dropped": "routing",
+   "n_features": 4,
+   "val_aurc": 0.2149,
+   "delta_aurc": 0.0657,
+   "delta_ci95": [
+    0.0223,
+    0.1173
+   ],
+   "helps": true,
+   "hurts": false
+  },
+  {
+   "dropped": "evidence quality",
+   "n_features": 3,
+   "val_aurc": 0.1291,
+   "delta_aurc": -0.0202,
+   "delta_ci95": [
+    -0.0407,
+    -0.0056
+   ],
+   "helps": false,
+   "hurts": true
+  },
+  {
+   "dropped": "ticket",
+   "n_features": 4,
+   "val_aurc": 0.1765,
+   "delta_aurc": 0.0272,
+   "delta_ci95": [
+    0.0042,
+    0.0615
+   ],
+   "helps": true,
+   "hurts": false
+  },
+  {
+   "dropped": "category history",
+   "n_features": 2,
+   "val_aurc": 0.1983,
+   "delta_aurc": 0.0491,
+   "delta_ci95": [
+    0.0122,
+    0.1053
+   ],
+   "helps": true,
+   "hurts": false
+  },
+  {
+   "dropped": "cross-department probe",
+   "n_features": 2,
+   "val_aurc": 0.1728,
+   "delta_aurc": 0.0235,
+   "delta_ci95": [
+    0.0045,
+    0.0519
+   ],
+   "helps": true,
+   "hurts": false
+  }
+ ]
+}
