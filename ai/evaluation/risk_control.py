@@ -61,8 +61,15 @@ def learn_then_test(
     alpha: float = 0.10,
     delta: float = 0.10,
     min_shown: int | None = None,
+    candidates: ArrayLike | None = None,
 ) -> ThresholdResult:
-    """Most lenient threshold whose risk is certified <= alpha with prob >= 1 - delta."""
+    """Most lenient threshold whose risk is certified <= alpha with prob >= 1 - delta.
+
+    `candidates` is the pre-specified grid of thresholds, tested strict to lenient. The
+    default (every distinct score) makes the first tests tiny: one unacceptable draft
+    among the five most confident ends the fixed sequence before any useful threshold is
+    reached. Pass a coarse grid such as `DEFAULT_GRID` to avoid that; the grid must be
+    fixed before looking at the calibration labels."""
     conf = np.asarray(confidence, dtype=float)
     acc = np.asarray(acceptable, dtype=float)
     if conf.shape != acc.shape or conf.ndim != 1 or conf.size == 0:
@@ -74,7 +81,8 @@ def learn_then_test(
         min_shown = min_testable_size(alpha, delta)
 
     best = ThresholdResult(None, alpha, delta, 0, 0, 0.0, None)
-    for t in np.unique(conf)[::-1]:  # strict -> lenient
+    grid = np.unique(conf) if candidates is None else np.unique(np.asarray(candidates, dtype=float))
+    for t in grid[::-1]:  # strict -> lenient
         shown = conf >= t
         n = int(shown.sum())
         if n < min_shown:
@@ -110,8 +118,14 @@ def select_lane_thresholds(
     alpha_fast: float = 0.10,
     alpha_assisted: float = 0.40,
     delta: float = 0.10,
+    candidates: ArrayLike | None = None,
 ) -> LaneThresholds:
     return LaneThresholds(
-        fast=learn_then_test(confidence, acceptable, alpha_fast, delta),
-        assisted=learn_then_test(confidence, acceptable, alpha_assisted, delta),
+        fast=learn_then_test(confidence, acceptable, alpha_fast, delta, candidates=candidates),
+        assisted=learn_then_test(confidence, acceptable, alpha_assisted, delta, candidates=candidates),
     )
+
+
+# Pre-specified candidate thresholds for calibrated probabilities: 0.99, then 0.95 down to
+# 0.05 in steps of 0.05. Fixed in Week 8 before any human label exists.
+DEFAULT_GRID = np.round(np.concatenate([[0.99], np.arange(0.95, 0.0, -0.05)]), 2)
