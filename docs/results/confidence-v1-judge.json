@@ -361,7 +361,7 @@
    "score": 0.691,
    "reasons": [
     "topic often needs rework",
-    "gr_n_claims",
+    "unusual number of claims",
     "a weakly supported claim"
    ]
   },
@@ -379,7 +379,7 @@
    "score": 0.697,
    "reasons": [
     "topic often needs rework",
-    "gr_n_claims",
+    "unusual number of claims",
     "a weakly supported claim"
    ]
   },

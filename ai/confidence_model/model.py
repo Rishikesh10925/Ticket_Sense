@@ -40,6 +40,12 @@ READABLE = {
     "rt_dept_max_prob": "uncertain routing", "rt_dept_entropy": "uncertain routing",
     "rt_probe_margin": "another department matches as well", "ev_cited_age_days_max": "old evidence",
     "cat_department_rate": "department often needs rework", "cat_topic_rate": "topic often needs rework",
+    "ret_topk_fused_mean": "weak retrieval overall", "gr_cited_step_share": "steps without citations",
+    "gr_schema_valid": "draft failed its format check", "gr_n_steps": "unusual number of steps",
+    "gr_n_claims": "unusual number of claims", "rt_probe_top1": "ticket also matches another department",
+    "ev_cited_words_mean": "unusual evidence length", "ev_cited_has_warning": "cited evidence carries a warning",
+    "tk_words": "unusual ticket length", "tk_questions": "ticket asks several questions",
+    "tk_has_error_code": "error code in the ticket", "tk_has_log": "pasted log in the ticket",
 }
 
 

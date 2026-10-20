@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-import { ApiError, getTicketDraft, type DraftClaim, type DraftPassage, type TicketDraft } from "../api/client";
+import {
+  ApiError,
+  getTicketDecision,
+  getTicketDraft,
+  type DraftClaim,
+  type DraftPassage,
+  type TicketDecision,
+  type TicketDraft,
+} from "../api/client";
 import LaneBadge from "./LaneBadge";
 import "./DraftPanel.css";
 
@@ -70,7 +78,27 @@ function Passages({ passages, active }: { passages: DraftPassage[]; active: numb
   );
 }
 
-function DraftBody({ draft }: { draft: TicketDraft }) {
+// The confidence gate's verdict (Week 8). Logged for every draft; ticket routing still
+// follows the V1 rule until the Week 9 switch, so this is shown as information.
+function GateLine({ decision }: { decision: TicketDecision }) {
+  return (
+    <div className="gate-line">
+      <span className="gate-line-label">Confidence gate</span>
+      <LaneBadge lane={decision.lane} />
+      {decision.score !== null && <span className="status-badge">score {Math.round(decision.score * 100)}%</span>}
+      {decision.label_source === "judge" && (
+        <span className="status-badge" title="Thresholds certified on AI-judge labels, not human labels">
+          provisional
+        </span>
+      )}
+      {decision.reasons.length > 0 && (
+        <span className="gate-line-reasons">Held back by: {decision.reasons.join(" · ")}</span>
+      )}
+    </div>
+  );
+}
+
+function DraftBody({ draft, decision }: { draft: TicketDraft; decision?: TicketDecision }) {
   const [active, setActive] = useState<number | null>(null);
 
   const claimsByStep = new Map<number, DraftClaim[]>();
@@ -82,6 +110,7 @@ function DraftBody({ draft }: { draft: TicketDraft }) {
 
   return (
     <div className="draft-panel">
+      {decision && <GateLine decision={decision} />}
       <div className="draft-panel-meta">
         {draft.lane === "escalate" ? (
           <LaneBadge lane="escalate" />
@@ -176,6 +205,12 @@ export default function DraftPanel({ token, ticketId, version }: { token: string
     retry: (count, err) => !(err instanceof ApiError && err.status === 404) && count < 1,
   });
 
+  const decision = useQuery({
+    queryKey: ["decision", ticketId, version],
+    queryFn: () => getTicketDecision(token, ticketId),
+    retry: false,
+  });
+
   if (query.isPending) return <p className="placeholder-note">Loading the draft…</p>;
   if (query.error) {
     if (query.error instanceof ApiError && query.error.status === 404) {
@@ -190,5 +225,5 @@ export default function DraftPanel({ token, ticketId, version }: { token: string
       </div>
     );
   }
-  return <DraftBody draft={query.data} />;
+  return <DraftBody draft={query.data} decision={decision.data} />;
 }

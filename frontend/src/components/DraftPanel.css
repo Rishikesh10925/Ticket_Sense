@@ -146,3 +146,24 @@
   font-size: 11px;
   color: var(--color-text-faint);
 }
+
+.gate-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.gate-line-label {
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.gate-line-reasons {
+  color: var(--color-text-muted);
+}

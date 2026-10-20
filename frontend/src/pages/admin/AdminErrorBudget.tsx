@@ -9,6 +9,11 @@ function thresholdLabel(t: number | null) {
   return t === null ? "not certified (lane closed)" : t.toFixed(2);
 }
 
+// Stat cards have room for a number, not a sentence.
+function thresholdValue(t: number | null) {
+  return t === null ? "closed" : t.toFixed(2);
+}
+
 // Blueprint V2 §13.4: "The administrator screen shows the expected coverage for any
 // chosen alpha so the trade-off is visible." Read-only: a new budget means certifying a
 // new threshold set on the calibration split, never typing a number in here.
@@ -44,9 +49,15 @@ export default function AdminErrorBudget() {
 
       <div className="stat-grid">
         <StatCard label="Fast lane: error budget" value={pct(active.alpha_fast)} accent />
-        <StatCard label="Fast lane: threshold" value={thresholdLabel(active.fast_threshold)} />
+        <StatCard
+          label={active.fast_threshold === null ? "Fast lane: no threshold certified" : "Fast lane: threshold"}
+          value={thresholdValue(active.fast_threshold)}
+        />
         <StatCard label="Assisted lane: error budget" value={pct(active.alpha_assisted)} tone="info" />
-        <StatCard label="Assisted lane: threshold" value={thresholdLabel(active.assisted_threshold)} />
+        <StatCard
+          label={active.assisted_threshold === null ? "Assisted lane: no threshold certified" : "Assisted lane: threshold"}
+          value={thresholdValue(active.assisted_threshold)}
+        />
       </div>
 
       <Card title="What each error budget allows">
