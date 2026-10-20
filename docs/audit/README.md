@@ -1,4 +1,12 @@
-# Groundedness audit (Week 6): 100 drafts, about 33 each
+# Groundedness audit (Week 6)
+
+> **Short version (use this):** `audit_v1_R_short.csv`, `audit_v1_A_short.csv`,
+> `audit_v1_S_short.csv`, about 40 claims each instead of about 165. Two automatic
+> checkers (NLI and an LLM check) judge every claim first; you label every claim where
+> they disagree plus a random sample of the ones where they agree, so the audit still
+> measures how often both are wrong together. Same rules as below; label in
+> `audit_tool.html`. Which rows are "doubtful" is deliberately not shown.
+
 
 Why: the NLI claim checker decides which claims count as "supported". Before its
 scores feed the confidence model, a human checks it on 100 drafts so its errors are
