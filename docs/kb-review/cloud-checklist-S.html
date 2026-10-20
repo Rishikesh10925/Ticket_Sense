@@ -1,0 +1,103 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width, initial-scale=1'><title>CLOUD fact-check</title><style>:root{--bg:#f8fafc;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--link:#4f46e5}@media (prefers-color-scheme:dark){:root{--bg:#0b1120;--card:#131c31;--text:#e2e8f0;--muted:#94a3b8;--border:#1e293b;--link:#a5b4fc}}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,sans-serif}main{max-width:900px;margin:0 auto;padding:16px}h1{font-size:22px}.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px 16px 12px;margin:14px 0}h2{font-size:17px}a{color:var(--link)}code{font-size:13px}p{margin:6px 0}.fact{display:block;margin:4px 0;cursor:pointer}textarea{width:100%;min-height:44px;margin-top:6px;font:inherit;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px;box-sizing:border-box}</style></head><body><main><section><h1>Fact-check checklist: CLOUD (12 articles, reviewer S)</h1>
+<p>For each article: open it, click each term, confirm the article uses it correctly.</p>
+<p>All correct ➜ set <code>reviewer: S</code> in the article. Something wrong ➜ note it here and tell Claude.</p>
+<p>Values described as *this organisation's* policy (limits, approvals) are fictional company rules:</p>
+<p>they cannot be looked up, only checked for being stated as policy rather than as a vendor default.</p>
+<p>⭐ = check first (flagged as risky). ⬜ = not checked. 🤖 = AI-checked only (still needs a human). ✅ = human-reviewed.</p>
+</section><section class="card"><h2>⬜ CLD-ENV-001: Request for a new cloud environment</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-ENV-001.md" target="_blank" rel="noopener">data/kb/cloud/CLD-ENV-001.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> New environments are created only from the landing-zone template.</label>
+<label class=fact><input type=checkbox> Cost-centre, owner and environment tags are applied at creation.</label>
+<label class=fact><input type=checkbox> Teams get least-privilege access by default.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ CLD-ENV-002: Managed database refusing new connections</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-ENV-002.md" target="_blank" rel="noopener">data/kb/cloud/CLD-ENV-002.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> "Too many connections" means the database reached its maximum connections setting.</label>
+<label class=fact><input type=checkbox> Connection leaks after a deployment are a common cause.</label>
+<label class=fact><input type=checkbox> Leaks are fixed before the database is resized.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ CLD-ENV-003: Request for a new managed database</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-ENV-003.md" target="_blank" rel="noopener">data/kb/cloud/CLD-ENV-003.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Production databases are deployed across two availability zones.</label>
+<label class=fact><input type=checkbox> Automated backups and encryption at rest are mandatory.</label>
+<label class=fact><input type=checkbox> Databases sit in private subnets, reachable only from the application's security group.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ CLD-ENV-004: Decommission a cloud environment</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-ENV-004.md" target="_blank" rel="noopener">data/kb/cloud/CLD-ENV-004.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Decommissioning needs confirmation from the owner and the cost-centre manager.</label>
+<label class=fact><input type=checkbox> Final snapshots are taken where data retention requires them.</label>
+<label class=fact><input type=checkbox> Accounts and projects are closed by the platform team.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ CLD-LB-001: Load balancer marks servers unhealthy</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-LB-001.md" target="_blank" rel="noopener">data/kb/cloud/CLD-LB-001.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Health checks fail when the path does not return the expected status code in time.</label>
+<label class=fact><input type=checkbox> Calling the health check path directly on the server isolates application from network problems.</label>
+<label class=fact><input type=checkbox> Servers flapping between healthy and unhealthy usually lack CPU or memory.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ CLD-LB-002: TLS certificate about to expire</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-LB-002.md" target="_blank" rel="noopener">data/kb/cloud/CLD-LB-002.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Managed certificates renew automatically only while DNS validation still works.</label>
+<label class=fact><input type=checkbox> A renewed certificate must be installed on every endpoint that uses it.</label>
+<label class=fact><input type=checkbox> An expired production certificate is a priority-1 incident.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ CLD-LB-003: Website returns 502 or 503 from the load balancer</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-LB-003.md" target="_blank" rel="noopener">data/kb/cloud/CLD-LB-003.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> 503 from the load balancer means no healthy servers are available.</label>
+<label class=fact><input type=checkbox> 502 means a server closed the connection or returned an invalid response.</label>
+<label class=fact><input type=checkbox> 504 means the server did not respond within the load balancer timeout.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ CLD-LB-004: New service needs a company domain name</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-LB-004.md" target="_blank" rel="noopener">data/kb/cloud/CLD-LB-004.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A company name for a service needs a DNS record and a matching certificate.</label>
+<label class=fact><input type=checkbox> Load balancers are referenced by alias records, never by IP address.</label>
+<label class=fact><input type=checkbox> Certificates for company names are validated through DNS.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ CLD-VM-001: Cannot SSH into a cloud virtual machine</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-VM-001.md" target="_blank" rel="noopener">data/kb/cloud/CLD-VM-001.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> An SSH timeout points to a network block such as a security group rule.</label>
+<label class=fact><input type=checkbox> A refused connection or failed authentication points to the key or SSH configuration.</label>
+<label class=fact><input type=checkbox> Private-subnet machines are reached through the bastion host or VPN.</label>
+<label class=fact><input type=checkbox> A failed system status check is fixed by stopping and starting the instance.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ CLD-VM-002: Restore a disk or server from a snapshot</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-VM-002.md" target="_blank" rel="noopener">data/kb/cloud/CLD-VM-002.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Restores go to a new resource by default, not over the original.</label>
+<label class=fact><input type=checkbox> Data changed after the snapshot time is not in the restored copy.</label>
+<label class=fact><input type=checkbox> The original is kept until the restored copy is verified by the owner.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ CLD-VM-003: Virtual machine disk is full</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-VM-003.md" target="_blank" rel="noopener">data/kb/cloud/CLD-VM-003.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=AWS+growpart+site%3Adocs.aws.amazon.com" target="_blank" rel="noopener">growpart</a> · <a href="https://www.google.com/search?q=AWS+resize2fs+site%3Adocs.aws.amazon.com" target="_blank" rel="noopener">resize2fs</a> · <a href="https://www.google.com/search?q=AWS+xfs_growfs+site%3Adocs.aws.amazon.com" target="_blank" rel="noopener">xfs_growfs</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Growing a cloud volume does not grow the file system automatically.</label>
+<label class=fact><input type=checkbox> The partition is extended with growpart and the file system with resize2fs or xfs_growfs.</label>
+<label class=fact><input type=checkbox> A snapshot is taken before resizing a volume.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ CLD-VM-004: Development server stopped overnight</h2>
+<p>File: <a href="../../data/kb/cloud/CLD-VM-004.md" target="_blank" rel="noopener">data/kb/cloud/CLD-VM-004.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Development and test machines are stopped outside working hours by the instance scheduler.</label>
+<label class=fact><input type=checkbox> The machine's schedule tag decides when it is stopped.</label>
+<label class=fact><input type=checkbox> Data on instance-store disks is lost when the machine stops.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea></section></main></body></html>
