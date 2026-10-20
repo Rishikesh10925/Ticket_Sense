@@ -26,6 +26,7 @@ from app.database import SessionLocal
 from app.models import Department, Escalation, Ticket
 from app.models.department import DEFAULT_CONFIDENCE_THRESHOLD
 from app.models.draft import Draft, DraftClaim, SignalVector
+from app.models.gate import GateDecision
 from app.services.ticket_lifecycle import TicketStatus, transition
 
 from generation.llm import get_llm_client  # noqa: E402
@@ -136,6 +137,19 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
             if draft_row is not None:
                 db.add(draft_row)
                 signals = result.get("signals")
+                gate = result.get("gate_v2")
+                if gate:
+                    await db.flush()
+                    db.add(
+                        GateDecision(
+                            draft_id=draft_row.id,
+                            thresholds_id=uuid.UUID(gate["thresholds_id"]) if gate["thresholds_id"] else None,
+                            model_version=gate["model_version"],
+                            score=gate["score"],
+                            lane=gate["lane"],
+                            reasons=gate["reasons"],
+                        )
+                    )
                 if signals:
                     await db.flush()
                     db.add(

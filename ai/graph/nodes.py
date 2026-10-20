@@ -356,6 +356,34 @@ def make_signals_node():
     return node
 
 
+def make_gate_node(db):
+    """Blueprint V2 §9 stages 7 and 8: the confidence model scores the draft and the active
+    certified thresholds assign a lane. Week 8 records this decision for every draft;
+    the routing itself still follows `gate_condition` until the Week 9 switch."""
+
+    async def node(state: TicketState) -> dict:
+        from app.models.gate import GateThresholds
+        from gate.service import Thresholds, decide
+
+        active = await db.scalar(select(GateThresholds).where(GateThresholds.active.is_(True)))
+        thresholds = Thresholds(active.version, active.fast_threshold, active.assisted_threshold) if active else None
+        draft = state.get("draft_result") or {}
+        passages = state.get("passages") or []
+        decision = await asyncio.to_thread(
+            decide,
+            state.get("signals") or {},
+            state.get("department_name"),
+            passages[0].get("article_key") if passages else None,
+            bool(draft.get("shown")),
+            thresholds,
+        )
+        return {"gate_v2": {"score": decision.score, "lane": decision.lane, "reasons": decision.reasons,
+                            "model_version": decision.model_version,
+                            "thresholds_id": str(active.id) if active else None}}
+
+    return node
+
+
 def make_score_node(db, department_model, default_threshold: float):
     """Interim V1 confidence score until the Week 8 confidence model replaces it."""
 

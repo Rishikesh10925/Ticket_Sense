@@ -36,6 +36,7 @@ class TicketState(TypedDict, total=False):
     grounding: dict | None  # claim check: groundedness, min/mean support, claims, weakest
     retrieval_candidates: list[dict]  # every fused candidate with its ranks and scores
     signals: dict | None  # the signal vector (ai/signals/features.py)
+    gate_v2: dict | None  # confidence-model score, lane, reasons (logged; routing switches in Week 9)
     draft: str | None  # rendered reply text, only when the draft is shown
     citations: list[dict]
     confidence_score: float | None
