@@ -1,0 +1,887 @@
+draft_id,ticket_id,step,claim,cited_passages,human,note
+e5cf9179-c44c-4400-9892-587994d75d3a,T-00022,4,"If the error appeared at the start of a fiscal year, mention it: the new year's interval may simply not have been created.","[1] Number range exhausted
+Number range exhausted (Materials and number ranges)
+## Symptom
+Creating a document (material, purchase order, sales order or accounting document) fails
+because no number can be assigned: the message says the number range interval is full or
+was not found.
+
+## Cause
+Every document type draws its numbers from a number range interval. When the interval
+reaches its upper limit, or the interval for a new fiscal year was never created, no new
+documents of that type can be saved.
+
+## Resolution steps
+1. Note the exact message, the document type and the company code or plant.
+2. Identify the number range object (for example FBN1 for accounting documents, MMNR for
+   materials, or SNRO for the generic view).
+3. Escalate to the SAP configuration team with the object, the interval and the fiscal
+   year. Extending or adding an interval is a configuration change.
+4. If the error appeared at the start of a fiscal year, mention it: the new year's
+   interval may simply not have been created.",,
+744e4c20-a392-4e5a-a0c3-7fbf1a2aca63,T-01437,1,Check if the switch port 3/1 is still in the 'err-disabled' state.,"[5] Application cannot send email from the office network
+Application cannot send email from the office network (Firewall and proxy)
+## Symptom
+A script, scanner or application that sends email directly fails to connect to the mail
+server on port 25, while the same email account works in Outlook.
+
+## Cause
+Outbound SMTP on port 25 is blocked for all devices except the company mail relay, to
+stop infected machines from sending spam.
+
+## Resolution steps
+1. Confirm what is sending the email: a device (scanner, printer) or an application.
+2. Configure it to send through the internal mail relay, whose address is on the
+   intranet, instead of an outside mail server.
+3. If the relay needs to accept a new device, raise a request with the device's IP and
+   the sender address it will use.
+
+## Warnings
+Do not request a firewall exception for port 25 to the internet.",,
+7d779d8b-76a9-45b7-8a54-d0fa8a032e38,T-01700,6,"If the issue is specific to your machine and the entry is correct, reinstall or update SAP GUI from the software centre.","[1] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Symptom
+SAP GUI hangs on ""Connecting"" after the user selects a system in SAP Logon and then
+fails with a connection or timeout error before the logon screen appears.
+
+## Cause
+The user's machine cannot reach the application server: no VPN when working remotely, a
+wrong or outdated system entry in SAP Logon, or the server itself is down.
+---
+[2] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Resolution steps
+1. If the user works remotely, confirm the VPN is connected; see the Networking VPN
+   articles if it is not.
+2. Ask whether colleagues can connect to the same system. If several users are affected,
+   the server is probably down: escalate to Basis at once.
+3. Check the system entry in SAP Logon: application server, instance number and system
+   ID must match the values published by Basis. Entries can change after a system refresh.
+4. Test that the dispatcher port is reachable. SAP GUI connects to port 32 followed by
+   the instance number (3200 for instance 00).
+5. If only this user is affected and the entry is correct, reinstall or update SAP GUI
+   from the software centre.
+
+## Warnings
+Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",,
+e5cf9179-c44c-4400-9892-587994d75d3a,T-00022,3,"Escalate to the SAP configuration team with the object, interval, and fiscal year.","[1] Number range exhausted
+Number range exhausted (Materials and number ranges)
+## Symptom
+Creating a document (material, purchase order, sales order or accounting document) fails
+because no number can be assigned: the message says the number range interval is full or
+was not found.
+
+## Cause
+Every document type draws its numbers from a number range interval. When the interval
+reaches its upper limit, or the interval for a new fiscal year was never created, no new
+documents of that type can be saved.
+
+## Resolution steps
+1. Note the exact message, the document type and the company code or plant.
+2. Identify the number range object (for example FBN1 for accounting documents, MMNR for
+   materials, or SNRO for the generic view).
+3. Escalate to the SAP configuration team with the object, the interval and the fiscal
+   year. Extending or adding an interval is a configuration change.
+4. If the error appeared at the start of a fiscal year, mention it: the new year's
+   interval may simply not have been created.",,
+248a1cf2-d3cd-47b2-9232-577451fdb5cc,T-01044,5,Check SM12 for any database locks held by the job's user.,"[2] Background job not starting or stuck
+Background job not starting or stuck (Batch jobs and IDocs)
+## Resolution steps
+1. Open the job in SM37 and note its status and planned start.
+2. If ""Released"", check the start condition: a future start time or an event that has not
+   been raised yet is normal.
+3. If ""Ready"", check in SM50 whether all background work processes are busy. The job
+   starts when one frees up. Report it to Basis if this persists.
+4. If ""Active"" for too long, open the job log in SM37 and note the last step; check SM12
+   for locks held by the job's user.
+5. A job with no log progress for 30 minutes or more is cancelled by Basis, not the user.
+
+## Warnings
+Do not cancel and reschedule a running job without checking what it was posting; a
+half-finished posting run can leave inconsistent documents.",,
+bd8aa55e-1d0a-4fd2-afc8-b0816b9a8401,T-01090,3,"If the `pg_wal` directory is large, check `pg_stat_archiver` for any failed archive commands.","[2] WAL archiving failing
+WAL archiving failing (Disk space and backups)
+## Symptom
+Monitoring reports WAL archive failures, and the `pg_wal` directory keeps growing.
+
+## Cause
+PostgreSQL keeps each WAL file until `archive_command` succeeds for it. If the archive
+target is full, unreachable or its credentials expired, WAL files pile up locally.
+
+## Resolution steps
+1. Check `pg_stat_archiver` for `failed_count` and `last_failed_wal`.
+2. Read the database log for the archive command's error message.
+3. Fix the target: free space, restore network access, or renew the credential.
+4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
+
+## Warnings
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+b06c8bfc-9b9c-4ab8-9942-b7a52d129693,T-01254,4,"If the issue persists, raise a hardware ticket.","[5] Laptop cannot see the corporate Wi-Fi network
+Laptop cannot see the corporate Wi-Fi network (Wireless access)
+## Symptom
+Other people in the room are connected, but the corporate network name does not appear
+in the user's list of available Wi-Fi networks.
+
+## Cause
+The corporate network runs only on the 5 GHz band. An outdated driver, an adapter set to
+2.4 GHz only, or airplane mode or a hardware Wi-Fi switch hides it.
+
+## Resolution steps
+1. Check that airplane mode is off and the Wi-Fi toggle (or keyboard key) is on.
+2. Ask whether other 5 GHz networks are visible. If only 2.4 GHz networks show, check the
+   adapter's band setting and set it to auto or 5 GHz preferred.
+3. Update the wireless driver from the software centre and restart.
+4. If it is still missing, the adapter may be faulty: raise a hardware ticket.
+
+## Warnings
+Do not share a phone hotspot with corporate devices as a long-term workaround.",,
+8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,4,"If no specific query is causing the issue, check for idle sessions holding locks with `pg_blocking_pids()` and `pg_stat_activity`.","[2] Queries blocked by an idle session holding a lock
+Queries blocked by an idle session holding a lock (Locks and deadlocks)
+## Symptom
+Queries on a table hang waiting for a lock, and the session holding the lock is idle and
+doing nothing.
+
+## Cause
+A session opened a transaction, took a lock, and then stopped without committing or
+rolling back. It shows as ""idle in transaction"" and keeps its locks until it ends.
+
+## Resolution steps
+1. Find the blocking session with `pg_blocking_pids()` and `pg_stat_activity`.
+2. Check its state and how long it has been idle in transaction.
+3. Confirm with the owning application that the session is stuck, not a long legitimate job.
+4. End it with `pg_terminate_backend(pid)`; its locks are released and waiting queries continue.
+5. Ask the application team to close transactions on error paths.
+
+## Warnings
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,1,Check the `pg_stat_activity` view for any long-running queries.,"[1] Database server CPU is very high
+Database server CPU is very high (Query performance and indexes)
+## Symptom
+Monitoring shows the database server's CPU near 100 percent and applications are slow.
+
+## Cause
+A few expensive queries usually cause most of the load: a new query without a suitable
+index, a report run at peak time, or a query whose plan changed after data growth.
+
+## Resolution steps
+1. Look at `pg_stat_activity` for long-running active queries right now.
+2. Check `pg_stat_statements` for the queries with the highest total execution time.
+3. If one report or job causes the spike, ask its owner to stop it or run it off-peak.
+4. Send the top queries and their plans to the owning teams for tuning.
+
+## Warnings
+Do not restart the database to clear CPU load; it drops every connection and the load
+usually returns.",,
+0cc077b3-e160-4b32-a72d-2d5084f6b092,T-01308,5,Verify the application's connection pool settings and ensure they are not exhausted.,"[4] Application runs out of database connections
+Application runs out of database connections (Connections and pools)
+## Symptom
+Application logs show ""connection pool exhausted"", ""sorry, too many clients already"", or
+requests waiting for a database connection, while the database server is up.
+
+## Cause
+Either the database reached `max_connections`, or the application's pool is full because
+code paths take connections and never return them (a leak), often after an unhandled
+error. Sessions left ""idle in transaction"" also hold connection slots.
+
+## Resolution steps
+1. Compare the number of connections in `pg_stat_activity` with `SHOW max_connections`.
+2. Group the sessions by application and state; many ""idle in transaction"" sessions from
+   one application point to that application.
+3. Check whether the errors started after a deployment; a new code path that does not
+   close its connection is the usual cause.
+4. As a stop-gap, restart the affected application instance to release leaked connections.
+5. Send the findings to the owning team to fix the leak or pool settings.
+
+## Warnings
+Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",,
+c2ce45e0-fb33-45be-8e24-bcc79fa2ea95,T-00659,1,Check if the company root certificate is published on the intranet.,"[1] Certificate errors in a desktop tool on the office network
+Certificate errors in a desktop tool on the office network (Firewall and proxy)
+## Symptom
+A developer tool, command-line client or desktop app fails with an SSL or certificate
+error (""unable to get local issuer certificate"", ""self-signed certificate in chain"") on
+the office network, but works at home.
+
+## Cause
+The web proxy inspects encrypted traffic and re-signs it with the company's root
+certificate. Browsers trust that certificate, but some tools use their own certificate
+store and do not.
+
+## Resolution steps
+1. Confirm the error appears only on the office network or VPN.
+2. Point the tool at the company root certificate, which is published on the intranet
+   (most tools have a setting or environment variable for a CA bundle).
+3. If the tool cannot be configured, raise a request for an inspection bypass for that
+   domain, with the business reason.
+
+## Warnings
+Never turn off certificate verification in the tool; it removes protection against
+real interception.",,
+e92614c3-f6c8-4b88-9843-a0eab6eda71f,T-00374,2,Point the tool at the company root certificate if available.,"[1] Certificate errors in a desktop tool on the office network
+Certificate errors in a desktop tool on the office network (Firewall and proxy)
+## Symptom
+A developer tool, command-line client or desktop app fails with an SSL or certificate
+error (""unable to get local issuer certificate"", ""self-signed certificate in chain"") on
+the office network, but works at home.
+
+## Cause
+The web proxy inspects encrypted traffic and re-signs it with the company's root
+certificate. Browsers trust that certificate, but some tools use their own certificate
+store and do not.
+
+## Resolution steps
+1. Confirm the error appears only on the office network or VPN.
+2. Point the tool at the company root certificate, which is published on the intranet
+   (most tools have a setting or environment variable for a CA bundle).
+3. If the tool cannot be configured, raise a request for an inspection bypass for that
+   domain, with the business reason.
+
+## Warnings
+Never turn off certificate verification in the tool; it removes protection against
+real interception.",,
+6e04672c-2f21-4921-b02c-3504ab4783a9,T-00764,3,"Pay changes are announced separately from the review cycle, typically after the cycle ends.","[1] How performance reviews work
+How performance reviews work (Workplace policy and reviews)
+## Symptom
+An employee or manager asks when reviews happen, how ratings are decided, or when pay
+changes are announced.
+
+## Cause
+Reviews follow an annual cycle with a mid-year check-in. Ratings are calibrated across
+teams before they are shared. Pay decisions are communicated separately.
+
+## Resolution steps
+1. Explain the steps: self-assessment, manager assessment, calibration, then the rating is
+   shared.
+2. New hires in their first 90 days get a probation check-in instead of a formal review.
+3. Pay changes are announced in a separate communication after the cycle, on their own
+   timeline.
+4. Disagreements with a rating are raised with the manager first, then with HR.
+
+## Warnings
+Do not predict pay changes from a rating.",,
+e9c3d757-6ad0-4ccd-86b8-2ef948034271,T-00442,3,"If the on-demand backup fails, free space or extend the target, renew the storage credential, or move the schedule away from the batch job.","[1] Nightly database backup failed
+Nightly database backup failed (Disk space and backups)
+## Symptom
+The backup monitoring reports that last night's backup of a database failed or did not run.
+
+## Cause
+Common causes are not enough space in the backup target, an expired credential for the
+backup storage, a backup that overlapped a heavy batch job and timed out, or the
+database being unreachable at the time.
+
+## Resolution steps
+1. Read the backup job's log for the exact error.
+2. Fix the cause: free space or extend the target, renew the storage credential, or move
+   the schedule away from the batch job.
+3. Run an on-demand backup at once, so there is a recent good backup.
+4. Confirm the new backup completed and its size is similar to previous ones.
+
+## Warnings
+A failed backup is not ""fixed"" until a new backup has completed successfully.",,
+81ee9cb3-91b9-4f0a-bd17-4451f7e893ae,T-01436,1,Run `ipconfig /release`,"[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.",,
+e9c3d757-6ad0-4ccd-86b8-2ef948034271,T-00442,5,Monitor the backup job to ensure it runs without issues.,"[1] Nightly database backup failed
+Nightly database backup failed (Disk space and backups)
+## Symptom
+The backup monitoring reports that last night's backup of a database failed or did not run.
+
+## Cause
+Common causes are not enough space in the backup target, an expired credential for the
+backup storage, a backup that overlapped a heavy batch job and timed out, or the
+database being unreachable at the time.
+
+## Resolution steps
+1. Read the backup job's log for the exact error.
+2. Fix the cause: free space or extend the target, renew the storage credential, or move
+   the schedule away from the batch job.
+3. Run an on-demand backup at once, so there is a recent good backup.
+4. Confirm the new backup completed and its size is similar to previous ones.
+
+## Warnings
+A failed backup is not ""fixed"" until a new backup has completed successfully.",,
+7d779d8b-76a9-45b7-8a54-d0fa8a032e38,T-01700,2,Try logging in again.,"[1] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Symptom
+SAP GUI hangs on ""Connecting"" after the user selects a system in SAP Logon and then
+fails with a connection or timeout error before the logon screen appears.
+
+## Cause
+The user's machine cannot reach the application server: no VPN when working remotely, a
+wrong or outdated system entry in SAP Logon, or the server itself is down.
+---
+[2] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Resolution steps
+1. If the user works remotely, confirm the VPN is connected; see the Networking VPN
+   articles if it is not.
+2. Ask whether colleagues can connect to the same system. If several users are affected,
+   the server is probably down: escalate to Basis at once.
+3. Check the system entry in SAP Logon: application server, instance number and system
+   ID must match the values published by Basis. Entries can change after a system refresh.
+4. Test that the dispatcher port is reachable. SAP GUI connects to port 32 followed by
+   the instance number (3200 for instance 00).
+5. If only this user is affected and the entry is correct, reinstall or update SAP GUI
+   from the software centre.
+
+## Warnings
+Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",,
+04abf6ad-860f-4eb8-96ac-38f00bc6b5f7,T-00998,1,Open the IDoc in WE02 and read the status record for status 51.,"[1] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.",,
+ae8bc591-8c7a-4460-9d75-e9ef4c79aaca,T-01622,2,Verify if there are large uploads or backups running at the same time.,"[1] Video calls freeze or lag
+Video calls freeze or lag (Call quality and file shares)
+## Symptom
+Video and audio calls freeze, drop or lag, while web browsing seems normal.
+
+## Cause
+Calls need low latency more than bandwidth. Weak Wi-Fi, large uploads on the same
+connection, or VPN routing for a call that does not need it are the usual causes. If a
+whole office is affected, the internet link is saturated.
+
+## Resolution steps
+1. Ask whether it happens on a cable too. If only on Wi-Fi, treat it as a Wi-Fi signal
+   problem (move closer to an access point, or use a cable).
+2. Check for large uploads or backups running at the same time.
+3. If the user is on VPN for a call with outside participants, they can disconnect the VPN
+   for the call.
+4. Ask the user to run the call app's network test during a bad call and send the result.
+5. If many users at one office are affected, escalate as a link-capacity problem.
+
+## Warnings
+Do not ask users to stop company backups to free bandwidth.",,
+7d779d8b-76a9-45b7-8a54-d0fa8a032e38,T-01700,3,"If other users are also experiencing issues, inform your IT support team immediately.","[1] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Symptom
+SAP GUI hangs on ""Connecting"" after the user selects a system in SAP Logon and then
+fails with a connection or timeout error before the logon screen appears.
+
+## Cause
+The user's machine cannot reach the application server: no VPN when working remotely, a
+wrong or outdated system entry in SAP Logon, or the server itself is down.
+---
+[2] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Resolution steps
+1. If the user works remotely, confirm the VPN is connected; see the Networking VPN
+   articles if it is not.
+2. Ask whether colleagues can connect to the same system. If several users are affected,
+   the server is probably down: escalate to Basis at once.
+3. Check the system entry in SAP Logon: application server, instance number and system
+   ID must match the values published by Basis. Entries can change after a system refresh.
+4. Test that the dispatcher port is reachable. SAP GUI connects to port 32 followed by
+   the instance number (3200 for instance 00).
+5. If only this user is affected and the entry is correct, reinstall or update SAP GUI
+   from the software centre.
+
+## Warnings
+Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",,
+8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,7,"If a query is timing out, analyze the query and consider setting a higher `statement_timeout` if it's a legitimate long-running job.","[3] Statement cancelled due to statement or lock timeout
+Statement cancelled due to statement or lock timeout (Locks and deadlocks)
+## Symptom
+A query fails with ""canceling statement due to statement timeout"" or ""canceling statement
+due to lock timeout"".
+
+## Cause
+The database cancels statements that run longer than `statement_timeout`, or wait for a
+lock longer than `lock_timeout`. These limits protect the database from runaway queries
+and long lock queues.
+
+## Resolution steps
+1. Note which message appeared: statement timeout means the query ran too long; lock
+   timeout means it waited too long for another session.
+2. For a statement timeout, get the query and analyse it (see the slow query article).
+3. For a lock timeout, find what held the lock at that time, usually a long transaction
+   or a migration.
+4. If a specific report legitimately needs longer, the owning team can set a higher
+   timeout for that session only.
+
+## Warnings
+Do not raise the timeout for the whole database to make one query pass.",,
+d24eefb3-b9d8-4f37-9814-9f0e702d1ce6,T-01127,1,Identify the idle session holding the lock using `pg_blocking_pids()` and `pg_stat_activity`.,"[1] Queries blocked by an idle session holding a lock
+Queries blocked by an idle session holding a lock (Locks and deadlocks)
+## Symptom
+Queries on a table hang waiting for a lock, and the session holding the lock is idle and
+doing nothing.
+
+## Cause
+A session opened a transaction, took a lock, and then stopped without committing or
+rolling back. It shows as ""idle in transaction"" and keeps its locks until it ends.
+
+## Resolution steps
+1. Find the blocking session with `pg_blocking_pids()` and `pg_stat_activity`.
+2. Check its state and how long it has been idle in transaction.
+3. Confirm with the owning application that the session is stuck, not a long legitimate job.
+4. End it with `pg_terminate_backend(pid)`; its locks are released and waiting queries continue.
+5. Ask the application team to close transactions on error paths.
+
+## Warnings
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+9d05551b-e7d3-4d00-8eae-5c66906ac6ba,T-01183,1,"Collect the source IP or subnet, destination IP or host, port numbers, and protocol (TCP or UDP) for the new application.","[1] Firewall rule needed for an application
+Firewall rule needed for an application (Firewall and proxy)
+## Symptom
+A new application or integration cannot connect to a server or external service; the
+connection times out because the firewall blocks it.
+
+## Cause
+The firewall denies traffic that no rule allows. A new connection needs a rule scoped to
+the exact source, destination, port and protocol.
+
+## Resolution steps
+1. Collect source IP or subnet, destination IP or host, port numbers, protocol (TCP or
+   UDP) and the business reason.
+2. Raise a firewall change request through the change process; rules are never added ad
+   hoc, even for urgent requests.
+3. When the rule is in place, test with the requester, for example with
+   `Test-NetConnection <host> -Port <port>` or the application's own connection test.
+4. For temporary rules (a migration), record an end date so the rule is removed.
+
+## Warnings
+Never request or approve an any-to-any rule, even temporarily.",,
+658d326d-cdc3-4a75-9b55-727517e8ccc3,T-00844,1,Check if other computers in the same area are also affected.,"[1] Office Wi-Fi keeps dropping
+Office Wi-Fi keeps dropping (Wireless access)
+## Symptom
+A laptop repeatedly disconnects from the office Wi-Fi, especially after being idle or
+when the user moves between meeting rooms.
+
+## Cause
+Most often the adapter's power saving turns the radio down when idle, or the laptop holds
+on to a distant access point. When many users in one area drop at once, an access point
+or the wireless controller is at fault.
+
+## Resolution steps
+1. Ask whether colleagues in the same area are affected. If yes, record the location and
+   escalate it as an access point problem.
+2. Note the network name and the access point the laptop was last connected to, from the
+   connection details.
+3. Forget the network and reconnect to clear a stale saved profile.
+4. Set the adapter's power management so Windows cannot turn it off to save power, and
+   update the wireless driver from the software centre.
+
+## Warnings
+Do not tell users to connect to the guest network instead; it has no access to internal
+systems.",,
+81ee9cb3-91b9-4f0a-bd17-4451f7e893ae,T-01436,2,try them if so.,"[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.",,
+7d779d8b-76a9-45b7-8a54-d0fa8a032e38,T-01700,1,"If not, connect to the VPN.","[1] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Symptom
+SAP GUI hangs on ""Connecting"" after the user selects a system in SAP Logon and then
+fails with a connection or timeout error before the logon screen appears.
+
+## Cause
+The user's machine cannot reach the application server: no VPN when working remotely, a
+wrong or outdated system entry in SAP Logon, or the server itself is down.",,
+04abf6ad-860f-4eb8-96ac-38f00bc6b5f7,T-00998,3,"If a customer or vendor detail is missing, ask the master-data team to create the missing record.","[1] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.",,
+754151a9-c3e3-441d-8fed-3c4f72702146,T-01162,3,Retry the goods receipt in MIGO after the block has been removed.,"[1] Goods receipt fails because the PO item is blocked
+Goods receipt fails because the PO item is blocked (Purchasing and goods receipt)
+## Symptom
+Posting a goods receipt in MIGO against a purchase order fails with a message that the
+purchase order item is blocked, so the goods cannot be received.
+
+## Cause
+A buyer has blocked the PO item in ME22N (for example during a dispute with the
+vendor), or the item has a deletion indicator. Blocked items cannot be received until a
+buyer releases them.
+
+## Resolution steps
+1. Display the PO in ME23N and open the item. Check whether the item shows a block or a
+   deletion indicator in the item overview.
+2. Find the buyer from the PO header (purchasing group) and ask whether the block is
+   intentional.
+3. If the block should be removed, the buyer removes it in ME22N and saves the PO.
+4. Retry the goods receipt in MIGO.
+5. If the item has a deletion indicator and the goods have physically arrived, the buyer
+   must create a new PO item; a deleted item cannot be received.",,
+a6396989-f000-4561-acfa-bd3d61d7268b,T-01325,1,Check the posting date you entered.,"[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+0cc077b3-e160-4b32-a72d-2d5084f6b092,T-01308,1,Check the database logs for the exact transaction that is failing.,"[3] Transaction fails with deadlock detected
+Transaction fails with deadlock detected (Locks and deadlocks)
+## Symptom
+A transaction fails with ""deadlock detected"" and is rolled back, sometimes only under load.
+
+## Cause
+Two transactions lock the same rows in opposite order, each waiting for the other.
+PostgreSQL detects this and cancels one of them. The data is safe; the cancelled
+transaction must be retried.
+
+## Resolution steps
+1. Get the deadlock details from the database log: it shows both statements and the locks
+   involved.
+2. Look for code paths that update the same tables in a different order.
+3. Ask the owning team to lock rows in a consistent order (for example by primary key) and
+   to retry transactions that fail with a deadlock.
+4. If a batch job collides with user traffic, move it to a quieter time or split it into
+   smaller transactions.
+
+## Warnings
+A deadlock is not data corruption; do not restore backups because of one.",,
+8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,6,"If the issue persists, note if any queries are failing due to timeouts or lock waits.","[3] Statement cancelled due to statement or lock timeout
+Statement cancelled due to statement or lock timeout (Locks and deadlocks)
+## Symptom
+A query fails with ""canceling statement due to statement timeout"" or ""canceling statement
+due to lock timeout"".
+
+## Cause
+The database cancels statements that run longer than `statement_timeout`, or wait for a
+lock longer than `lock_timeout`. These limits protect the database from runaway queries
+and long lock queues.
+
+## Resolution steps
+1. Note which message appeared: statement timeout means the query ran too long; lock
+   timeout means it waited too long for another session.
+2. For a statement timeout, get the query and analyse it (see the slow query article).
+3. For a lock timeout, find what held the lock at that time, usually a long transaction
+   or a migration.
+4. If a specific report legitimately needs longer, the owning team can set a higher
+   timeout for that session only.
+
+## Warnings
+Do not raise the timeout for the whole database to make one query pass.",,
+8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,8,"If a query is waiting for a lock, identify the transaction holding the lock and consider rerunning the migration with a shorter `lock_timeout`.","[5] Schema change hangs and blocks the whole table
+Schema change hangs and blocks the whole table (Locks and deadlocks)
+## Symptom
+An `ALTER TABLE` during a deployment hangs, and soon all queries on that table are blocked
+too, causing an application outage.
+
+## Cause
+`ALTER TABLE` needs an exclusive lock. It waits behind any running transaction on the
+table, and every new query then queues behind the waiting `ALTER TABLE`.
+
+## Resolution steps
+1. Cancel the waiting `ALTER TABLE` session to release the queue at once.
+2. Find the long-running transaction it was waiting for.
+3. Rerun the migration in a quiet window with a short `lock_timeout` (for example a few
+   seconds), so it gives up instead of blocking everyone.
+4. Retry the migration if it times out, rather than letting it wait.
+
+## Warnings
+Never run schema changes on busy tables without a lock timeout.",,
+9d05551b-e7d3-4d00-8eae-5c66906ac6ba,T-01183,2,"Raise a firewall change request through the change process, as adding a rule is not done ad hoc.","[1] Firewall rule needed for an application
+Firewall rule needed for an application (Firewall and proxy)
+## Symptom
+A new application or integration cannot connect to a server or external service; the
+connection times out because the firewall blocks it.
+
+## Cause
+The firewall denies traffic that no rule allows. A new connection needs a rule scoped to
+the exact source, destination, port and protocol.
+
+## Resolution steps
+1. Collect source IP or subnet, destination IP or host, port numbers, protocol (TCP or
+   UDP) and the business reason.
+2. Raise a firewall change request through the change process; rules are never added ad
+   hoc, even for urgent requests.
+3. When the rule is in place, test with the requester, for example with
+   `Test-NetConnection <host> -Port <port>` or the application's own connection test.
+4. For temporary rules (a migration), record an end date so the rule is removed.
+
+## Warnings
+Never request or approve an any-to-any rule, even temporarily.",,
+248a1cf2-d3cd-47b2-9232-577451fdb5cc,T-01044,4,"If the job is 'Active' for too long, open the job log in SM37 and note the last step.","[2] Background job not starting or stuck
+Background job not starting or stuck (Batch jobs and IDocs)
+## Resolution steps
+1. Open the job in SM37 and note its status and planned start.
+2. If ""Released"", check the start condition: a future start time or an event that has not
+   been raised yet is normal.
+3. If ""Ready"", check in SM50 whether all background work processes are busy. The job
+   starts when one frees up. Report it to Basis if this persists.
+4. If ""Active"" for too long, open the job log in SM37 and note the last step; check SM12
+   for locks held by the job's user.
+5. A job with no log progress for 30 minutes or more is cancelled by Basis, not the user.
+
+## Warnings
+Do not cancel and reschedule a running job without checking what it was posting; a
+half-finished posting run can leave inconsistent documents.",,
+c2ce45e0-fb33-45be-8e24-bcc79fa2ea95,T-00659,2,Point the tool at the company root certificate if available.,"[1] Certificate errors in a desktop tool on the office network
+Certificate errors in a desktop tool on the office network (Firewall and proxy)
+## Symptom
+A developer tool, command-line client or desktop app fails with an SSL or certificate
+error (""unable to get local issuer certificate"", ""self-signed certificate in chain"") on
+the office network, but works at home.
+
+## Cause
+The web proxy inspects encrypted traffic and re-signs it with the company's root
+certificate. Browsers trust that certificate, but some tools use their own certificate
+store and do not.
+
+## Resolution steps
+1. Confirm the error appears only on the office network or VPN.
+2. Point the tool at the company root certificate, which is published on the intranet
+   (most tools have a setting or environment variable for a CA bundle).
+3. If the tool cannot be configured, raise a request for an inspection bypass for that
+   domain, with the business reason.
+
+## Warnings
+Never turn off certificate verification in the tool; it removes protection against
+real interception.",,
+e0f5c40c-195d-4aaf-b777-ef9521abf802,T-01121,2,"Identify the number range object (e.g., FBN1 for accounting documents, MMNR for materials, or SNRO for the generic view).","[1] Number range exhausted
+Number range exhausted (Materials and number ranges)
+## Symptom
+Creating a document (material, purchase order, sales order or accounting document) fails
+because no number can be assigned: the message says the number range interval is full or
+was not found.
+
+## Cause
+Every document type draws its numbers from a number range interval. When the interval
+reaches its upper limit, or the interval for a new fiscal year was never created, no new
+documents of that type can be saved.
+
+## Resolution steps
+1. Note the exact message, the document type and the company code or plant.
+2. Identify the number range object (for example FBN1 for accounting documents, MMNR for
+   materials, or SNRO for the generic view).
+3. Escalate to the SAP configuration team with the object, the interval and the fiscal
+   year. Extending or adding an interval is a configuration change.
+4. If the error appeared at the start of a fiscal year, mention it: the new year's
+   interval may simply not have been created.",,
+8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,5,Confirm with the application team that the idle session is stuck and terminate it if necessary.,"[2] Queries blocked by an idle session holding a lock
+Queries blocked by an idle session holding a lock (Locks and deadlocks)
+## Symptom
+Queries on a table hang waiting for a lock, and the session holding the lock is idle and
+doing nothing.
+
+## Cause
+A session opened a transaction, took a lock, and then stopped without committing or
+rolling back. It shows as ""idle in transaction"" and keeps its locks until it ends.
+
+## Resolution steps
+1. Find the blocking session with `pg_blocking_pids()` and `pg_stat_activity`.
+2. Check its state and how long it has been idle in transaction.
+3. Confirm with the owning application that the session is stuck, not a long legitimate job.
+4. End it with `pg_terminate_backend(pid)`; its locks are released and waiting queries continue.
+5. Ask the application team to close transactions on error paths.
+
+## Warnings
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+744e4c20-a392-4e5a-a0c3-7fbf1a2aca63,T-01437,3,`ipconfig /renew` to ensure your device is getting a proper IP address.,"[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.",,
+0cc077b3-e160-4b32-a72d-2d5084f6b092,T-01308,2,Identify if the transaction is part of a read-only or read-write operation.,"[1] Request for access to a database
+Request for access to a database (Access requests and schema changes)
+## Symptom
+A developer or a service asks for read or write access to a database, schema or table.
+
+## Cause
+Access is granted per role. A new project or service often needs access that nobody has
+requested yet.
+
+## Resolution steps
+1. Confirm the exact scope (table, schema or database) and whether read-only or read-write.
+2. Get the manager's approval and the business reason.
+3. Grant the narrowest existing role that fits, for example the schema's read-only role.
+   For a service, create a dedicated role for that service.
+4. Record who, what, why and when in the ticket, and an end date for temporary access.
+
+## Warnings
+Never add a person to the database owner or superuser role to grant access.
+---
+[2] Read-only access for reporting tools
+Read-only access for reporting tools (Access requests and schema changes)
+## Symptom
+An analyst asks to connect a reporting or BI tool directly to a production database.
+
+## Cause
+Heavy reporting queries on the primary database slow down the applications that use it.
+Reporting is served from a read replica with a read-only role.
+
+## Resolution steps
+1. Confirm which data the analyst needs and the manager's approval.
+2. Grant the reporting read-only role on the read replica, not on the primary.
+3. Give the analyst the replica's connection details and explain that data may lag a few
+   seconds.
+4. For personal data, check with the data protection officer before granting access.
+
+## Warnings
+Reporting tools never connect to the primary database.",,
+7d779d8b-76a9-45b7-8a54-d0fa8a032e38,T-01700,4,"Ensure the application server, instance number, and system ID are correct.","[1] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Symptom
+SAP GUI hangs on ""Connecting"" after the user selects a system in SAP Logon and then
+fails with a connection or timeout error before the logon screen appears.
+
+## Cause
+The user's machine cannot reach the application server: no VPN when working remotely, a
+wrong or outdated system entry in SAP Logon, or the server itself is down.
+---
+[2] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Resolution steps
+1. If the user works remotely, confirm the VPN is connected; see the Networking VPN
+   articles if it is not.
+2. Ask whether colleagues can connect to the same system. If several users are affected,
+   the server is probably down: escalate to Basis at once.
+3. Check the system entry in SAP Logon: application server, instance number and system
+   ID must match the values published by Basis. Entries can change after a system refresh.
+4. Test that the dispatcher port is reachable. SAP GUI connects to port 32 followed by
+   the instance number (3200 for instance 00).
+5. If only this user is affected and the entry is correct, reinstall or update SAP GUI
+   from the software centre.
+
+## Warnings
+Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",,
+754151a9-c3e3-441d-8fed-3c4f72702146,T-01162,2,"If a block is found, contact the buyer to request the block be removed in ME22N.","[1] Goods receipt fails because the PO item is blocked
+Goods receipt fails because the PO item is blocked (Purchasing and goods receipt)
+## Symptom
+Posting a goods receipt in MIGO against a purchase order fails with a message that the
+purchase order item is blocked, so the goods cannot be received.
+
+## Cause
+A buyer has blocked the PO item in ME22N (for example during a dispute with the
+vendor), or the item has a deletion indicator. Blocked items cannot be received until a
+buyer releases them.
+
+## Resolution steps
+1. Display the PO in ME23N and open the item. Check whether the item shows a block or a
+   deletion indicator in the item overview.
+2. Find the buyer from the PO header (purchasing group) and ask whether the block is
+   intentional.
+3. If the block should be removed, the buyer removes it in ME22N and saves the PO.
+4. Retry the goods receipt in MIGO.
+5. If the item has a deletion indicator and the goods have physically arrived, the buyer
+   must create a new PO item; a deleted item cannot be received.
+---
+[4] Goods receipt fails because the PO item is blocked
+Goods receipt fails because the PO item is blocked (Purchasing and goods receipt)
+## Warnings
+The helpdesk does not change purchase orders. Only the responsible buyer removes a block.",,
+248a1cf2-d3cd-47b2-9232-577451fdb5cc,T-01044,1,Check the job status in SM37 and note if it is 'Released' or 'Ready'.,"[1] Background job not starting or stuck
+Background job not starting or stuck (Batch jobs and IDocs)
+## Symptom
+A background job in SM37 stays ""Released"" or ""Ready"" and never becomes ""Active"", or it
+stays ""Active"" for much longer than usual.
+
+## Cause
+""Released"" means the job is waiting for its start condition (date, time or event).
+""Ready"" means the start condition is met but no background work process is free. A long
+""Active"" job is usually waiting on a database lock or processing far more data than usual.",,
+e9c3d757-6ad0-4ccd-86b8-2ef948034271,T-00442,4,Run the on-demand backup again to confirm it completes successfully.,"[1] Nightly database backup failed
+Nightly database backup failed (Disk space and backups)
+## Symptom
+The backup monitoring reports that last night's backup of a database failed or did not run.
+
+## Cause
+Common causes are not enough space in the backup target, an expired credential for the
+backup storage, a backup that overlapped a heavy batch job and timed out, or the
+database being unreachable at the time.
+
+## Resolution steps
+1. Read the backup job's log for the exact error.
+2. Fix the cause: free space or extend the target, renew the storage credential, or move
+   the schedule away from the batch job.
+3. Run an on-demand backup at once, so there is a recent good backup.
+4. Confirm the new backup completed and its size is similar to previous ones.
+
+## Warnings
+A failed backup is not ""fixed"" until a new backup has completed successfully.",,

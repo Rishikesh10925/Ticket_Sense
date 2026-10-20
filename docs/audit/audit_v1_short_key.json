@@ -1,0 +1,1236 @@
+{
+ "seed": 2026,
+ "agree_per_member": 15,
+ "members": {
+  "R": [
+   {
+    "draft_id": "5ec35e3f-4055-48a2-bbf0-d41b19d06e8e",
+    "step": 4,
+    "claim": "Inform the visitor that guest Wi-Fi is deliberately bandwidth-limited and isolated.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.9934,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "b3671980-eb71-416a-ba32-9c3d723bdb78",
+    "step": 1,
+    "claim": "Check the `pg_stat_activity` for any long-running queries.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.9977,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "683f3d89-9b6f-481c-9435-8e536f616b00",
+    "step": 3,
+    "claim": "If the issue persists, contact the materials-management team to escalate the missing period change.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.3085,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "35a7db69-5efb-4579-b200-dd6be5311fc2",
+    "step": 3,
+    "claim": "Save the changes and log off then log on again.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.2838,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "24101d25-6ca3-48a7-9bee-c747ccd5333c",
+    "step": 2,
+    "claim": "Verify that other 5 GHz networks are visible.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.9888,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "04341ba0-c0c7-49b5-9ee8-65b069448a76",
+    "step": 4,
+    "claim": "Ensure that your network adapter's power management settings are not set to turn off the radio when idle.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0915,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "d852565f-8989-4ff3-b91e-e729d6d3d16b",
+    "step": 3,
+    "claim": "Save the changes and log off then log on again.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.2838,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "b16f5dda-cfff-42bc-92b5-579b1b15cda7",
+    "step": 3,
+    "claim": "If the slot is confirmed to be abandoned, remove it using `DROP Replication Slot <slot_name>;`.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0067,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "acab063b-1021-43a9-a79f-ad78cd33ac04",
+    "step": 3,
+    "claim": "Do not restart any network equipment yourself.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.8993,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "ac653582-67a9-464c-9143-4c43210f8c68",
+    "step": 2,
+    "claim": "Run `ipconfig /all` and check that the internal DNS servers are listed.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.3784,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "5ec35e3f-4055-48a2-bbf0-d41b19d06e8e",
+    "step": 3,
+    "claim": "Record the sponsor and visit dates in the ticket for audit purposes.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.48,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "da1fbb42-a4b8-4694-8dd6-4875b510d1c4",
+    "step": 4,
+    "claim": "If the issue persists, contact Finance for approval to post in an older period.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.8721,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "39628814-01b5-4ed9-ab9b-f9d920445ccd",
+    "step": 2,
+    "claim": "Ask the identity team to reset your multi-factor registration in the identity provider.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.9885,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "ee42b65c-6ff7-4b6c-8320-7a3be4d83ee7",
+    "step": 1,
+    "claim": "If they are, the issue might be specific to the IP desk phone.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0115,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "66a56215-452e-499e-ba47-21432e26189e",
+    "step": 4,
+    "claim": "If IP addresses also fail, check for address range overlaps with your home network and report to network engineering.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.9842,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "368217ce-3251-4435-b333-b2d4515277ae",
+    "step": 1,
+    "claim": "Check if other users in your department are experiencing the same issue.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0033,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "655a4e10-d4ef-4432-9b8c-4766147f7d40",
+    "step": 4,
+    "claim": "If the quota issue is recurring, consider raising a capacity-planning review.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.8594,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "2a032319-bbb4-49c2-abbe-9607254fac7c",
+    "step": 3,
+    "claim": "If the block is not intentional, ask the buyer to release the account in ME22N.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0291,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "88fcb816-7dc2-4a44-87f9-8897836b7e3a",
+    "step": 3,
+    "claim": "If a colleague is editing, ask them to save or exit the transaction.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0069,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "88fcb816-7dc2-4a44-87f9-8897836b7e3a",
+    "step": 1,
+    "claim": "If so, contact the SAP configuration team to create a new number range interval for the fiscal year.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0039,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "fb36de82-5ea8-40c5-94da-3eb40f37e977",
+    "step": 1,
+    "claim": "Check the date of your marriage or the date your spouse became eligible.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0259,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "acab063b-1021-43a9-a79f-ad78cd33ac04",
+    "step": 1,
+    "claim": "Check if other users on your floor are experiencing similar issues.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0172,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "04341ba0-c0c7-49b5-9ee8-65b069448a76",
+    "step": 3,
+    "claim": "If the issue is isolated to your computer, try forgetting the network and reconnecting.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0026,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "66a56215-452e-499e-ba47-21432e26189e",
+    "step": 1,
+    "claim": "Check if the issue is with internal resources by trying to access them by IP address.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.9977,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "ee42b65c-6ff7-4b6c-8320-7a3be4d83ee7",
+    "step": 1,
+    "claim": "Check if other devices on the same wall port are working.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.0478,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "66a56215-452e-499e-ba47-21432e26189e",
+    "step": 5,
+    "claim": "If colleagues in the same area are affected, note the location and escalate it as an access point problem.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0033,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "acab063b-1021-43a9-a79f-ad78cd33ac04",
+    "step": 6,
+    "claim": "Run a network test during a video call to identify any issues.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0058,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "368217ce-3251-4435-b333-b2d4515277ae",
+    "step": 8,
+    "claim": "Update your wireless driver from the software centre.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.99,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "2a032319-bbb4-49c2-abbe-9607254fac7c",
+    "step": 1,
+    "claim": "Check the GL account in FS00 to confirm it is marked for retirement.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.0213,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "655a4e10-d4ef-4432-9b8c-4766147f7d40",
+    "step": 2,
+    "claim": "Review the application's retention policy and consider archiving or deleting old data.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.9833,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "acab063b-1021-43a9-a79f-ad78cd33ac04",
+    "step": 5,
+    "claim": "If you are using a laptop, check if the Wi-Fi adapter's power management is set to save power and adjust it if necessary.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0062,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "88fcb816-7dc2-4a44-87f9-8897836b7e3a",
+    "step": 1,
+    "claim": "Check if the issue started at the beginning of a fiscal year.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.9982,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "ac653582-67a9-464c-9143-4c43210f8c68",
+    "step": 1,
+    "claim": "If it works but the name does not, it is a DNS problem.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.9729,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "eb464403-b717-4db2-80a5-106f51fd8438",
+    "step": 5,
+    "claim": "For your first month, ensure you are in the office as required by your role category.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0024,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "88fcb816-7dc2-4a44-87f9-8897836b7e3a",
+    "step": 4,
+    "claim": "If the material is locked by another user and they are unreachable, contact a Basis administrator to check for and delete the lock entry.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0022,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "dc32686e-8dcc-4cde-9961-a548f8a61969",
+    "step": 2,
+    "claim": "Group the sessions by application and state to identify any 'idle in transaction' sessions.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 0.9453,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "39628814-01b5-4ed9-ab9b-f9d920445ccd",
+    "step": 1,
+    "claim": "Verify your identity through the standard process (manager confirmation plus employee ID).",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.1597,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "66a56215-452e-499e-ba47-21432e26189e",
+    "step": 8,
+    "claim": "Update the wireless driver from the software centre.",
+    "stratum": "agree",
+    "p_include": 0.1034,
+    "nli_support": 1.0,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "b16f5dda-cfff-42bc-92b5-579b1b15cda7",
+    "step": 4,
+    "claim": "Verify the removal by checking the `pg_replication_slots` again.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0003,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "88fcb816-7dc2-4a44-87f9-8897836b7e3a",
+    "step": 3,
+    "claim": "Ensure no other user is currently editing the material.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.01,
+    "llm_supported": true
+   }
+  ],
+  "A": [
+   {
+    "draft_id": "c1b352c3-e9ec-40ea-8acf-2e2e2136c256",
+    "step": 2,
+    "claim": "Run `EXPLAIN (ANALYZE, BUFFERS)` on the slow query to identify if a sequential scan is causing the issue.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.002,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "ec037008-9cf9-422b-8a10-9f21c7bf8cd3",
+    "step": 1,
+    "claim": "Check the approval status of the purchase order in ME23N.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.3458,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "f56a8d16-1539-46e4-ac7a-e21819b803b0",
+    "step": 2,
+    "claim": "If an inactive slot is found, contact the DBA to confirm and remove it.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.986,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "cc69aaaa-c9f2-4f1a-99bb-bd8390637b87",
+    "step": 1,
+    "claim": "`ipconfig /renew` to request a new IP address.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.9243,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "3e4bbfd3-8b5d-4a27-ad25-c9451acdf768",
+    "step": 1,
+    "claim": "Check the posting date the user entered.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 1.0,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "d061d15e-eae9-4b6c-9def-3e0cb3b38ec4",
+    "step": 3,
+    "claim": "Save the changes and log off then log on again.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.2838,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "a710cebd-c3c6-41f4-aaa8-cd863969d8dc",
+    "step": 1,
+    "claim": "Ensure it is within the current or previous month.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 0.9585,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "b54b5e39-1d98-4180-9069-6bf8f49465be",
+    "step": 1,
+    "claim": "Check if the report figure is related to a slow query or a recent data growth.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.9746,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "7dbc6134-ae70-48f7-9a2c-4c31d427350d",
+    "step": 2,
+    "claim": "Ensure the assignment is correct.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.9913,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "3334735b-059a-41b6-ace4-963db35265c5",
+    "step": 3,
+    "claim": "Check if there are any long-running transactions that might be causing the issue: `SELECT * FROM pg_stat_activity WHERE state = 'idle in transaction';`.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0013,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "c1b352c3-e9ec-40ea-8acf-2e2e2136c256",
+    "step": 1,
+    "claim": "Check the `pg_stat_statements` view for the slow query that caused the 'EXC001' warning.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0013,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "e6445a37-ccdd-46e1-89e2-d3d3fd518b1a",
+    "step": 1,
+    "claim": "Check the application logs to confirm if the issue started after the last database failover.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 0.0002,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "9444b6f1-3002-456e-92bc-1d9a5bb15955",
+    "step": 3,
+    "claim": "If the provider is out-of-network, the employee should check the carrier's portal using the claim number.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0019,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "c48ec8cd-639a-4d99-ad1b-dc863e768edc",
+    "step": 3,
+    "claim": "If you miss the cut-off, your hours will be paid in the following cycle.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0164,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "c4281cad-bdae-42fb-98a6-afa0b7d1fefe",
+    "step": 2,
+    "claim": "If the claim is still pending, contact the insurance carrier's employer support line to escalate the issue, quoting the claim number.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.9951,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "333b4644-2b97-4240-91b6-1155b7828148",
+    "step": 3,
+    "claim": "Escalate to the SAP configuration team with the number range object, interval, and fiscal year.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.2995,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "46c8c5d8-7201-459d-a46e-f87b29db5820",
+    "step": 1,
+    "claim": "Check the version table (alembic_version) to see what the tool recorded.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 0.9939,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "5b9122d9-c4eb-409f-acb3-fa4f8b7018a4",
+    "step": 2,
+    "claim": "The platform team will create an alias DNS record pointing the domain at the load balancer.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 0.9915,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "a710cebd-c3c6-41f4-aaa8-cd863969d8dc",
+    "step": 3,
+    "claim": "If the issue persists, escalate the problem to the materials-management team.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 0.9819,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "d182e1ce-b2f2-478f-a697-dbed38c03b6c",
+    "step": 2,
+    "claim": "`ipconfig /renew` to ensure a proper DHCP lease.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0168,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "4d0047d5-cfe1-4406-b193-1845519824dc",
+    "step": 3,
+    "claim": "Run the call app's network test during a bad call and send the results.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 0.9968,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "d182e1ce-b2f2-478f-a697-dbed38c03b6c",
+    "step": 4,
+    "claim": "If the issue persists, contact network engineering to check the DHCP server and address pool.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.9747,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "3334735b-059a-41b6-ace4-963db35265c5",
+    "step": 2,
+    "claim": "Cancel the `ALTER TABLE` session immediately to release the queue: `SELECT pg_cancel_backend(<session_id>);`.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0099,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "e6445a37-ccdd-46e1-89e2-d3d3fd518b1a",
+    "step": 2,
+    "claim": "If so, switch to a read-write transaction.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0007,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "5b9122d9-c4eb-409f-acb3-fa4f8b7018a4",
+    "step": 3,
+    "claim": "Request a TLS certificate for the domain from the platform team.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0065,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "dc9e56c7-1c88-42c4-827e-ca2267e3169f",
+    "step": 1,
+    "claim": "Confirm the request with your sponsor.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.2123,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "46c8c5d8-7201-459d-a46e-f87b29db5820",
+    "step": 8,
+    "claim": "Retry the migration if it times out, rather than letting it wait.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 1.0,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "c1b352c3-e9ec-40ea-8acf-2e2e2136c256",
+    "step": 4,
+    "claim": "If the issue persists, send the query plan to the database team for further tuning.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0011,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "3334735b-059a-41b6-ace4-963db35265c5",
+    "step": 1,
+    "claim": "Identify the session that is running the `ALTER TABLE` command with `SELECT * FROM pg_stat_activity WHERE query LIKE '%ALTER TABLE%';`.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0715,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "f56a8d16-1539-46e4-ac7a-e21819b803b0",
+    "step": 3,
+    "claim": "Verify that WAL archiving is working correctly by checking `pg_stat_archiver`.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.3894,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "fec7b48e-8200-4602-a6f4-563a3057a73e",
+    "step": 3,
+    "claim": "If an inactive slot is found, contact the DBA to confirm and remove it.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.986,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "e918b20c-063c-4f37-af60-9c9dcf683797",
+    "step": 4,
+    "claim": "Run `ipconfig /flushdns` and try accessing the internal sites again.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0793,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "46c8c5d8-7201-459d-a46e-f87b29db5820",
+    "step": 3,
+    "claim": "Finish or undo the partial change by hand so the schema matches one known version.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 1.0,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "c4281cad-bdae-42fb-98a6-afa0b7d1fefe",
+    "step": 3,
+    "claim": "Check the carrier's portal for an estimated timeline.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0111,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "b54b5e39-1d98-4180-9069-6bf8f49465be",
+    "step": 3,
+    "claim": "Look for any sequential scans on large tables that might indicate an inefficient query plan.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.4955,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "7dbc6134-ae70-48f7-9a2c-4c31d427350d",
+    "step": 3,
+    "claim": "If the console is empty or denies access, check the mapping between groups and cloud roles.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 0.9964,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "46c8c5d8-7201-459d-a46e-f87b29db5820",
+    "step": 2,
+    "claim": "Compare the actual schema with what the migration should produce.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 1.0,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "9444b6f1-3002-456e-92bc-1d9a5bb15955",
+    "step": 2,
+    "claim": "If the provider is in-network, ask the provider to check the claim status.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.8627,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "3334735b-059a-41b6-ace4-963db35265c5",
+    "step": 6,
+    "claim": "Inform the application team to ensure their application handles errors and transactions properly to prevent such issues in the future.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 0.9849,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "c4281cad-bdae-42fb-98a6-afa0b7d1fefe",
+    "step": 1,
+    "claim": "Check the status of your claim on the insurance carrier's portal using the claim number.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0745,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "9444b6f1-3002-456e-92bc-1d9a5bb15955",
+    "step": 4,
+    "claim": "If the claim is beyond the carrier's stated turnaround time, HR can escalate it through the carrier's employer support line, quoting the claim number only.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 0.9967,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "b54b5e39-1d98-4180-9069-6bf8f49465be",
+    "step": 2,
+    "claim": "If it's a slow query, run `EXPLAIN (ANALYZE, BUFFERS)` on the query to understand its execution plan.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.4438,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "d061d15e-eae9-4b6c-9def-3e0cb3b38ec4",
+    "step": 1,
+    "claim": "Open transaction SU3 (own user data) and go to the Defaults tab.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 1.0,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "c48ec8cd-639a-4d99-ad1b-dc863e768edc",
+    "step": 4,
+    "claim": "If you have any questions about the consequences, contact the HR team.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0006,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "9444b6f1-3002-456e-92bc-1d9a5bb15955",
+    "step": 1,
+    "claim": "If yes, the provider should have auto-submitted the claim.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0112,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "d182e1ce-b2f2-478f-a697-dbed38c03b6c",
+    "step": 3,
+    "claim": "Try connecting the device to a different port on the switch.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0376,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "ff87dc35-ae5c-4ef0-be82-57fb591f55a4",
+    "step": 1,
+    "claim": "Check the HR portal under Payroll Payslips.",
+    "stratum": "agree",
+    "p_include": 0.124,
+    "nli_support": 0.995,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "c48ec8cd-639a-4d99-ad1b-dc863e768edc",
+    "step": 1,
+    "claim": "Submit your timesheet in the HR portal as soon as possible, even if late.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.1112,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "e6445a37-ccdd-46e1-89e2-d3d3fd518b1a",
+    "step": 4,
+    "claim": "Restart the application to release any leaked database connections and check if the issue persists.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0028,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "e6445a37-ccdd-46e1-89e2-d3d3fd518b1a",
+    "step": 3,
+    "claim": "If the application is using a secrets manager for database credentials, ensure it is fetching the latest password.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.7185,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "c4281cad-bdae-42fb-98a6-afa0b7d1fefe",
+    "step": 4,
+    "claim": "No specific form is required for this process",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0668,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "c1b352c3-e9ec-40ea-8acf-2e2e2136c256",
+    "step": 3,
+    "claim": "If a sequential scan is identified, refresh statistics on the `sales_data` table with `ANALYZE`.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0635,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "4d0047d5-cfe1-4406-b193-1845519824dc",
+    "step": 2,
+    "claim": "Verify if there are large uploads or backups running at the same time.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.4962,
+    "llm_supported": true
+   }
+  ],
+  "S": [
+   {
+    "draft_id": "e5cf9179-c44c-4400-9892-587994d75d3a",
+    "step": 4,
+    "claim": "If the error appeared at the start of a fiscal year, mention it: the new year's interval may simply not have been created.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 1.0,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "744e4c20-a392-4e5a-a0c3-7fbf1a2aca63",
+    "step": 1,
+    "claim": "Check if the switch port 3/1 is still in the 'err-disabled' state.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.0024,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "7d779d8b-76a9-45b7-8a54-d0fa8a032e38",
+    "step": 6,
+    "claim": "If the issue is specific to your machine and the entry is correct, reinstall or update SAP GUI from the software centre.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.004,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "e5cf9179-c44c-4400-9892-587994d75d3a",
+    "step": 3,
+    "claim": "Escalate to the SAP configuration team with the object, interval, and fiscal year.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.9898,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "248a1cf2-d3cd-47b2-9232-577451fdb5cc",
+    "step": 5,
+    "claim": "Check SM12 for any database locks held by the job's user.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0011,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "bd8aa55e-1d0a-4fd2-afc8-b0816b9a8401",
+    "step": 3,
+    "claim": "If the `pg_wal` directory is large, check `pg_stat_archiver` for any failed archive commands.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0205,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "b06c8bfc-9b9c-4ab8-9942-b7a52d129693",
+    "step": 4,
+    "claim": "If the issue persists, raise a hardware ticket.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.9885,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "8921f3bf-7f25-47fa-9d3b-3c8b96dcc363",
+    "step": 4,
+    "claim": "If no specific query is causing the issue, check for idle sessions holding locks with `pg_blocking_pids()` and `pg_stat_activity`.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0095,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "8921f3bf-7f25-47fa-9d3b-3c8b96dcc363",
+    "step": 1,
+    "claim": "Check the `pg_stat_activity` view for any long-running queries.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.9977,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "0cc077b3-e160-4b32-a72d-2d5084f6b092",
+    "step": 5,
+    "claim": "Verify the application's connection pool settings and ensure they are not exhausted.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.027,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "c2ce45e0-fb33-45be-8e24-bcc79fa2ea95",
+    "step": 1,
+    "claim": "Check if the company root certificate is published on the intranet.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.9922,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "e92614c3-f6c8-4b88-9843-a0eab6eda71f",
+    "step": 2,
+    "claim": "Point the tool at the company root certificate if available.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.3821,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "6e04672c-2f21-4921-b02c-3504ab4783a9",
+    "step": 3,
+    "claim": "Pay changes are announced separately from the review cycle, typically after the cycle ends.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.2987,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "e9c3d757-6ad0-4ccd-86b8-2ef948034271",
+    "step": 3,
+    "claim": "If the on-demand backup fails, free space or extend the target, renew the storage credential, or move the schedule away from the batch job.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.4235,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "81ee9cb3-91b9-4f0a-bd17-4451f7e893ae",
+    "step": 1,
+    "claim": "Run `ipconfig /release`",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 1.0,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "e9c3d757-6ad0-4ccd-86b8-2ef948034271",
+    "step": 5,
+    "claim": "Monitor the backup job to ensure it runs without issues.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.561,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "7d779d8b-76a9-45b7-8a54-d0fa8a032e38",
+    "step": 2,
+    "claim": "Try logging in again.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0151,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "04abf6ad-860f-4eb8-96ac-38f00bc6b5f7",
+    "step": 1,
+    "claim": "Open the IDoc in WE02 and read the status record for status 51.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 1.0,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "ae8bc591-8c7a-4460-9d75-e9ef4c79aaca",
+    "step": 2,
+    "claim": "Verify if there are large uploads or backups running at the same time.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.4962,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "7d779d8b-76a9-45b7-8a54-d0fa8a032e38",
+    "step": 3,
+    "claim": "If other users are also experiencing issues, inform your IT support team immediately.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0453,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "8921f3bf-7f25-47fa-9d3b-3c8b96dcc363",
+    "step": 7,
+    "claim": "If a query is timing out, analyze the query and consider setting a higher `statement_timeout` if it's a legitimate long-running job.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.1309,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "d24eefb3-b9d8-4f37-9814-9f0e702d1ce6",
+    "step": 1,
+    "claim": "Identify the idle session holding the lock using `pg_blocking_pids()` and `pg_stat_activity`.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.3568,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "9d05551b-e7d3-4d00-8eae-5c66906ac6ba",
+    "step": 1,
+    "claim": "Collect the source IP or subnet, destination IP or host, port numbers, and protocol (TCP or UDP) for the new application.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.2029,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "658d326d-cdc3-4a75-9b55-727517e8ccc3",
+    "step": 1,
+    "claim": "Check if other computers in the same area are also affected.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0007,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "81ee9cb3-91b9-4f0a-bd17-4451f7e893ae",
+    "step": 2,
+    "claim": "try them if so.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0197,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "7d779d8b-76a9-45b7-8a54-d0fa8a032e38",
+    "step": 1,
+    "claim": "If not, connect to the VPN.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.0013,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "04abf6ad-860f-4eb8-96ac-38f00bc6b5f7",
+    "step": 3,
+    "claim": "If a customer or vendor detail is missing, ask the master-data team to create the missing record.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0683,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "754151a9-c3e3-441d-8fed-3c4f72702146",
+    "step": 3,
+    "claim": "Retry the goods receipt in MIGO after the block has been removed.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0342,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "a6396989-f000-4561-acfa-bd3d61d7268b",
+    "step": 1,
+    "claim": "Check the posting date you entered.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.9973,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "0cc077b3-e160-4b32-a72d-2d5084f6b092",
+    "step": 1,
+    "claim": "Check the database logs for the exact transaction that is failing.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0166,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "8921f3bf-7f25-47fa-9d3b-3c8b96dcc363",
+    "step": 6,
+    "claim": "If the issue persists, note if any queries are failing due to timeouts or lock waits.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0007,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "8921f3bf-7f25-47fa-9d3b-3c8b96dcc363",
+    "step": 8,
+    "claim": "If a query is waiting for a lock, identify the transaction holding the lock and consider rerunning the migration with a shorter `lock_timeout`.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.9947,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "9d05551b-e7d3-4d00-8eae-5c66906ac6ba",
+    "step": 2,
+    "claim": "Raise a firewall change request through the change process, as adding a rule is not done ad hoc.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.9976,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "248a1cf2-d3cd-47b2-9232-577451fdb5cc",
+    "step": 4,
+    "claim": "If the job is 'Active' for too long, open the job log in SM37 and note the last step.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.9963,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "c2ce45e0-fb33-45be-8e24-bcc79fa2ea95",
+    "step": 2,
+    "claim": "Point the tool at the company root certificate if available.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.3821,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "e0f5c40c-195d-4aaf-b777-ef9521abf802",
+    "step": 2,
+    "claim": "Identify the number range object (e.g., FBN1 for accounting documents, MMNR for materials, or SNRO for the generic view).",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.4465,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "8921f3bf-7f25-47fa-9d3b-3c8b96dcc363",
+    "step": 5,
+    "claim": "Confirm with the application team that the idle session is stuck and terminate it if necessary.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.9801,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "744e4c20-a392-4e5a-a0c3-7fbf1a2aca63",
+    "step": 3,
+    "claim": "`ipconfig /renew` to ensure your device is getting a proper IP address.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0198,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "0cc077b3-e160-4b32-a72d-2d5084f6b092",
+    "step": 2,
+    "claim": "Identify if the transaction is part of a read-only or read-write operation.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.9705,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "7d779d8b-76a9-45b7-8a54-d0fa8a032e38",
+    "step": 4,
+    "claim": "Ensure the application server, instance number, and system ID are correct.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.0222,
+    "llm_supported": true
+   },
+   {
+    "draft_id": "754151a9-c3e3-441d-8fed-3c4f72702146",
+    "step": 2,
+    "claim": "If a block is found, contact the buyer to request the block be removed in ME22N.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.9842,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "248a1cf2-d3cd-47b2-9232-577451fdb5cc",
+    "step": 1,
+    "claim": "Check the job status in SM37 and note if it is 'Released' or 'Ready'.",
+    "stratum": "disagree",
+    "p_include": 1.0,
+    "nli_support": 0.5489,
+    "llm_supported": false
+   },
+   {
+    "draft_id": "e9c3d757-6ad0-4ccd-86b8-2ef948034271",
+    "step": 4,
+    "claim": "Run the on-demand backup again to confirm it completes successfully.",
+    "stratum": "agree",
+    "p_include": 0.1087,
+    "nli_support": 0.6465,
+    "llm_supported": true
+   }
+  ]
+ }
+}

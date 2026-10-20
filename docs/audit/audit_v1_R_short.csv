@@ -1,0 +1,1065 @@
+draft_id,ticket_id,step,claim,cited_passages,human,note
+5ec35e3f-4055-48a2-bbf0-d41b19d06e8e,T-01210,4,Inform the visitor that guest Wi-Fi is deliberately bandwidth-limited and isolated.,"[1] Wi-Fi access for a visitor
+Wi-Fi access for a visitor (Wireless access)
+## Symptom
+An employee asks for internet access for a visitor, contractor or vendor who is on site.
+
+## Cause
+Visitors may not join the corporate network. Guest access is a separate, isolated network
+with time-limited credentials sponsored by an employee.
+
+## Resolution steps
+1. Confirm the request comes from an employee who sponsors the guest. Visitors cannot
+   request access for themselves.
+2. Create a guest credential or day pass in the guest portal, with an expiry that matches
+   the visit. Never issue a credential without an expiry.
+3. Record the sponsor and the visit dates in the ticket for audit.
+4. If the visitor needs internal systems, explain that this is a separate access request
+   with its own approval. Never put a visitor on the corporate network.
+
+## Warnings
+Guest Wi-Fi is deliberately bandwidth-limited and isolated; ""slow"" guest Wi-Fi is not a
+fault to fix.",,
+b3671980-eb71-416a-ba32-9c3d723bdb78,T-01615,1,Check the `pg_stat_activity` for any long-running queries.,"[1] Database server CPU is very high
+Database server CPU is very high (Query performance and indexes)
+## Symptom
+Monitoring shows the database server's CPU near 100 percent and applications are slow.
+
+## Cause
+A few expensive queries usually cause most of the load: a new query without a suitable
+index, a report run at peak time, or a query whose plan changed after data growth.
+
+## Resolution steps
+1. Look at `pg_stat_activity` for long-running active queries right now.
+2. Check `pg_stat_statements` for the queries with the highest total execution time.
+3. If one report or job causes the spike, ask its owner to stop it or run it off-peak.
+4. Send the top queries and their plans to the owning teams for tuning.
+
+## Warnings
+Do not restart the database to clear CPU load; it drops every connection and the load
+usually returns.",,
+683f3d89-9b6f-481c-9435-8e536f616b00,T-01397,3,"If the issue persists, contact the materials-management team to escalate the missing period change.","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+35a7db69-5efb-4579-b200-dd6be5311fc2,T-01026,3,Save the changes and log off then log on again.,"[1] Wrong date or number format in SAP
+Wrong date or number format in SAP (GUI, dumps and printing)
+## Symptom
+SAP shows dates as month/day/year instead of day/month/year, or uses a comma instead of a
+decimal point, so amounts look ten or a thousand times wrong in downloads.
+
+## Cause
+Date and decimal formats are personal settings stored in the user's master record; they
+may differ from Windows regional settings.
+
+## Resolution steps
+1. Open transaction SU3 (own user data) and go to the Defaults tab.
+2. Choose the correct decimal notation and date format.
+3. Save, then log off and log on again so the new settings apply.
+4. Re-export any spreadsheet downloads made with the wrong format.
+
+## Warnings
+The formats affect only how values are displayed and exported, not the stored data; do
+not correct postings because of a display format.",,
+24101d25-6ca3-48a7-9bee-c747ccd5333c,T-01395,2,Verify that other 5 GHz networks are visible.,"[5] Laptop cannot see the corporate Wi-Fi network
+Laptop cannot see the corporate Wi-Fi network (Wireless access)
+## Symptom
+Other people in the room are connected, but the corporate network name does not appear
+in the user's list of available Wi-Fi networks.
+
+## Cause
+The corporate network runs only on the 5 GHz band. An outdated driver, an adapter set to
+2.4 GHz only, or airplane mode or a hardware Wi-Fi switch hides it.
+
+## Resolution steps
+1. Check that airplane mode is off and the Wi-Fi toggle (or keyboard key) is on.
+2. Ask whether other 5 GHz networks are visible. If only 2.4 GHz networks show, check the
+   adapter's band setting and set it to auto or 5 GHz preferred.
+3. Update the wireless driver from the software centre and restart.
+4. If it is still missing, the adapter may be faulty: raise a hardware ticket.
+
+## Warnings
+Do not share a phone hotspot with corporate devices as a long-term workaround.",,
+04341ba0-c0c7-49b5-9ee8-65b069448a76,T-01712,4,Ensure that your network adapter's power management settings are not set to turn off the radio when idle.,"[1] Office Wi-Fi keeps dropping
+Office Wi-Fi keeps dropping (Wireless access)
+## Symptom
+A laptop repeatedly disconnects from the office Wi-Fi, especially after being idle or
+when the user moves between meeting rooms.
+
+## Cause
+Most often the adapter's power saving turns the radio down when idle, or the laptop holds
+on to a distant access point. When many users in one area drop at once, an access point
+or the wireless controller is at fault.
+
+## Resolution steps
+1. Ask whether colleagues in the same area are affected. If yes, record the location and
+   escalate it as an access point problem.
+2. Note the network name and the access point the laptop was last connected to, from the
+   connection details.
+3. Forget the network and reconnect to clear a stale saved profile.
+4. Set the adapter's power management so Windows cannot turn it off to save power, and
+   update the wireless driver from the software centre.
+
+## Warnings
+Do not tell users to connect to the guest network instead; it has no access to internal
+systems.",,
+d852565f-8989-4ff3-b91e-e729d6d3d16b,T-00638,3,Save the changes and log off then log on again.,"[1] Wrong date or number format in SAP
+Wrong date or number format in SAP (GUI, dumps and printing)
+## Symptom
+SAP shows dates as month/day/year instead of day/month/year, or uses a comma instead of a
+decimal point, so amounts look ten or a thousand times wrong in downloads.
+
+## Cause
+Date and decimal formats are personal settings stored in the user's master record; they
+may differ from Windows regional settings.
+
+## Resolution steps
+1. Open transaction SU3 (own user data) and go to the Defaults tab.
+2. Choose the correct decimal notation and date format.
+3. Save, then log off and log on again so the new settings apply.
+4. Re-export any spreadsheet downloads made with the wrong format.
+
+## Warnings
+The formats affect only how values are displayed and exported, not the stored data; do
+not correct postings because of a display format.",,
+b16f5dda-cfff-42bc-92b5-579b1b15cda7,T-01529,3,"If the slot is confirmed to be abandoned, remove it using `DROP Replication Slot <slot_name>;`.","[1] Database disk almost full
+Database disk almost full (Disk space and backups)
+## Symptom
+Monitoring warns the database volume is nearly full, or the database already rejects
+writes because the disk is full.
+
+## Cause
+Table and index bloat, write-ahead log (WAL) files piling up because a replication slot
+or WAL archiving is stuck, or genuine data growth.
+
+## Resolution steps
+1. Find what uses the space: data files, or the `pg_wal` directory.
+2. If `pg_wal` is large, check `pg_replication_slots` for inactive slots and WAL archiving
+   for failures.
+3. If writes are already failing, expand the volume first to restore service.
+4. Then fix the cause: remove an abandoned slot (after the DBA confirms), fix archiving,
+   or address bloat.
+
+## Warnings
+Never delete files from `pg_wal` by hand; it can make the database impossible to start.",,
+acab063b-1021-43a9-a79f-ad78cd33ac04,T-01681,3,Do not restart any network equipment yourself.,"[1] Internet slow for a whole floor
+Internet slow for a whole floor (Call quality and file shares)
+## Symptom
+Many users on the same floor or office report that websites and cloud apps are slow at
+the same time.
+
+## Cause
+A shared link or switch is saturated: a large download or backup, a faulty uplink running
+at reduced speed, or the office internet link reaching capacity.
+
+## Resolution steps
+1. Confirm that several users in the same area are affected, and record when it started.
+2. Ask whether anything unusual is running: large software deployments, backups or
+   video events.
+3. Escalate to network engineering with the location, the time and the number of users;
+   they check link utilisation and uplink errors.
+4. Keep the ticket open as a parent for the other users' reports.
+
+## Warnings
+Do not restart network equipment yourself.",,
+ac653582-67a9-464c-9143-4c43210f8c68,T-01064,2,Run `ipconfig /all` and check that the internal DNS servers are listed.,"[1] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.",,
+5ec35e3f-4055-48a2-bbf0-d41b19d06e8e,T-01210,3,Record the sponsor and visit dates in the ticket for audit purposes.,"[1] Wi-Fi access for a visitor
+Wi-Fi access for a visitor (Wireless access)
+## Symptom
+An employee asks for internet access for a visitor, contractor or vendor who is on site.
+
+## Cause
+Visitors may not join the corporate network. Guest access is a separate, isolated network
+with time-limited credentials sponsored by an employee.
+
+## Resolution steps
+1. Confirm the request comes from an employee who sponsors the guest. Visitors cannot
+   request access for themselves.
+2. Create a guest credential or day pass in the guest portal, with an expiry that matches
+   the visit. Never issue a credential without an expiry.
+3. Record the sponsor and the visit dates in the ticket for audit.
+4. If the visitor needs internal systems, explain that this is a separate access request
+   with its own approval. Never put a visitor on the corporate network.
+
+## Warnings
+Guest Wi-Fi is deliberately bandwidth-limited and isolated; ""slow"" guest Wi-Fi is not a
+fault to fix.",,
+da1fbb42-a4b8-4694-8dd6-4875b510d1c4,T-01396,4,"If the issue persists, contact Finance for approval to post in an older period.","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+39628814-01b5-4ed9-ab9b-f9d920445ccd,T-00899,2,Ask the identity team to reset your multi-factor registration in the identity provider.,"[1] Lost phone for cloud console multi-factor sign-in
+Lost phone for cloud console multi-factor sign-in (Identity, SSO and permissions)
+## Symptom
+The user has a new or lost phone and can no longer complete the multi-factor step when
+signing in to the cloud console.
+
+## Cause
+Multi-factor for the console runs through the corporate identity provider. The
+authenticator was registered on the old phone.
+
+## Resolution steps
+1. Verify the user's identity through the standard process (manager confirmation plus
+   employee ID).
+2. Ask the identity team to reset the user's multi-factor registration in the identity
+   provider.
+3. The user registers the authenticator on the new phone at the next sign-in.
+4. If the phone was lost, ask the user to report it to security as a lost device.
+
+## Warnings
+Never turn multi-factor off for an account, even temporarily.",,
+ee42b65c-6ff7-4b6c-8320-7a3be4d83ee7,T-01538,1,"If they are, the issue might be specific to the IP desk phone.","[1] Office Wi-Fi keeps dropping
+Office Wi-Fi keeps dropping (Wireless access)
+## Symptom
+A laptop repeatedly disconnects from the office Wi-Fi, especially after being idle or
+when the user moves between meeting rooms.
+
+## Cause
+Most often the adapter's power saving turns the radio down when idle, or the laptop holds
+on to a distant access point. When many users in one area drop at once, an access point
+or the wireless controller is at fault.
+
+## Resolution steps
+1. Ask whether colleagues in the same area are affected. If yes, record the location and
+   escalate it as an access point problem.
+2. Note the network name and the access point the laptop was last connected to, from the
+   connection details.
+3. Forget the network and reconnect to clear a stale saved profile.
+4. Set the adapter's power management so Windows cannot turn it off to save power, and
+   update the wireless driver from the software centre.
+
+## Warnings
+Do not tell users to connect to the guest network instead; it has no access to internal
+systems.
+---
+[2] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.
+---
+[3] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.
+---
+[4] Internal names do not resolve
+Internal names do not resolve (DHCP and DNS)
+## Symptom
+Public websites work, but internal names such as the intranet or a file server do not
+open. The same resource opens when the user types its IP address.
+
+## Cause
+The device is not using the internal DNS servers: it is off the corporate network or VPN,
+or it has public DNS servers set, which cannot resolve internal names.
+
+## Resolution steps
+1. Confirm the device is on the corporate network or connected to the VPN.
+2. Run `ipconfig /all` and check that the DNS servers are the internal ones, not public
+   resolvers such as 8.8.8.8.
+3. If public DNS servers were set by hand, set the adapter back to obtain DNS
+   automatically.
+4. Run `ipconfig /flushdns` and retry.
+
+## Warnings
+Once the IP address works but the name does not, do not keep checking cables and Wi-Fi;
+it is a DNS problem.
+---
+[5] Windows reports an IP address conflict
+Windows reports an IP address conflict (DHCP and DNS)
+## Symptom
+Windows shows ""Windows has detected an IP address conflict"" and the connection becomes
+unreliable or drops.
+
+## Cause
+Two devices are using the same IP address, almost always because one of them (a printer,
+a test machine) was given a static address inside the DHCP range.
+
+## Resolution steps
+1. Run `ipconfig /release` and `ipconfig /renew` on the user's laptop to get a new
+   address; this usually restores the connection at once.
+2. Note the conflicting address from the message or the event log.
+3. Report the address to network engineering so they can find the device with the static
+   address and either reserve it or move it outside the DHCP range.
+
+## Warnings
+Do not set a static address on the laptop to escape the conflict; it only moves the
+problem.",,
+66a56215-452e-499e-ba47-21432e26189e,T-01742,4,"If IP addresses also fail, check for address range overlaps with your home network and report to network engineering.","[1] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.",,
+368217ce-3251-4435-b333-b2d4515277ae,T-01740,1,Check if other users in your department are experiencing the same issue.,"[1] Internet slow for a whole floor
+Internet slow for a whole floor (Call quality and file shares)
+## Symptom
+Many users on the same floor or office report that websites and cloud apps are slow at
+the same time.
+
+## Cause
+A shared link or switch is saturated: a large download or backup, a faulty uplink running
+at reduced speed, or the office internet link reaching capacity.
+
+## Resolution steps
+1. Confirm that several users in the same area are affected, and record when it started.
+2. Ask whether anything unusual is running: large software deployments, backups or
+   video events.
+3. Escalate to network engineering with the location, the time and the number of users;
+   they check link utilisation and uplink errors.
+4. Keep the ticket open as a parent for the other users' reports.
+
+## Warnings
+Do not restart network equipment yourself.
+---
+[3] Video calls freeze or lag
+Video calls freeze or lag (Call quality and file shares)
+## Symptom
+Video and audio calls freeze, drop or lag, while web browsing seems normal.
+
+## Cause
+Calls need low latency more than bandwidth. Weak Wi-Fi, large uploads on the same
+connection, or VPN routing for a call that does not need it are the usual causes. If a
+whole office is affected, the internet link is saturated.
+
+## Resolution steps
+1. Ask whether it happens on a cable too. If only on Wi-Fi, treat it as a Wi-Fi signal
+   problem (move closer to an access point, or use a cable).
+2. Check for large uploads or backups running at the same time.
+3. If the user is on VPN for a call with outside participants, they can disconnect the VPN
+   for the call.
+4. Ask the user to run the call app's network test during a bad call and send the result.
+5. If many users at one office are affected, escalate as a link-capacity problem.
+
+## Warnings
+Do not ask users to stop company backups to free bandwidth.",,
+655a4e10-d4ef-4432-9b8c-4766147f7d40,T-00320,4,"If the quota issue is recurring, consider raising a capacity-planning review.","[1] Writes fail because a storage quota is reached
+Writes fail because a storage quota is reached (Object storage)
+## Symptom
+An application or backup job fails with a quota or limit error, or writes start failing
+while reads still work.
+
+## Cause
+A limit was reached: an account-level service quota, a size limit on a volume or file
+share, or a budget control that stops further spending.
+
+## Resolution steps
+1. Read the error to identify which limit was hit.
+2. Check whether old data can be archived or deleted under the retention policy before
+   asking for more space.
+3. Request a service quota increase through the cloud provider's process. It is not
+   instant, so state clearly if production is blocked.
+4. If usage grows steadily, raise a capacity-planning review instead of repeated small
+   increases.
+
+## Warnings
+Do not request the largest possible quota ""to be safe""; it hides runaway growth.",,
+2a032319-bbb4-49c2-abbe-9607254fac7c,T-01582,3,"If the block is not intentional, ask the buyer to release the account in ME22N.","[2] Goods receipt fails because the PO item is blocked
+Goods receipt fails because the PO item is blocked (Purchasing and goods receipt)
+## Symptom
+Posting a goods receipt in MIGO against a purchase order fails with a message that the
+purchase order item is blocked, so the goods cannot be received.
+
+## Cause
+A buyer has blocked the PO item in ME22N (for example during a dispute with the
+vendor), or the item has a deletion indicator. Blocked items cannot be received until a
+buyer releases them.
+
+## Resolution steps
+1. Display the PO in ME23N and open the item. Check whether the item shows a block or a
+   deletion indicator in the item overview.
+2. Find the buyer from the PO header (purchasing group) and ask whether the block is
+   intentional.
+3. If the block should be removed, the buyer removes it in ME22N and saves the PO.
+4. Retry the goods receipt in MIGO.
+5. If the item has a deletion indicator and the goods have physically arrived, the buyer
+   must create a new PO item; a deleted item cannot be received.",,
+88fcb816-7dc2-4a44-87f9-8897836b7e3a,T-01120,3,"If a colleague is editing, ask them to save or exit the transaction.","[3] Material master locked by another user
+Material master locked by another user (Materials and number ranges)
+## Symptom
+Changing a material in MM02 fails with a message that the material is currently being
+processed by another user, who is named in the message.
+
+## Cause
+SAP sets a lock entry while someone edits a material. The lock is released when they
+save or leave the transaction. If their session crashed, the lock can be left behind.
+
+## Resolution steps
+1. Contact the named user and ask them to save or exit MM02. This releases the lock at once.
+2. If they are unreachable or say they are not editing, check SM12 for the lock entry on
+   the material and note the user and the time it was created.
+3. A Basis administrator confirms the user has no active session (SM04) before deleting
+   the lock entry in SM12.
+4. Ask the original requester to retry MM02.
+
+## Warnings
+Deleting a lock entry while the other user is still editing can corrupt the material
+data. Only Basis deletes lock entries, and only after confirming the session is gone.",,
+88fcb816-7dc2-4a44-87f9-8897836b7e3a,T-01120,1,"If so, contact the SAP configuration team to create a new number range interval for the fiscal year.","[1] Number range exhausted
+Number range exhausted (Materials and number ranges)
+## Symptom
+Creating a document (material, purchase order, sales order or accounting document) fails
+because no number can be assigned: the message says the number range interval is full or
+was not found.
+
+## Cause
+Every document type draws its numbers from a number range interval. When the interval
+reaches its upper limit, or the interval for a new fiscal year was never created, no new
+documents of that type can be saved.
+
+## Resolution steps
+1. Note the exact message, the document type and the company code or plant.
+2. Identify the number range object (for example FBN1 for accounting documents, MMNR for
+   materials, or SNRO for the generic view).
+3. Escalate to the SAP configuration team with the object, the interval and the fiscal
+   year. Extending or adding an interval is a configuration change.
+4. If the error appeared at the start of a fiscal year, mention it: the new year's
+   interval may simply not have been created.
+---
+[4] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.",,
+fb36de82-5ea8-40c5-94da-3eb40f37e977,T-00694,1,Check the date of your marriage or the date your spouse became eligible.,"[1] Adding a family member to health insurance
+Adding a family member to health insurance (Benefits and insurance)
+## Symptom
+An employee wants to add a spouse, partner or child to their health insurance.
+
+## Cause
+Dependants can be added only within 30 days of becoming eligible (marriage, birth,
+adoption) or during open enrolment.
+
+## Resolution steps
+1. Confirm the relationship and the date of the event that made them eligible.
+2. Within 30 days of the event, the employee adds the dependant in the HR portal under
+   Benefits and uploads proof of relationship.
+3. Coverage starts from the event date once approved.
+4. Outside the window, the dependant can be added at the next open enrolment.
+
+## Warnings
+The premium deduction for the dependant starts on the next payslip and may include
+arrears back to the coverage start date.",,
+acab063b-1021-43a9-a79f-ad78cd33ac04,T-01681,1,Check if other users on your floor are experiencing similar issues.,"[1] Internet slow for a whole floor
+Internet slow for a whole floor (Call quality and file shares)
+## Symptom
+Many users on the same floor or office report that websites and cloud apps are slow at
+the same time.
+
+## Cause
+A shared link or switch is saturated: a large download or backup, a faulty uplink running
+at reduced speed, or the office internet link reaching capacity.
+
+## Resolution steps
+1. Confirm that several users in the same area are affected, and record when it started.
+2. Ask whether anything unusual is running: large software deployments, backups or
+   video events.
+3. Escalate to network engineering with the location, the time and the number of users;
+   they check link utilisation and uplink errors.
+4. Keep the ticket open as a parent for the other users' reports.
+
+## Warnings
+Do not restart network equipment yourself.",,
+04341ba0-c0c7-49b5-9ee8-65b069448a76,T-01712,3,"If the issue is isolated to your computer, try forgetting the network and reconnecting.","[1] Office Wi-Fi keeps dropping
+Office Wi-Fi keeps dropping (Wireless access)
+## Symptom
+A laptop repeatedly disconnects from the office Wi-Fi, especially after being idle or
+when the user moves between meeting rooms.
+
+## Cause
+Most often the adapter's power saving turns the radio down when idle, or the laptop holds
+on to a distant access point. When many users in one area drop at once, an access point
+or the wireless controller is at fault.
+
+## Resolution steps
+1. Ask whether colleagues in the same area are affected. If yes, record the location and
+   escalate it as an access point problem.
+2. Note the network name and the access point the laptop was last connected to, from the
+   connection details.
+3. Forget the network and reconnect to clear a stale saved profile.
+4. Set the adapter's power management so Windows cannot turn it off to save power, and
+   update the wireless driver from the software centre.
+
+## Warnings
+Do not tell users to connect to the guest network instead; it has no access to internal
+systems.",,
+66a56215-452e-499e-ba47-21432e26189e,T-01742,1,Check if the issue is with internal resources by trying to access them by IP address.,"[1] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.",,
+ee42b65c-6ff7-4b6c-8320-7a3be4d83ee7,T-01538,1,Check if other devices on the same wall port are working.,"[1] Office Wi-Fi keeps dropping
+Office Wi-Fi keeps dropping (Wireless access)
+## Symptom
+A laptop repeatedly disconnects from the office Wi-Fi, especially after being idle or
+when the user moves between meeting rooms.
+
+## Cause
+Most often the adapter's power saving turns the radio down when idle, or the laptop holds
+on to a distant access point. When many users in one area drop at once, an access point
+or the wireless controller is at fault.
+
+## Resolution steps
+1. Ask whether colleagues in the same area are affected. If yes, record the location and
+   escalate it as an access point problem.
+2. Note the network name and the access point the laptop was last connected to, from the
+   connection details.
+3. Forget the network and reconnect to clear a stale saved profile.
+4. Set the adapter's power management so Windows cannot turn it off to save power, and
+   update the wireless driver from the software centre.
+
+## Warnings
+Do not tell users to connect to the guest network instead; it has no access to internal
+systems.
+---
+[2] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.
+---
+[3] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.
+---
+[4] Internal names do not resolve
+Internal names do not resolve (DHCP and DNS)
+## Symptom
+Public websites work, but internal names such as the intranet or a file server do not
+open. The same resource opens when the user types its IP address.
+
+## Cause
+The device is not using the internal DNS servers: it is off the corporate network or VPN,
+or it has public DNS servers set, which cannot resolve internal names.
+
+## Resolution steps
+1. Confirm the device is on the corporate network or connected to the VPN.
+2. Run `ipconfig /all` and check that the DNS servers are the internal ones, not public
+   resolvers such as 8.8.8.8.
+3. If public DNS servers were set by hand, set the adapter back to obtain DNS
+   automatically.
+4. Run `ipconfig /flushdns` and retry.
+
+## Warnings
+Once the IP address works but the name does not, do not keep checking cables and Wi-Fi;
+it is a DNS problem.
+---
+[5] Windows reports an IP address conflict
+Windows reports an IP address conflict (DHCP and DNS)
+## Symptom
+Windows shows ""Windows has detected an IP address conflict"" and the connection becomes
+unreliable or drops.
+
+## Cause
+Two devices are using the same IP address, almost always because one of them (a printer,
+a test machine) was given a static address inside the DHCP range.
+
+## Resolution steps
+1. Run `ipconfig /release` and `ipconfig /renew` on the user's laptop to get a new
+   address; this usually restores the connection at once.
+2. Note the conflicting address from the message or the event log.
+3. Report the address to network engineering so they can find the device with the static
+   address and either reserve it or move it outside the DHCP range.
+
+## Warnings
+Do not set a static address on the laptop to escape the conflict; it only moves the
+problem.",,
+66a56215-452e-499e-ba47-21432e26189e,T-01742,5,"If colleagues in the same area are affected, note the location and escalate it as an access point problem.","[3] Office Wi-Fi keeps dropping
+Office Wi-Fi keeps dropping (Wireless access)
+## Symptom
+A laptop repeatedly disconnects from the office Wi-Fi, especially after being idle or
+when the user moves between meeting rooms.
+
+## Cause
+Most often the adapter's power saving turns the radio down when idle, or the laptop holds
+on to a distant access point. When many users in one area drop at once, an access point
+or the wireless controller is at fault.
+
+## Resolution steps
+1. Ask whether colleagues in the same area are affected. If yes, record the location and
+   escalate it as an access point problem.
+2. Note the network name and the access point the laptop was last connected to, from the
+   connection details.
+3. Forget the network and reconnect to clear a stale saved profile.
+4. Set the adapter's power management so Windows cannot turn it off to save power, and
+   update the wireless driver from the software centre.
+
+## Warnings
+Do not tell users to connect to the guest network instead; it has no access to internal
+systems.",,
+acab063b-1021-43a9-a79f-ad78cd33ac04,T-01681,6,Run a network test during a video call to identify any issues.,"[3] Video calls freeze or lag
+Video calls freeze or lag (Call quality and file shares)
+## Symptom
+Video and audio calls freeze, drop or lag, while web browsing seems normal.
+
+## Cause
+Calls need low latency more than bandwidth. Weak Wi-Fi, large uploads on the same
+connection, or VPN routing for a call that does not need it are the usual causes. If a
+whole office is affected, the internet link is saturated.
+
+## Resolution steps
+1. Ask whether it happens on a cable too. If only on Wi-Fi, treat it as a Wi-Fi signal
+   problem (move closer to an access point, or use a cable).
+2. Check for large uploads or backups running at the same time.
+3. If the user is on VPN for a call with outside participants, they can disconnect the VPN
+   for the call.
+4. Ask the user to run the call app's network test during a bad call and send the result.
+5. If many users at one office are affected, escalate as a link-capacity problem.
+
+## Warnings
+Do not ask users to stop company backups to free bandwidth.",,
+368217ce-3251-4435-b333-b2d4515277ae,T-01740,8,Update your wireless driver from the software centre.,"[2] Office Wi-Fi keeps dropping
+Office Wi-Fi keeps dropping (Wireless access)
+## Symptom
+A laptop repeatedly disconnects from the office Wi-Fi, especially after being idle or
+when the user moves between meeting rooms.
+
+## Cause
+Most often the adapter's power saving turns the radio down when idle, or the laptop holds
+on to a distant access point. When many users in one area drop at once, an access point
+or the wireless controller is at fault.
+
+## Resolution steps
+1. Ask whether colleagues in the same area are affected. If yes, record the location and
+   escalate it as an access point problem.
+2. Note the network name and the access point the laptop was last connected to, from the
+   connection details.
+3. Forget the network and reconnect to clear a stale saved profile.
+4. Set the adapter's power management so Windows cannot turn it off to save power, and
+   update the wireless driver from the software centre.
+
+## Warnings
+Do not tell users to connect to the guest network instead; it has no access to internal
+systems.",,
+2a032319-bbb4-49c2-abbe-9607254fac7c,T-01582,1,Check the GL account in FS00 to confirm it is marked for retirement.,"[3] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+655a4e10-d4ef-4432-9b8c-4766147f7d40,T-00320,2,Review the application's retention policy and consider archiving or deleting old data.,"[1] Writes fail because a storage quota is reached
+Writes fail because a storage quota is reached (Object storage)
+## Symptom
+An application or backup job fails with a quota or limit error, or writes start failing
+while reads still work.
+
+## Cause
+A limit was reached: an account-level service quota, a size limit on a volume or file
+share, or a budget control that stops further spending.
+
+## Resolution steps
+1. Read the error to identify which limit was hit.
+2. Check whether old data can be archived or deleted under the retention policy before
+   asking for more space.
+3. Request a service quota increase through the cloud provider's process. It is not
+   instant, so state clearly if production is blocked.
+4. If usage grows steadily, raise a capacity-planning review instead of repeated small
+   increases.
+
+## Warnings
+Do not request the largest possible quota ""to be safe""; it hides runaway growth.",,
+acab063b-1021-43a9-a79f-ad78cd33ac04,T-01681,5,"If you are using a laptop, check if the Wi-Fi adapter's power management is set to save power and adjust it if necessary.","[2] Office Wi-Fi keeps dropping
+Office Wi-Fi keeps dropping (Wireless access)
+## Symptom
+A laptop repeatedly disconnects from the office Wi-Fi, especially after being idle or
+when the user moves between meeting rooms.
+
+## Cause
+Most often the adapter's power saving turns the radio down when idle, or the laptop holds
+on to a distant access point. When many users in one area drop at once, an access point
+or the wireless controller is at fault.
+
+## Resolution steps
+1. Ask whether colleagues in the same area are affected. If yes, record the location and
+   escalate it as an access point problem.
+2. Note the network name and the access point the laptop was last connected to, from the
+   connection details.
+3. Forget the network and reconnect to clear a stale saved profile.
+4. Set the adapter's power management so Windows cannot turn it off to save power, and
+   update the wireless driver from the software centre.
+
+## Warnings
+Do not tell users to connect to the guest network instead; it has no access to internal
+systems.",,
+88fcb816-7dc2-4a44-87f9-8897836b7e3a,T-01120,1,Check if the issue started at the beginning of a fiscal year.,"[1] Number range exhausted
+Number range exhausted (Materials and number ranges)
+## Symptom
+Creating a document (material, purchase order, sales order or accounting document) fails
+because no number can be assigned: the message says the number range interval is full or
+was not found.
+
+## Cause
+Every document type draws its numbers from a number range interval. When the interval
+reaches its upper limit, or the interval for a new fiscal year was never created, no new
+documents of that type can be saved.
+
+## Resolution steps
+1. Note the exact message, the document type and the company code or plant.
+2. Identify the number range object (for example FBN1 for accounting documents, MMNR for
+   materials, or SNRO for the generic view).
+3. Escalate to the SAP configuration team with the object, the interval and the fiscal
+   year. Extending or adding an interval is a configuration change.
+4. If the error appeared at the start of a fiscal year, mention it: the new year's
+   interval may simply not have been created.
+---
+[4] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.",,
+ac653582-67a9-464c-9143-4c43210f8c68,T-01064,1,"If it works but the name does not, it is a DNS problem.","[1] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.",,
+eb464403-b717-4db2-80a5-106f51fd8438,T-00974,5,"For your first month, ensure you are in the office as required by your role category.","[1] Working from home rules and exceptions
+Working from home rules and exceptions (Workplace policy and reviews)
+## Symptom
+An employee asks how many days they must be in the office, or wants an exception to work
+remotely for a period.
+
+## Cause
+Each role is office-based, hybrid or fully remote, as set in the employment terms. Hybrid
+roles have a minimum number of office days per week set by the department.
+
+## Resolution steps
+1. Check the employee's role category in their employment terms.
+2. For hybrid roles, the department's minimum office days apply.
+3. Exceptions (for example temporary full remote for a personal reason) are requested from
+   the manager, who decides with HR informed.
+4. Equipment for home working is requested through the normal equipment request.
+
+## Warnings
+HR clarifies the policy; the manager approves individual exceptions.",,
+88fcb816-7dc2-4a44-87f9-8897836b7e3a,T-01120,4,"If the material is locked by another user and they are unreachable, contact a Basis administrator to check for and delete the lock entry.","[3] Material master locked by another user
+Material master locked by another user (Materials and number ranges)
+## Symptom
+Changing a material in MM02 fails with a message that the material is currently being
+processed by another user, who is named in the message.
+
+## Cause
+SAP sets a lock entry while someone edits a material. The lock is released when they
+save or leave the transaction. If their session crashed, the lock can be left behind.
+
+## Resolution steps
+1. Contact the named user and ask them to save or exit MM02. This releases the lock at once.
+2. If they are unreachable or say they are not editing, check SM12 for the lock entry on
+   the material and note the user and the time it was created.
+3. A Basis administrator confirms the user has no active session (SM04) before deleting
+   the lock entry in SM12.
+4. Ask the original requester to retry MM02.
+
+## Warnings
+Deleting a lock entry while the other user is still editing can corrupt the material
+data. Only Basis deletes lock entries, and only after confirming the session is gone.",,
+dc32686e-8dcc-4cde-9961-a548f8a61969,T-01421,2,Group the sessions by application and state to identify any 'idle in transaction' sessions.,"[1] Application runs out of database connections
+Application runs out of database connections (Connections and pools)
+## Symptom
+Application logs show ""connection pool exhausted"", ""sorry, too many clients already"", or
+requests waiting for a database connection, while the database server is up.
+
+## Cause
+Either the database reached `max_connections`, or the application's pool is full because
+code paths take connections and never return them (a leak), often after an unhandled
+error. Sessions left ""idle in transaction"" also hold connection slots.
+
+## Resolution steps
+1. Compare the number of connections in `pg_stat_activity` with `SHOW max_connections`.
+2. Group the sessions by application and state; many ""idle in transaction"" sessions from
+   one application point to that application.
+3. Check whether the errors started after a deployment; a new code path that does not
+   close its connection is the usual cause.
+4. As a stop-gap, restart the affected application instance to release leaked connections.
+5. Send the findings to the owning team to fix the leak or pool settings.
+
+## Warnings
+Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",,
+39628814-01b5-4ed9-ab9b-f9d920445ccd,T-00899,1,Verify your identity through the standard process (manager confirmation plus employee ID).,"[1] Lost phone for cloud console multi-factor sign-in
+Lost phone for cloud console multi-factor sign-in (Identity, SSO and permissions)
+## Symptom
+The user has a new or lost phone and can no longer complete the multi-factor step when
+signing in to the cloud console.
+
+## Cause
+Multi-factor for the console runs through the corporate identity provider. The
+authenticator was registered on the old phone.
+
+## Resolution steps
+1. Verify the user's identity through the standard process (manager confirmation plus
+   employee ID).
+2. Ask the identity team to reset the user's multi-factor registration in the identity
+   provider.
+3. The user registers the authenticator on the new phone at the next sign-in.
+4. If the phone was lost, ask the user to report it to security as a lost device.
+
+## Warnings
+Never turn multi-factor off for an account, even temporarily.",,
+66a56215-452e-499e-ba47-21432e26189e,T-01742,8,Update the wireless driver from the software centre.,"[3] Office Wi-Fi keeps dropping
+Office Wi-Fi keeps dropping (Wireless access)
+## Symptom
+A laptop repeatedly disconnects from the office Wi-Fi, especially after being idle or
+when the user moves between meeting rooms.
+
+## Cause
+Most often the adapter's power saving turns the radio down when idle, or the laptop holds
+on to a distant access point. When many users in one area drop at once, an access point
+or the wireless controller is at fault.
+
+## Resolution steps
+1. Ask whether colleagues in the same area are affected. If yes, record the location and
+   escalate it as an access point problem.
+2. Note the network name and the access point the laptop was last connected to, from the
+   connection details.
+3. Forget the network and reconnect to clear a stale saved profile.
+4. Set the adapter's power management so Windows cannot turn it off to save power, and
+   update the wireless driver from the software centre.
+
+## Warnings
+Do not tell users to connect to the guest network instead; it has no access to internal
+systems.",,
+b16f5dda-cfff-42bc-92b5-579b1b15cda7,T-01529,4,Verify the removal by checking the `pg_replication_slots` again.,"[1] Database disk almost full
+Database disk almost full (Disk space and backups)
+## Symptom
+Monitoring warns the database volume is nearly full, or the database already rejects
+writes because the disk is full.
+
+## Cause
+Table and index bloat, write-ahead log (WAL) files piling up because a replication slot
+or WAL archiving is stuck, or genuine data growth.
+
+## Resolution steps
+1. Find what uses the space: data files, or the `pg_wal` directory.
+2. If `pg_wal` is large, check `pg_replication_slots` for inactive slots and WAL archiving
+   for failures.
+3. If writes are already failing, expand the volume first to restore service.
+4. Then fix the cause: remove an abandoned slot (after the DBA confirms), fix archiving,
+   or address bloat.
+
+## Warnings
+Never delete files from `pg_wal` by hand; it can make the database impossible to start.",,
+88fcb816-7dc2-4a44-87f9-8897836b7e3a,T-01120,3,Ensure no other user is currently editing the material.,"[3] Material master locked by another user
+Material master locked by another user (Materials and number ranges)
+## Symptom
+Changing a material in MM02 fails with a message that the material is currently being
+processed by another user, who is named in the message.
+
+## Cause
+SAP sets a lock entry while someone edits a material. The lock is released when they
+save or leave the transaction. If their session crashed, the lock can be left behind.
+
+## Resolution steps
+1. Contact the named user and ask them to save or exit MM02. This releases the lock at once.
+2. If they are unreachable or say they are not editing, check SM12 for the lock entry on
+   the material and note the user and the time it was created.
+3. A Basis administrator confirms the user has no active session (SM04) before deleting
+   the lock entry in SM12.
+4. Ask the original requester to retry MM02.
+
+## Warnings
+Deleting a lock entry while the other user is still editing can corrupt the material
+data. Only Basis deletes lock entries, and only after confirming the session is gone.",,
