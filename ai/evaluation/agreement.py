@@ -91,7 +91,7 @@ def pilot(path: Path, judge: dict[str, str]) -> dict:
     rows = list(csv.DictReader(path.open(encoding="utf-8-sig")))
     members = [m for m in ("R", "A", "S") if any(r[f"label_{m}"] for r in rows)]
     complete = [[r[f"label_{m}"] for m in members] for r in rows if all(r[f"label_{m}"] for m in members)]
-    out = {"members_labelled": members,
+    out: dict[str, object] = {"members_labelled": members,
            "fleiss_kappa": fleiss_kappa(complete) if len(members) >= 2 else f"needs >= 2 members, has {len(members)}"}
     for m in members:
         pairs = [(r[f"label_{m}"], judge[r["draft_id"]]) for r in rows if r[f"label_{m}"] and r["draft_id"] in judge]
