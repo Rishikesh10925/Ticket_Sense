@@ -93,7 +93,7 @@ before or for one that was just launched.
 ## Cause
 A timeout usually means the network blocks the connection: the security group does not
 allow port 22 from the user's address, or the machine is in a private subnet. A refusal or
-authentication failure means the network is fine but the key or SSH configuration is wrong.",,,,,
+authentication failure means the network is fine but the key or SSH configuration is wrong.",W,,,,
 2,292663f3-9f73-46b5-83d5-9761376a5d8b,"Cloud service not working
 
 Our cloud storage is messed up, can't access files. Tried logging in multiple times, still no luck. Checked network, sems fine but files aren't loading. Tried different browsers and devices, issue persists. Other team members can't access files too, maybe same issue? Need this urgently for our project presentation tomorrow. Can you help us fix this ASAP, please?","(no draft: the model said the evidence cannot answer) The exact error message or logs related to the cloud storage issue.; Whether the issue is specific to certain files or directories.; The type of cloud storage service being used (e.g., object storage, file storage).","[1] Virtual machine disk is full
@@ -198,7 +198,7 @@ share, or a budget control that stops further spending.
    increases.
 
 ## Warnings
-Do not request the largest possible quota ""to be safe""; it hides runaway growth.",,,,,
+Do not request the largest possible quota ""to be safe""; it hides runaway growth.",A,,,,
 3,cab69422-5b11-458f-b1e6-b7a504c4afb9,"Can't sign in to cloud console
 
 Lost my old phone with registered authenticator. Now can't complete multi-factor step. Tried signing in but get stuck. Access to critical cloud resources needed urgently. Please help resolve quickly.","1. Verify your identity through the standard process (manager confirmation plus employee ID). [1]
@@ -294,7 +294,7 @@ credentials stop working when that session ends.
    of repeated links.
 
 ## Warnings
-Do not make the object or bucket public to replace an expired link.",,,,,
+Do not make the object or bucket public to replace an expired link.",A,,,,
 4,dbf53bb3-1443-412d-bab4-b1788efd151a,"SAP system acting weird
 
 We are experiencing issues with the SAP system today, it's not functioning as expected. Can you please investigate and provide an update? Thank you for your assistance.","1. Check if your machine is connected to the company's VPN. If not, connect to the VPN. [1]
@@ -372,7 +372,7 @@ no output was triggered for the document.
 3. If the request is fine, reprint it from SP01 to the correct output device.
 4. If no spool request exists, the print was never triggered from SAP. Check the
    document's output messages; an output type may be missing.
-5. If the printer is offline or out of paper, hand over to desktop support.",,,,,
+5. If the printer is offline or out of paper, hand over to desktop support.",M,,,,
 5,c4d64f4d-f090-40a8-adca-199874af25af,"Application connection issues
 
 I'm having trouble connecting our new CRM app to the server. The connection just times out without any error messages. I've checked our internal wiki, but it doesn't have this app's details. I'm not sure if the firewall is blocking it or if it's something else. Do we have a specific rule for this type of application? It's affecting our team's ability to work with customer data. Is there a specific time by which this needs to be resolved for our daily operations to continue smoothly?","1. Collect the source IP or subnet, destination IP or host, port numbers, and protocol (TCP or UDP) for the CRM app. [1]
@@ -466,7 +466,7 @@ effect permanently.
    owns the DNS record.
 
 ## Warnings
-Do not edit DNS records yourself; ask the record owner.",,,,,
+Do not edit DNS records yourself; ask the record owner.",M,,,,
 6,11ef1e49-cb0c-4f45-9e20-85c966bd6831,"Office Wi-Fi keeps dropping
 
 Can't stay online during meetings! Laptop disconnects every 5 minutes. Even idle connections drop suddenly. Tried restarting, no change. Blocking work, urgent fix needed.","1. Check if colleagues in the same area are affected. If yes, inform your manager and note the location. [1]
@@ -579,7 +579,7 @@ adds more latency.
 4. If speed is poor for all remote users at once, escalate as a VPN gateway capacity issue.
 
 ## Warnings
-Do not tell users to email large files to themselves.",,,,,
+Do not tell users to email large files to themselves.",M,,,,
 7,eb8e80d0-30ac-4bd0-b14f-54b4f571e451,"IP conflict warning
 
 Windows says IP conflict, network acting up. Tried restarting, no joy. Printer and test machine share same address. How long until fix? How long until the issue is resolved and the network stabilizes fully?","1. Run `ipconfig /release` and `ipconfig /renew` on your laptop to get a new IP address. [1]
@@ -689,7 +689,7 @@ stop infected machines from sending spam.
    the sender address it will use.
 
 ## Warnings
-Do not request a firewall exception for port 25 to the internet.",,,,,
+Do not request a firewall exception for port 25 to the internet.",W,,,,
 8,5d48bdaf-cc8a-40b1-b709-4fa6561e1402,"Bucket object retention time
 
 Not sure how long files stay in the bucket before they move or delete. Also, slow internet speed makes video calls lag sometimes.","1. Check the bucket's lifecycle rules to see how long files are kept before they are moved or deleted. [1]
@@ -789,7 +789,7 @@ Do not request the largest possible quota ""to be safe""; it hides runaway growt
 Cloud access key exposed or committed to a repository (Identity, SSO and permissions)
 ## Warnings
 Deleting the commit is not enough: a pushed key must be treated as compromised and
-deactivated.",,,,,
+deactivated.",M,,,,
 9,83ba07ba-31af-440d-81f9-3cbbcd7eb528,"Leave types and entitlements
 
 Need to knoow about different types of leave and days allowed. Country and job type affect leave days.","1. Explain the categories of leave: annual leave (accrued monthly), sick leave (from the first day of employment), casual leave (short-notice personal leave, limited days per year), and separate policies for bereavement, parental and jury duty leave. [1]
@@ -895,7 +895,7 @@ the HR portal.
    request.
 
 ## Warnings
-Last year's calendar is not valid for this year; dates move.",,,,,
+Last year's calendar is not valid for this year; dates move.",A,,,,
 10,333127fb-72d5-4d29-9d29-8bc83df580b4,"Employment verification needed
 
 Employee needs a verification letter for bank loan. Can I get this via HR portal or do I ned HR to sign? No rush, just need it for the loan application.","1. Go to the HR portal and request an employment verification letter under Documents. [1]
@@ -1001,7 +1001,7 @@ shortlisted.
    weeks.
 
 ## Warnings
-Do not tell the current manager about an application before shortlisting.",,,,,
+Do not tell the current manager about an application before shortlisting.",M,,,,
 11,5b9122d9-c4eb-409f-acb3-fa4f8b7018a4,"New app needs domain setup
 
 Our new service is up but can't be accessed via the company domain. We need a DNS record for it and an HTTPS certificate. When can we get this done? Is there a specific name we should use for the domain? We need this soon for training sessions. Is there a specific name we should use for the domain?","1. Provide the desired domain name for the new service. [1]
@@ -1117,7 +1117,7 @@ act with its permissions until it is disabled.
    with temporary credentials instead.
 4. Remove the key from the repository history, not just the latest commit. Rotating the
    key matters more than cleaning the history.
-5. Ask the security team to review the account's activity logs for use of the old key.",,,,,
+5. Ask the security team to review the account's activity logs for use of the old key.",M,,,,
 12,2b648b51-9fd3-4a68-a48c-b12ba7e53287,"New managed database request
 
 Our team needs a new managed database for the new application. It would be great if it's a PostgreSQL setup with standard policies applied. Thanks for your assistance with this.","1. Please provide the details of the new application, including the expected number of users and the required storage capacity. [1, 2, 3, 4, 5]
@@ -1225,7 +1225,7 @@ error. Sessions left ""idle in transaction"" also hold connection slots.
 5. Send the findings to the owning team to fix the leak or pool settings.
 
 ## Warnings
-Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",,,,,
+Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",W,,,,
 13,12e0d8e0-1f48-4bcd-b0b0-30a63a893479,"Cloud cost spike alert
 
 Cost anomaly alert for project XYZ, $1500+ over last hour. Last week was only $200. Checked recent changes, no new projects. Suspect forgotten test resource or auto-scaling gone wild. Tried scaling down manually, didn't help. Also, desktop freezing issues persist.","1. Check the EC2 instance ID i-01234567890abcdef for any running processes that might be causing high costs. [1]
@@ -1309,7 +1309,7 @@ denied.
 ## Cause
 The corporate account is locked or disabled, the user is not assigned to the cloud
 application in the identity provider, or they are assigned but no role or permission set
-is mapped to their group.",,,,,
+is mapped to their group.",W,,,,
 14,6c2bc41c-aff0-4faf-af2c-65759e106d76,"Query failed with timeout
 
 My query keeps timing out and locking up the database. It happens even when I run simple reports. Is there a limit on how long a qery can run? Is there a specific time limit for query execution before it gets canceled due to timeout?","1. Check the query log to see if the timeout was due to a statement or lock timeout. [1]
@@ -1416,7 +1416,7 @@ index, a report run at peak time, or a query whose plan changed after data growt
 
 ## Warnings
 Do not restart the database to clear CPU load; it drops every connection and the load
-usually returns.",,,,,
+usually returns.",M,,,,
 15,f78b6acd-223e-4a7f-b136-8301331a03bc,"Leave types and entitlements
 
 Could you please explain the different types of leave available? Also, how many days of each leave am I entitled to? I'm not sure about the specifics, so any clarification would be helpful. Thank you for your assistance with this.","1. The different types of leave include annual leave (accrued monthly), sick leave (from the first day of employment), casual leave (short-notice personal leave, limited days per year), and separate policies for bereavement, parental, and jury duty leave. [1]
@@ -1522,7 +1522,7 @@ roles have a minimum number of office days per week set by the department.
 4. Equipment for home working is requested through the normal equipment request.
 
 ## Warnings
-HR clarifies the policy; the manager approves individual exceptions.",,,,,
+HR clarifies the policy; the manager approves individual exceptions.",A,,,,
 16,2fe42f9d-251b-441a-a37b-76a992f653df,"Network status display needed
 
 Need a large screen to show network health in the break room. Current monitors are too small and hard to read from afar.",(no draft: the model said the evidence cannot answer) The specific model and size of the large screen needed; The budget for purchasing the large screen; The location and mounting requirements for the large screen; The network infrastructure details to ensure the large screen can connect to the network,"[1] Laptop cannot see the corporate Wi-Fi network
@@ -1614,7 +1614,7 @@ at reduced speed, or the office internet link reaching capacity.
 4. Keep the ticket open as a parent for the other users' reports.
 
 ## Warnings
-Do not restart network equipment yourself.",,,,,
+Do not restart network equipment yourself.",A,,,,
 17,c680c224-e467-435c-bbdc-820309afb8cb,"SSL Errors in Developer Tool
 
 Development tool fails with SSL errors at office. Works fine from home, likely due to different certificate trust. Error message: 'unable to get local issuer certificate'. Office network's proxy re-signs traffic with internal certificate. Browsers automatically trust this, but tools need manual config. Need to add company root cert to tool’s certificate store. Block on deployment, delays critical project features.","1. Confirm the error appears only on the office network or VPN. [1]
@@ -1713,7 +1713,7 @@ at reduced speed, or the office internet link reaching capacity.
 4. Keep the ticket open as a parent for the other users' reports.
 
 ## Warnings
-Do not restart network equipment yourself.",,,,,
+Do not restart network equipment yourself.",A,,,,
 18,1dcca7ba-ba83-4ec0-80a6-29ac8b5b83c6,"Writes fail - read-only error
 
 App failing with 'cannot execute INSERT in a read-only transaction' Log shows: '2026-02-15 14:30:01 - ERRCODE: 40001' Previously working fine, now suddenly fails Checked connection, seems correct but still error Attached full error logs for review","1. Check if the database connection is set to read-only mode. If so, contact the database administrator to change it. [1]
@@ -1799,7 +1799,7 @@ fails with a connection or timeout error before the logon screen appears.
 
 ## Cause
 The user's machine cannot reach the application server: no VPN when working remotely, a
-wrong or outdated system entry in SAP Logon, or the server itself is down.",,,,,
+wrong or outdated system entry in SAP Logon, or the server itself is down.",W,,,,
 19,a42ed289-aa03-49f8-9ebd-a2f01ce1fa5b,"New approval workflow issues
 
 Just set up the new workflow, but approvals aren't going through. Also, the data export tool keeps freezing. Tried restarting the server and clearing cache, no luck. Need help figuring out what's wrong.","(no draft: the model said the evidence cannot answer) The exact error messages or symptoms related to the approval workflow issues and data export tool freezing.; The user roles and access levels of the person experiencing the issues.; The date and number format settings in SAP, if they are different from the expected settings.","[1] Purchase order waiting for release
@@ -1889,7 +1889,7 @@ SAP user account locked (User access and authorisations)
 
 ## Warnings
 Never unlock an account locked by an administrator. Never send an initial password to an
-address that has not been verified.",,,,,
+address that has not been verified.",M,,,,
 20,1af3043c-9e8b-480c-b1ca-d7e386cfab3b,"TLS cert expires soon
 
 Monitoring shows our API's TLS cert is due to expire. Users are starting to get certificate warning messages. We've tried restarting services, but the issue persists. Checking DNS, everything seems fine, but certificates might still fail. Need to ensure all endpoints get updated manually if needed. Trying to find a way to avoid downtime.","1. Identify the certificate and its domain. [1]
@@ -1991,7 +1991,7 @@ after a set number of days.
    are not restored.
 
 ## Warnings
-Never shorten retention on a bucket under legal or compliance hold.",,,,,
+Never shorten retention on a bucket under legal or compliance hold.",M,,,,
 21,da1fbb42-a4b8-4694-8dd6-4875b510d1c4,"Posting period issue
 
 Finance posting failed. Error message says period not open. Last month worked fine. Checked OB52, looks correct. Works for other account types. Not sure what changed. Need help resolving.","1. Check the posting date you entered. Ensure it is within the current or previous month. [1]
@@ -2087,7 +2087,7 @@ buyer releases them.
 3. If the block should be removed, the buyer removes it in ME22N and saves the PO.
 4. Retry the goods receipt in MIGO.
 5. If the item has a deletion indicator and the goods have physically arrived, the buyer
-   must create a new PO item; a deleted item cannot be received.",,,,,
+   must create a new PO item; a deleted item cannot be received.",W,,,,
 22,88811866-4cf0-4d5b-ba76-9fe8824f6d3a,"Printed SAP doc not arriving
 
 I printed an invoice in SAP, but the printer didn't spit anything out. I've tried restarting both the printer and the computer, but no luck. All other printers are working fine. Any idea what could be causing this? Could there be a setting specific to SAP documents that might affect printing? Is there a specific policy or limit for SAP document printing that I should be aware of when troubleshooting this issue?","1. Open SP01 and search for spool requests by your user ID and the time of printing. [1]
@@ -2166,7 +2166,7 @@ SAP GUI cannot connect to the server (GUI, dumps and printing)
    from the software centre.
 
 ## Warnings
-Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",,,,,
+Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",A,,,,
 23,b1cb9cae-8ad0-4ab4-bbfe-8e78f36939ad,"Cloud service acting weird
 
 I can't access any cloud services today. Everything was fine yesterday. I tried restarting my computer, but it didn't help. I also cleared my cache and cookies, but nothing changes. I even reinstalled the cloud client, but still can't get in. Other users are experiencing the same issue. It's critical for our project, which is due tomorrow.","(no draft: the model said the evidence cannot answer) Exact error messages or symptoms when trying to access the cloud services; Details about the cloud services being used (e.g., AWS, GCP, Azure); Whether other users are experiencing the same issue; Any recent changes or updates to the cloud services","[1] Request for additional cloud permissions
@@ -2240,7 +2240,7 @@ act with its permissions until it is disabled.
    with temporary credentials instead.
 4. Remove the key from the repository history, not just the latest commit. Rotating the
    key matters more than cleaning the history.
-5. Ask the security team to review the account's activity logs for use of the old key.",,,,,
+5. Ask the security team to review the account's activity logs for use of the old key.",M,,,,
 24,82e64872-3819-4baf-9fff-ffa8e4da58dd,"Colleague's behavior concern
 
 John has been interrupting meetings frequently. It disrupts our workflow and group dynamics. Can you advise on handling this? We need a solution soon.",(no draft: the model said the evidence cannot answer) Specific HR or management procedures for addressing frequent meeting interruptions; Company policies on meeting etiquette and behavior during meetings,"[1] Is a date a company holiday?
@@ -2344,7 +2344,7 @@ roles have a minimum number of office days per week set by the department.
 4. Equipment for home working is requested through the normal equipment request.
 
 ## Warnings
-HR clarifies the policy; the manager approves individual exceptions.",,,,,
+HR clarifies the policy; the manager approves individual exceptions.",A,,,,
 25,a2406e23-c52c-4545-a29f-02f8200074bb,"Schema migration failed
 
 Migration halted before completion; unsure of applied changes. Need assistance to identify and revert partial schema changes.","1. Check the version table (alembic_version) to see what the tool recorded. [1]
@@ -2448,7 +2448,7 @@ itself.
 
 ## Warnings
 Never run a data fix that has no `WHERE` clause or whose row count does not match the
-expected number.",,,,,
+expected number.",A,,,,
 26,76039600-8c7a-49ef-9ca0-60018c4c4c23,"IDoc status 51 - Urgent Attention
 
 Inbound IDoc WE02 shows status 51, no document posted. Expected order not created, blocking our delivery schedule. Tried reprocessing but got same error; need immediate resolution. Customer data seems correct, but could be a missing pricing condition. Urgent: Need SAP expert to investigate and fix.","1. Open the IDoc in WE02 and read the status record for status 51. The error message usually names the missing field or master record. [1]
@@ -2551,7 +2551,7 @@ allows unlimited over-delivery.
    receiving team wants to accept that part now.
 3. For the extra quantity, ask the buyer whether to accept it. If yes, the buyer
    increases the PO quantity in ME22N and the rest is received afterwards.
-4. If the buyer does not accept the extra quantity, it is returned to the vendor.",,,,,
+4. If the buyer does not accept the extra quantity, it is returned to the vendor.",A,,,,
 27,65b6873a-be32-47dd-be41-fa40f40064a9,"Printed document not reaching printer
 
 Printed invoice doesn't show up on the printer queue. Checked the printer status, seems fine. Tried restarting both SAP and the printer, still nothing. Printer log shows no job, even though SAP said it printed. Other documents print fine, so it’s not the printer. SAP settings look correct, nothing is blocked or flagged. Any idea why it’s not printing? What else should I check? Is there a timeout setting for SAP print jobs that could cause them to be canceled before reaching the printer queue?","1. Open SP01 and search for spool requests by the user's ID and the time of printing. [1]
@@ -2618,7 +2618,7 @@ intermittent, repeated attempts can create duplicate documents.
 [5] Vendor invoice blocked for payment
 Vendor invoice blocked for payment (Purchasing and goods receipt)
 ## Warnings
-Only accounts payable releases blocked invoices. The helpdesk does not.",,,,,
+Only accounts payable releases blocked invoices. The helpdesk does not.",M,,,,
 28,f71a7edb-5a31-4817-9538-6afaa2c40b70,"Network issue, 169.254 address
 
 PC connects, but No internet. Tried restarting, didn't help. ipconfig shows 169.254.x.x. Other devices work fine nearby. Don't remember changing anything. Last week had same issue, fixed itself. Need working internet ASAP for meeting. Let's check server soon.","1. Run `ipconfig /release` and `ipconfig /renew` to request a new IP address. [1]
@@ -2715,7 +2715,7 @@ timeout error. Internet access without the VPN works.
 ## Cause
 Usually one of: the local network blocks the VPN (hotel, airport or public Wi-Fi), the
 user's domain account is locked or its password expired, the VPN adapter was disabled by
-an update, or the VPN gateway itself is down.",,,,,
+an update, or the VPN gateway itself is down.",R,,,,
 29,1344b2e5-deee-4633-bef2-c5f80ea172dd,"Bucket storage duration query
 
 Need to know how long files stay in our bucket before moving or deleting. Checked the documentation but it's unclear. Some files disappeared, others moved to archive storage. Worried about old data being retained indefinitely. Tried adjusting lifecycle rules but got conflicting info. Need a clear timeline for file retention and movement. Help to avoid data loss or unnecessary costs.","1. Check the bucket's lifecycle rules for transition and expiration settings. [1]
@@ -2816,7 +2816,7 @@ Do not request the largest possible quota ""to be safe""; it hides runaway growt
 Cloud access key exposed or committed to a repository (Identity, SSO and permissions)
 ## Warnings
 Deleting the commit is not enough: a pushed key must be treated as compromised and
-deactivated.",,,,,
+deactivated.",A,,,,
 30,f1bd33cb-403a-4e05-874c-57a4088ad0a9,"New database request
 
 Our team needs a managed PostgreSQL database for the new project. Can we get that set up, please?","1. Confirm the exact scope (database) and whether read-only or read-write access is needed. [2]
@@ -2926,4 +2926,4 @@ inside the retention window.
    window with them.
 
 ## Warnings
-Never restore over the live database before the restored copy is verified.",,,,,
+Never restore over the live database before the restored copy is verified.",W,,,,
