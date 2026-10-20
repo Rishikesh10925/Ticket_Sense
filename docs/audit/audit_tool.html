@@ -36,6 +36,8 @@
   .claim { font-size: 18px; font-weight: 600; }
   .passage { white-space: pre-wrap; max-height: 60vh; overflow: auto; font-size: 14px; }
   mark { background: var(--mark); color: inherit; border-radius: 2px; }
+  mark.best { outline: 2px solid var(--primary); }
+  .passage { position: relative; }
   .meta { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
   .choices { display: flex; gap: 10px; margin: 16px 0 8px; flex-wrap: wrap; }
   .choices button { flex: 1; min-width: 160px; padding: 12px; font-weight: 600; }
@@ -132,6 +134,22 @@
     return esc(passage).replace(/[A-Za-z0-9_\/.-]{3,}/g, (m) => w.has(m.toLowerCase()) ? "<mark>" + m + "</mark>" : m);
   }
 
+  // Long passages hid the matching sentence below the fold (a pilot audit marked two
+  // verbatim steps "not supported"). Scroll to the densest run of highlights and ring it.
+  function scrollToBestMatch() {
+    const box = $("passage");
+    const marks = [...box.querySelectorAll("mark")];
+    box.querySelectorAll(".best").forEach((m) => m.classList.remove("best"));
+    if (!marks.length) { box.scrollTop = 0; return; }
+    let best = 0, bestCount = 0;
+    marks.forEach((m, k) => {
+      const n = marks.filter((o) => Math.abs(o.offsetTop - m.offsetTop) < 60).length;
+      if (n > bestCount) { bestCount = n; best = k; }
+    });
+    marks.filter((o) => Math.abs(o.offsetTop - marks[best].offsetTop) < 60).forEach((m) => m.classList.add("best"));
+    box.scrollTop = Math.max(0, marks[best].offsetTop - 60);
+  }
+
   function save() {
     try { localStorage.setItem(key(), JSON.stringify(rows.map((r) => [r[col("human")], r[col("note")]]))); } catch (e) {}
   }
@@ -150,7 +168,7 @@
     $("where").textContent = `Claim ${i + 1} of ${rows.length} · ticket ${r[col("ticket_id")]} · step ${r[col("step")]}`;
     $("claim").textContent = r[col("claim")];
     $("passage").innerHTML = highlight(r[col("cited_passages")], r[col("claim")]);
-    $("passage").scrollTop = 0;
+    scrollToBestMatch();
     $("note").value = r[col("note")] || "";
     document.querySelectorAll(".choices button").forEach((b) => b.classList.toggle("on", b.dataset.v === r[col("human")]));
     const done = rows.filter((x) => x[col("human")]).length;
