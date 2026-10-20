@@ -13,6 +13,7 @@ const TABS = [
   { to: "/admin/knowledge-base", label: "Knowledge Base" },
   { to: "/admin/analytics", label: "Analytics" },
   { to: "/admin/model-health", label: "Model Health" },
+  { to: "/admin/error-budget", label: "Error Budget" },
 ];
 
 // The admin control-center shell: a second-level tab row beneath the global top

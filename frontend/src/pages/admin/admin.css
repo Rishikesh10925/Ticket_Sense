@@ -137,3 +137,14 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Error budget (Week 8): provisional thresholds are flagged, never shown as the real guarantee. */
+.budget-warning {
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-left: 3px solid var(--color-warning-strong);
+  background: var(--color-warning-bg);
+  color: var(--color-text);
+  border-radius: 4px;
+  font-size: 14px;
+}

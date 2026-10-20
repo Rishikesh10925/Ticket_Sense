@@ -17,6 +17,7 @@ import AdminDepartments from "./pages/admin/AdminDepartments";
 import AdminKnowledgeBase from "./pages/admin/AdminKnowledgeBase";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminModelHealth from "./pages/admin/AdminModelHealth";
+import AdminErrorBudget from "./pages/admin/AdminErrorBudget";
 import TicketDetail from "./pages/TicketDetail";
 import "./pages/pages.css";
 
@@ -63,6 +64,7 @@ export default function App() {
                     <Route path="knowledge-base" element={<AdminKnowledgeBase />} />
                     <Route path="analytics" element={<AdminAnalytics />} />
                     <Route path="model-health" element={<AdminModelHealth />} />
+                    <Route path="error-budget" element={<AdminErrorBudget />} />
                   </Route>
                 </Route>
                 {/* Backend enforces per-ticket access (see app/routers/tickets.py), so
