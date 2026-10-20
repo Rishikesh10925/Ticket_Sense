@@ -85,6 +85,24 @@ def human_label(mean_acceptable: float | None, adjudicated: int | None) -> int |
     return adjudicated
 
 
+def verify_inputs(version: str) -> None:
+    """Refuse to train or evaluate on changed data (Roadmap Week 8: "verify the
+    locked-test data hash"): the benchmark freeze must verify and the sealed locked-test
+    selection must still match its hash."""
+    import hashlib
+
+    from benchmark.freeze import verify
+
+    problems = verify(version)
+    seal = json.loads((ROOT / "data" / "annotation" / "locked_test_seal.json").read_text(encoding="utf-8"))
+    selection = json.loads((ROOT / "data" / "annotation" / f"selection_{version}.json").read_text(encoding="utf-8"))
+    ids = sorted(selection["selected"]["test"])
+    if hashlib.sha256("\n".join(ids).encode()).hexdigest() != seal["ticket_ids_sha256"]:
+        problems.append("the locked-test selection no longer matches its seal")
+    if problems:
+        raise RuntimeError("inputs changed since they were frozen or sealed:\n" + "\n".join(problems))
+
+
 async def load(version: str = "v1", label_source: str = "judge", include_test: bool = False,
                reason: str | None = None) -> list[Row]:
     from sqlalchemy import text
@@ -94,6 +112,7 @@ async def load(version: str = "v1", label_source: str = "judge", include_test: b
 
     if label_source not in LABEL_SOURCES:
         raise ValueError(f"label_source must be one of {LABEL_SOURCES}")
+    verify_inputs(version)
     if include_test:
         if not reason:
             raise ValueError("reading the locked test needs a recorded reason")
