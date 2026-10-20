@@ -302,6 +302,32 @@ export interface TicketDraft {
   created_at: string;
 }
 
+export interface GateThresholdSet {
+  version: string;
+  model_version: string;
+  label_source: "human" | "judge";
+  alpha_fast: number;
+  alpha_assisted: number;
+  delta: number;
+  fast_threshold: number | null;
+  assisted_threshold: number | null;
+  active: boolean;
+  created_at: string;
+}
+
+export interface GateThresholdsView {
+  active: GateThresholdSet | null;
+  alpha_curve: { alpha: number; threshold: number | null; coverage: number }[];
+  calibration_n: number | null;
+  history: GateThresholdSet[];
+}
+
+export async function getGateThresholds(token: string): Promise<GateThresholdsView> {
+  const res = await fetch(`${API_URL}/gate/thresholds`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
 export async function getTicketDraft(token: string, id: string): Promise<TicketDraft> {
   const res = await fetch(`${API_URL}/tickets/${id}/draft`, { headers: authHeaders(token) });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));

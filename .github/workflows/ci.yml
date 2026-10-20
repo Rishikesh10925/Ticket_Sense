@@ -39,7 +39,7 @@ jobs:
       - name: Install
         run: |
           uv venv
-          uv pip install numpy scipy pandas scikit-learn pyyaml pytest pytest-cov
+          uv pip install numpy scipy pandas scikit-learn xgboost pyyaml pytest pytest-cov
       - name: ai/ unit tests (no database, no model server)
         run: .venv/bin/pytest ai/tests -q --cov=ai/evaluation --cov=ai/generation --cov-report=term
 

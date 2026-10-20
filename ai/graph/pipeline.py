@@ -1,6 +1,6 @@
 """Builds and compiles the ticket pipeline as a LangGraph StateGraph:
 
-    extract -> redact -> classify -> route -> retrieve -> draft -> check -> signals -> score
+    extract -> redact -> classify -> route -> retrieve -> draft -> check -> signals -> gate -> score
             -> [gate] -> show | escalate
 
 Blueprint V2 §9 stages 1 to 8. Every ticket gets a draft and a claim check, because
@@ -29,6 +29,7 @@ from graph.nodes import (  # noqa: E402
     make_draft_node,
     make_escalate_node,
     make_extract_node,
+    make_gate_node,
     make_redact_node,
     make_retrieve_node,
     make_route_node,
@@ -49,6 +50,7 @@ def build_pipeline(db, department_model, llm_client, scorer=None, default_confid
     graph.add_node("draft", make_draft_node(llm_client))
     graph.add_node("check", make_check_node(scorer))
     graph.add_node("signals", make_signals_node())
+    graph.add_node("gate", make_gate_node(db))
     graph.add_node("score", make_score_node(db, department_model, default_confidence_threshold))
     graph.add_node("show", make_show_node())
     graph.add_node("escalate", make_escalate_node())
@@ -61,7 +63,8 @@ def build_pipeline(db, department_model, llm_client, scorer=None, default_confid
     graph.add_edge("retrieve", "draft")
     graph.add_edge("draft", "check")
     graph.add_edge("check", "signals")
-    graph.add_edge("signals", "score")
+    graph.add_edge("signals", "gate")
+    graph.add_edge("gate", "score")
     graph.add_conditional_edges("score", gate_condition, {"draft": "show", "escalate": "escalate"})
     graph.add_edge("show", END)
     graph.add_edge("escalate", END)

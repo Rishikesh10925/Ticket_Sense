@@ -56,7 +56,7 @@ async def _truncate() -> None:
         await conn.execute(
             text(
                 "TRUNCATE TABLE feedback, escalations, embeddings, tickets, "
-                "knowledge_base, users, departments RESTART IDENTITY CASCADE"
+                "knowledge_base, users, departments, gate_thresholds RESTART IDENTITY CASCADE"
             )
         )
     await truncate_engine.dispose()

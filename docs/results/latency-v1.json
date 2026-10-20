@@ -1,0 +1,47 @@
+{
+ "n": 30,
+ "seed": 2026,
+ "cache": "bypassed",
+ "stages": {
+  "redact": {
+   "median_ms": 0.1,
+   "p90_ms": 0.2,
+   "max_ms": 29.5
+  },
+  "classify": {
+   "median_ms": 24.2,
+   "p90_ms": 104.7,
+   "max_ms": 259.2
+  },
+  "route": {
+   "median_ms": 48.4,
+   "p90_ms": 84.9,
+   "max_ms": 228.1
+  },
+  "retrieve": {
+   "median_ms": 430.3,
+   "p90_ms": 3773.1,
+   "max_ms": 6367.0
+  },
+  "draft": {
+   "median_ms": 6034.2,
+   "p90_ms": 10611.3,
+   "max_ms": 27403.0
+  },
+  "check": {
+   "median_ms": 175.2,
+   "p90_ms": 533.1,
+   "max_ms": 3822.7
+  },
+  "signals": {
+   "median_ms": 0.2,
+   "p90_ms": 0.6,
+   "max_ms": 1.9
+  },
+  "total": {
+   "median_ms": 6764.5,
+   "p90_ms": 19155.2,
+   "max_ms": 31936.1
+  }
+ }
+}

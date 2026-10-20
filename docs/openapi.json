@@ -570,6 +570,55 @@
         }
       }
     },
+    "/tickets/{ticket_id}/decision": {
+      "get": {
+        "tags": [
+          "tickets"
+        ],
+        "summary": "Get Ticket Decision",
+        "description": "The confidence gate's lane, calibrated score, top reasons and the threshold set\nused for the ticket's latest draft. Reviewer-only: an end user never sees scores.",
+        "operationId": "get_ticket_decision_tickets__ticket_id__decision_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Ticket Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tickets/{ticket_id}/escalation": {
       "get": {
         "tags": [
@@ -1370,6 +1419,34 @@
           }
         }
       }
+    },
+    "/gate/thresholds": {
+      "get": {
+        "tags": [
+          "gate"
+        ],
+        "summary": "Get Thresholds",
+        "operationId": "get_thresholds_gate_thresholds_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Thresholds Gate Thresholds Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1793,6 +1870,99 @@
           "count"
         ],
         "title": "DailyTrendPoint"
+      },
+      "DecisionOut": {
+        "properties": {
+          "lane": {
+            "type": "string",
+            "title": "Lane"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "thresholds_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thresholds Version"
+          },
+          "label_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label Source"
+          },
+          "fast_threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fast Threshold"
+          },
+          "assisted_threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assisted Threshold"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lane",
+          "score",
+          "reasons",
+          "model_version",
+          "thresholds_version",
+          "label_source",
+          "fast_threshold",
+          "assisted_threshold",
+          "created_at"
+        ],
+        "title": "DecisionOut",
+        "description": "The confidence gate's decision for a ticket's latest draft (docs/api-contract.md)."
       },
       "DepartmentBreakdown": {
         "properties": {
