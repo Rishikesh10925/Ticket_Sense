@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Numeric, Text
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -18,6 +18,8 @@ class Escalation(UUIDPKMixin, CreatedAtMixin, Base):
         UUID(as_uuid=True), ForeignKey("tickets.id", ondelete="CASCADE"), nullable=False, index=True
     )
     reason: Mapped[str] = mapped_column(Text(), nullable=False)
+    # senior: the gate withheld the draft; admin: an engineer escalated after reviewing it.
+    tier: Mapped[str] = mapped_column(String(16), nullable=False, server_default="admin")
     confidence_score: Mapped[float | None] = mapped_column(Numeric(), nullable=True)
     # Set once an admin approves this escalation and picks a specific engineer to
     # handle it (see app/routers/escalations.py) — the only thing that puts an

@@ -47,6 +47,8 @@ class Ticket(UUIDPKMixin, CreatedAtMixin, Base):
     redacted_text: Mapped[str | None] = mapped_column(Text(), nullable=True)
     redaction_map: Mapped[dict | None] = mapped_column(JSONB(), nullable=True)
     redactor_version: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    # The confidence gate's lane (Week 9, migration 0022): fast, assisted or escalate.
+    lane: Mapped[str | None] = mapped_column(String(16), nullable=True, index=True)
     ai_draft_reply: Mapped[str | None] = mapped_column(Text(), nullable=True)
     # [{"source_type": ..., "source_id": ..., "title": ...}, ...] — the evidence the
     # draft actually cited, in citation-number order. See docs/langgraph-pipeline.md.
