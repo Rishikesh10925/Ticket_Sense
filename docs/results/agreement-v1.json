@@ -1,0 +1,27 @@
+{
+ "reviewers": {
+  "overlap_pairs": {
+   "n": 0,
+   "status": "insufficient (< 10 shared items)"
+  },
+  "judge_vs_reviewers": {
+   "n": 0,
+   "status": "insufficient (< 10 shared items)"
+  },
+  "label_counts": {}
+ },
+ "pilot": {
+  "members_labelled": [
+   "R"
+  ],
+  "fleiss_kappa": "needs >= 2 members, has 1",
+  "R_vs_judge": {
+   "n": 28,
+   "raw_agreement": 0.4286,
+   "kappa": 0.2028,
+   "kappa_linear": 0.4604,
+   "acceptable_agreement": 0.8214,
+   "kappa_acceptable": 0.5783
+  }
+ }
+}
