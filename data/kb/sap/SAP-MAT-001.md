@@ -6,7 +6,7 @@ title: Material master locked by another user
 updated: '2026-07-07'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 legacy: material-locked-by-user
 ---
 

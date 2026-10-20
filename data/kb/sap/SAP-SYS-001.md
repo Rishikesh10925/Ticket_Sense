@@ -6,7 +6,7 @@ title: SAP GUI cannot connect to the server
 updated: '2026-09-21'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 legacy: gui-connection-timeout
 ---
 

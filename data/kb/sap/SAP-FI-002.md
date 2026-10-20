@@ -6,7 +6,7 @@ title: Posting period not open in finance
 updated: '2026-09-30'
 served: false
 author: S
-reviewer: null
+reviewer: Claude
 ---
 
 ## Symptom

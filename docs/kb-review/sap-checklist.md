@@ -4,9 +4,9 @@ For each article: open it, click each term, confirm the article uses it correctl
 All correct ➜ set `reviewer: R` in the article. Something wrong ➜ note it here and tell Claude.
 Values described as *this organisation's* policy (limits, approvals) are fictional company rules:
 they cannot be looked up, only checked for being stated as policy rather than as a vendor default.
-⭐ = check first (claims the authoring workflow flagged as risky). ⬜ = not checked yet. ✅ = reviewed.
+⭐ = check first (flagged as risky). ⬜ = not checked. 🤖 = AI-checked only (still needs a human). ✅ = human-reviewed.
 
-## ⭐ SAP-ACC-001: SAP user account locked
+## 🤖 SAP-ACC-001: SAP user account locked
 File: [data/kb/sap/SAP-ACC-001.md](../../data/kb/sap/SAP-ACC-001.md) · author S
 
 **Look up:** [login/fails_to_user_lock](https://www.google.com/search?q=SAP+login%2Ffails_to_user_lock+site%3Ahelp.sap.com) · [SU01](https://www.google.com/search?q=SAP+SU01+site%3Ahelp.sap.com)
@@ -19,7 +19,7 @@ File: [data/kb/sap/SAP-ACC-001.md](../../data/kb/sap/SAP-ACC-001.md) · author S
 
 Notes: 
 
-## ⭐ SAP-ACC-002: Not authorised for a transaction
+## 🤖 SAP-ACC-002: Not authorised for a transaction
 File: [data/kb/sap/SAP-ACC-002.md](../../data/kb/sap/SAP-ACC-002.md) · author S
 
 **Look up:** [SU53](https://www.google.com/search?q=SAP+SU53+site%3Ahelp.sap.com)
@@ -32,7 +32,7 @@ File: [data/kb/sap/SAP-ACC-002.md](../../data/kb/sap/SAP-ACC-002.md) · author S
 
 Notes: 
 
-## ⭐ SAP-ACC-004: Fiori app tile missing from the launchpad
+## 🤖 SAP-ACC-004: Fiori app tile missing from the launchpad
 File: [data/kb/sap/SAP-ACC-004.md](../../data/kb/sap/SAP-ACC-004.md) · author S
 
 **Look up:** [PFCG](https://www.google.com/search?q=SAP+PFCG+site%3Ahelp.sap.com) · [SU01](https://www.google.com/search?q=SAP+SU01+site%3Ahelp.sap.com)
@@ -44,7 +44,7 @@ File: [data/kb/sap/SAP-ACC-004.md](../../data/kb/sap/SAP-ACC-004.md) · author S
 
 Notes: 
 
-## ⭐ SAP-FI-001: Wrong exchange rate on a foreign-currency posting
+## 🤖 SAP-FI-001: Wrong exchange rate on a foreign-currency posting
 File: [data/kb/sap/SAP-FI-001.md](../../data/kb/sap/SAP-FI-001.md) · author S
 
 **Look up:** [OB08](https://www.google.com/search?q=SAP+OB08+site%3Ahelp.sap.com) · [FB08](https://www.google.com/search?q=SAP+FB08+site%3Ahelp.sap.com)
@@ -56,7 +56,7 @@ File: [data/kb/sap/SAP-FI-001.md](../../data/kb/sap/SAP-FI-001.md) · author S
 
 Notes: 
 
-## ⭐ SAP-INT-001: Background job not starting or stuck
+## 🤖 SAP-INT-001: Background job not starting or stuck
 File: [data/kb/sap/SAP-INT-001.md](../../data/kb/sap/SAP-INT-001.md) · author S
 
 **Look up:** [SM37](https://www.google.com/search?q=SAP+SM37+site%3Ahelp.sap.com) · [SM50](https://www.google.com/search?q=SAP+SM50+site%3Ahelp.sap.com) · [SM12](https://www.google.com/search?q=SAP+SM12+site%3Ahelp.sap.com)
@@ -69,7 +69,7 @@ File: [data/kb/sap/SAP-INT-001.md](../../data/kb/sap/SAP-INT-001.md) · author S
 
 Notes: 
 
-## ⭐ SAP-INT-002: IDoc in status 51
+## 🤖 SAP-INT-002: IDoc in status 51
 File: [data/kb/sap/SAP-INT-002.md](../../data/kb/sap/SAP-INT-002.md) · author S
 
 **Look up:** [WE02](https://www.google.com/search?q=SAP+WE02+site%3Ahelp.sap.com) · [WE05](https://www.google.com/search?q=SAP+WE05+site%3Ahelp.sap.com) · [BD87](https://www.google.com/search?q=SAP+BD87+site%3Ahelp.sap.com) · [status 51](https://www.google.com/search?q=SAP+status+51+site%3Ahelp.sap.com)
@@ -82,7 +82,7 @@ File: [data/kb/sap/SAP-INT-002.md](../../data/kb/sap/SAP-INT-002.md) · author S
 
 Notes: 
 
-## ⭐ SAP-MAT-004: Posting period closed for goods movements
+## 🤖 SAP-MAT-004: Posting period closed for goods movements
 File: [data/kb/sap/SAP-MAT-004.md](../../data/kb/sap/SAP-MAT-004.md) · author S
 
 **Look up:** [MMPV](https://www.google.com/search?q=SAP+MMPV+site%3Ahelp.sap.com) · [MMRV](https://www.google.com/search?q=SAP+MMRV+site%3Ahelp.sap.com)
@@ -94,7 +94,7 @@ File: [data/kb/sap/SAP-MAT-004.md](../../data/kb/sap/SAP-MAT-004.md) · author S
 
 Notes: 
 
-## ⭐ SAP-PO-001: Goods receipt fails because the PO item is blocked
+## 🤖 SAP-PO-001: Goods receipt fails because the PO item is blocked
 File: [data/kb/sap/SAP-PO-001.md](../../data/kb/sap/SAP-PO-001.md) · author S
 
 **Look up:** [MIGO](https://www.google.com/search?q=SAP+MIGO+site%3Ahelp.sap.com) · [ME22N](https://www.google.com/search?q=SAP+ME22N+site%3Ahelp.sap.com) · [ME23N](https://www.google.com/search?q=SAP+ME23N+site%3Ahelp.sap.com)
@@ -107,7 +107,7 @@ File: [data/kb/sap/SAP-PO-001.md](../../data/kb/sap/SAP-PO-001.md) · author S
 
 Notes: 
 
-## ⭐ SAP-PO-002: Purchase order waiting for release
+## 🤖 SAP-PO-002: Purchase order waiting for release
 File: [data/kb/sap/SAP-PO-002.md](../../data/kb/sap/SAP-PO-002.md) · author S
 
 **Look up:** [ME23N](https://www.google.com/search?q=SAP+ME23N+site%3Ahelp.sap.com) · [ME29N](https://www.google.com/search?q=SAP+ME29N+site%3Ahelp.sap.com) · [ME28](https://www.google.com/search?q=SAP+ME28+site%3Ahelp.sap.com)
@@ -115,12 +115,12 @@ File: [data/kb/sap/SAP-PO-002.md](../../data/kb/sap/SAP-PO-002.md) · author S
 **Key facts to confirm:**
 - [ ] The Release Strategy tab in ME23N shows which approvals are outstanding.
 - [ ] Approvers release POs in ME29N (individually) or ME28 (collectively).
-- [ ] A deputy configured for the release code can release when the approver is absent.
+- [ ] An absent approver is covered by a workflow substitute or another holder of the same release code.
 - [ ] The helpdesk never releases a PO on an approver's behalf.
 
 Notes: 
 
-## ⭐ SAP-PO-004: Vendor invoice blocked for payment
+## 🤖 SAP-PO-004: Vendor invoice blocked for payment
 File: [data/kb/sap/SAP-PO-004.md](../../data/kb/sap/SAP-PO-004.md) · author S
 
 **Look up:** [MIRO](https://www.google.com/search?q=SAP+MIRO+site%3Ahelp.sap.com) · [MRBR](https://www.google.com/search?q=SAP+MRBR+site%3Ahelp.sap.com)
@@ -128,12 +128,12 @@ File: [data/kb/sap/SAP-PO-004.md](../../data/kb/sap/SAP-PO-004.md) · author S
 **Key facts to confirm:**
 - [ ] MIRO blocks invoices for payment when they differ from the PO or goods receipt beyond tolerance.
 - [ ] MRBR shows why an invoice is blocked and is used to release it.
-- [ ] A quantity block caused by a missing goods receipt clears once the receipt is posted.
+- [ ] After the missing goods receipt is posted, a quantity block is released by an MRBR run, not automatically.
 - [ ] Blocked invoices are released by accounts payable, not the helpdesk.
 
 Notes: 
 
-## ⭐ SAP-SYS-001: SAP GUI cannot connect to the server
+## 🤖 SAP-SYS-001: SAP GUI cannot connect to the server
 File: [data/kb/sap/SAP-SYS-001.md](../../data/kb/sap/SAP-SYS-001.md) · author S
 
 **Look up:** (no technical terms; check the steps make sense)
@@ -145,7 +145,7 @@ File: [data/kb/sap/SAP-SYS-001.md](../../data/kb/sap/SAP-SYS-001.md) · author S
 
 Notes: 
 
-## ⬜ SAP-ACC-003: Forgotten SAP password
+## 🤖 SAP-ACC-003: Forgotten SAP password
 File: [data/kb/sap/SAP-ACC-003.md](../../data/kb/sap/SAP-ACC-003.md) · author S
 
 **Look up:** [SU01](https://www.google.com/search?q=SAP+SU01+site%3Ahelp.sap.com)
@@ -157,7 +157,7 @@ File: [data/kb/sap/SAP-ACC-003.md](../../data/kb/sap/SAP-ACC-003.md) · author S
 
 Notes: 
 
-## ⬜ SAP-FI-002: Posting period not open in finance
+## 🤖 SAP-FI-002: Posting period not open in finance
 File: [data/kb/sap/SAP-FI-002.md](../../data/kb/sap/SAP-FI-002.md) · author S
 
 **Look up:** [OB52](https://www.google.com/search?q=SAP+OB52+site%3Ahelp.sap.com)
@@ -169,7 +169,7 @@ File: [data/kb/sap/SAP-FI-002.md](../../data/kb/sap/SAP-FI-002.md) · author S
 
 Notes: 
 
-## ⬜ SAP-FI-003: General ledger account blocked for posting
+## 🤖 SAP-FI-003: General ledger account blocked for posting
 File: [data/kb/sap/SAP-FI-003.md](../../data/kb/sap/SAP-FI-003.md) · author S
 
 **Look up:** [FS00](https://www.google.com/search?q=SAP+FS00+site%3Ahelp.sap.com)
@@ -181,7 +181,7 @@ File: [data/kb/sap/SAP-FI-003.md](../../data/kb/sap/SAP-FI-003.md) · author S
 
 Notes: 
 
-## ⬜ SAP-FI-004: Vendor not included in the payment run
+## 🤖 SAP-FI-004: Vendor not included in the payment run
 File: [data/kb/sap/SAP-FI-004.md](../../data/kb/sap/SAP-FI-004.md) · author S
 
 **Look up:** (no technical terms; check the steps make sense)
@@ -193,7 +193,7 @@ File: [data/kb/sap/SAP-FI-004.md](../../data/kb/sap/SAP-FI-004.md) · author S
 
 Notes: 
 
-## ⬜ SAP-INT-003: Interface fails with RFC connection error
+## 🤖 SAP-INT-003: Interface fails with RFC connection error
 File: [data/kb/sap/SAP-INT-003.md](../../data/kb/sap/SAP-INT-003.md) · author S
 
 **Look up:** [SM59](https://www.google.com/search?q=SAP+SM59+site%3Ahelp.sap.com)
@@ -205,7 +205,7 @@ File: [data/kb/sap/SAP-INT-003.md](../../data/kb/sap/SAP-INT-003.md) · author S
 
 Notes: 
 
-## ⬜ SAP-INT-004: Scheduled job cancelled because a variant is missing
+## 🤖 SAP-INT-004: Scheduled job cancelled because a variant is missing
 File: [data/kb/sap/SAP-INT-004.md](../../data/kb/sap/SAP-INT-004.md) · author S
 
 **Look up:** [SM37](https://www.google.com/search?q=SAP+SM37+site%3Ahelp.sap.com)
@@ -217,7 +217,7 @@ File: [data/kb/sap/SAP-INT-004.md](../../data/kb/sap/SAP-INT-004.md) · author S
 
 Notes: 
 
-## ⬜ SAP-MAT-001: Material master locked by another user
+## 🤖 SAP-MAT-001: Material master locked by another user
 File: [data/kb/sap/SAP-MAT-001.md](../../data/kb/sap/SAP-MAT-001.md) · author S
 
 **Look up:** [MM02](https://www.google.com/search?q=SAP+MM02+site%3Ahelp.sap.com) · [SM12](https://www.google.com/search?q=SAP+SM12+site%3Ahelp.sap.com) · [SM04](https://www.google.com/search?q=SAP+SM04+site%3Ahelp.sap.com)
@@ -229,7 +229,7 @@ File: [data/kb/sap/SAP-MAT-001.md](../../data/kb/sap/SAP-MAT-001.md) · author S
 
 Notes: 
 
-## ⬜ SAP-MAT-002: Number range exhausted
+## 🤖 SAP-MAT-002: Number range exhausted
 File: [data/kb/sap/SAP-MAT-002.md](../../data/kb/sap/SAP-MAT-002.md) · author S
 
 **Look up:** [FBN1](https://www.google.com/search?q=SAP+FBN1+site%3Ahelp.sap.com) · [MMNR](https://www.google.com/search?q=SAP+MMNR+site%3Ahelp.sap.com) · [SNRO](https://www.google.com/search?q=SAP+SNRO+site%3Ahelp.sap.com)
@@ -241,7 +241,7 @@ File: [data/kb/sap/SAP-MAT-002.md](../../data/kb/sap/SAP-MAT-002.md) · author S
 
 Notes: 
 
-## ⬜ SAP-MAT-003: Material not maintained for the plant
+## 🤖 SAP-MAT-003: Material not maintained for the plant
 File: [data/kb/sap/SAP-MAT-003.md](../../data/kb/sap/SAP-MAT-003.md) · author S
 
 **Look up:** [MM03](https://www.google.com/search?q=SAP+MM03+site%3Ahelp.sap.com) · [MM01](https://www.google.com/search?q=SAP+MM01+site%3Ahelp.sap.com)
@@ -253,7 +253,7 @@ File: [data/kb/sap/SAP-MAT-003.md](../../data/kb/sap/SAP-MAT-003.md) · author S
 
 Notes: 
 
-## ⬜ SAP-PO-003: Goods receipt quantity exceeds the PO quantity
+## 🤖 SAP-PO-003: Goods receipt quantity exceeds the PO quantity
 File: [data/kb/sap/SAP-PO-003.md](../../data/kb/sap/SAP-PO-003.md) · author S
 
 **Look up:** [MIGO](https://www.google.com/search?q=SAP+MIGO+site%3Ahelp.sap.com) · [ME23N](https://www.google.com/search?q=SAP+ME23N+site%3Ahelp.sap.com) · [ME22N](https://www.google.com/search?q=SAP+ME22N+site%3Ahelp.sap.com)
@@ -265,7 +265,7 @@ File: [data/kb/sap/SAP-PO-003.md](../../data/kb/sap/SAP-PO-003.md) · author S
 
 Notes: 
 
-## ⬜ SAP-SYS-002: Short dump during a transaction
+## 🤖 SAP-SYS-002: Short dump during a transaction
 File: [data/kb/sap/SAP-SYS-002.md](../../data/kb/sap/SAP-SYS-002.md) · author S
 
 **Look up:** [ST22](https://www.google.com/search?q=SAP+ST22+site%3Ahelp.sap.com)
@@ -277,7 +277,7 @@ File: [data/kb/sap/SAP-SYS-002.md](../../data/kb/sap/SAP-SYS-002.md) · author S
 
 Notes: 
 
-## ⬜ SAP-SYS-003: Printed SAP document never arrives at the printer
+## 🤖 SAP-SYS-003: Printed SAP document never arrives at the printer
 File: [data/kb/sap/SAP-SYS-003.md](../../data/kb/sap/SAP-SYS-003.md) · author S
 
 **Look up:** [SP01](https://www.google.com/search?q=SAP+SP01+site%3Ahelp.sap.com) · [SPAD](https://www.google.com/search?q=SAP+SPAD+site%3Ahelp.sap.com)
@@ -290,7 +290,7 @@ File: [data/kb/sap/SAP-SYS-003.md](../../data/kb/sap/SAP-SYS-003.md) · author S
 
 Notes: 
 
-## ⬜ SAP-SYS-004: Wrong date or number format in SAP
+## 🤖 SAP-SYS-004: Wrong date or number format in SAP
 File: [data/kb/sap/SAP-SYS-004.md](../../data/kb/sap/SAP-SYS-004.md) · author S
 
 **Look up:** [SU3](https://www.google.com/search?q=SAP+SU3+site%3Ahelp.sap.com)

@@ -6,7 +6,7 @@ title: Short dump during a transaction
 updated: '2025-05-08'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 legacy: short-dump-st22
 ---
 

@@ -6,7 +6,7 @@ title: Forgotten SAP password
 updated: '2026-02-03'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 ---
 
 ## Symptom

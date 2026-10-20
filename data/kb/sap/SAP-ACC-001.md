@@ -6,7 +6,7 @@ title: SAP user account locked
 updated: '2026-08-11'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 legacy: locked-user-account
 ---
 

@@ -6,7 +6,7 @@ title: Wrong exchange rate on a foreign-currency posting
 updated: '2024-03-19'
 served: false
 author: S
-reviewer: null
+reviewer: Claude
 legacy: incorrect-exchange-rate-fi
 ---
 

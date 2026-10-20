@@ -6,7 +6,7 @@ title: Interface fails with RFC connection error
 updated: '2026-07-14'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 ---
 
 ## Symptom

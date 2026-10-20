@@ -6,7 +6,7 @@ title: Fiori app tile missing from the launchpad
 updated: '2025-11-18'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 ---
 
 ## Symptom

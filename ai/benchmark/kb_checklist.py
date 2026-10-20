@@ -21,7 +21,7 @@ from urllib.parse import quote_plus
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "ai"))
 
-from benchmark.kb import load_articles  # noqa: E402
+from benchmark.kb import is_ai_reviewed, is_human_reviewed, load_articles  # noqa: E402
 
 VENDOR = {
     "sap": ("SAP", "help.sap.com"),
@@ -68,11 +68,11 @@ def main() -> None:
         f"All correct ➜ set `reviewer: {args.reviewer}` in the article. Something wrong ➜ note it here and tell Claude.",
         "Values described as *this organisation's* policy (limits, approvals) are fictional company rules:",
         "they cannot be looked up, only checked for being stated as policy rather than as a vendor default.",
-        "⭐ = check first (claims the authoring workflow flagged as risky). ⬜ = not checked yet. ✅ = reviewed.",
+        "⭐ = check first (flagged as risky). ⬜ = not checked. 🤖 = AI-checked only (still needs a human). ✅ = human-reviewed.",
         "",
     ]
     for a in sorted(articles, key=lambda a: (a.id not in priority, a.id)):
-        done = "✅" if a.meta.get("reviewer") else ("⭐" if a.id in priority else "⬜")
+        done = "✅" if is_human_reviewed(a) else "🤖" if is_ai_reviewed(a) else ("⭐" if a.id in priority else "⬜")
         body = a.path.read_text(encoding="utf-8")
         lines += [f"## {done} {a.id}: {a.meta.get('title')}",
                   f"File: [{a.path.relative_to(ROOT).as_posix()}](../../{a.path.relative_to(ROOT).as_posix()}) · "

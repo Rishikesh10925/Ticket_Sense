@@ -6,7 +6,7 @@ title: Background job not starting or stuck
 updated: '2026-08-27'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 legacy: batch-job-stuck
 ---
 
