@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rubric pilot</title>
+<style>
+  :root {
+    --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --muted: #64748b; --border: #e2e8f0;
+    --primary: #4f46e5; --primary-soft: #eef2ff;
+    --a: #15803d; --a-bg: #dcfce7; --m: #0369a1; --m-bg: #e0f2fe; --r: #a16207; --r-bg: #fef3c7; --w: #b91c1c; --w-bg: #fee2e2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b1120; --surface: #131c31; --text: #e2e8f0; --muted: #94a3b8; --border: #1e293b;
+      --primary: #818cf8; --primary-soft: #1e1b4b;
+      --a: #4ade80; --a-bg: #14532d; --m: #38bdf8; --m-bg: #0c4a6e; --r: #fbbf24; --r-bg: #422006; --w: #f87171; --w-bg: #450a0a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 system-ui, sans-serif; }
+  header { position: sticky; top: 0; z-index: 1; background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 10px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  header h1 { font-size: 16px; margin: 0 auto 0 0; }
+  .bar { height: 6px; width: 200px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0; background: var(--primary); }
+  button, label.btn, select { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer; }
+  .primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+  main { max-width: 1200px; margin: 0 auto; padding: 16px; }
+  .start { text-align: center; padding: 50px 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+  .card h2 { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .pre { white-space: pre-wrap; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .scroll { max-height: 45vh; overflow: auto; font-size: 14px; }
+  .labels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+  @media (max-width: 600px) { .labels { grid-template-columns: 1fr 1fr; } }
+  .labels button { padding: 10px 6px; text-align: left; line-height: 1.3; }
+  .labels b { font-size: 18px; margin-right: 6px; }
+  .labels small { color: var(--muted); display: block; }
+  .on[data-v="A"] { background: var(--a-bg); border-color: var(--a); color: var(--a); }
+  .on[data-v="M"] { background: var(--m-bg); border-color: var(--m); color: var(--m); }
+  .on[data-v="R"] { background: var(--r-bg); border-color: var(--r); color: var(--r); }
+  .on[data-v="W"] { background: var(--w-bg); border-color: var(--w); color: var(--w); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+  .chip { padding: 2px 10px; border-radius: 999px; font-size: 13px; }
+  .chip.on { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+  input[type=text] { width: 100%; font: inherit; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--surface); color: var(--text); }
+  .nav { display: flex; justify-content: space-between; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .help { color: var(--muted); font-size: 13px; }
+  .hidden { display: none; }
+  kbd { font: 12px ui-monospace, monospace; border: 1px solid var(--border); border-radius: 3px; padding: 0 4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Rubric pilot</h1>
+  <span id="who" class="help"></span>
+  <span id="count" class="help"></span>
+  <div class="bar"><div id="progress"></div></div>
+  <button id="export" class="primary hidden">Download finished CSV</button>
+</header>
+<main>
+  <section id="start" class="start card">
+    <h2>Rubric pilot</h2>
+    <p>Who are you? <select id="member"><option value="R">Rishikesh</option><option value="A">Aashritha</option><option value="S">Shivaganesh</option></select></p>
+    <p class="help">Then choose <b>docs/pilot/pilot_v1.csv</b>. Only your own column is filled; others' labels are never shown.<br>
+      Nothing leaves your computer. Progress is saved in this browser as you go.</p>
+    <label class="btn primary">Choose CSV file<input id="file" type="file" accept=".csv" hidden></label>
+  </section>
+
+  <section id="work" class="hidden">
+    <div class="card"><h2 id="itemNo">Ticket</h2><div id="ticket" class="pre"></div></div>
+    <div class="grid">
+      <div class="card"><h2>AI draft (citations in [ ])</h2><div id="draft" class="pre scroll"></div></div>
+      <div class="card"><h2>Evidence the draft could use</h2><div id="evidence" class="pre scroll"></div></div>
+    </div>
+    <div class="card">
+      <div class="labels">
+        <button data-v="A"><b>A</b> Acceptable<small>correct, send as is</small></button>
+        <button data-v="M"><b>M</b> Minor edit<small>correct, small fix &lt; 2 min</small></button>
+        <button data-v="R"><b>R</b> Major rework<small>missing or wrong steps</small></button>
+        <button data-v="W"><b>W</b> Wrong / unsafe<small>misleads, harms, or answers without evidence</small></button>
+      </div>
+      <div id="reasonsBox">
+        <span class="help">Reason codes (for M, R, W):</span>
+        <div class="chips" id="chips"></div>
+      </div>
+      <input id="problem" type="text" placeholder="Rubric problem: what made this hard to label? (optional)">
+      <div class="nav">
+        <button id="prev">← Previous</button>
+        <button id="nextOpen">Next unlabelled</button>
+        <button id="next">Next →</button>
+      </div>
+      <p class="help">Keys: <kbd>A</kbd> <kbd>M</kbd> <kbd>R</kbd> <kbd>W</kbd> label · <kbd>←</kbd> <kbd>→</kbd> move.
+        A correct refusal ("the evidence can't answer this") is A or M. Any dangerous command or invented
+        policy not in the evidence is R or W.</p>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const CODES = ["wrong_source", "outdated_source", "missing_step", "invented_step", "did_not_address_question", "tone", "formatting", "other"];
+  let rows = [], header = [], fileName = "", member = "R", i = 0;
+  const key = () => `pilot:${fileName}:${member}`;
+  const col = (n) => header.indexOf(n);
+
+  function parseCSV(text) {
+    const out = []; let row = [], f = "", q = false;
+    for (let k = 0; k < text.length; k++) {
+      const c = text[k];
+      if (q) { if (c === '"' && text[k + 1] === '"') { f += '"'; k++; } else if (c === '"') q = false; else f += c; }
+      else if (c === '"') q = true;
+      else if (c === ",") { row.push(f); f = ""; }
+      else if (c === "\n" || c === "\r") { if (c === "\r" && text[k + 1] === "\n") k++; row.push(f); out.push(row); row = []; f = ""; }
+      else f += c;
+    }
+    if (f !== "" || row.length) { row.push(f); out.push(row); }
+    return out.filter((r) => r.length > 1 || r[0] !== "");
+  }
+  const toCSV = (t) => t.map((r) => r.map((v) => /[",\n\r]/.test(v ?? "") ? '"' + String(v).replace(/"/g, '""') + '"' : (v ?? "")).join(",")).join("\r\n") + "\r\n";
+
+  // Reason codes for several members share one column: "R:missing_step|tone; A:..."
+  function myCodes(r) {
+    const part = (r[col("reason_codes")] || "").split(";").map((s) => s.trim()).find((s) => s.startsWith(member + ":"));
+    return part ? part.slice(2).split("|").filter(Boolean) : [];
+  }
+  function setMyCodes(r, codes) {
+    const others = (r[col("reason_codes")] || "").split(";").map((s) => s.trim()).filter((s) => s && !s.startsWith(member + ":"));
+    if (codes.length) others.push(member + ":" + codes.join("|"));
+    r[col("reason_codes")] = others.join("; ");
+  }
+  function myProblem(r) {
+    const part = (r[col("rubric_problem")] || "").split(" || ").find((s) => s.startsWith(member + ": "));
+    return part ? part.slice(member.length + 2) : "";
+  }
+  function setMyProblem(r, text) {
+    const others = (r[col("rubric_problem")] || "").split(" || ").filter((s) => s && !s.startsWith(member + ": "));
+    if (text.trim()) others.push(member + ": " + text.trim());
+    r[col("rubric_problem")] = others.join(" || ");
+  }
+
+  function save() {
+    try { localStorage.setItem(key(), JSON.stringify(rows.map((r) => [r[col("label_" + member)], myCodes(r), myProblem(r)]))); } catch (e) {}
+  }
+  function restore() {
+    try {
+      const s = JSON.parse(localStorage.getItem(key()) || "null");
+      if (s && s.length === rows.length) s.forEach(([l, c, p], k) => {
+        if (!rows[k][col("label_" + member)]) rows[k][col("label_" + member)] = l || "";
+        if (!myCodes(rows[k]).length && c && c.length) setMyCodes(rows[k], c);
+        if (!myProblem(rows[k]) && p) setMyProblem(rows[k], p);
+      });
+    } catch (e) {}
+  }
+
+  function render() {
+    const r = rows[i], label = r[col("label_" + member)];
+    $("itemNo").textContent = `Item ${r[col("item")]} of ${rows.length} · ticket`;
+    $("ticket").textContent = r[col("ticket")];
+    $("draft").textContent = r[col("draft")];
+    $("evidence").textContent = r[col("evidence")];
+    $("draft").scrollTop = 0; $("evidence").scrollTop = 0;
+    document.querySelectorAll(".labels button").forEach((b) => b.classList.toggle("on", b.dataset.v === label));
+    const codes = myCodes(r);
+    $("chips").innerHTML = "";
+    CODES.forEach((c) => {
+      const b = document.createElement("button");
+      b.className = "chip" + (codes.includes(c) ? " on" : ""); b.textContent = c.replace(/_/g, " ");
+      b.onclick = () => { const now = myCodes(r); setMyCodes(r, now.includes(c) ? now.filter((x) => x !== c) : [...now, c]); save(); render(); };
+      $("chips").appendChild(b);
+    });
+    $("reasonsBox").classList.toggle("hidden", !label || label === "A");
+    $("problem").value = myProblem(r);
+    const done = rows.filter((x) => x[col("label_" + member)]).length;
+    $("count").textContent = `${done} / ${rows.length} labelled`;
+    $("progress").style.width = (100 * done / rows.length) + "%";
+    $("export").classList.toggle("hidden", done === 0);
+  }
+
+  function choose(v) {
+    rows[i][col("label_" + member)] = v;
+    if (v === "A") setMyCodes(rows[i], []);
+    save(); render();
+    // Stay on the item for M/R/W so reason codes can be ticked; A moves on.
+    if (v === "A" && i < rows.length - 1) { i++; render(); }
+  }
+
+  $("file").addEventListener("change", async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    fileName = f.name; member = $("member").value;
+    const t = parseCSV((await f.text()).replace(/^﻿/, ""));
+    header = t[0]; rows = t.slice(1);
+    if (col("label_" + member) < 0 || col("draft") < 0) { alert("This is not the pilot worksheet."); return; }
+    rows.forEach((r) => { while (r.length < header.length) r.push(""); });
+    restore();
+    i = Math.max(0, rows.findIndex((r) => !r[col("label_" + member)]));
+    $("who").textContent = "Labelling as " + $("member").selectedOptions[0].text;
+    $("start").classList.add("hidden"); $("work").classList.remove("hidden");
+    render();
+  });
+  document.querySelectorAll(".labels button").forEach((b) => b.addEventListener("click", () => choose(b.dataset.v)));
+  $("problem").addEventListener("input", () => { setMyProblem(rows[i], $("problem").value); save(); });
+  $("prev").onclick = () => { if (i > 0) { i--; render(); } };
+  $("next").onclick = () => { if (i < rows.length - 1) { i++; render(); } };
+  $("nextOpen").onclick = () => { const k = rows.findIndex((r, n) => n > i && !r[col("label_" + member)]); if (k >= 0) { i = k; render(); } };
+  $("export").onclick = () => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([toCSV([header, ...rows])], { type: "text/csv" }));
+    a.download = fileName; a.click();
+  };
+  document.addEventListener("keydown", (e) => {
+    if (!rows.length || e.target.id === "problem") return;
+    const k = e.key.toUpperCase();
+    if (["A", "M", "R", "W"].includes(k)) choose(k);
+    else if (e.key === "ArrowLeft") $("prev").click();
+    else if (e.key === "ArrowRight") $("next").click();
+  });
+})();
+</script>
+</body>
+</html>
