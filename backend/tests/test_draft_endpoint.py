@@ -36,7 +36,7 @@ def test_engineer_sees_cited_steps_evidence_and_claim_support(api):
     assert resp.status_code == 200
     draft = resp.json()
 
-    assert draft["shown"] is True and draft["lane"] == "draft"
+    assert draft["shown"] is True and draft["lane"] == "assisted"
     assert draft["steps"] and all(step["citations"] for step in draft["steps"])
     cited = {n for step in draft["steps"] for n in step["citations"]}
     assert cited <= {p["n"] for p in draft["evidence"]}

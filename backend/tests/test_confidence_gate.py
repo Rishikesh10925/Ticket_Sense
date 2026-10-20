@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from app.config import settings
 from app.core.security import hash_password
 from app.models import Department, User
+from gate_seed import set_thresholds
 from kb_seed import ensure_article
 
 
@@ -103,16 +104,13 @@ def test_high_confidence_ticket_reaches_drafted(api):
 
 
 def test_low_confidence_ticket_is_escalated_with_no_draft(api):
-    networking_id = _department_id_sync("Networking")
+    _department_id_sync("Networking")
     admin_token = _admin_token(api, "gate_admin_low@example.com")
 
-    # Force the gate to fail regardless of the actual score, so this test doesn't
-    # depend on the model's exact output — an unreachably high bar.
-    api.patch(
-        f"/departments/{networking_id}/threshold",
-        json={"confidence_threshold": 1.0},
-        headers={"Authorization": f"Bearer {admin_token}"},
-    )
+    # Since Week 9 the gate's certified thresholds route tickets (not the department's
+    # V1 threshold). An unreachable assisted threshold forces escalation regardless of
+    # the model's exact score.
+    set_thresholds(fast=None, assisted=1.0, version="test-unreachable")
 
     token = _register_and_login(api, "gate_user_low@example.com")
     resp = api.post(
@@ -131,6 +129,7 @@ def test_low_confidence_ticket_is_escalated_with_no_draft(api):
     assert ticket["ai_draft_citations"] is None
     assert ticket["confidence_score"] is not None
     assert ticket["confidence_threshold"] == 1.0
+    assert ticket["lane"] == "escalate"
 
     escalation = api.get(
         f"/tickets/{ticket_id}/escalation", headers={"Authorization": f"Bearer {admin_token}"}

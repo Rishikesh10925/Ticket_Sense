@@ -100,12 +100,12 @@ def test_ticket_auto_classified_and_routed(api):
     ).json()
     assert engineer_view["ai_draft_reply"]
     assert engineer_view["ai_draft_citations"] is not None
+    # Week 9: the confidence model's calibrated score and the assisted-lane threshold it
+    # was compared with (the permissive test set: 0.0); reasons live in gate_decisions.
     assert 0.0 <= engineer_view["confidence_score"] <= 1.0
-    assert set(engineer_view["confidence_features"]) == {
-        "retrieval_relevance", "ticket_resolution_similarity", "document_freshness",
-        "ocr_confidence", "category_risk",
-    }
-    assert engineer_view["confidence_threshold"] == 0.5  # DEFAULT_CONFIDENCE_THRESHOLD
+    assert engineer_view["confidence_features"] is None
+    assert engineer_view["confidence_threshold"] == 0.0
+    assert engineer_view["lane"] == "assisted"
 
 
 def test_queue_sort_by_priority(api):

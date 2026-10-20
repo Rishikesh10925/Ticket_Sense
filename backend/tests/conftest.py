@@ -65,8 +65,13 @@ async def _truncate() -> None:
 @pytest.fixture(autouse=True)
 def _clean_db():
     """Truncate app tables before/after each test so tests stay isolated from each
-    other and from any data a developer has in their local dev database."""
+    other and from any data a developer has in their local dev database. Each test then
+    starts with a permissive gate threshold set (assisted lane open to every score, fast
+    lane closed), so a ticket the model can answer is shown; gate tests replace it."""
     asyncio.run(_truncate())
+    from gate_seed import set_thresholds
+
+    set_thresholds(fast=None, assisted=0.0, version="test-default")
     yield
     asyncio.run(_truncate())
 
