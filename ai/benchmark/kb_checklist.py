@@ -54,13 +54,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--department", default="sap")
     parser.add_argument("--reviewer", default="R", help="your initial: articles you wrote are skipped")
+    parser.add_argument("--author", default=None, help="only articles by this author (to split a department)")
     args = parser.parse_args()
     vendor, site = VENDOR[args.department]
     # Articles whose risky claims the authoring workflow lists first (docs/kb-authoring-workflow.md).
     workflow = (ROOT / "docs" / "kb-authoring-workflow.md").read_text(encoding="utf-8")
     priority = set(re.findall(r"^\| ([A-Z]+-[A-Z]+-\d{3}) \|", workflow, flags=re.MULTILINE))
     articles = [a for a in load_articles(ROOT / "data" / "kb") if a.path.parent.name == args.department
-                and a.meta.get("author") != args.reviewer]
+                and a.meta.get("author") != args.reviewer
+                and (args.author is None or a.meta.get("author") == args.author)]
     lines = [
         f"# Fact-check checklist: {args.department.upper()} ({len(articles)} articles, reviewer {args.reviewer})",
         "",
@@ -80,7 +82,8 @@ def main() -> None:
         t = terms(body)
         lines.append("**Look up:** " + (" · ".join(search(x, vendor, site) for x in t) if t else "(no technical terms; check the steps make sense)"))
         lines += ["", "**Key facts to confirm:**"] + [f"- [ ] {k}" for k in a.key_facts] + ["", "Notes: ", ""]
-    out = ROOT / "docs" / "kb-review" / f"{args.department}-checklist.md"
+    suffix = "" if args.department == "sap" and args.reviewer == "R" else f"-{args.reviewer}"
+    out = ROOT / "docs" / "kb-review" / f"{args.department}-checklist{suffix}.md"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
     page = out.with_suffix(".html")

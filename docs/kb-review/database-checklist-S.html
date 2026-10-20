@@ -1,0 +1,200 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width, initial-scale=1'><title>DATABASE fact-check</title><style>:root{--bg:#f8fafc;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--link:#4f46e5}@media (prefers-color-scheme:dark){:root{--bg:#0b1120;--card:#131c31;--text:#e2e8f0;--muted:#94a3b8;--border:#1e293b;--link:#a5b4fc}}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,sans-serif}main{max-width:900px;margin:0 auto;padding:16px}h1{font-size:22px}.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px 16px 12px;margin:14px 0}h2{font-size:17px}a{color:var(--link)}code{font-size:13px}p{margin:6px 0}.fact{display:block;margin:4px 0;cursor:pointer}textarea{width:100%;min-height:44px;margin-top:6px;font:inherit;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px;box-sizing:border-box}</style></head><body><main><section><h1>Fact-check checklist: DATABASE (24 articles, reviewer S)</h1>
+<p>For each article: open it, click each term, confirm the article uses it correctly.</p>
+<p>All correct ➜ set <code>reviewer: S</code> in the article. Something wrong ➜ note it here and tell Claude.</p>
+<p>Values described as *this organisation's* policy (limits, approvals) are fictional company rules:</p>
+<p>they cannot be looked up, only checked for being stated as policy rather than as a vendor default.</p>
+<p>⭐ = check first (flagged as risky). ⬜ = not checked. 🤖 = AI-checked only (still needs a human). ✅ = human-reviewed.</p>
+</section><section class="card"><h2>⬜ DB-CHG-001: Request for access to a database</h2>
+<p>File: <a href="../../data/kb/database/DB-CHG-001.md" target="_blank" rel="noopener">data/kb/database/DB-CHG-001.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Access is granted through the narrowest role that fits the request.</label>
+<label class=fact><input type=checkbox> Each service gets its own dedicated role.</label>
+<label class=fact><input type=checkbox> Grants are recorded with who, what, why and when.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-CHG-002: Schema migration failed halfway</h2>
+<p>File: <a href="../../data/kb/database/DB-CHG-002.md" target="_blank" rel="noopener">data/kb/database/DB-CHG-002.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+CREATE+INDEX%0ACONCURRENTLY+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">CREATE INDEX
+CONCURRENTLY</a> · <a href="https://www.google.com/search?q=PostgreSQL+alembic_version+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">alembic_version</a> · <a href="https://www.google.com/search?q=PostgreSQL+CREATE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">CREATE</a> · <a href="https://www.google.com/search?q=PostgreSQL+INDEX+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">INDEX</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> The migration version table may not match the real schema after a failure.</label>
+<label class=fact><input type=checkbox> Non-transactional statements like CREATE INDEX CONCURRENTLY can leave partial changes.</label>
+<label class=fact><input type=checkbox> The schema is brought to one consistent version before rerunning.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-CHG-003: Request to run a data fix in production</h2>
+<p>File: <a href="../../data/kb/database/DB-CHG-003.md" target="_blank" rel="noopener">data/kb/database/DB-CHG-003.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+UPDATE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">UPDATE</a> · <a href="https://www.google.com/search?q=PostgreSQL+DELETE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">DELETE</a> · <a href="https://www.google.com/search?q=PostgreSQL+WHERE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">WHERE</a> · <a href="https://www.google.com/search?q=PostgreSQL+SELECT+COUNT%28%2A%29+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">SELECT COUNT(*)</a> · <a href="https://www.google.com/search?q=PostgreSQL+SELECT+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">SELECT</a> · <a href="https://www.google.com/search?q=PostgreSQL+COUNT+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">COUNT</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Production data fixes need an approved change and the expected row count.</label>
+<label class=fact><input type=checkbox> The WHERE clause is tested with SELECT COUNT(*) before the change runs.</label>
+<label class=fact><input type=checkbox> Data fixes run inside a transaction and are committed only if the row count matches.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-CHG-004: Read-only access for reporting tools</h2>
+<p>File: <a href="../../data/kb/database/DB-CHG-004.md" target="_blank" rel="noopener">data/kb/database/DB-CHG-004.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Reporting tools connect to the read replica, not the primary.</label>
+<label class=fact><input type=checkbox> Analysts get the read-only reporting role.</label>
+<label class=fact><input type=checkbox> Access to personal data needs the data protection officer's check.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-CONN-001: Application runs out of database connections</h2>
+<p>File: <a href="../../data/kb/database/DB-CONN-001.md" target="_blank" rel="noopener">data/kb/database/DB-CONN-001.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+max_connections+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">max_connections</a> · <a href="https://www.google.com/search?q=PostgreSQL+pg_stat_activity+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_stat_activity</a> · <a href="https://www.google.com/search?q=PostgreSQL+SHOW+max_connections+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">SHOW max_connections</a> · <a href="https://www.google.com/search?q=PostgreSQL+CONN+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">CONN</a> · <a href="https://www.google.com/search?q=PostgreSQL+SHOW+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">SHOW</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> "too many clients already" means the server reached max_connections.</label>
+<label class=fact><input type=checkbox> Sessions idle in transaction hold connection slots while doing no work.</label>
+<label class=fact><input type=checkbox> Restarting the application releases leaked connections but is only a stop-gap.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-CONN-002: Application times out connecting to the database</h2>
+<p>File: <a href="../../data/kb/database/DB-CONN-002.md" target="_blank" rel="noopener">data/kb/database/DB-CONN-002.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+CONN+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">CONN</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A client working from another host does not rule out the application host's network path.</label>
+<label class=fact><input type=checkbox> A connect timeout set too short causes intermittent failures under load.</label>
+<label class=fact><input type=checkbox> Timeouts at the same time each day point to a scheduled job.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-CONN-003: Password authentication failed after credential rotation</h2>
+<p>File: <a href="../../data/kb/database/DB-CONN-003.md" target="_blank" rel="noopener">data/kb/database/DB-CONN-003.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+CONN+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">CONN</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> "password authentication failed" right after rotation means the application still uses the old password.</label>
+<label class=fact><input type=checkbox> Applications that cache secrets at start-up need a restart after rotation.</label>
+<label class=fact><input type=checkbox> Database passwords belong in the secrets manager, not configuration files.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-CONN-004: Connection rejected with no pg_hba.conf entry</h2>
+<p>File: <a href="../../data/kb/database/DB-CONN-004.md" target="_blank" rel="noopener">data/kb/database/DB-CONN-004.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+pg_hba.conf+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_hba.conf</a> · <a href="https://www.google.com/search?q=PostgreSQL+CONN+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">CONN</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> "no pg_hba.conf entry" means no rule allows that host, user, database and SSL setting.</label>
+<label class=fact><input type=checkbox> The error message names the client address, user and database.</label>
+<label class=fact><input type=checkbox> pg_hba.conf changes are made by the DBA team through a change request.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-HA-001: Read replica lagging behind</h2>
+<p>File: <a href="../../data/kb/database/DB-HA-001.md" target="_blank" rel="noopener">data/kb/database/DB-HA-001.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Lag caused by a write burst usually recovers after the burst.</label>
+<label class=fact><input type=checkbox> Long-running queries on a replica can delay replay.</label>
+<label class=fact><input type=checkbox> Read-your-own-writes features must read from the primary.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-HA-002: Automatic failover did not happen</h2>
+<p>File: <a href="../../data/kb/database/DB-HA-002.md" target="_blank" rel="noopener">data/kb/database/DB-HA-002.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A health check that only tests the port can keep a broken primary looking healthy.</label>
+<label class=fact><input type=checkbox> Service is restored first by promoting the standby manually.</label>
+<label class=fact><input type=checkbox> Promoting while the old primary still accepts writes causes split brain.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-HA-003: Writes fail with read-only transaction error</h2>
+<p>File: <a href="../../data/kb/database/DB-HA-003.md" target="_blank" rel="noopener">data/kb/database/DB-HA-003.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+INSERT+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">INSERT</a> · <a href="https://www.google.com/search?q=PostgreSQL+UPDATE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">UPDATE</a> · <a href="https://www.google.com/search?q=PostgreSQL+DELETE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">DELETE</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> "read-only transaction" errors mean the application is connected to a replica or standby.</label>
+<label class=fact><input type=checkbox> After a failover, the old primary can become a standby.</label>
+<label class=fact><input type=checkbox> Applications should use the cluster's write endpoint, which follows the primary.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-HA-004: Inactive replication slot</h2>
+<p>File: <a href="../../data/kb/database/DB-HA-004.md" target="_blank" rel="noopener">data/kb/database/DB-HA-004.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+pg_replication_slots+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_replication_slots</a> · <a href="https://www.google.com/search?q=PostgreSQL+active+%3D+false+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">active = false</a> · <a href="https://www.google.com/search?q=PostgreSQL+pg_drop_replication_slot+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_drop_replication_slot</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> An inactive replication slot makes the primary keep WAL indefinitely.</label>
+<label class=fact><input type=checkbox> pg_replication_slots shows which slots are inactive.</label>
+<label class=fact><input type=checkbox> Dropping a slot used by a live replica forces a rebuild of that replica.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-LOCK-001: Transaction fails with deadlock detected</h2>
+<p>File: <a href="../../data/kb/database/DB-LOCK-001.md" target="_blank" rel="noopener">data/kb/database/DB-LOCK-001.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+LOCK+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">LOCK</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A deadlock happens when two transactions lock the same rows in opposite order.</label>
+<label class=fact><input type=checkbox> PostgreSQL cancels one transaction; the application must retry it.</label>
+<label class=fact><input type=checkbox> The database log shows both statements in the deadlock.</label>
+<label class=fact><input type=checkbox> Locking rows in a consistent order prevents deadlocks.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-LOCK-002: Queries blocked by an idle session holding a lock</h2>
+<p>File: <a href="../../data/kb/database/DB-LOCK-002.md" target="_blank" rel="noopener">data/kb/database/DB-LOCK-002.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+pg_blocking_pids%28%29+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_blocking_pids()</a> · <a href="https://www.google.com/search?q=PostgreSQL+pg_stat_activity+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_stat_activity</a> · <a href="https://www.google.com/search?q=PostgreSQL+pg_terminate_backend%28pid%29+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_terminate_backend(pid)</a> · <a href="https://www.google.com/search?q=PostgreSQL+LOCK+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">LOCK</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A session "idle in transaction" keeps its locks until it ends.</label>
+<label class=fact><input type=checkbox> pg_blocking_pids() identifies the session blocking a query.</label>
+<label class=fact><input type=checkbox> pg_terminate_backend ends the session and releases its locks.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-LOCK-003: Statement cancelled due to statement or lock timeout</h2>
+<p>File: <a href="../../data/kb/database/DB-LOCK-003.md" target="_blank" rel="noopener">data/kb/database/DB-LOCK-003.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+statement_timeout+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">statement_timeout</a> · <a href="https://www.google.com/search?q=PostgreSQL+lock_timeout+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">lock_timeout</a> · <a href="https://www.google.com/search?q=PostgreSQL+LOCK+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">LOCK</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> statement_timeout cancels queries that run too long.</label>
+<label class=fact><input type=checkbox> lock_timeout cancels statements that wait too long for a lock.</label>
+<label class=fact><input type=checkbox> A longer timeout is set per session for a legitimate job, never database-wide.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-LOCK-004: Schema change hangs and blocks the whole table</h2>
+<p>File: <a href="../../data/kb/database/DB-LOCK-004.md" target="_blank" rel="noopener">data/kb/database/DB-LOCK-004.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+ALTER+TABLE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">ALTER TABLE</a> · <a href="https://www.google.com/search?q=PostgreSQL+lock_timeout+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">lock_timeout</a> · <a href="https://www.google.com/search?q=PostgreSQL+LOCK+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">LOCK</a> · <a href="https://www.google.com/search?q=PostgreSQL+ALTER+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">ALTER</a> · <a href="https://www.google.com/search?q=PostgreSQL+TABLE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">TABLE</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> ALTER TABLE needs an exclusive lock on the table.</label>
+<label class=fact><input type=checkbox> A waiting ALTER TABLE blocks every new query on that table behind it.</label>
+<label class=fact><input type=checkbox> Migrations set a short lock_timeout so they fail fast instead of blocking.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-PERF-001: A query has become slow</h2>
+<p>File: <a href="../../data/kb/database/DB-PERF-001.md" target="_blank" rel="noopener">data/kb/database/DB-PERF-001.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+pg_stat_statements+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_stat_statements</a> · <a href="https://www.google.com/search?q=PostgreSQL+EXPLAIN+%28ANALYZE%2C+BUFFERS%29+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">EXPLAIN (ANALYZE, BUFFERS)</a> · <a href="https://www.google.com/search?q=PostgreSQL+ANALYZE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">ANALYZE</a> · <a href="https://www.google.com/search?q=PostgreSQL+PERF+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">PERF</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> EXPLAIN ANALYZE shows the real plan and where time is spent.</label>
+<label class=fact><input type=checkbox> A sequential scan on a large table is the most common cause of a query that became slow.</label>
+<label class=fact><input type=checkbox> Outdated statistics are refreshed with ANALYZE.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-PERF-002: Index returns wrong results</h2>
+<p>File: <a href="../../data/kb/database/DB-PERF-002.md" target="_blank" rel="noopener">data/kb/database/DB-PERF-002.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+SET+enable_indexscan+%3D+off%3B+SET+enable_bitmapscan+%3D+off%3B+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">SET enable_indexscan = off; SET enable_bitmapscan = off;</a> · <a href="https://www.google.com/search?q=PostgreSQL+REINDEX+INDEX+CONCURRENTLY+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">REINDEX INDEX CONCURRENTLY</a> · <a href="https://www.google.com/search?q=PostgreSQL+REINDEX+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">REINDEX</a> · <a href="https://www.google.com/search?q=PostgreSQL+PERF+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">PERF</a> · <a href="https://www.google.com/search?q=PostgreSQL+INDEX+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">INDEX</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Results that change with index scans disabled point to a corrupted index.</label>
+<label class=fact><input type=checkbox> Corrupted indexes are rebuilt, preferably with REINDEX CONCURRENTLY.</label>
+<label class=fact><input type=checkbox> Recurring corruption on one volume points to the storage, not the database.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-PERF-003: Database server CPU is very high</h2>
+<p>File: <a href="../../data/kb/database/DB-PERF-003.md" target="_blank" rel="noopener">data/kb/database/DB-PERF-003.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+pg_stat_activity+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_stat_activity</a> · <a href="https://www.google.com/search?q=PostgreSQL+pg_stat_statements+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_stat_statements</a> · <a href="https://www.google.com/search?q=PostgreSQL+PERF+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">PERF</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> pg_stat_statements ranks queries by total execution time.</label>
+<label class=fact><input type=checkbox> High CPU is usually caused by a few expensive queries.</label>
+<label class=fact><input type=checkbox> Restarting the database is not a fix for high CPU.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-PERF-004: Table keeps growing although rows are deleted</h2>
+<p>File: <a href="../../data/kb/database/DB-PERF-004.md" target="_blank" rel="noopener">data/kb/database/DB-PERF-004.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+n_dead_tup+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">n_dead_tup</a> · <a href="https://www.google.com/search?q=PostgreSQL+last_autovacuum+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">last_autovacuum</a> · <a href="https://www.google.com/search?q=PostgreSQL+pg_stat_user_tables+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_stat_user_tables</a> · <a href="https://www.google.com/search?q=PostgreSQL+pg_stat_activity+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_stat_activity</a> · <a href="https://www.google.com/search?q=PostgreSQL+VACUUM+%28ANALYZE%29+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">VACUUM (ANALYZE)</a> · <a href="https://www.google.com/search?q=PostgreSQL+VACUUM+FULL+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">VACUUM FULL</a> · <a href="https://www.google.com/search?q=PostgreSQL+PERF+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">PERF</a> · <a href="https://www.google.com/search?q=PostgreSQL+VACUUM+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">VACUUM</a> · <a href="https://www.google.com/search?q=PostgreSQL+FULL+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">FULL</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Updates and deletes leave dead rows that autovacuum cleans up.</label>
+<label class=fact><input type=checkbox> Long-running transactions prevent dead rows from being removed.</label>
+<label class=fact><input type=checkbox> VACUUM FULL takes an exclusive lock on the table.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-STO-001: Database disk almost full</h2>
+<p>File: <a href="../../data/kb/database/DB-STO-001.md" target="_blank" rel="noopener">data/kb/database/DB-STO-001.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+pg_wal+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_wal</a> · <a href="https://www.google.com/search?q=PostgreSQL+pg_replication_slots+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_replication_slots</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A growing pg_wal directory points to a stuck replication slot or failed WAL archiving.</label>
+<label class=fact><input type=checkbox> Expanding the volume restores service fast but does not fix the cause.</label>
+<label class=fact><input type=checkbox> Files in pg_wal are never deleted by hand.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-STO-002: Backup before a change or restore after data loss</h2>
+<p>File: <a href="../../data/kb/database/DB-STO-002.md" target="_blank" rel="noopener">data/kb/database/DB-STO-002.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+UPDATE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">UPDATE</a> · <a href="https://www.google.com/search?q=PostgreSQL+DELETE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">DELETE</a> · <a href="https://www.google.com/search?q=PostgreSQL+WHERE+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">WHERE</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Point-in-time recovery can restore to any moment inside the retention window.</label>
+<label class=fact><input type=checkbox> Restores go to a new database first, never directly over the live one.</label>
+<label class=fact><input type=checkbox> The exact time of the bad change sets the restore point.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-STO-003: Nightly database backup failed</h2>
+<p>File: <a href="../../data/kb/database/DB-STO-003.md" target="_blank" rel="noopener">data/kb/database/DB-STO-003.md</a> · author A</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> The backup job log gives the reason for a failed backup.</label>
+<label class=fact><input type=checkbox> After fixing the cause, an on-demand backup is run immediately.</label>
+<label class=fact><input type=checkbox> A backup much smaller than usual should be investigated.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ DB-STO-004: WAL archiving failing</h2>
+<p>File: <a href="../../data/kb/database/DB-STO-004.md" target="_blank" rel="noopener">data/kb/database/DB-STO-004.md</a> · author A</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=PostgreSQL+pg_wal+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_wal</a> · <a href="https://www.google.com/search?q=PostgreSQL+archive_command+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">archive_command</a> · <a href="https://www.google.com/search?q=PostgreSQL+pg_stat_archiver+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">pg_stat_archiver</a> · <a href="https://www.google.com/search?q=PostgreSQL+failed_count+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">failed_count</a> · <a href="https://www.google.com/search?q=PostgreSQL+last_failed_wal+site%3Apostgresql.org%2Fdocs" target="_blank" rel="noopener">last_failed_wal</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> WAL files are kept until archive_command succeeds.</label>
+<label class=fact><input type=checkbox> pg_stat_archiver shows archive failures and the last failed WAL file.</label>
+<label class=fact><input type=checkbox> Point-in-time recovery is not possible while archiving is failing.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea></section></main></body></html>

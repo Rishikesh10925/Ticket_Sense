@@ -1,0 +1,201 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width, initial-scale=1'><title>NETWORKING fact-check</title><style>:root{--bg:#f8fafc;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--link:#4f46e5}@media (prefers-color-scheme:dark){:root{--bg:#0b1120;--card:#131c31;--text:#e2e8f0;--muted:#94a3b8;--border:#1e293b;--link:#a5b4fc}}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,sans-serif}main{max-width:900px;margin:0 auto;padding:16px}h1{font-size:22px}.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px 16px 12px;margin:14px 0}h2{font-size:17px}a{color:var(--link)}code{font-size:13px}p{margin:6px 0}.fact{display:block;margin:4px 0;cursor:pointer}textarea{width:100%;min-height:44px;margin-top:6px;font:inherit;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px;box-sizing:border-box}</style></head><body><main><section><h1>Fact-check checklist: NETWORKING (24 articles, reviewer A)</h1>
+<p>For each article: open it, click each term, confirm the article uses it correctly.</p>
+<p>All correct ➜ set <code>reviewer: A</code> in the article. Something wrong ➜ note it here and tell Claude.</p>
+<p>Values described as *this organisation's* policy (limits, approvals) are fictional company rules:</p>
+<p>they cannot be looked up, only checked for being stated as policy rather than as a vendor default.</p>
+<p>⭐ = check first (flagged as risky). ⬜ = not checked. 🤖 = AI-checked only (still needs a human). ✅ = human-reviewed.</p>
+</section><section class="card"><h2>⬜ NET-DNS-001: Internal names do not resolve</h2>
+<p>File: <a href="../../data/kb/networking/NET-DNS-001.md" target="_blank" rel="noopener">data/kb/networking/NET-DNS-001.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+ipconfig+%2Fall+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig /all</a> · <a href="https://www.google.com/search?q=Windows+ipconfig+%2Fflushdns+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig /flushdns</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Working by IP but not by name isolates the problem to DNS.</label>
+<label class=fact><input type=checkbox> Internal names resolve only through the internal DNS servers.</label>
+<label class=fact><input type=checkbox> Public resolvers such as 8.8.8.8 cannot resolve internal names.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-DNS-002: Connected but no internet, 169.254 address</h2>
+<p>File: <a href="../../data/kb/networking/NET-DNS-002.md" target="_blank" rel="noopener">data/kb/networking/NET-DNS-002.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+ipconfig+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig</a> · <a href="https://www.google.com/search?q=Windows+ipconfig+%2Frelease+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig /release</a> · <a href="https://www.google.com/search?q=Windows+ipconfig+%2Frenew+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig /renew</a> · <a href="https://www.google.com/search?q=Windows+DHCP+site%3Alearn.microsoft.com" target="_blank" rel="noopener">DHCP</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A 169.254.x.x address means the device got no answer from DHCP.</label>
+<label class=fact><input type=checkbox> ipconfig /release then /renew requests a fresh lease.</label>
+<label class=fact><input type=checkbox> Many devices with 169.254 addresses point to the DHCP server or a full scope.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-DNS-003: Windows reports an IP address conflict</h2>
+<p>File: <a href="../../data/kb/networking/NET-DNS-003.md" target="_blank" rel="noopener">data/kb/networking/NET-DNS-003.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+ipconfig+%2Frelease+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig /release</a> · <a href="https://www.google.com/search?q=Windows+ipconfig+%2Frenew+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig /renew</a> · <a href="https://www.google.com/search?q=Windows+DHCP+site%3Alearn.microsoft.com" target="_blank" rel="noopener">DHCP</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> IP conflicts are usually caused by a static address inside the DHCP range.</label>
+<label class=fact><input type=checkbox> Renewing the DHCP lease gives the laptop a new address and restores the connection.</label>
+<label class=fact><input type=checkbox> The device with the static address must be reserved or moved outside the DHCP range.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-DNS-004: Server name points to the old address after a move</h2>
+<p>File: <a href="../../data/kb/networking/NET-DNS-004.md" target="_blank" rel="noopener">data/kb/networking/NET-DNS-004.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+nslookup+%3Cname%3E+site%3Alearn.microsoft.com" target="_blank" rel="noopener">nslookup &lt;name&gt;</a> · <a href="https://www.google.com/search?q=Windows+ipconfig+%2Fflushdns+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig /flushdns</a> · <a href="https://www.google.com/search?q=Windows+C%3A%5CWindows%5CSystem32%5Cdrivers%5Cetc%5Chosts+site%3Alearn.microsoft.com" target="_blank" rel="noopener">C:\Windows\System32\drivers\etc\hosts</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Clients cache DNS answers until the record's TTL expires.</label>
+<label class=fact><input type=checkbox> ipconfig /flushdns clears the local DNS cache.</label>
+<label class=fact><input type=checkbox> A hosts-file entry overrides DNS and can keep pointing to an old address.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-FW-001: Firewall rule needed for an application</h2>
+<p>File: <a href="../../data/kb/networking/NET-FW-001.md" target="_blank" rel="noopener">data/kb/networking/NET-FW-001.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+Test-NetConnection+%3Chost%3E+-Port+%3Cport%3E+site%3Alearn.microsoft.com" target="_blank" rel="noopener">Test-NetConnection &lt;host&gt; -Port &lt;port&gt;</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A firewall request needs source, destination, port, protocol and business reason.</label>
+<label class=fact><input type=checkbox> Firewall changes go through the change process, never ad hoc.</label>
+<label class=fact><input type=checkbox> Temporary rules must carry an end date.</label>
+<label class=fact><input type=checkbox> Any-to-any rules are never allowed.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-FW-002: Work website blocked by the web proxy</h2>
+<p>File: <a href="../../data/kb/networking/NET-FW-002.md" target="_blank" rel="noopener">data/kb/networking/NET-FW-002.md</a> · author R</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> The proxy blocks by content category, not usually by specific site.</label>
+<label class=fact><input type=checkbox> The block page shows the category that caused the block.</label>
+<label class=fact><input type=checkbox> Miscategorised sites are recategorised; others need an allow-list request.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-FW-003: Certificate errors in a desktop tool on the office network</h2>
+<p>File: <a href="../../data/kb/networking/NET-FW-003.md" target="_blank" rel="noopener">data/kb/networking/NET-FW-003.md</a> · author R</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> The proxy re-signs inspected traffic with the company root certificate.</label>
+<label class=fact><input type=checkbox> Tools with their own certificate store must be pointed at the company root certificate.</label>
+<label class=fact><input type=checkbox> Disabling certificate verification is never an acceptable fix.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-FW-004: Application cannot send email from the office network</h2>
+<p>File: <a href="../../data/kb/networking/NET-FW-004.md" target="_blank" rel="noopener">data/kb/networking/NET-FW-004.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+SMTP+site%3Alearn.microsoft.com" target="_blank" rel="noopener">SMTP</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Outbound port 25 is blocked except from the company mail relay.</label>
+<label class=fact><input type=checkbox> Devices and applications must send email through the internal mail relay.</label>
+<label class=fact><input type=checkbox> A new device needs its IP registered with the relay.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-PERF-001: Video calls freeze or lag</h2>
+<p>File: <a href="../../data/kb/networking/NET-PERF-001.md" target="_blank" rel="noopener">data/kb/networking/NET-PERF-001.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+PERF+site%3Alearn.microsoft.com" target="_blank" rel="noopener">PERF</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Problems only on Wi-Fi point to a wireless signal issue.</label>
+<label class=fact><input type=checkbox> Disconnecting the VPN is acceptable for calls that need no internal access.</label>
+<label class=fact><input type=checkbox> Many users at one office with bad calls points to link capacity.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-PERF-002: Mapped network drive shows a red X</h2>
+<p>File: <a href="../../data/kb/networking/NET-PERF-002.md" target="_blank" rel="noopener">data/kb/networking/NET-PERF-002.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+%5C%5Cserver%5Cshare+site%3Alearn.microsoft.com" target="_blank" rel="noopener">\\server\share</a> · <a href="https://www.google.com/search?q=Windows+PERF+site%3Alearn.microsoft.com" target="_blank" rel="noopener">PERF</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Testing the full path (\\server\share) separates a broken mapping from a server problem.</label>
+<label class=fact><input type=checkbox> A password change can leave outdated credentials in Credential Manager.</label>
+<label class=fact><input type=checkbox> Mapped drives work only on the corporate network or VPN.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-PERF-003: File copies are very slow over VPN</h2>
+<p>File: <a href="../../data/kb/networking/NET-PERF-003.md" target="_blank" rel="noopener">data/kb/networking/NET-PERF-003.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+PERF+site%3Alearn.microsoft.com" target="_blank" rel="noopener">PERF</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> File shares over VPN are limited by latency, not bandwidth.</label>
+<label class=fact><input type=checkbox> Synchronised cloud storage is the recommended option for remote document work.</label>
+<label class=fact><input type=checkbox> Slow speed for all remote users at once points to VPN gateway capacity.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-PERF-004: Internet slow for a whole floor</h2>
+<p>File: <a href="../../data/kb/networking/NET-PERF-004.md" target="_blank" rel="noopener">data/kb/networking/NET-PERF-004.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+PERF+site%3Alearn.microsoft.com" target="_blank" rel="noopener">PERF</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Many users slow at once in one area points to a saturated shared link or uplink.</label>
+<label class=fact><input type=checkbox> Network engineering checks link utilisation and uplink errors.</label>
+<label class=fact><input type=checkbox> Related user reports are linked to one parent ticket.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-SW-001: Network port dead at a new desk</h2>
+<p>File: <a href="../../data/kb/networking/NET-SW-001.md" target="_blank" rel="noopener">data/kb/networking/NET-SW-001.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+VLAN+site%3Alearn.microsoft.com" target="_blank" rel="noopener">VLAN</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Testing the cable at a working desk rules out the cable first.</label>
+<label class=fact><input type=checkbox> Patch panel labels drift after desk moves and must be checked physically.</label>
+<label class=fact><input type=checkbox> A port in the wrong VLAN needs a switch change by network engineering.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-SW-002: Switch port in err-disabled state</h2>
+<p>File: <a href="../../data/kb/networking/NET-SW-002.md" target="_blank" rel="noopener">data/kb/networking/NET-SW-002.md</a> · author R</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Err-disabled ports are shut by the switch because of a loop or a port-security violation.</label>
+<label class=fact><input type=checkbox> The switch log states why the port was disabled.</label>
+<label class=fact><input type=checkbox> A port is re-enabled only after the cause is removed.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-SW-003: Desk phone does not power on</h2>
+<p>File: <a href="../../data/kb/networking/NET-SW-003.md" target="_blank" rel="noopener">data/kb/networking/NET-SW-003.md</a> · author R</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> IP desk phones are powered through the network cable (PoE).</label>
+<label class=fact><input type=checkbox> A phone that works at another desk shows the original port lacks PoE.</label>
+<label class=fact><input type=checkbox> Network engineering checks PoE settings and the switch power budget.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-SW-004: Wired connection gives the wrong network after a move</h2>
+<p>File: <a href="../../data/kb/networking/NET-SW-004.md" target="_blank" rel="noopener">data/kb/networking/NET-SW-004.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+ipconfig+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig</a> · <a href="https://www.google.com/search?q=Windows+ipconfig+%2Frelease+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig /release</a> · <a href="https://www.google.com/search?q=Windows+ipconfig+%2Frenew+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig /renew</a> · <a href="https://www.google.com/search?q=Windows+VLAN+site%3Alearn.microsoft.com" target="_blank" rel="noopener">VLAN</a> · <a href="https://www.google.com/search?q=Windows+DHCP+site%3Alearn.microsoft.com" target="_blank" rel="noopener">DHCP</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Each department's desk ports belong to that department's VLAN.</label>
+<label class=fact><input type=checkbox> After a desk move the port may still be in the previous occupant's VLAN.</label>
+<label class=fact><input type=checkbox> VLAN changes are made by network engineering; the user then renews the DHCP lease.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-VPN-001: VPN client not connecting</h2>
+<p>File: <a href="../../data/kb/networking/NET-VPN-001.md" target="_blank" rel="noopener">data/kb/networking/NET-VPN-001.md</a> · author R</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A hang at "Connecting" with no login prompt points to a network that blocks the VPN.</label>
+<label class=fact><input type=checkbox> A mobile hotspot test separates a blocking network from a client fault.</label>
+<label class=fact><input type=checkbox> Authentication errors are checked against a locked or expired domain account first.</label>
+<label class=fact><input type=checkbox> Many users failing at once means a gateway problem for network engineering.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-VPN-002: Branch office cannot reach the head office</h2>
+<p>File: <a href="../../data/kb/networking/NET-VPN-002.md" target="_blank" rel="noopener">data/kb/networking/NET-VPN-002.md</a> · author R</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A whole branch losing head-office systems while internet works points to the site-to-site tunnel.</label>
+<label class=fact><input type=checkbox> A tunnel that is up but passes no traffic usually has a routing problem.</label>
+<label class=fact><input type=checkbox> A changed public IP or ISP at either site breaks the tunnel peer settings.</label>
+<label class=fact><input type=checkbox> Site-to-site tunnel changes are made by network engineering.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-VPN-003: VPN connected but internal sites do not open</h2>
+<p>File: <a href="../../data/kb/networking/NET-VPN-003.md" target="_blank" rel="noopener">data/kb/networking/NET-VPN-003.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+ipconfig+%2Fall+site%3Alearn.microsoft.com" target="_blank" rel="noopener">ipconfig /all</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Reaching a resource by IP but not by name over VPN is a DNS problem.</label>
+<label class=fact><input type=checkbox> The VPN adapter should list the internal DNS servers in ipconfig /all.</label>
+<label class=fact><input type=checkbox> A home network using the same private range as an internal network stops that traffic entering the tunnel.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-VPN-004: VPN multi-factor prompt never arrives</h2>
+<p>File: <a href="../../data/kb/networking/NET-VPN-004.md" target="_blank" rel="noopener">data/kb/networking/NET-VPN-004.md</a> · author R</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Pending multi-factor requests can be approved by opening the authenticator app directly.</label>
+<label class=fact><input type=checkbox> The one-time code option works when push notifications fail.</label>
+<label class=fact><input type=checkbox> A new phone needs the authenticator re-registered after identity verification.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-WIFI-001: Office Wi-Fi keeps dropping</h2>
+<p>File: <a href="../../data/kb/networking/NET-WIFI-001.md" target="_blank" rel="noopener">data/kb/networking/NET-WIFI-001.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+WIFI+site%3Alearn.microsoft.com" target="_blank" rel="noopener">WIFI</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Drops after idle periods are usually caused by the adapter's power saving.</label>
+<label class=fact><input type=checkbox> Many users dropping in one area points to an access point or controller problem.</label>
+<label class=fact><input type=checkbox> Forgetting and re-adding the network clears a stale saved profile.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-WIFI-002: Wi-Fi access for a visitor</h2>
+<p>File: <a href="../../data/kb/networking/NET-WIFI-002.md" target="_blank" rel="noopener">data/kb/networking/NET-WIFI-002.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+WIFI+site%3Alearn.microsoft.com" target="_blank" rel="noopener">WIFI</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Guest access must be sponsored by an employee.</label>
+<label class=fact><input type=checkbox> Guest credentials always expire, matching the visit.</label>
+<label class=fact><input type=checkbox> The guest network is isolated from internal systems by design.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-WIFI-003: Corporate Wi-Fi rejects login after a password change</h2>
+<p>File: <a href="../../data/kb/networking/NET-WIFI-003.md" target="_blank" rel="noopener">data/kb/networking/NET-WIFI-003.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+WIFI+site%3Alearn.microsoft.com" target="_blank" rel="noopener">WIFI</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Corporate Wi-Fi uses the domain account, so a password change breaks saved Wi-Fi credentials.</label>
+<label class=fact><input type=checkbox> Devices with the old saved password can lock the domain account.</label>
+<label class=fact><input type=checkbox> Forgetting the network on every device and reconnecting with the new password fixes it.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>⬜ NET-WIFI-004: Laptop cannot see the corporate Wi-Fi network</h2>
+<p>File: <a href="../../data/kb/networking/NET-WIFI-004.md" target="_blank" rel="noopener">data/kb/networking/NET-WIFI-004.md</a> · author R</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=Windows+WIFI+site%3Alearn.microsoft.com" target="_blank" rel="noopener">WIFI</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> The corporate Wi-Fi network is broadcast only on 5 GHz.</label>
+<label class=fact><input type=checkbox> An adapter limited to 2.4 GHz or an old driver hides the corporate network.</label>
+<label class=fact><input type=checkbox> Airplane mode or a hardware Wi-Fi switch hides all networks.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea></section></main></body></html>
