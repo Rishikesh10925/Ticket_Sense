@@ -31,7 +31,7 @@ from confidence_model.dataset import load  # noqa: E402
 from confidence_model.model import FEATURES, MODEL_VERSION, fit  # noqa: E402
 from evaluation.metrics import (aurc, auroc_unacceptable, brier_score, excess_aurc,  # noqa: E402
                                 expected_calibration_error, reliability_bins)
-from evaluation.risk_control import DEFAULT_GRID, select_lane_thresholds  # noqa: E402
+from evaluation.risk_control import DEFAULT_GRID, learn_then_test, select_lane_thresholds  # noqa: E402
 
 ARTIFACT_DIR = ROOT / "ai" / "confidence_model" / "artifacts"
 
@@ -90,6 +90,11 @@ def main() -> None:
     report["thresholds"] = {name: {"threshold": t.threshold, "n_shown": t.n_shown, "n_unacceptable": t.n_unacceptable,
                                    "coverage": round(t.coverage, 4)}
                             for name, t in (("fast", lanes.fast), ("assisted", lanes.assisted))}
+    # Admin screen (§13.4): the certified coverage for any chosen error budget.
+    report["alpha_curve"] = []
+    for a in (0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.50):
+        t = learn_then_test(p_cal, y["calib"], alpha=a, delta=0.10, candidates=DEFAULT_GRID)
+        report["alpha_curve"].append({"alpha": a, "threshold": t.threshold, "coverage": round(t.coverage, 4)})
     for split in ("val", "unseen"):
         p = model.predict(by[split])
         report[f"lanes_{split}"] = lane_report(lanes, p, y[split], [r.can_answer for r in by[split]])

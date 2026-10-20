@@ -92,7 +92,7 @@ def make_estimator(kind: str, params: dict):
 
         return XGBClassifier(n_estimators=params["n_estimators"], max_depth=params["max_depth"],
                              learning_rate=params["learning_rate"], subsample=0.9, colsample_bytree=0.9,
-                             eval_metric="logloss", random_state=2026, n_jobs=4)
+                             eval_metric="logloss", random_state=2026, n_jobs=1)  # 1 thread: bit-for-bit reproducible
     raise ValueError(kind)
 
 

@@ -46,46 +46,46 @@
  "candidates": {
   "logreg": {
    "chosen_params": {
-    "C": 0.1
+    "C": 0.3
    },
    "cv": [
     {
      "params": {
       "C": 0.03
      },
-     "cv_aurc": 0.0907
+     "cv_aurc": 0.0906
     },
     {
      "params": {
       "C": 0.1
      },
-     "cv_aurc": 0.0885
+     "cv_aurc": 0.0894
     },
     {
      "params": {
       "C": 0.3
      },
-     "cv_aurc": 0.0887
+     "cv_aurc": 0.0891
     },
     {
      "params": {
       "C": 1.0
      },
-     "cv_aurc": 0.0888
+     "cv_aurc": 0.0896
     },
     {
      "params": {
       "C": 3.0
      },
-     "cv_aurc": 0.0889
+     "cv_aurc": 0.0895
     }
    ],
    "val_uncalibrated": {
-    "aurc": 0.2568,
-    "e_aurc": 0.2232,
-    "auroc_unacceptable": 0.5648,
-    "ece": 0.1979,
-    "brier": 0.2183
+    "aurc": 0.2599,
+    "e_aurc": 0.2263,
+    "auroc_unacceptable": 0.5517,
+    "ece": 0.2439,
+    "brier": 0.2389
    }
   },
   "xgboost": {
@@ -101,7 +101,7 @@
       "max_depth": 2,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.0818
+     "cv_aurc": 0.0803
     },
     {
      "params": {
@@ -109,7 +109,7 @@
       "max_depth": 2,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0808
+     "cv_aurc": 0.082
     },
     {
      "params": {
@@ -117,7 +117,7 @@
       "max_depth": 3,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.0805
+     "cv_aurc": 0.08
     },
     {
      "params": {
@@ -125,7 +125,7 @@
       "max_depth": 3,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0858
+     "cv_aurc": 0.0829
     },
     {
      "params": {
@@ -133,7 +133,7 @@
       "max_depth": 4,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.0812
+     "cv_aurc": 0.0822
     },
     {
      "params": {
@@ -141,7 +141,7 @@
       "max_depth": 4,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0824
+     "cv_aurc": 0.0867
     },
     {
      "params": {
@@ -149,7 +149,7 @@
       "max_depth": 2,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.0815
+     "cv_aurc": 0.0825
     },
     {
      "params": {
@@ -157,7 +157,7 @@
       "max_depth": 2,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0853
+     "cv_aurc": 0.0886
     },
     {
      "params": {
@@ -165,7 +165,7 @@
       "max_depth": 3,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.0853
+     "cv_aurc": 0.0861
     },
     {
      "params": {
@@ -173,7 +173,7 @@
       "max_depth": 3,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0897
+     "cv_aurc": 0.0891
     },
     {
      "params": {
@@ -181,7 +181,7 @@
       "max_depth": 4,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.0848
+     "cv_aurc": 0.0857
     },
     {
      "params": {
@@ -189,25 +189,25 @@
       "max_depth": 4,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0888
+     "cv_aurc": 0.0924
     }
    ],
    "val_uncalibrated": {
-    "aurc": 0.1511,
-    "e_aurc": 0.1175,
-    "auroc_unacceptable": 0.6734,
-    "ece": 0.1613,
-    "brier": 0.1871
+    "aurc": 0.1558,
+    "e_aurc": 0.1222,
+    "auroc_unacceptable": 0.6597,
+    "ece": 0.1588,
+    "brier": 0.1888
    }
   }
  },
  "chosen": "xgboost",
  "val": {
-  "aurc": 0.1511,
-  "e_aurc": 0.1175,
-  "auroc_unacceptable": 0.6734,
-  "ece": 0.0833,
-  "brier": 0.1731
+  "aurc": 0.1558,
+  "e_aurc": 0.1222,
+  "auroc_unacceptable": 0.6597,
+  "ece": 0.0881,
+  "brier": 0.1735
  },
  "val_reliability": {
   "bin_edges": [
@@ -229,10 +229,10 @@
    null,
    null,
    null,
-   0.5649,
-   0.6494,
-   0.7452,
-   0.8502,
+   0.5663,
+   0.6554,
+   0.7438,
+   0.856,
    null
   ],
   "accuracy": [
@@ -241,9 +241,9 @@
    null,
    null,
    null,
-   0.0,
-   0.6071,
-   0.875,
+   0.2,
+   0.6207,
+   0.8966,
    0.7917,
    null
   ],
@@ -253,9 +253,9 @@
    0.0,
    0.0,
    0.0,
-   3.0,
-   28.0,
-   32.0,
+   5.0,
+   29.0,
+   29.0,
    72.0,
    0.0
   ]
@@ -274,6 +274,53 @@
    "coverage": 1.0
   }
  },
+ "alpha_curve": [
+  {
+   "alpha": 0.05,
+   "threshold": null,
+   "coverage": 0.0
+  },
+  {
+   "alpha": 0.1,
+   "threshold": null,
+   "coverage": 0.0
+  },
+  {
+   "alpha": 0.15,
+   "threshold": null,
+   "coverage": 0.0
+  },
+  {
+   "alpha": 0.2,
+   "threshold": null,
+   "coverage": 0.0
+  },
+  {
+   "alpha": 0.25,
+   "threshold": 0.85,
+   "coverage": 0.271
+  },
+  {
+   "alpha": 0.3,
+   "threshold": 0.05,
+   "coverage": 1.0
+  },
+  {
+   "alpha": 0.35,
+   "threshold": 0.05,
+   "coverage": 1.0
+  },
+  {
+   "alpha": 0.4,
+   "threshold": 0.05,
+   "coverage": 1.0
+  },
+  {
+   "alpha": 0.5,
+   "threshold": 0.05,
+   "coverage": 1.0
+  }
+ ],
  "lanes_val": {
   "fast": {
    "share": 0.0,
@@ -311,16 +358,16 @@
  "example_reasons": [
   {
    "ticket_id": "T-00066",
-   "score": 0.652,
+   "score": 0.63,
    "reasons": [
     "topic often needs rework",
     "gr_n_claims",
-    "old evidence"
+    "a weakly supported claim"
    ]
   },
   {
    "ticket_id": "T-00067",
-   "score": 0.732,
+   "score": 0.727,
    "reasons": [
     "topic often needs rework",
     "a weakly supported claim",
@@ -329,29 +376,29 @@
   },
   {
    "ticket_id": "T-00068",
-   "score": 0.621,
+   "score": 0.601,
    "reasons": [
     "topic often needs rework",
     "a weakly supported claim",
-    "old evidence"
+    "gr_n_claims"
    ]
   },
   {
    "ticket_id": "T-00126",
-   "score": 0.866,
+   "score": 0.875,
    "reasons": [
     "a weakly supported claim",
-    "keyword and dense results differ",
-    "uncertain routing"
+    "uncertain routing",
+    "tk_questions"
    ]
   },
   {
    "ticket_id": "T-00127",
-   "score": 0.847,
+   "score": 0.848,
    "reasons": [
     "uncertain routing",
-    "a weakly supported claim",
-    "uncertain routing"
+    "uncertain routing",
+    "low reranker score"
    ]
   }
  ]
