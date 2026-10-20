@@ -142,6 +142,7 @@ async def list_tickets(
     status: str | None = None,
     priority: str | None = None,
     department_id: uuid.UUID | None = None,
+    lane: str | None = None,
     sort: str | None = None,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
@@ -161,6 +162,8 @@ async def list_tickets(
         query = query.where(Ticket.status == status)
     if priority is not None:
         query = query.where(Ticket.priority == priority)
+    if lane is not None:
+        query = query.where(Ticket.lane == lane)
     if department_id is not None and current_user.role == "admin":
         query = query.where(Ticket.department_id == department_id)
 
@@ -290,7 +293,7 @@ async def get_ticket_draft(
     ] if shown else []
     return DraftOut(
         shown=shown,
-        lane="draft" if shown else "escalate",
+        lane=ticket.lane or ("draft" if shown else "escalate"),
         steps=draft.steps if shown else [],
         missing_information=draft.missing_information,
         evidence=draft.evidence,

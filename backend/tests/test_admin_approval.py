@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from app.config import settings
 from app.core.security import hash_password
 from app.models import Department, User
+from gate_seed import set_thresholds
 from kb_seed import ensure_article
 
 
@@ -98,14 +99,10 @@ def _wait_for_status(api, token: str, ticket_id: str, target_statuses: tuple[str
 
 
 def _submit_and_force_escalation(api, customer_token: str, admin_token: str, department_id: str, subject: str, description: str) -> str:
-    """Forces a ticket to escalate deterministically (threshold=1.0, same technique
-    test_confidence_gate.py already uses), then restores a normal threshold so it
-    doesn't affect other tickets in the same test."""
-    api.patch(
-        f"/departments/{department_id}/threshold",
-        json={"confidence_threshold": 1.0},
-        headers={"Authorization": f"Bearer {admin_token}"},
-    )
+    """Forces a ticket to escalate deterministically (an unreachable assisted-lane
+    threshold, as test_confidence_gate.py uses), then restores the permissive test
+    thresholds so it doesn't affect other tickets in the same test."""
+    set_thresholds(fast=None, assisted=1.0, version="test-unreachable")
     resp = api.post(
         "/tickets",
         data={"subject": subject, "description": description},
@@ -113,11 +110,7 @@ def _submit_and_force_escalation(api, customer_token: str, admin_token: str, dep
     )
     ticket_id = resp.json()["id"]
     _wait_for_status(api, admin_token, ticket_id, ("escalated",))
-    api.patch(
-        f"/departments/{department_id}/threshold",
-        json={"confidence_threshold": 0.5},
-        headers={"Authorization": f"Bearer {admin_token}"},
-    )
+    set_thresholds(fast=None, assisted=0.0, version="test-default")
     return ticket_id
 
 

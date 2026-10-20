@@ -77,10 +77,55 @@ def test_admin_sees_the_error_budget_and_history(api):
     admin = _admin_token(api, "gate_admin3@example.com")
     body = api.get("/gate/thresholds", headers={"Authorization": f"Bearer {admin}"}).json()
     assert body["active"]["version"] == "t-test-b" and body["active"]["fast_threshold"] == 0.9
-    assert [h["version"] for h in body["history"]] == ["t-test-b", "t-test-a"]
-    assert [h["active"] for h in body["history"]] == [True, False]  # old sets kept, never deleted
+    history = [h for h in body["history"] if h["version"] != "test-default"]
+    assert [h["version"] for h in history] == ["t-test-b", "t-test-a"]
+    assert [h["active"] for h in history] == [True, False]  # old sets kept, never deleted
 
 
 def test_only_admins_see_the_error_budget(api):
     customer = _register_and_login(api, "gate_customer3@example.com")
     assert api.get("/gate/thresholds", headers={"Authorization": f"Bearer {customer}"}).status_code == 403
+
+
+def test_shift_guard_escalates_drafts_that_look_unlike_the_calibration_data():
+    from gate.service import guard_reasons
+
+    t = Thresholds("t", fast=0.9, assisted=0.1, min_dept_prob=0.6, min_probe_margin=0.05)
+    confident = {"rt_dept_max_prob": 0.95, "rt_probe_margin": 0.2}
+    unsure = {"rt_dept_max_prob": 0.4, "rt_probe_margin": 0.2}
+    lookalike = {"rt_dept_max_prob": 0.95, "rt_probe_margin": 0.01}
+    assert guard_reasons(confident, t) == []
+    assert guard_reasons(unsure, t) == ["uncertain routing: possibly outside the knowledge base"]
+    assert guard_reasons(lookalike, t) == ["another department matches as well"]
+    assert guard_reasons({}, Thresholds("t", 0.9, 0.1)) == []  # guard off
+    assert lane_for(0.99, True, t, guarded=True) == "escalate"
+
+
+def test_guarded_live_ticket_escalates_to_the_senior_queue(api):
+    from gate_seed import set_thresholds
+
+    _department_id_sync("Networking")
+    set_thresholds(fast=None, assisted=0.0, version="t-guard", guard={"min_dept_prob": 1.01})  # nothing passes
+    admin = _admin_token(api, "gate_admin4@example.com")
+    customer = _register_and_login(api, "gate_customer4@example.com")
+    ticket_id = api.post(
+        "/tickets",
+        data={"subject": "VPN not connecting from home", "description": "My VPN client hangs on connecting today"},
+        headers={"Authorization": f"Bearer {customer}"},
+    ).json()["id"]
+    ticket = api.get(f"/tickets/{ticket_id}", headers={"Authorization": f"Bearer {admin}"}).json()
+    assert ticket["status"] == "escalated" and ticket["lane"] == "escalate" and ticket["ai_draft_reply"] is None
+    escalation = api.get(f"/tickets/{ticket_id}/escalation", headers={"Authorization": f"Bearer {admin}"}).json()
+    assert escalation["reason"].startswith("Shift guard: uncertain routing")
+
+
+def test_queue_can_be_filtered_by_lane(api):
+    _department_id_sync("Networking")
+    admin = _admin_token(api, "gate_admin5@example.com")
+    customer = _register_and_login(api, "gate_customer5@example.com")
+    api.post("/tickets", data={"subject": "VPN not connecting from home", "description": "VPN hangs on connecting"},
+             headers={"Authorization": f"Bearer {customer}"})
+    h = {"Authorization": f"Bearer {admin}"}
+    assisted = api.get("/tickets?lane=assisted", headers=h).json()
+    assert assisted and all(t["lane"] == "assisted" for t in assisted)
+    assert api.get("/tickets?lane=fast", headers=h).json() == []

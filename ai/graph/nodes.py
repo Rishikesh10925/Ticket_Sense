@@ -366,7 +366,12 @@ def make_gate_node(db):
         from gate.service import Thresholds, decide
 
         active = await db.scalar(select(GateThresholds).where(GateThresholds.active.is_(True)))
-        thresholds = Thresholds(active.version, active.fast_threshold, active.assisted_threshold) if active else None
+        guard = (active.calibration or {}).get("guard") or {} if active else {}
+        thresholds = (
+            Thresholds(active.version, active.fast_threshold, active.assisted_threshold,
+                       guard.get("min_dept_prob"), guard.get("min_probe_margin"))
+            if active else None
+        )
         draft = state.get("draft_result") or {}
         passages = state.get("passages") or []
         decision = await asyncio.to_thread(
@@ -379,7 +384,9 @@ def make_gate_node(db):
         )
         return {"gate_v2": {"score": decision.score, "lane": decision.lane, "reasons": decision.reasons,
                             "model_version": decision.model_version,
-                            "thresholds_id": str(active.id) if active else None}}
+                            "thresholds_id": str(active.id) if active else None,
+                            "assisted_threshold": active.assisted_threshold if active else None,
+                            "thresholds_version": active.version if active else None}}
 
     return node
 
@@ -410,6 +417,17 @@ def make_score_node(db, department_model, default_threshold: float):
 
 
 def gate_condition(state: TicketState) -> str:
+    """Week 9: the confidence gate's lane routes the ticket. Fast and assisted show the
+    draft (with different workbench layouts); escalate withholds it. With no certified
+    thresholds, or no gate decision at all, the ticket escalates: a human always sees
+    it, so the safe failure is withholding the draft, never showing it."""
+    gate = state.get("gate_v2")
+    if gate is not None:
+        return "escalate" if gate.get("lane") == "escalate" else "draft"
+    return "escalate"
+
+
+def gate_condition_v1(state: TicketState) -> str:
     """Routes to "draft" (shown to the engineer) or "escalate" (no AI draft) — a
     LangGraph conditional edge (see pipeline.py), not an if/else buried inside a node,
     so the routing decision is visible in the graph definition itself.

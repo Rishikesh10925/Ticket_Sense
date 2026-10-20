@@ -22,6 +22,7 @@ class TicketOut(BaseModel):
     priority: str | None
     sentiment: str | None
     status: str
+    lane: str | None = None
     ai_draft_reply: str | None
     ai_draft_citations: list[dict] | None
     confidence_score: float | None
@@ -59,6 +60,7 @@ def build_ticket_out(ticket, role: str, final_response: str | None = None) -> Ti
                 "confidence_score": None,
                 "confidence_features": None,
                 "confidence_threshold": None,
+                "lane": None,
             }
         )
     return out.model_copy(update=update)

@@ -24,7 +24,6 @@ if str(_AI_DIR) not in sys.path:
 from app.config import settings
 from app.database import SessionLocal
 from app.models import Department, Escalation, Ticket
-from app.models.department import DEFAULT_CONFIDENCE_THRESHOLD
 from app.models.draft import Draft, DraftClaim, SignalVector
 from app.models.gate import GateDecision
 from app.services.ticket_lifecycle import TicketStatus, transition
@@ -75,10 +74,17 @@ def _escalation_reason(ticket: Ticket, result: dict) -> str:
         return f"Draft rejected: {draft['rejection']}"
     if draft and draft.get("can_answer") is False:
         return "The evidence does not answer this ticket"
-    return (
-        f"Confidence score {ticket.confidence_score:.3f} below "
-        f"department threshold {ticket.confidence_threshold:.3f}"
-    )
+    gate = result.get("gate_v2") or {}
+    if gate.get("thresholds_id") is None:
+        return "No certified thresholds are active, so every draft escalates"
+    reasons = gate.get("reasons") or []
+    if reasons and reasons[0].startswith(("uncertain routing", "another department")):
+        return f"Shift guard: {reasons[0]}"
+    score = "unknown" if ticket.confidence_score is None else f"{ticket.confidence_score:.3f}"
+    threshold = gate.get("assisted_threshold")
+    shown = "not certified" if threshold is None else f"{threshold:.3f}"
+    return (f"Confidence score {score} below the assisted-lane threshold {shown} "
+            f"(thresholds {gate.get('thresholds_version')})")
 
 
 async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
@@ -94,7 +100,6 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
             Department,
             get_llm_client(settings.llm_client),
             scorer=get_scorer(settings.grounding_scorer),
-            default_confidence_threshold=DEFAULT_CONFIDENCE_THRESHOLD,
         )
 
         result = await pipeline.ainvoke(
@@ -158,11 +163,13 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
                         )
                     )
 
-            # score/threshold/features are the full log of "what the gate saw" — see
-            # docs/langgraph-pipeline.md for why no separate decision-log table was added.
-            ticket.confidence_score = result.get("confidence_score")
-            ticket.confidence_features = result.get("confidence_features")
-            ticket.confidence_threshold = result.get("confidence_threshold")
+            # The gate's decision is logged in gate_decisions; the ticket keeps the lane,
+            # the calibrated score and the assisted-lane threshold it was compared with.
+            gate = result.get("gate_v2") or {}
+            ticket.lane = gate.get("lane") or "escalate"
+            ticket.confidence_score = gate.get("score")
+            ticket.confidence_threshold = gate.get("assisted_threshold")
+            ticket.confidence_features = None  # V1 feature bars; V2 reasons live in gate_decisions
 
             if result.get("gate_decision") == "draft":
                 # The model only saw placeholders; the engineer's copy gets the real
@@ -182,6 +189,7 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
                         ticket_id=ticket.id,
                         reason=_escalation_reason(ticket, result),
                         confidence_score=ticket.confidence_score,
+                        tier="senior",  # the gate withheld the draft: senior queue (Blueprint V2 §9.1)
                     )
                 )
 

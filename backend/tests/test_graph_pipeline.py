@@ -167,17 +167,18 @@ def test_build_pipeline_compiles():
     assert pipeline is not None
 
 
-def test_gate_condition_routes_to_draft_when_score_clears_threshold():
-    assert gate_condition({"confidence_score": 0.7, "confidence_threshold": 0.5}) == "draft"
-    assert gate_condition({"confidence_score": 0.5, "confidence_threshold": 0.5}) == "draft"  # exact tie passes
+def test_gate_condition_shows_the_draft_in_the_fast_and_assisted_lanes():
+    assert gate_condition({"gate_v2": {"lane": "fast"}}) == "draft"
+    assert gate_condition({"gate_v2": {"lane": "assisted"}}) == "draft"
 
 
-def test_gate_condition_routes_to_escalate_when_score_below_threshold():
-    assert gate_condition({"confidence_score": 0.3, "confidence_threshold": 0.5}) == "escalate"
+def test_gate_condition_withholds_the_draft_in_the_escalation_lane():
+    assert gate_condition({"gate_v2": {"lane": "escalate"}}) == "escalate"
 
 
-def test_gate_condition_fails_open_to_draft_on_missing_score():
-    assert gate_condition({}) == "draft"
+def test_gate_condition_fails_closed_without_a_gate_decision():
+    # Week 9: a human sees every ticket, so the safe failure is withholding the draft.
+    assert gate_condition({}) == "escalate"
 
 
 def test_escalate_node_returns_gate_decision():
