@@ -19,7 +19,7 @@ with time-limited credentials sponsored by an employee.
 
 ## Warnings
 Guest Wi-Fi is deliberately bandwidth-limited and isolated; ""slow"" guest Wi-Fi is not a
-fault to fix.",,
+fault to fix.",supported,
 b3671980-eb71-416a-ba32-9c3d723bdb78,T-01615,1,Check the `pg_stat_activity` for any long-running queries.,"[1] Database server CPU is very high
 Database server CPU is very high (Query performance and indexes)
 ## Symptom
@@ -37,7 +37,7 @@ index, a report run at peak time, or a query whose plan changed after data growt
 
 ## Warnings
 Do not restart the database to clear CPU load; it drops every connection and the load
-usually returns.",,
+usually returns.",supported,
 683f3d89-9b6f-481c-9435-8e536f616b00,T-01397,3,"If the issue persists, contact the materials-management team to escalate the missing period change.","[1] Posting period closed for goods movements
 Posting period closed for goods movements (Materials and number ranges)
 ## Symptom
@@ -56,7 +56,7 @@ change was not run, or the user picks a date in an older period, the posting is 
    moved forward. Check the current period with MMRV.
 3. Escalate a missing period change to the materials-management team, who run MMPV.
 4. Postings into an older closed period need Finance approval and are handled by
-   Finance, not the helpdesk.",,
+   Finance, not the helpdesk.",supported,
 35a7db69-5efb-4579-b200-dd6be5311fc2,T-01026,3,Save the changes and log off then log on again.,"[1] Wrong date or number format in SAP
 Wrong date or number format in SAP (GUI, dumps and printing)
 ## Symptom
@@ -75,7 +75,7 @@ may differ from Windows regional settings.
 
 ## Warnings
 The formats affect only how values are displayed and exported, not the stored data; do
-not correct postings because of a display format.",,
+not correct postings because of a display format.",not_supported,
 24101d25-6ca3-48a7-9bee-c747ccd5333c,T-01395,2,Verify that other 5 GHz networks are visible.,"[5] Laptop cannot see the corporate Wi-Fi network
 Laptop cannot see the corporate Wi-Fi network (Wireless access)
 ## Symptom
@@ -94,7 +94,7 @@ The corporate network runs only on the 5 GHz band. An outdated driver, an adapte
 4. If it is still missing, the adapter may be faulty: raise a hardware ticket.
 
 ## Warnings
-Do not share a phone hotspot with corporate devices as a long-term workaround.",,
+Do not share a phone hotspot with corporate devices as a long-term workaround.",not_supported,
 04341ba0-c0c7-49b5-9ee8-65b069448a76,T-01712,4,Ensure that your network adapter's power management settings are not set to turn off the radio when idle.,"[1] Office Wi-Fi keeps dropping
 Office Wi-Fi keeps dropping (Wireless access)
 ## Symptom
@@ -117,7 +117,7 @@ or the wireless controller is at fault.
 
 ## Warnings
 Do not tell users to connect to the guest network instead; it has no access to internal
-systems.",,
+systems.",supported,
 d852565f-8989-4ff3-b91e-e729d6d3d16b,T-00638,3,Save the changes and log off then log on again.,"[1] Wrong date or number format in SAP
 Wrong date or number format in SAP (GUI, dumps and printing)
 ## Symptom
@@ -136,7 +136,7 @@ may differ from Windows regional settings.
 
 ## Warnings
 The formats affect only how values are displayed and exported, not the stored data; do
-not correct postings because of a display format.",,
+not correct postings because of a display format.",not_supported,
 b16f5dda-cfff-42bc-92b5-579b1b15cda7,T-01529,3,"If the slot is confirmed to be abandoned, remove it using `DROP Replication Slot <slot_name>;`.","[1] Database disk almost full
 Database disk almost full (Disk space and backups)
 ## Symptom
@@ -156,7 +156,7 @@ or WAL archiving is stuck, or genuine data growth.
    or address bloat.
 
 ## Warnings
-Never delete files from `pg_wal` by hand; it can make the database impossible to start.",,
+Never delete files from `pg_wal` by hand; it can make the database impossible to start.",not_supported,
 acab063b-1021-43a9-a79f-ad78cd33ac04,T-01681,3,Do not restart any network equipment yourself.,"[1] Internet slow for a whole floor
 Internet slow for a whole floor (Call quality and file shares)
 ## Symptom
@@ -176,7 +176,7 @@ at reduced speed, or the office internet link reaching capacity.
 4. Keep the ticket open as a parent for the other users' reports.
 
 ## Warnings
-Do not restart network equipment yourself.",,
+Do not restart network equipment yourself.",not_supported,
 ac653582-67a9-464c-9143-4c43210f8c68,T-01064,2,Run `ipconfig /all` and check that the internal DNS servers are listed.,"[1] VPN connected but internal sites do not open
 VPN connected but internal sites do not open (VPN connectivity)
 ## Symptom
@@ -196,7 +196,7 @@ traffic for that range never enters the tunnel.
    the software centre.
 4. If even IP addresses fail, compare the home network's address range with the internal
    ranges (for example both using 192.168.1.x). Ask the user to restart the home router
-   or test from a hotspot, and report the overlap to network engineering.",,
+   or test from a hotspot, and report the overlap to network engineering.",supported,
 5ec35e3f-4055-48a2-bbf0-d41b19d06e8e,T-01210,3,Record the sponsor and visit dates in the ticket for audit purposes.,"[1] Wi-Fi access for a visitor
 Wi-Fi access for a visitor (Wireless access)
 ## Symptom
@@ -217,7 +217,7 @@ with time-limited credentials sponsored by an employee.
 
 ## Warnings
 Guest Wi-Fi is deliberately bandwidth-limited and isolated; ""slow"" guest Wi-Fi is not a
-fault to fix.",,
+fault to fix.",not_supported,
 da1fbb42-a4b8-4694-8dd6-4875b510d1c4,T-01396,4,"If the issue persists, contact Finance for approval to post in an older period.","[1] Posting period closed for goods movements
 Posting period closed for goods movements (Materials and number ranges)
 ## Symptom
@@ -236,7 +236,7 @@ change was not run, or the user picks a date in an older period, the posting is 
    moved forward. Check the current period with MMRV.
 3. Escalate a missing period change to the materials-management team, who run MMPV.
 4. Postings into an older closed period need Finance approval and are handled by
-   Finance, not the helpdesk.",,
+   Finance, not the helpdesk.",not_supported,
 39628814-01b5-4ed9-ab9b-f9d920445ccd,T-00899,2,Ask the identity team to reset your multi-factor registration in the identity provider.,"[1] Lost phone for cloud console multi-factor sign-in
 Lost phone for cloud console multi-factor sign-in (Identity, SSO and permissions)
 ## Symptom
@@ -256,7 +256,7 @@ authenticator was registered on the old phone.
 4. If the phone was lost, ask the user to report it to security as a lost device.
 
 ## Warnings
-Never turn multi-factor off for an account, even temporarily.",,
+Never turn multi-factor off for an account, even temporarily.",supported,
 ee42b65c-6ff7-4b6c-8320-7a3be4d83ee7,T-01538,1,"If they are, the issue might be specific to the IP desk phone.","[1] Office Wi-Fi keeps dropping
 Office Wi-Fi keeps dropping (Wireless access)
 ## Symptom
@@ -365,7 +365,7 @@ a test machine) was given a static address inside the DHCP range.
 
 ## Warnings
 Do not set a static address on the laptop to escape the conflict; it only moves the
-problem.",,
+problem.",not_supported,
 66a56215-452e-499e-ba47-21432e26189e,T-01742,4,"If IP addresses also fail, check for address range overlaps with your home network and report to network engineering.","[1] VPN connected but internal sites do not open
 VPN connected but internal sites do not open (VPN connectivity)
 ## Symptom
@@ -385,7 +385,7 @@ traffic for that range never enters the tunnel.
    the software centre.
 4. If even IP addresses fail, compare the home network's address range with the internal
    ranges (for example both using 192.168.1.x). Ask the user to restart the home router
-   or test from a hotspot, and report the overlap to network engineering.",,
+   or test from a hotspot, and report the overlap to network engineering.",supported,
 368217ce-3251-4435-b333-b2d4515277ae,T-01740,1,Check if other users in your department are experiencing the same issue.,"[1] Internet slow for a whole floor
 Internet slow for a whole floor (Call quality and file shares)
 ## Symptom
@@ -427,7 +427,7 @@ whole office is affected, the internet link is saturated.
 5. If many users at one office are affected, escalate as a link-capacity problem.
 
 ## Warnings
-Do not ask users to stop company backups to free bandwidth.",,
+Do not ask users to stop company backups to free bandwidth.",supported,
 655a4e10-d4ef-4432-9b8c-4766147f7d40,T-00320,4,"If the quota issue is recurring, consider raising a capacity-planning review.","[1] Writes fail because a storage quota is reached
 Writes fail because a storage quota is reached (Object storage)
 ## Symptom
@@ -448,7 +448,7 @@ share, or a budget control that stops further spending.
    increases.
 
 ## Warnings
-Do not request the largest possible quota ""to be safe""; it hides runaway growth.",,
+Do not request the largest possible quota ""to be safe""; it hides runaway growth.",not_supported,
 2a032319-bbb4-49c2-abbe-9607254fac7c,T-01582,3,"If the block is not intentional, ask the buyer to release the account in ME22N.","[2] Goods receipt fails because the PO item is blocked
 Goods receipt fails because the PO item is blocked (Purchasing and goods receipt)
 ## Symptom
@@ -468,7 +468,7 @@ buyer releases them.
 3. If the block should be removed, the buyer removes it in ME22N and saves the PO.
 4. Retry the goods receipt in MIGO.
 5. If the item has a deletion indicator and the goods have physically arrived, the buyer
-   must create a new PO item; a deleted item cannot be received.",,
+   must create a new PO item; a deleted item cannot be received.",not_supported,
 88fcb816-7dc2-4a44-87f9-8897836b7e3a,T-01120,3,"If a colleague is editing, ask them to save or exit the transaction.","[3] Material master locked by another user
 Material master locked by another user (Materials and number ranges)
 ## Symptom
@@ -489,7 +489,7 @@ save or leave the transaction. If their session crashed, the lock can be left be
 
 ## Warnings
 Deleting a lock entry while the other user is still editing can corrupt the material
-data. Only Basis deletes lock entries, and only after confirming the session is gone.",,
+data. Only Basis deletes lock entries, and only after confirming the session is gone.",not_supported,
 88fcb816-7dc2-4a44-87f9-8897836b7e3a,T-01120,1,"If so, contact the SAP configuration team to create a new number range interval for the fiscal year.","[1] Number range exhausted
 Number range exhausted (Materials and number ranges)
 ## Symptom
@@ -532,7 +532,7 @@ profile mismatch.
 
 ## Warnings
 Do not reprocess an IDoc repeatedly without reading the error. If the cause was
-intermittent, repeated attempts can create duplicate documents.",,
+intermittent, repeated attempts can create duplicate documents.",supported,
 fb36de82-5ea8-40c5-94da-3eb40f37e977,T-00694,1,Check the date of your marriage or the date your spouse became eligible.,"[1] Adding a family member to health insurance
 Adding a family member to health insurance (Benefits and insurance)
 ## Symptom
@@ -551,7 +551,7 @@ adoption) or during open enrolment.
 
 ## Warnings
 The premium deduction for the dependant starts on the next payslip and may include
-arrears back to the coverage start date.",,
+arrears back to the coverage start date.",supported,
 acab063b-1021-43a9-a79f-ad78cd33ac04,T-01681,1,Check if other users on your floor are experiencing similar issues.,"[1] Internet slow for a whole floor
 Internet slow for a whole floor (Call quality and file shares)
 ## Symptom
@@ -571,7 +571,7 @@ at reduced speed, or the office internet link reaching capacity.
 4. Keep the ticket open as a parent for the other users' reports.
 
 ## Warnings
-Do not restart network equipment yourself.",,
+Do not restart network equipment yourself.",not_supported,
 04341ba0-c0c7-49b5-9ee8-65b069448a76,T-01712,3,"If the issue is isolated to your computer, try forgetting the network and reconnecting.","[1] Office Wi-Fi keeps dropping
 Office Wi-Fi keeps dropping (Wireless access)
 ## Symptom
@@ -594,7 +594,7 @@ or the wireless controller is at fault.
 
 ## Warnings
 Do not tell users to connect to the guest network instead; it has no access to internal
-systems.",,
+systems.",not_supported,
 66a56215-452e-499e-ba47-21432e26189e,T-01742,1,Check if the issue is with internal resources by trying to access them by IP address.,"[1] VPN connected but internal sites do not open
 VPN connected but internal sites do not open (VPN connectivity)
 ## Symptom
@@ -614,7 +614,7 @@ traffic for that range never enters the tunnel.
    the software centre.
 4. If even IP addresses fail, compare the home network's address range with the internal
    ranges (for example both using 192.168.1.x). Ask the user to restart the home router
-   or test from a hotspot, and report the overlap to network engineering.",,
+   or test from a hotspot, and report the overlap to network engineering.",supported,
 ee42b65c-6ff7-4b6c-8320-7a3be4d83ee7,T-01538,1,Check if other devices on the same wall port are working.,"[1] Office Wi-Fi keeps dropping
 Office Wi-Fi keeps dropping (Wireless access)
 ## Symptom
@@ -723,7 +723,7 @@ a test machine) was given a static address inside the DHCP range.
 
 ## Warnings
 Do not set a static address on the laptop to escape the conflict; it only moves the
-problem.",,
+problem.",not_supported,
 66a56215-452e-499e-ba47-21432e26189e,T-01742,5,"If colleagues in the same area are affected, note the location and escalate it as an access point problem.","[3] Office Wi-Fi keeps dropping
 Office Wi-Fi keeps dropping (Wireless access)
 ## Symptom
@@ -746,7 +746,7 @@ or the wireless controller is at fault.
 
 ## Warnings
 Do not tell users to connect to the guest network instead; it has no access to internal
-systems.",,
+systems.",supported,
 acab063b-1021-43a9-a79f-ad78cd33ac04,T-01681,6,Run a network test during a video call to identify any issues.,"[3] Video calls freeze or lag
 Video calls freeze or lag (Call quality and file shares)
 ## Symptom
@@ -767,7 +767,7 @@ whole office is affected, the internet link is saturated.
 5. If many users at one office are affected, escalate as a link-capacity problem.
 
 ## Warnings
-Do not ask users to stop company backups to free bandwidth.",,
+Do not ask users to stop company backups to free bandwidth.",supported,
 368217ce-3251-4435-b333-b2d4515277ae,T-01740,8,Update your wireless driver from the software centre.,"[2] Office Wi-Fi keeps dropping
 Office Wi-Fi keeps dropping (Wireless access)
 ## Symptom
@@ -790,7 +790,7 @@ or the wireless controller is at fault.
 
 ## Warnings
 Do not tell users to connect to the guest network instead; it has no access to internal
-systems.",,
+systems.",not_supported,
 2a032319-bbb4-49c2-abbe-9607254fac7c,T-01582,1,Check the GL account in FS00 to confirm it is marked for retirement.,"[3] Posting period closed for goods movements
 Posting period closed for goods movements (Materials and number ranges)
 ## Symptom
@@ -809,7 +809,7 @@ change was not run, or the user picks a date in an older period, the posting is 
    moved forward. Check the current period with MMRV.
 3. Escalate a missing period change to the materials-management team, who run MMPV.
 4. Postings into an older closed period need Finance approval and are handled by
-   Finance, not the helpdesk.",,
+   Finance, not the helpdesk.",not_supported,
 655a4e10-d4ef-4432-9b8c-4766147f7d40,T-00320,2,Review the application's retention policy and consider archiving or deleting old data.,"[1] Writes fail because a storage quota is reached
 Writes fail because a storage quota is reached (Object storage)
 ## Symptom
@@ -830,7 +830,7 @@ share, or a budget control that stops further spending.
    increases.
 
 ## Warnings
-Do not request the largest possible quota ""to be safe""; it hides runaway growth.",,
+Do not request the largest possible quota ""to be safe""; it hides runaway growth.",not_supported,
 acab063b-1021-43a9-a79f-ad78cd33ac04,T-01681,5,"If you are using a laptop, check if the Wi-Fi adapter's power management is set to save power and adjust it if necessary.","[2] Office Wi-Fi keeps dropping
 Office Wi-Fi keeps dropping (Wireless access)
 ## Symptom
@@ -853,7 +853,7 @@ or the wireless controller is at fault.
 
 ## Warnings
 Do not tell users to connect to the guest network instead; it has no access to internal
-systems.",,
+systems.",not_supported,
 88fcb816-7dc2-4a44-87f9-8897836b7e3a,T-01120,1,Check if the issue started at the beginning of a fiscal year.,"[1] Number range exhausted
 Number range exhausted (Materials and number ranges)
 ## Symptom
@@ -896,7 +896,7 @@ profile mismatch.
 
 ## Warnings
 Do not reprocess an IDoc repeatedly without reading the error. If the cause was
-intermittent, repeated attempts can create duplicate documents.",,
+intermittent, repeated attempts can create duplicate documents.",not_supported,
 ac653582-67a9-464c-9143-4c43210f8c68,T-01064,1,"If it works but the name does not, it is a DNS problem.","[1] VPN connected but internal sites do not open
 VPN connected but internal sites do not open (VPN connectivity)
 ## Symptom
@@ -916,7 +916,7 @@ traffic for that range never enters the tunnel.
    the software centre.
 4. If even IP addresses fail, compare the home network's address range with the internal
    ranges (for example both using 192.168.1.x). Ask the user to restart the home router
-   or test from a hotspot, and report the overlap to network engineering.",,
+   or test from a hotspot, and report the overlap to network engineering.",supported,
 eb464403-b717-4db2-80a5-106f51fd8438,T-00974,5,"For your first month, ensure you are in the office as required by your role category.","[1] Working from home rules and exceptions
 Working from home rules and exceptions (Workplace policy and reviews)
 ## Symptom
@@ -935,7 +935,7 @@ roles have a minimum number of office days per week set by the department.
 4. Equipment for home working is requested through the normal equipment request.
 
 ## Warnings
-HR clarifies the policy; the manager approves individual exceptions.",,
+HR clarifies the policy; the manager approves individual exceptions.",supported,
 88fcb816-7dc2-4a44-87f9-8897836b7e3a,T-01120,4,"If the material is locked by another user and they are unreachable, contact a Basis administrator to check for and delete the lock entry.","[3] Material master locked by another user
 Material master locked by another user (Materials and number ranges)
 ## Symptom
@@ -956,7 +956,7 @@ save or leave the transaction. If their session crashed, the lock can be left be
 
 ## Warnings
 Deleting a lock entry while the other user is still editing can corrupt the material
-data. Only Basis deletes lock entries, and only after confirming the session is gone.",,
+data. Only Basis deletes lock entries, and only after confirming the session is gone.",supported,
 dc32686e-8dcc-4cde-9961-a548f8a61969,T-01421,2,Group the sessions by application and state to identify any 'idle in transaction' sessions.,"[1] Application runs out of database connections
 Application runs out of database connections (Connections and pools)
 ## Symptom
@@ -978,7 +978,7 @@ error. Sessions left ""idle in transaction"" also hold connection slots.
 5. Send the findings to the owning team to fix the leak or pool settings.
 
 ## Warnings
-Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",,
+Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",supported,
 39628814-01b5-4ed9-ab9b-f9d920445ccd,T-00899,1,Verify your identity through the standard process (manager confirmation plus employee ID).,"[1] Lost phone for cloud console multi-factor sign-in
 Lost phone for cloud console multi-factor sign-in (Identity, SSO and permissions)
 ## Symptom
@@ -998,7 +998,7 @@ authenticator was registered on the old phone.
 4. If the phone was lost, ask the user to report it to security as a lost device.
 
 ## Warnings
-Never turn multi-factor off for an account, even temporarily.",,
+Never turn multi-factor off for an account, even temporarily.",supported,
 66a56215-452e-499e-ba47-21432e26189e,T-01742,8,Update the wireless driver from the software centre.,"[3] Office Wi-Fi keeps dropping
 Office Wi-Fi keeps dropping (Wireless access)
 ## Symptom
@@ -1021,7 +1021,7 @@ or the wireless controller is at fault.
 
 ## Warnings
 Do not tell users to connect to the guest network instead; it has no access to internal
-systems.",,
+systems.",not_supported,
 b16f5dda-cfff-42bc-92b5-579b1b15cda7,T-01529,4,Verify the removal by checking the `pg_replication_slots` again.,"[1] Database disk almost full
 Database disk almost full (Disk space and backups)
 ## Symptom
@@ -1041,7 +1041,7 @@ or WAL archiving is stuck, or genuine data growth.
    or address bloat.
 
 ## Warnings
-Never delete files from `pg_wal` by hand; it can make the database impossible to start.",,
+Never delete files from `pg_wal` by hand; it can make the database impossible to start.",not_supported,
 88fcb816-7dc2-4a44-87f9-8897836b7e3a,T-01120,3,Ensure no other user is currently editing the material.,"[3] Material master locked by another user
 Material master locked by another user (Materials and number ranges)
 ## Symptom
@@ -1062,4 +1062,4 @@ save or leave the transaction. If their session crashed, the lock can be left be
 
 ## Warnings
 Deleting a lock entry while the other user is still editing can corrupt the material
-data. Only Basis deletes lock entries, and only after confirming the session is gone.",,
+data. Only Basis deletes lock entries, and only after confirming the session is gone.",supported,
