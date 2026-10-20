@@ -64,3 +64,10 @@ def test_human_label_rules():
     assert human_label(1.0, None) == 1 and human_label(0.0, None) == 0
     assert human_label(0.5, None) is None  # disagreement without adjudication: no label yet
     assert human_label(0.5, 1) == 1
+
+
+def test_every_feature_has_a_readable_reason():
+    from confidence_model.model import READABLE
+
+    missing = [f for f in FEATURES if f not in READABLE]
+    assert not missing, f"reasons would show raw feature names: {missing}"
