@@ -1,0 +1,8 @@
+{
+  "what": "the 250 locked-test tickets selected for human labelling (Blueprint V2 \u00a715; Roadmap Week 8)",
+  "benchmark_version": "v1",
+  "sealed_on": "2026-10-20",
+  "n": 250,
+  "ticket_ids_sha256": "608c0d3726151bdb53c7114a72169525e26cfd66a6c5b38ae9d5bfa5038d74cf",
+  "rule": "Read only through ai/confidence_model/dataset.load(include_test=True, reason=...), once, in Week 10. Every read is appended to data/annotation/locked_test_access.log."
+}
