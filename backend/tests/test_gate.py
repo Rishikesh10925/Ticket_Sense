@@ -69,3 +69,18 @@ def test_decision_is_404_before_any_draft(api):
     ticket_id = api.post("/tickets", data={"subject": "x issue", "description": "nothing routes this"},
                          headers={"Authorization": f"Bearer {customer}"}).json()["id"]
     assert api.get(f"/tickets/{ticket_id}/decision", headers={"Authorization": f"Bearer {admin}"}).status_code == 404
+
+
+def test_admin_sees_the_error_budget_and_history(api):
+    _activate(None, 0.05, "t-test-a")
+    _activate(0.9, 0.4, "t-test-b")
+    admin = _admin_token(api, "gate_admin3@example.com")
+    body = api.get("/gate/thresholds", headers={"Authorization": f"Bearer {admin}"}).json()
+    assert body["active"]["version"] == "t-test-b" and body["active"]["fast_threshold"] == 0.9
+    assert [h["version"] for h in body["history"]] == ["t-test-b", "t-test-a"]
+    assert [h["active"] for h in body["history"]] == [True, False]  # old sets kept, never deleted
+
+
+def test_only_admins_see_the_error_budget(api):
+    customer = _register_and_login(api, "gate_customer3@example.com")
+    assert api.get("/gate/thresholds", headers={"Authorization": f"Bearer {customer}"}).status_code == 403

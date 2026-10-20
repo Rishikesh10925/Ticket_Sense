@@ -8,6 +8,7 @@ from app.routers import (
     auth,
     departments,
     escalations,
+    gate,
     health,
     knowledge_base,
     messages,
@@ -35,3 +36,4 @@ app.include_router(analytics.router)
 app.include_router(escalations.router)
 app.include_router(messages.router)
 app.include_router(annotate.router)
+app.include_router(gate.router)

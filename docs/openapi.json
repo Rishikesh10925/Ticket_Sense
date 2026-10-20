@@ -1419,6 +1419,34 @@
           }
         }
       }
+    },
+    "/gate/thresholds": {
+      "get": {
+        "tags": [
+          "gate"
+        ],
+        "summary": "Get Thresholds",
+        "operationId": "get_thresholds_gate_thresholds_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Thresholds Gate Thresholds Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {

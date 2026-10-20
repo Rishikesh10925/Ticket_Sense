@@ -33,7 +33,8 @@ async def load(report_path: Path, version: str) -> GateThresholds:
             delta=0.10,
             fast_threshold=t["fast"]["threshold"],
             assisted_threshold=t["assisted"]["threshold"],
-            calibration={"report": report_path.name, "n": report["n"], "thresholds": t, "status": report["status"]},
+            calibration={"report": report_path.name, "n": report["n"], "thresholds": t, "status": report["status"],
+                         "alpha_curve": report.get("alpha_curve", [])},
             active=True,
         )
         db.add(row)
