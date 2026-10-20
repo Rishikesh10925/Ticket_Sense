@@ -1,0 +1,3480 @@
+draft_id,ticket_id,step,claim,cited_passages,human,note
+333b4644-2b97-4240-91b6-1155b7828148,T-00870,1,Note the exact error message and document type.,"[1] Number range exhausted
+Number range exhausted (Materials and number ranges)
+## Symptom
+Creating a document (material, purchase order, sales order or accounting document) fails
+because no number can be assigned: the message says the number range interval is full or
+was not found.
+
+## Cause
+Every document type draws its numbers from a number range interval. When the interval
+reaches its upper limit, or the interval for a new fiscal year was never created, no new
+documents of that type can be saved.
+
+## Resolution steps
+1. Note the exact message, the document type and the company code or plant.
+2. Identify the number range object (for example FBN1 for accounting documents, MMNR for
+   materials, or SNRO for the generic view).
+3. Escalate to the SAP configuration team with the object, the interval and the fiscal
+   year. Extending or adding an interval is a configuration change.
+4. If the error appeared at the start of a fiscal year, mention it: the new year's
+   interval may simply not have been created.",,
+333b4644-2b97-4240-91b6-1155b7828148,T-00870,2,"Identify the number range object (e.g., FBN1 for accounting, MMNR for materials, or SNRO for generic view).","[1] Number range exhausted
+Number range exhausted (Materials and number ranges)
+## Symptom
+Creating a document (material, purchase order, sales order or accounting document) fails
+because no number can be assigned: the message says the number range interval is full or
+was not found.
+
+## Cause
+Every document type draws its numbers from a number range interval. When the interval
+reaches its upper limit, or the interval for a new fiscal year was never created, no new
+documents of that type can be saved.
+
+## Resolution steps
+1. Note the exact message, the document type and the company code or plant.
+2. Identify the number range object (for example FBN1 for accounting documents, MMNR for
+   materials, or SNRO for the generic view).
+3. Escalate to the SAP configuration team with the object, the interval and the fiscal
+   year. Extending or adding an interval is a configuration change.
+4. If the error appeared at the start of a fiscal year, mention it: the new year's
+   interval may simply not have been created.",,
+333b4644-2b97-4240-91b6-1155b7828148,T-00870,3,"Escalate to the SAP configuration team with the number range object, interval, and fiscal year.","[1] Number range exhausted
+Number range exhausted (Materials and number ranges)
+## Symptom
+Creating a document (material, purchase order, sales order or accounting document) fails
+because no number can be assigned: the message says the number range interval is full or
+was not found.
+
+## Cause
+Every document type draws its numbers from a number range interval. When the interval
+reaches its upper limit, or the interval for a new fiscal year was never created, no new
+documents of that type can be saved.
+
+## Resolution steps
+1. Note the exact message, the document type and the company code or plant.
+2. Identify the number range object (for example FBN1 for accounting documents, MMNR for
+   materials, or SNRO for the generic view).
+3. Escalate to the SAP configuration team with the object, the interval and the fiscal
+   year. Extending or adding an interval is a configuration change.
+4. If the error appeared at the start of a fiscal year, mention it: the new year's
+   interval may simply not have been created.",,
+333b4644-2b97-4240-91b6-1155b7828148,T-00870,4,"If the error appeared at the start of a fiscal year, inform the SAP team.","[1] Number range exhausted
+Number range exhausted (Materials and number ranges)
+## Symptom
+Creating a document (material, purchase order, sales order or accounting document) fails
+because no number can be assigned: the message says the number range interval is full or
+was not found.
+
+## Cause
+Every document type draws its numbers from a number range interval. When the interval
+reaches its upper limit, or the interval for a new fiscal year was never created, no new
+documents of that type can be saved.
+
+## Resolution steps
+1. Note the exact message, the document type and the company code or plant.
+2. Identify the number range object (for example FBN1 for accounting documents, MMNR for
+   materials, or SNRO for the generic view).
+3. Escalate to the SAP configuration team with the object, the interval and the fiscal
+   year. Extending or adding an interval is a configuration change.
+4. If the error appeared at the start of a fiscal year, mention it: the new year's
+   interval may simply not have been created.",,
+c48ec8cd-639a-4d99-ad1b-dc863e768edc,T-01069,1,"Submit your timesheet in the HR portal as soon as possible, even if late.","[1] Missed timesheet deadline
+Missed timesheet deadline (Payroll and timesheets)
+## Symptom
+An employee or manager asks about the timesheet deadline or a missed submission.
+
+## Cause
+Timesheets are due every Friday by end of day and must be approved by the manager before
+the payroll cut-off to be paid in that cycle.
+
+## Resolution steps
+1. Submit the timesheet in the HR portal even if late; late timesheets are accepted until
+   the payroll cut-off.
+2. Ask the manager to approve it before the cut-off.
+3. After the cut-off, the hours are paid in the following cycle.
+4. Contractors and hourly staff have an earlier cut-off; confirm the employment type
+   before quoting a deadline.
+
+## Warnings
+Do not edit or approve a timesheet on an employee's or manager's behalf.",,
+c48ec8cd-639a-4d99-ad1b-dc863e768edc,T-01069,2,Ask your manager to approve it before the payroll cut-off.,"[1] Missed timesheet deadline
+Missed timesheet deadline (Payroll and timesheets)
+## Symptom
+An employee or manager asks about the timesheet deadline or a missed submission.
+
+## Cause
+Timesheets are due every Friday by end of day and must be approved by the manager before
+the payroll cut-off to be paid in that cycle.
+
+## Resolution steps
+1. Submit the timesheet in the HR portal even if late; late timesheets are accepted until
+   the payroll cut-off.
+2. Ask the manager to approve it before the cut-off.
+3. After the cut-off, the hours are paid in the following cycle.
+4. Contractors and hourly staff have an earlier cut-off; confirm the employment type
+   before quoting a deadline.
+
+## Warnings
+Do not edit or approve a timesheet on an employee's or manager's behalf.",,
+c48ec8cd-639a-4d99-ad1b-dc863e768edc,T-01069,3,"If you miss the cut-off, your hours will be paid in the following cycle.","[1] Missed timesheet deadline
+Missed timesheet deadline (Payroll and timesheets)
+## Symptom
+An employee or manager asks about the timesheet deadline or a missed submission.
+
+## Cause
+Timesheets are due every Friday by end of day and must be approved by the manager before
+the payroll cut-off to be paid in that cycle.
+
+## Resolution steps
+1. Submit the timesheet in the HR portal even if late; late timesheets are accepted until
+   the payroll cut-off.
+2. Ask the manager to approve it before the cut-off.
+3. After the cut-off, the hours are paid in the following cycle.
+4. Contractors and hourly staff have an earlier cut-off; confirm the employment type
+   before quoting a deadline.
+
+## Warnings
+Do not edit or approve a timesheet on an employee's or manager's behalf.",,
+c48ec8cd-639a-4d99-ad1b-dc863e768edc,T-01069,4,"If you have any questions about the consequences, contact the HR team.","[1] Missed timesheet deadline
+Missed timesheet deadline (Payroll and timesheets)
+## Symptom
+An employee or manager asks about the timesheet deadline or a missed submission.
+
+## Cause
+Timesheets are due every Friday by end of day and must be approved by the manager before
+the payroll cut-off to be paid in that cycle.
+
+## Resolution steps
+1. Submit the timesheet in the HR portal even if late; late timesheets are accepted until
+   the payroll cut-off.
+2. Ask the manager to approve it before the cut-off.
+3. After the cut-off, the hours are paid in the following cycle.
+4. Contractors and hourly staff have an earlier cut-off; confirm the employment type
+   before quoting a deadline.
+
+## Warnings
+Do not edit or approve a timesheet on an employee's or manager's behalf.",,
+74b8c859-a609-4856-8ceb-f184fbafec16,T-01180,1,"Check the version table (e.g., `alembic_version`) to see what the tool recorded.","[1] Schema migration failed halfway
+Schema migration failed halfway (Access requests and schema changes)
+## Symptom
+A schema migration failed during deployment, and it is unclear which changes were applied.
+
+## Cause
+Migrations that are not run in one transaction (for example with `CREATE INDEX
+CONCURRENTLY`) can stop halfway. The migration tool's version table may not match what
+was really applied.
+
+## Resolution steps
+1. Check the version table (for example `alembic_version`) to see what the tool recorded.
+2. Compare the actual schema with what the migration should produce.
+3. Finish or undo the partial change by hand so the schema matches one known version.
+4. Then mark the version or rerun the migration, and record what was done in the ticket.
+
+## Warnings
+Never rerun a failed migration before you know which statements already applied.",,
+74b8c859-a609-4856-8ceb-f184fbafec16,T-01180,2,Compare the actual schema with what the migration should produce.,"[1] Schema migration failed halfway
+Schema migration failed halfway (Access requests and schema changes)
+## Symptom
+A schema migration failed during deployment, and it is unclear which changes were applied.
+
+## Cause
+Migrations that are not run in one transaction (for example with `CREATE INDEX
+CONCURRENTLY`) can stop halfway. The migration tool's version table may not match what
+was really applied.
+
+## Resolution steps
+1. Check the version table (for example `alembic_version`) to see what the tool recorded.
+2. Compare the actual schema with what the migration should produce.
+3. Finish or undo the partial change by hand so the schema matches one known version.
+4. Then mark the version or rerun the migration, and record what was done in the ticket.
+
+## Warnings
+Never rerun a failed migration before you know which statements already applied.",,
+74b8c859-a609-4856-8ceb-f184fbafec16,T-01180,3,Finish or undo the partial change by hand so the schema matches one known version.,"[1] Schema migration failed halfway
+Schema migration failed halfway (Access requests and schema changes)
+## Symptom
+A schema migration failed during deployment, and it is unclear which changes were applied.
+
+## Cause
+Migrations that are not run in one transaction (for example with `CREATE INDEX
+CONCURRENTLY`) can stop halfway. The migration tool's version table may not match what
+was really applied.
+
+## Resolution steps
+1. Check the version table (for example `alembic_version`) to see what the tool recorded.
+2. Compare the actual schema with what the migration should produce.
+3. Finish or undo the partial change by hand so the schema matches one known version.
+4. Then mark the version or rerun the migration, and record what was done in the ticket.
+
+## Warnings
+Never rerun a failed migration before you know which statements already applied.",,
+74b8c859-a609-4856-8ceb-f184fbafec16,T-01180,4,"Mark the version or rerun the migration, and record the changes in the ticket.","[1] Schema migration failed halfway
+Schema migration failed halfway (Access requests and schema changes)
+## Symptom
+A schema migration failed during deployment, and it is unclear which changes were applied.
+
+## Cause
+Migrations that are not run in one transaction (for example with `CREATE INDEX
+CONCURRENTLY`) can stop halfway. The migration tool's version table may not match what
+was really applied.
+
+## Resolution steps
+1. Check the version table (for example `alembic_version`) to see what the tool recorded.
+2. Compare the actual schema with what the migration should produce.
+3. Finish or undo the partial change by hand so the schema matches one known version.
+4. Then mark the version or rerun the migration, and record what was done in the ticket.
+
+## Warnings
+Never rerun a failed migration before you know which statements already applied.",,
+cc69aaaa-c9f2-4f1a-99bb-bd8390637b87,T-01517,1,Run `ipconfig /release`,"[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.",,
+cc69aaaa-c9f2-4f1a-99bb-bd8390637b87,T-01517,1,`ipconfig /renew` to request a new IP address.,"[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.",,
+cc69aaaa-c9f2-4f1a-99bb-bd8390637b87,T-01517,2,Try connecting to an internal resource by IP address to check if the issue is with DNS.,"[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.
+---
+[4] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.",,
+cc69aaaa-c9f2-4f1a-99bb-bd8390637b87,T-01517,3,Run `ipconfig /all` and check if the internal DNS servers are listed for the VPN adapter.,"[4] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.",,
+cc69aaaa-c9f2-4f1a-99bb-bd8390637b87,T-01517,4,"If the internal DNS servers are not listed, disconnect and reconnect the VPN.","[4] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.",,
+b54b5e39-1d98-4180-9069-6bf8f49465be,T-01653,1,Check if the report figure is related to a slow query or a recent data growth.,"[1] A query has become slow
+A query has become slow (Query performance and indexes)
+## Symptom
+A report or application feature that used to be fast is now slow, gradually or suddenly
+after a release or data growth.
+
+## Cause
+The query plan changed: a sequential scan over a large table instead of an index scan,
+because an index is missing or table statistics are out of date. Sometimes the query does
+far more work than needed.
+
+## Resolution steps
+1. Get the exact query from the application log or `pg_stat_statements`.
+2. Run `EXPLAIN (ANALYZE, BUFFERS)` on it (on a replica or test copy if it changes data).
+3. Look for a sequential scan on a large table where an index scan is expected.
+4. If the index exists but is not used, refresh statistics with `ANALYZE` on the table.
+5. If an index is missing or the query is inefficient, send the plan to the owning team.
+
+## Warnings
+Do not create indexes on production tables without the DBA team; building them can lock
+the table.
+---
+[3] Database server CPU is very high
+Database server CPU is very high (Query performance and indexes)
+## Symptom
+Monitoring shows the database server's CPU near 100 percent and applications are slow.
+
+## Cause
+A few expensive queries usually cause most of the load: a new query without a suitable
+index, a report run at peak time, or a query whose plan changed after data growth.
+
+## Resolution steps
+1. Look at `pg_stat_activity` for long-running active queries right now.
+2. Check `pg_stat_statements` for the queries with the highest total execution time.
+3. If one report or job causes the spike, ask its owner to stop it or run it off-peak.
+4. Send the top queries and their plans to the owning teams for tuning.
+
+## Warnings
+Do not restart the database to clear CPU load; it drops every connection and the load
+usually returns.",,
+b54b5e39-1d98-4180-9069-6bf8f49465be,T-01653,2,"If it's a slow query, run `EXPLAIN (ANALYZE, BUFFERS)` on the query to understand its execution plan.","[1] A query has become slow
+A query has become slow (Query performance and indexes)
+## Symptom
+A report or application feature that used to be fast is now slow, gradually or suddenly
+after a release or data growth.
+
+## Cause
+The query plan changed: a sequential scan over a large table instead of an index scan,
+because an index is missing or table statistics are out of date. Sometimes the query does
+far more work than needed.
+
+## Resolution steps
+1. Get the exact query from the application log or `pg_stat_statements`.
+2. Run `EXPLAIN (ANALYZE, BUFFERS)` on it (on a replica or test copy if it changes data).
+3. Look for a sequential scan on a large table where an index scan is expected.
+4. If the index exists but is not used, refresh statistics with `ANALYZE` on the table.
+5. If an index is missing or the query is inefficient, send the plan to the owning team.
+
+## Warnings
+Do not create indexes on production tables without the DBA team; building them can lock
+the table.
+---
+[3] Database server CPU is very high
+Database server CPU is very high (Query performance and indexes)
+## Symptom
+Monitoring shows the database server's CPU near 100 percent and applications are slow.
+
+## Cause
+A few expensive queries usually cause most of the load: a new query without a suitable
+index, a report run at peak time, or a query whose plan changed after data growth.
+
+## Resolution steps
+1. Look at `pg_stat_activity` for long-running active queries right now.
+2. Check `pg_stat_statements` for the queries with the highest total execution time.
+3. If one report or job causes the spike, ask its owner to stop it or run it off-peak.
+4. Send the top queries and their plans to the owning teams for tuning.
+
+## Warnings
+Do not restart the database to clear CPU load; it drops every connection and the load
+usually returns.",,
+b54b5e39-1d98-4180-9069-6bf8f49465be,T-01653,3,Look for any sequential scans on large tables that might indicate an inefficient query plan.,"[1] A query has become slow
+A query has become slow (Query performance and indexes)
+## Symptom
+A report or application feature that used to be fast is now slow, gradually or suddenly
+after a release or data growth.
+
+## Cause
+The query plan changed: a sequential scan over a large table instead of an index scan,
+because an index is missing or table statistics are out of date. Sometimes the query does
+far more work than needed.
+
+## Resolution steps
+1. Get the exact query from the application log or `pg_stat_statements`.
+2. Run `EXPLAIN (ANALYZE, BUFFERS)` on it (on a replica or test copy if it changes data).
+3. Look for a sequential scan on a large table where an index scan is expected.
+4. If the index exists but is not used, refresh statistics with `ANALYZE` on the table.
+5. If an index is missing or the query is inefficient, send the plan to the owning team.
+
+## Warnings
+Do not create indexes on production tables without the DBA team; building them can lock
+the table.
+---
+[3] Database server CPU is very high
+Database server CPU is very high (Query performance and indexes)
+## Symptom
+Monitoring shows the database server's CPU near 100 percent and applications are slow.
+
+## Cause
+A few expensive queries usually cause most of the load: a new query without a suitable
+index, a report run at peak time, or a query whose plan changed after data growth.
+
+## Resolution steps
+1. Look at `pg_stat_activity` for long-running active queries right now.
+2. Check `pg_stat_statements` for the queries with the highest total execution time.
+3. If one report or job causes the spike, ask its owner to stop it or run it off-peak.
+4. Send the top queries and their plans to the owning teams for tuning.
+
+## Warnings
+Do not restart the database to clear CPU load; it drops every connection and the load
+usually returns.",,
+b54b5e39-1d98-4180-9069-6bf8f49465be,T-01653,4,"If an inefficient query is identified, contact the owning team for assistance.","[1] A query has become slow
+A query has become slow (Query performance and indexes)
+## Symptom
+A report or application feature that used to be fast is now slow, gradually or suddenly
+after a release or data growth.
+
+## Cause
+The query plan changed: a sequential scan over a large table instead of an index scan,
+because an index is missing or table statistics are out of date. Sometimes the query does
+far more work than needed.
+
+## Resolution steps
+1. Get the exact query from the application log or `pg_stat_statements`.
+2. Run `EXPLAIN (ANALYZE, BUFFERS)` on it (on a replica or test copy if it changes data).
+3. Look for a sequential scan on a large table where an index scan is expected.
+4. If the index exists but is not used, refresh statistics with `ANALYZE` on the table.
+5. If an index is missing or the query is inefficient, send the plan to the owning team.
+
+## Warnings
+Do not create indexes on production tables without the DBA team; building them can lock
+the table.
+---
+[3] Database server CPU is very high
+Database server CPU is very high (Query performance and indexes)
+## Symptom
+Monitoring shows the database server's CPU near 100 percent and applications are slow.
+
+## Cause
+A few expensive queries usually cause most of the load: a new query without a suitable
+index, a report run at peak time, or a query whose plan changed after data growth.
+
+## Resolution steps
+1. Look at `pg_stat_activity` for long-running active queries right now.
+2. Check `pg_stat_statements` for the queries with the highest total execution time.
+3. If one report or job causes the spike, ask its owner to stop it or run it off-peak.
+4. Send the top queries and their plans to the owning teams for tuning.
+
+## Warnings
+Do not restart the database to clear CPU load; it drops every connection and the load
+usually returns.",,
+9444b6f1-3002-456e-92bc-1d9a5bb15955,T-00006,1,Check if the provider was in-network.,"[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+9444b6f1-3002-456e-92bc-1d9a5bb15955,T-00006,1,"If yes, the provider should have auto-submitted the claim.","[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+9444b6f1-3002-456e-92bc-1d9a5bb15955,T-00006,2,"If the provider is in-network, ask the provider to check the claim status.","[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+9444b6f1-3002-456e-92bc-1d9a5bb15955,T-00006,3,"If the provider is out-of-network, the employee should check the carrier's portal using the claim number.","[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+9444b6f1-3002-456e-92bc-1d9a5bb15955,T-00006,4,"If the claim is beyond the carrier's stated turnaround time, HR can escalate it through the carrier's employer support line, quoting the claim number only.","[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+b8d2b0f6-d2ba-42d6-9078-a5e3f3a05fce,T-00574,1,Check the posting date the user entered.,"[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+b8d2b0f6-d2ba-42d6-9078-a5e3f3a05fce,T-00574,1,Ensure it is within the current or previous period.,"[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+b8d2b0f6-d2ba-42d6-9078-a5e3f3a05fce,T-00574,2,"If the current period is not allowed, check the period with MMRV.","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+b8d2b0f6-d2ba-42d6-9078-a5e3f3a05fce,T-00574,3,"If the period is not current or previous, escalate to the materials-management team to run MMPV.","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+89015a51-318a-4a3c-bfd1-51fdf35c9417,T-01161,1,Run transaction SU53 to identify the missing authorization object and value.,"[1] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.",,
+89015a51-318a-4a3c-bfd1-51fdf35c9417,T-01161,2,Take a screenshot of the SU53 output and the transaction code ZZZZ.,"[1] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.",,
+89015a51-318a-4a3c-bfd1-51fdf35c9417,T-01161,3,Confirm with your manager that the access fits your job role.,"[1] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.
+---
+[3] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Warnings
+The helpdesk never assigns SAP roles itself and never grants SAP_ALL or similar broad
+profiles as a workaround.",,
+89015a51-318a-4a3c-bfd1-51fdf35c9417,T-01161,4,"Raise a role-change request to the SAP security team with the SU53 screenshot, the transaction code, and the business justification.","[1] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.",,
+89015a51-318a-4a3c-bfd1-51fdf35c9417,T-01161,5,Log off and log on again after the role change is assigned.,"[1] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.",,
+f56a8d16-1539-46e4-ac7a-e21819b803b0,T-01245,1,Check the `pg_replication_slots` to identify any inactive slots.,"[1] Database disk almost full
+Database disk almost full (Disk space and backups)
+## Symptom
+Monitoring warns the database volume is nearly full, or the database already rejects
+writes because the disk is full.
+
+## Cause
+Table and index bloat, write-ahead log (WAL) files piling up because a replication slot
+or WAL archiving is stuck, or genuine data growth.
+
+## Resolution steps
+1. Find what uses the space: data files, or the `pg_wal` directory.
+2. If `pg_wal` is large, check `pg_replication_slots` for inactive slots and WAL archiving
+   for failures.
+3. If writes are already failing, expand the volume first to restore service.
+4. Then fix the cause: remove an abandoned slot (after the DBA confirms), fix archiving,
+   or address bloat.
+
+## Warnings
+Never delete files from `pg_wal` by hand; it can make the database impossible to start.
+---
+[3] WAL archiving failing
+WAL archiving failing (Disk space and backups)
+## Symptom
+Monitoring reports WAL archive failures, and the `pg_wal` directory keeps growing.
+
+## Cause
+PostgreSQL keeps each WAL file until `archive_command` succeeds for it. If the archive
+target is full, unreachable or its credentials expired, WAL files pile up locally.
+
+## Resolution steps
+1. Check `pg_stat_archiver` for `failed_count` and `last_failed_wal`.
+2. Read the database log for the archive command's error message.
+3. Fix the target: free space, restore network access, or renew the credential.
+4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
+
+## Warnings
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+f56a8d16-1539-46e4-ac7a-e21819b803b0,T-01245,2,"If an inactive slot is found, contact the DBA to confirm and remove it.","[1] Database disk almost full
+Database disk almost full (Disk space and backups)
+## Symptom
+Monitoring warns the database volume is nearly full, or the database already rejects
+writes because the disk is full.
+
+## Cause
+Table and index bloat, write-ahead log (WAL) files piling up because a replication slot
+or WAL archiving is stuck, or genuine data growth.
+
+## Resolution steps
+1. Find what uses the space: data files, or the `pg_wal` directory.
+2. If `pg_wal` is large, check `pg_replication_slots` for inactive slots and WAL archiving
+   for failures.
+3. If writes are already failing, expand the volume first to restore service.
+4. Then fix the cause: remove an abandoned slot (after the DBA confirms), fix archiving,
+   or address bloat.
+
+## Warnings
+Never delete files from `pg_wal` by hand; it can make the database impossible to start.
+---
+[3] WAL archiving failing
+WAL archiving failing (Disk space and backups)
+## Symptom
+Monitoring reports WAL archive failures, and the `pg_wal` directory keeps growing.
+
+## Cause
+PostgreSQL keeps each WAL file until `archive_command` succeeds for it. If the archive
+target is full, unreachable or its credentials expired, WAL files pile up locally.
+
+## Resolution steps
+1. Check `pg_stat_archiver` for `failed_count` and `last_failed_wal`.
+2. Read the database log for the archive command's error message.
+3. Fix the target: free space, restore network access, or renew the credential.
+4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
+
+## Warnings
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+f56a8d16-1539-46e4-ac7a-e21819b803b0,T-01245,3,Verify that WAL archiving is working correctly by checking `pg_stat_archiver`.,"[3] WAL archiving failing
+WAL archiving failing (Disk space and backups)
+## Symptom
+Monitoring reports WAL archive failures, and the `pg_wal` directory keeps growing.
+
+## Cause
+PostgreSQL keeps each WAL file until `archive_command` succeeds for it. If the archive
+target is full, unreachable or its credentials expired, WAL files pile up locally.
+
+## Resolution steps
+1. Check `pg_stat_archiver` for `failed_count` and `last_failed_wal`.
+2. Read the database log for the archive command's error message.
+3. Fix the target: free space, restore network access, or renew the credential.
+4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
+
+## Warnings
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+f56a8d16-1539-46e4-ac7a-e21819b803b0,T-01245,4,"If archiving is failing, check the database logs for the `archive_command` error.","[3] WAL archiving failing
+WAL archiving failing (Disk space and backups)
+## Symptom
+Monitoring reports WAL archive failures, and the `pg_wal` directory keeps growing.
+
+## Cause
+PostgreSQL keeps each WAL file until `archive_command` succeeds for it. If the archive
+target is full, unreachable or its credentials expired, WAL files pile up locally.
+
+## Resolution steps
+1. Check `pg_stat_archiver` for `failed_count` and `last_failed_wal`.
+2. Read the database log for the archive command's error message.
+3. Fix the target: free space, restore network access, or renew the credential.
+4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
+
+## Warnings
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+f56a8d16-1539-46e4-ac7a-e21819b803b0,T-01245,5,"Fix the archiving target issue (free space, network access, or credential renewal).","[3] WAL archiving failing
+WAL archiving failing (Disk space and backups)
+## Symptom
+Monitoring reports WAL archive failures, and the `pg_wal` directory keeps growing.
+
+## Cause
+PostgreSQL keeps each WAL file until `archive_command` succeeds for it. If the archive
+target is full, unreachable or its credentials expired, WAL files pile up locally.
+
+## Resolution steps
+1. Check `pg_stat_archiver` for `failed_count` and `last_failed_wal`.
+2. Read the database log for the archive command's error message.
+3. Fix the target: free space, restore network access, or renew the credential.
+4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
+
+## Warnings
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+f56a8d16-1539-46e4-ac7a-e21819b803b0,T-01245,6,Confirm that archiving resumes and `pg_wal` directory size starts to decrease.,"[3] WAL archiving failing
+WAL archiving failing (Disk space and backups)
+## Symptom
+Monitoring reports WAL archive failures, and the `pg_wal` directory keeps growing.
+
+## Cause
+PostgreSQL keeps each WAL file until `archive_command` succeeds for it. If the archive
+target is full, unreachable or its credentials expired, WAL files pile up locally.
+
+## Resolution steps
+1. Check `pg_stat_archiver` for `failed_count` and `last_failed_wal`.
+2. Read the database log for the archive command's error message.
+3. Fix the target: free space, restore network access, or renew the credential.
+4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
+
+## Warnings
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+d182e1ce-b2f2-478f-a697-dbed38c03b6c,T-01605,1,Check if the network cable is securely connected to both the device and the switch.,"[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.",,
+d182e1ce-b2f2-478f-a697-dbed38c03b6c,T-01605,2,Run `ipconfig /release`,"[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.",,
+d182e1ce-b2f2-478f-a697-dbed38c03b6c,T-01605,2,`ipconfig /renew` to ensure a proper DHCP lease.,"[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.",,
+d182e1ce-b2f2-478f-a697-dbed38c03b6c,T-01605,3,Try connecting the device to a different port on the switch.,"[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.",,
+d182e1ce-b2f2-478f-a697-dbed38c03b6c,T-01605,4,"If the issue persists, contact network engineering to check the DHCP server and address pool.","[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.",,
+e918b20c-063c-4f37-af60-9c9dcf683797,T-00670,1,Check if your device is connected to the corporate network or the VPN.,"[1] Internal names do not resolve
+Internal names do not resolve (DHCP and DNS)
+## Symptom
+Public websites work, but internal names such as the intranet or a file server do not
+open. The same resource opens when the user types its IP address.
+
+## Cause
+The device is not using the internal DNS servers: it is off the corporate network or VPN,
+or it has public DNS servers set, which cannot resolve internal names.
+
+## Resolution steps
+1. Confirm the device is on the corporate network or connected to the VPN.
+2. Run `ipconfig /all` and check that the DNS servers are the internal ones, not public
+   resolvers such as 8.8.8.8.
+3. If public DNS servers were set by hand, set the adapter back to obtain DNS
+   automatically.
+4. Run `ipconfig /flushdns` and retry.
+
+## Warnings
+Once the IP address works but the name does not, do not keep checking cables and Wi-Fi;
+it is a DNS problem.
+---
+[2] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.",,
+e918b20c-063c-4f37-af60-9c9dcf683797,T-00670,2,Run `ipconfig /all` to verify the DNS servers are set to the internal ones.,"[1] Internal names do not resolve
+Internal names do not resolve (DHCP and DNS)
+## Symptom
+Public websites work, but internal names such as the intranet or a file server do not
+open. The same resource opens when the user types its IP address.
+
+## Cause
+The device is not using the internal DNS servers: it is off the corporate network or VPN,
+or it has public DNS servers set, which cannot resolve internal names.
+
+## Resolution steps
+1. Confirm the device is on the corporate network or connected to the VPN.
+2. Run `ipconfig /all` and check that the DNS servers are the internal ones, not public
+   resolvers such as 8.8.8.8.
+3. If public DNS servers were set by hand, set the adapter back to obtain DNS
+   automatically.
+4. Run `ipconfig /flushdns` and retry.
+
+## Warnings
+Once the IP address works but the name does not, do not keep checking cables and Wi-Fi;
+it is a DNS problem.
+---
+[2] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.",,
+e918b20c-063c-4f37-af60-9c9dcf683797,T-00670,3,"If public DNS servers are set, set the adapter to obtain DNS automatically.","[1] Internal names do not resolve
+Internal names do not resolve (DHCP and DNS)
+## Symptom
+Public websites work, but internal names such as the intranet or a file server do not
+open. The same resource opens when the user types its IP address.
+
+## Cause
+The device is not using the internal DNS servers: it is off the corporate network or VPN,
+or it has public DNS servers set, which cannot resolve internal names.
+
+## Resolution steps
+1. Confirm the device is on the corporate network or connected to the VPN.
+2. Run `ipconfig /all` and check that the DNS servers are the internal ones, not public
+   resolvers such as 8.8.8.8.
+3. If public DNS servers were set by hand, set the adapter back to obtain DNS
+   automatically.
+4. Run `ipconfig /flushdns` and retry.
+
+## Warnings
+Once the IP address works but the name does not, do not keep checking cables and Wi-Fi;
+it is a DNS problem.
+---
+[2] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.",,
+e918b20c-063c-4f37-af60-9c9dcf683797,T-00670,4,Run `ipconfig /flushdns` and try accessing the internal sites again.,"[1] Internal names do not resolve
+Internal names do not resolve (DHCP and DNS)
+## Symptom
+Public websites work, but internal names such as the intranet or a file server do not
+open. The same resource opens when the user types its IP address.
+
+## Cause
+The device is not using the internal DNS servers: it is off the corporate network or VPN,
+or it has public DNS servers set, which cannot resolve internal names.
+
+## Resolution steps
+1. Confirm the device is on the corporate network or connected to the VPN.
+2. Run `ipconfig /all` and check that the DNS servers are the internal ones, not public
+   resolvers such as 8.8.8.8.
+3. If public DNS servers were set by hand, set the adapter back to obtain DNS
+   automatically.
+4. Run `ipconfig /flushdns` and retry.
+
+## Warnings
+Once the IP address works but the name does not, do not keep checking cables and Wi-Fi;
+it is a DNS problem.
+---
+[2] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.",,
+ff87dc35-ae5c-4ef0-be82-57fb591f55a4,T-00480,1,Check the HR portal under Payroll Payslips.,"[1] Payslip missing or pay date question
+Payslip missing or pay date question (Payroll and timesheets)
+## Symptom
+An employee cannot find this month's payslip, or asks when salary will be paid.
+
+## Cause
+Salary is paid on the last working day of the month and payslips are published two
+working days before that. A missing payslip usually means it is not published yet, or the
+employee joined or left mid-month and was paid in a separate run.
+
+## Resolution steps
+1. Check today's date against the pay date; payslips appear two working days before it.
+2. Direct the employee to the HR portal under Payroll, then Payslips.
+3. If the pay date has passed and the payslip is missing, check whether the employee was
+   in a special run (mid-month starter or leaver) before escalating to payroll.
+4. Questions about the amount go to payroll with the specific line item.
+
+## Warnings
+Never share payslip or salary details with anyone except the employee.",,
+ff87dc35-ae5c-4ef0-be82-57fb591f55a4,T-00480,2,"If the payslip is still not there, confirm if you joined or left mid-month.","[1] Payslip missing or pay date question
+Payslip missing or pay date question (Payroll and timesheets)
+## Symptom
+An employee cannot find this month's payslip, or asks when salary will be paid.
+
+## Cause
+Salary is paid on the last working day of the month and payslips are published two
+working days before that. A missing payslip usually means it is not published yet, or the
+employee joined or left mid-month and was paid in a separate run.
+
+## Resolution steps
+1. Check today's date against the pay date; payslips appear two working days before it.
+2. Direct the employee to the HR portal under Payroll, then Payslips.
+3. If the pay date has passed and the payslip is missing, check whether the employee was
+   in a special run (mid-month starter or leaver) before escalating to payroll.
+4. Questions about the amount go to payroll with the specific line item.
+
+## Warnings
+Never share payslip or salary details with anyone except the employee.",,
+ff87dc35-ae5c-4ef0-be82-57fb591f55a4,T-00480,3,"If you joined or left mid-month, your payslip will be sent separately.","[1] Payslip missing or pay date question
+Payslip missing or pay date question (Payroll and timesheets)
+## Symptom
+An employee cannot find this month's payslip, or asks when salary will be paid.
+
+## Cause
+Salary is paid on the last working day of the month and payslips are published two
+working days before that. A missing payslip usually means it is not published yet, or the
+employee joined or left mid-month and was paid in a separate run.
+
+## Resolution steps
+1. Check today's date against the pay date; payslips appear two working days before it.
+2. Direct the employee to the HR portal under Payroll, then Payslips.
+3. If the pay date has passed and the payslip is missing, check whether the employee was
+   in a special run (mid-month starter or leaver) before escalating to payroll.
+4. Questions about the amount go to payroll with the specific line item.
+
+## Warnings
+Never share payslip or salary details with anyone except the employee.",,
+ff87dc35-ae5c-4ef0-be82-57fb591f55a4,T-00480,4,Your pay will be credited on the last working day of the month.,"[1] Payslip missing or pay date question
+Payslip missing or pay date question (Payroll and timesheets)
+## Symptom
+An employee cannot find this month's payslip, or asks when salary will be paid.
+
+## Cause
+Salary is paid on the last working day of the month and payslips are published two
+working days before that. A missing payslip usually means it is not published yet, or the
+employee joined or left mid-month and was paid in a separate run.
+
+## Resolution steps
+1. Check today's date against the pay date; payslips appear two working days before it.
+2. Direct the employee to the HR portal under Payroll, then Payslips.
+3. If the pay date has passed and the payslip is missing, check whether the employee was
+   in a special run (mid-month starter or leaver) before escalating to payroll.
+4. Questions about the amount go to payroll with the specific line item.
+
+## Warnings
+Never share payslip or salary details with anyone except the employee.",,
+ff87dc35-ae5c-4ef0-be82-57fb591f55a4,T-00480,5,Payslips are published two working days before the pay date.,"[1] Payslip missing or pay date question
+Payslip missing or pay date question (Payroll and timesheets)
+## Symptom
+An employee cannot find this month's payslip, or asks when salary will be paid.
+
+## Cause
+Salary is paid on the last working day of the month and payslips are published two
+working days before that. A missing payslip usually means it is not published yet, or the
+employee joined or left mid-month and was paid in a separate run.
+
+## Resolution steps
+1. Check today's date against the pay date; payslips appear two working days before it.
+2. Direct the employee to the HR portal under Payroll, then Payslips.
+3. If the pay date has passed and the payslip is missing, check whether the employee was
+   in a special run (mid-month starter or leaver) before escalating to payroll.
+4. Questions about the amount go to payroll with the specific line item.
+
+## Warnings
+Never share payslip or salary details with anyone except the employee.",,
+275f6a01-b1fb-4e75-907f-e1a83f8d8209,T-01160,1,Run transaction SU53 to identify the missing authorization object.,"[1] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.",,
+275f6a01-b1fb-4e75-907f-e1a83f8d8209,T-01160,2,Take a screenshot of the SU53 output and the transaction code ZXY123.,"[1] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.",,
+275f6a01-b1fb-4e75-907f-e1a83f8d8209,T-01160,3,Confirm with your manager that the access fits your job role.,"[1] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.
+---
+[3] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Warnings
+The helpdesk never assigns SAP roles itself and never grants SAP_ALL or similar broad
+profiles as a workaround.",,
+275f6a01-b1fb-4e75-907f-e1a83f8d8209,T-01160,4,"Raise a role-change request with the SAP security team, including the SU53 screenshot, transaction code, and business justification.","[1] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.",,
+275f6a01-b1fb-4e75-907f-e1a83f8d8209,T-01160,5,Log off and log on again after the role change is assigned.,"[1] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.",,
+fec7b48e-8200-4602-a6f4-563a3057a73e,T-01528,1,Check the `pg_replication_slots` to identify any inactive slots.,"[1] Database disk almost full
+Database disk almost full (Disk space and backups)
+## Symptom
+Monitoring warns the database volume is nearly full, or the database already rejects
+writes because the disk is full.
+
+## Cause
+Table and index bloat, write-ahead log (WAL) files piling up because a replication slot
+or WAL archiving is stuck, or genuine data growth.
+
+## Resolution steps
+1. Find what uses the space: data files, or the `pg_wal` directory.
+2. If `pg_wal` is large, check `pg_replication_slots` for inactive slots and WAL archiving
+   for failures.
+3. If writes are already failing, expand the volume first to restore service.
+4. Then fix the cause: remove an abandoned slot (after the DBA confirms), fix archiving,
+   or address bloat.
+
+## Warnings
+Never delete files from `pg_wal` by hand; it can make the database impossible to start.
+---
+[2] WAL archiving failing
+WAL archiving failing (Disk space and backups)
+## Symptom
+Monitoring reports WAL archive failures, and the `pg_wal` directory keeps growing.
+
+## Cause
+PostgreSQL keeps each WAL file until `archive_command` succeeds for it. If the archive
+target is full, unreachable or its credentials expired, WAL files pile up locally.
+
+## Resolution steps
+1. Check `pg_stat_archiver` for `failed_count` and `last_failed_wal`.
+2. Read the database log for the archive command's error message.
+3. Fix the target: free space, restore network access, or renew the credential.
+4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
+
+## Warnings
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+fec7b48e-8200-4602-a6f4-563a3057a73e,T-01528,2,Verify if WAL archiving is failing by checking `pg_stat_archiver`.,"[1] Database disk almost full
+Database disk almost full (Disk space and backups)
+## Symptom
+Monitoring warns the database volume is nearly full, or the database already rejects
+writes because the disk is full.
+
+## Cause
+Table and index bloat, write-ahead log (WAL) files piling up because a replication slot
+or WAL archiving is stuck, or genuine data growth.
+
+## Resolution steps
+1. Find what uses the space: data files, or the `pg_wal` directory.
+2. If `pg_wal` is large, check `pg_replication_slots` for inactive slots and WAL archiving
+   for failures.
+3. If writes are already failing, expand the volume first to restore service.
+4. Then fix the cause: remove an abandoned slot (after the DBA confirms), fix archiving,
+   or address bloat.
+
+## Warnings
+Never delete files from `pg_wal` by hand; it can make the database impossible to start.
+---
+[2] WAL archiving failing
+WAL archiving failing (Disk space and backups)
+## Symptom
+Monitoring reports WAL archive failures, and the `pg_wal` directory keeps growing.
+
+## Cause
+PostgreSQL keeps each WAL file until `archive_command` succeeds for it. If the archive
+target is full, unreachable or its credentials expired, WAL files pile up locally.
+
+## Resolution steps
+1. Check `pg_stat_archiver` for `failed_count` and `last_failed_wal`.
+2. Read the database log for the archive command's error message.
+3. Fix the target: free space, restore network access, or renew the credential.
+4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
+
+## Warnings
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+fec7b48e-8200-4602-a6f4-563a3057a73e,T-01528,3,"If an inactive slot is found, contact the DBA to confirm and remove it.","[1] Database disk almost full
+Database disk almost full (Disk space and backups)
+## Symptom
+Monitoring warns the database volume is nearly full, or the database already rejects
+writes because the disk is full.
+
+## Cause
+Table and index bloat, write-ahead log (WAL) files piling up because a replication slot
+or WAL archiving is stuck, or genuine data growth.
+
+## Resolution steps
+1. Find what uses the space: data files, or the `pg_wal` directory.
+2. If `pg_wal` is large, check `pg_replication_slots` for inactive slots and WAL archiving
+   for failures.
+3. If writes are already failing, expand the volume first to restore service.
+4. Then fix the cause: remove an abandoned slot (after the DBA confirms), fix archiving,
+   or address bloat.
+
+## Warnings
+Never delete files from `pg_wal` by hand; it can make the database impossible to start.",,
+fec7b48e-8200-4602-a6f4-563a3057a73e,T-01528,4,"If WAL archiving is failing, investigate the `archive_command` error and fix the target.","[2] WAL archiving failing
+WAL archiving failing (Disk space and backups)
+## Symptom
+Monitoring reports WAL archive failures, and the `pg_wal` directory keeps growing.
+
+## Cause
+PostgreSQL keeps each WAL file until `archive_command` succeeds for it. If the archive
+target is full, unreachable or its credentials expired, WAL files pile up locally.
+
+## Resolution steps
+1. Check `pg_stat_archiver` for `failed_count` and `last_failed_wal`.
+2. Read the database log for the archive command's error message.
+3. Fix the target: free space, restore network access, or renew the credential.
+4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
+
+## Warnings
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+fec7b48e-8200-4602-a6f4-563a3057a73e,T-01528,5,Monitor the `pg_wal` directory to ensure it starts shrinking as WAL files are archived.,"[2] WAL archiving failing
+WAL archiving failing (Disk space and backups)
+## Symptom
+Monitoring reports WAL archive failures, and the `pg_wal` directory keeps growing.
+
+## Cause
+PostgreSQL keeps each WAL file until `archive_command` succeeds for it. If the archive
+target is full, unreachable or its credentials expired, WAL files pile up locally.
+
+## Resolution steps
+1. Check `pg_stat_archiver` for `failed_count` and `last_failed_wal`.
+2. Read the database log for the archive command's error message.
+3. Fix the target: free space, restore network access, or renew the credential.
+4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
+
+## Warnings
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+ec037008-9cf9-422b-8a10-9f21c7bf8cd3,T-01774,1,Check the approval status of the purchase order in ME23N.,"[2] Purchase order waiting for release
+Purchase order waiting for release (Purchasing and goods receipt)
+## Symptom
+A new purchase order cannot be printed or sent to the vendor, and goods cannot be
+received against it. ME23N shows a release strategy on the PO header.
+
+## Cause
+POs above a value limit go through a release strategy. Until every required approver has
+released it, the PO stays blocked for output and follow-on documents.
+
+## Resolution steps
+1. Open the PO in ME23N and go to the Release Strategy tab in the header. It lists each
+   release code and shows which are still outstanding.
+2. Tell the requester who the outstanding approver is and ask them to follow up.
+3. Approvers release individual POs in ME29N or several at once in ME28. Editing the PO
+   is not a release.
+4. If the approver is away, the deputy configured for that release code can release on
+   their behalf.
+
+## Warnings
+The helpdesk cannot release a PO for an approver. Changing the PO value to get under the
+release limit is a policy violation.",,
+ec037008-9cf9-422b-8a10-9f21c7bf8cd3,T-01774,1,Ensure all required approvers have released it.,"[2] Purchase order waiting for release
+Purchase order waiting for release (Purchasing and goods receipt)
+## Symptom
+A new purchase order cannot be printed or sent to the vendor, and goods cannot be
+received against it. ME23N shows a release strategy on the PO header.
+
+## Cause
+POs above a value limit go through a release strategy. Until every required approver has
+released it, the PO stays blocked for output and follow-on documents.
+
+## Resolution steps
+1. Open the PO in ME23N and go to the Release Strategy tab in the header. It lists each
+   release code and shows which are still outstanding.
+2. Tell the requester who the outstanding approver is and ask them to follow up.
+3. Approvers release individual POs in ME29N or several at once in ME28. Editing the PO
+   is not a release.
+4. If the approver is away, the deputy configured for that release code can release on
+   their behalf.
+
+## Warnings
+The helpdesk cannot release a PO for an approver. Changing the PO value to get under the
+release limit is a policy violation.",,
+ec037008-9cf9-422b-8a10-9f21c7bf8cd3,T-01774,2,"If the printer is offline, contact desktop support for assistance.","[1] Printed SAP document never arrives at the printer
+Printed SAP document never arrives at the printer (GUI, dumps and printing)
+## Symptom
+A user printed an invoice, purchase order or delivery note from SAP but nothing came out
+of the printer.
+
+## Cause
+SAP creates a spool request and passes it to the output device. The request can fail
+(wrong output device), wait for a printer that is offline, or never be created because
+no output was triggered for the document.
+
+## Resolution steps
+1. Open SP01 and search for spool requests by the user's ID and the time of printing.
+2. If a request exists with an error status, open its log. The most common cause is an
+   output device that points to the wrong or a retired printer.
+3. If the request is fine, reprint it from SP01 to the correct output device.
+4. If no spool request exists, the print was never triggered from SAP. Check the
+   document's output messages; an output type may be missing.
+5. If the printer is offline or out of paper, hand over to desktop support.",,
+ec037008-9cf9-422b-8a10-9f21c7bf8cd3,T-01774,3,"If the SAP document was not triggered, check the document's output messages for missing output types.","[1] Printed SAP document never arrives at the printer
+Printed SAP document never arrives at the printer (GUI, dumps and printing)
+## Symptom
+A user printed an invoice, purchase order or delivery note from SAP but nothing came out
+of the printer.
+
+## Cause
+SAP creates a spool request and passes it to the output device. The request can fail
+(wrong output device), wait for a printer that is offline, or never be created because
+no output was triggered for the document.
+
+## Resolution steps
+1. Open SP01 and search for spool requests by the user's ID and the time of printing.
+2. If a request exists with an error status, open its log. The most common cause is an
+   output device that points to the wrong or a retired printer.
+3. If the request is fine, reprint it from SP01 to the correct output device.
+4. If no spool request exists, the print was never triggered from SAP. Check the
+   document's output messages; an output type may be missing.
+5. If the printer is offline or out of paper, hand over to desktop support.",,
+d061d15e-eae9-4b6c-9def-3e0cb3b38ec4,T-00920,1,Open transaction SU3 (own user data) and go to the Defaults tab.,"[1] Wrong date or number format in SAP
+Wrong date or number format in SAP (GUI, dumps and printing)
+## Symptom
+SAP shows dates as month/day/year instead of day/month/year, or uses a comma instead of a
+decimal point, so amounts look ten or a thousand times wrong in downloads.
+
+## Cause
+Date and decimal formats are personal settings stored in the user's master record; they
+may differ from Windows regional settings.
+
+## Resolution steps
+1. Open transaction SU3 (own user data) and go to the Defaults tab.
+2. Choose the correct decimal notation and date format.
+3. Save, then log off and log on again so the new settings apply.
+4. Re-export any spreadsheet downloads made with the wrong format.
+
+## Warnings
+The formats affect only how values are displayed and exported, not the stored data; do
+not correct postings because of a display format.",,
+d061d15e-eae9-4b6c-9def-3e0cb3b38ec4,T-00920,2,Choose the correct decimal notation and date format.,"[1] Wrong date or number format in SAP
+Wrong date or number format in SAP (GUI, dumps and printing)
+## Symptom
+SAP shows dates as month/day/year instead of day/month/year, or uses a comma instead of a
+decimal point, so amounts look ten or a thousand times wrong in downloads.
+
+## Cause
+Date and decimal formats are personal settings stored in the user's master record; they
+may differ from Windows regional settings.
+
+## Resolution steps
+1. Open transaction SU3 (own user data) and go to the Defaults tab.
+2. Choose the correct decimal notation and date format.
+3. Save, then log off and log on again so the new settings apply.
+4. Re-export any spreadsheet downloads made with the wrong format.
+
+## Warnings
+The formats affect only how values are displayed and exported, not the stored data; do
+not correct postings because of a display format.",,
+d061d15e-eae9-4b6c-9def-3e0cb3b38ec4,T-00920,3,Save the changes and log off then log on again.,"[1] Wrong date or number format in SAP
+Wrong date or number format in SAP (GUI, dumps and printing)
+## Symptom
+SAP shows dates as month/day/year instead of day/month/year, or uses a comma instead of a
+decimal point, so amounts look ten or a thousand times wrong in downloads.
+
+## Cause
+Date and decimal formats are personal settings stored in the user's master record; they
+may differ from Windows regional settings.
+
+## Resolution steps
+1. Open transaction SU3 (own user data) and go to the Defaults tab.
+2. Choose the correct decimal notation and date format.
+3. Save, then log off and log on again so the new settings apply.
+4. Re-export any spreadsheet downloads made with the wrong format.
+
+## Warnings
+The formats affect only how values are displayed and exported, not the stored data; do
+not correct postings because of a display format.",,
+d061d15e-eae9-4b6c-9def-3e0cb3b38ec4,T-00920,4,Re-export any spreadsheet downloads made with the wrong format.,"[1] Wrong date or number format in SAP
+Wrong date or number format in SAP (GUI, dumps and printing)
+## Symptom
+SAP shows dates as month/day/year instead of day/month/year, or uses a comma instead of a
+decimal point, so amounts look ten or a thousand times wrong in downloads.
+
+## Cause
+Date and decimal formats are personal settings stored in the user's master record; they
+may differ from Windows regional settings.
+
+## Resolution steps
+1. Open transaction SU3 (own user data) and go to the Defaults tab.
+2. Choose the correct decimal notation and date format.
+3. Save, then log off and log on again so the new settings apply.
+4. Re-export any spreadsheet downloads made with the wrong format.
+
+## Warnings
+The formats affect only how values are displayed and exported, not the stored data; do
+not correct postings because of a display format.",,
+5b9122d9-c4eb-409f-acb3-fa4f8b7018a4,T-01135,1,Provide the desired domain name for the new service.,"[1] New service needs a company domain name
+New service needs a company domain name (Load balancers and certificates)
+## Symptom
+A team has a new application running behind a load balancer and wants it reachable under
+a company domain name with HTTPS.
+
+## Cause
+The name needs a DNS record pointing at the load balancer and a certificate for that
+name, both managed by the platform team.
+
+## Resolution steps
+1. Get the desired name, the load balancer, the environment and the owning team.
+2. Request a certificate for the name; it is validated through a DNS record.
+3. Ask the platform team to create an alias record that points the name at the load
+   balancer.
+4. Add the certificate to the load balancer's HTTPS listener and test the site with the
+   new name.
+
+## Warnings
+Do not point records at a load balancer's IP addresses; they change. Use an alias record.",,
+5b9122d9-c4eb-409f-acb3-fa4f8b7018a4,T-01135,2,The platform team will create an alias DNS record pointing the domain at the load balancer.,"[1] New service needs a company domain name
+New service needs a company domain name (Load balancers and certificates)
+## Symptom
+A team has a new application running behind a load balancer and wants it reachable under
+a company domain name with HTTPS.
+
+## Cause
+The name needs a DNS record pointing at the load balancer and a certificate for that
+name, both managed by the platform team.
+
+## Resolution steps
+1. Get the desired name, the load balancer, the environment and the owning team.
+2. Request a certificate for the name; it is validated through a DNS record.
+3. Ask the platform team to create an alias record that points the name at the load
+   balancer.
+4. Add the certificate to the load balancer's HTTPS listener and test the site with the
+   new name.
+
+## Warnings
+Do not point records at a load balancer's IP addresses; they change. Use an alias record.",,
+5b9122d9-c4eb-409f-acb3-fa4f8b7018a4,T-01135,3,Request a TLS certificate for the domain from the platform team.,"[1] New service needs a company domain name
+New service needs a company domain name (Load balancers and certificates)
+## Symptom
+A team has a new application running behind a load balancer and wants it reachable under
+a company domain name with HTTPS.
+
+## Cause
+The name needs a DNS record pointing at the load balancer and a certificate for that
+name, both managed by the platform team.
+
+## Resolution steps
+1. Get the desired name, the load balancer, the environment and the owning team.
+2. Request a certificate for the name; it is validated through a DNS record.
+3. Ask the platform team to create an alias record that points the name at the load
+   balancer.
+4. Add the certificate to the load balancer's HTTPS listener and test the site with the
+   new name.
+
+## Warnings
+Do not point records at a load balancer's IP addresses; they change. Use an alias record.",,
+5b9122d9-c4eb-409f-acb3-fa4f8b7018a4,T-01135,4,The platform team will add the certificate to the load balancer's HTTPS listener.,"[1] New service needs a company domain name
+New service needs a company domain name (Load balancers and certificates)
+## Symptom
+A team has a new application running behind a load balancer and wants it reachable under
+a company domain name with HTTPS.
+
+## Cause
+The name needs a DNS record pointing at the load balancer and a certificate for that
+name, both managed by the platform team.
+
+## Resolution steps
+1. Get the desired name, the load balancer, the environment and the owning team.
+2. Request a certificate for the name; it is validated through a DNS record.
+3. Ask the platform team to create an alias record that points the name at the load
+   balancer.
+4. Add the certificate to the load balancer's HTTPS listener and test the site with the
+   new name.
+
+## Warnings
+Do not point records at a load balancer's IP addresses; they change. Use an alias record.",,
+5b9122d9-c4eb-409f-acb3-fa4f8b7018a4,T-01135,5,Test the new domain name to ensure the service is accessible via HTTPS.,"[1] New service needs a company domain name
+New service needs a company domain name (Load balancers and certificates)
+## Symptom
+A team has a new application running behind a load balancer and wants it reachable under
+a company domain name with HTTPS.
+
+## Cause
+The name needs a DNS record pointing at the load balancer and a certificate for that
+name, both managed by the platform team.
+
+## Resolution steps
+1. Get the desired name, the load balancer, the environment and the owning team.
+2. Request a certificate for the name; it is validated through a DNS record.
+3. Ask the platform team to create an alias record that points the name at the load
+   balancer.
+4. Add the certificate to the load balancer's HTTPS listener and test the site with the
+   new name.
+
+## Warnings
+Do not point records at a load balancer's IP addresses; they change. Use an alias record.",,
+bbba7c33-c503-4aa9-b9ff-a4a961aa7872,T-00997,1,Open the IDoc in WE02 and read the status record for status 51.,"[1] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.",,
+bbba7c33-c503-4aa9-b9ff-a4a961aa7872,T-00997,1,The error message usually names the missing field or master record.,"[1] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.",,
+bbba7c33-c503-4aa9-b9ff-a4a961aa7872,T-00997,2,"Fix the cause, or ask the master-data team to create the missing record.","[1] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.",,
+bbba7c33-c503-4aa9-b9ff-a4a961aa7872,T-00997,3,Reprocess the IDoc with BD87.,"[1] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.",,
+a710cebd-c3c6-41f4-aaa8-cd863969d8dc,T-01541,1,Check the posting date you entered.,"[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+a710cebd-c3c6-41f4-aaa8-cd863969d8dc,T-01541,1,Ensure it is within the current or previous month.,"[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+a710cebd-c3c6-41f4-aaa8-cd863969d8dc,T-01541,2,"If the current month is not allowed, run the month-end change process with MMRV.","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+a710cebd-c3c6-41f4-aaa8-cd863969d8dc,T-01541,3,"If the issue persists, escalate the problem to the materials-management team.","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+3334735b-059a-41b6-ace4-963db35265c5,T-00893,1,Identify the session that is running the `ALTER TABLE` command with `SELECT * FROM pg_stat_activity WHERE query LIKE '%ALTER TABLE%';`.,"[1] Schema change hangs and blocks the whole table
+Schema change hangs and blocks the whole table (Locks and deadlocks)
+## Symptom
+An `ALTER TABLE` during a deployment hangs, and soon all queries on that table are blocked
+too, causing an application outage.
+
+## Cause
+`ALTER TABLE` needs an exclusive lock. It waits behind any running transaction on the
+table, and every new query then queues behind the waiting `ALTER TABLE`.
+
+## Resolution steps
+1. Cancel the waiting `ALTER TABLE` session to release the queue at once.
+2. Find the long-running transaction it was waiting for.
+3. Rerun the migration in a quiet window with a short `lock_timeout` (for example a few
+   seconds), so it gives up instead of blocking everyone.
+4. Retry the migration if it times out, rather than letting it wait.
+
+## Warnings
+Never run schema changes on busy tables without a lock timeout.",,
+3334735b-059a-41b6-ace4-963db35265c5,T-00893,2,Cancel the `ALTER TABLE` session immediately to release the queue: `SELECT pg_cancel_backend(<session_id>);`.,"[1] Schema change hangs and blocks the whole table
+Schema change hangs and blocks the whole table (Locks and deadlocks)
+## Symptom
+An `ALTER TABLE` during a deployment hangs, and soon all queries on that table are blocked
+too, causing an application outage.
+
+## Cause
+`ALTER TABLE` needs an exclusive lock. It waits behind any running transaction on the
+table, and every new query then queues behind the waiting `ALTER TABLE`.
+
+## Resolution steps
+1. Cancel the waiting `ALTER TABLE` session to release the queue at once.
+2. Find the long-running transaction it was waiting for.
+3. Rerun the migration in a quiet window with a short `lock_timeout` (for example a few
+   seconds), so it gives up instead of blocking everyone.
+4. Retry the migration if it times out, rather than letting it wait.
+
+## Warnings
+Never run schema changes on busy tables without a lock timeout.",,
+3334735b-059a-41b6-ace4-963db35265c5,T-00893,3,Check if there are any long-running transactions that might be causing the issue: `SELECT * FROM pg_stat_activity WHERE state = 'idle in transaction';`.,"[2] Queries blocked by an idle session holding a lock
+Queries blocked by an idle session holding a lock (Locks and deadlocks)
+## Symptom
+Queries on a table hang waiting for a lock, and the session holding the lock is idle and
+doing nothing.
+
+## Cause
+A session opened a transaction, took a lock, and then stopped without committing or
+rolling back. It shows as ""idle in transaction"" and keeps its locks until it ends.
+
+## Resolution steps
+1. Find the blocking session with `pg_blocking_pids()` and `pg_stat_activity`.
+2. Check its state and how long it has been idle in transaction.
+3. Confirm with the owning application that the session is stuck, not a long legitimate job.
+4. End it with `pg_terminate_backend(pid)`; its locks are released and waiting queries continue.
+5. Ask the application team to close transactions on error paths.
+
+## Warnings
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+3334735b-059a-41b6-ace4-963db35265c5,T-00893,4,"If a long-running transaction is found, confirm with the application team that it is stuck and not a legitimate long-running job.","[2] Queries blocked by an idle session holding a lock
+Queries blocked by an idle session holding a lock (Locks and deadlocks)
+## Symptom
+Queries on a table hang waiting for a lock, and the session holding the lock is idle and
+doing nothing.
+
+## Cause
+A session opened a transaction, took a lock, and then stopped without committing or
+rolling back. It shows as ""idle in transaction"" and keeps its locks until it ends.
+
+## Resolution steps
+1. Find the blocking session with `pg_blocking_pids()` and `pg_stat_activity`.
+2. Check its state and how long it has been idle in transaction.
+3. Confirm with the owning application that the session is stuck, not a long legitimate job.
+4. End it with `pg_terminate_backend(pid)`; its locks are released and waiting queries continue.
+5. Ask the application team to close transactions on error paths.
+
+## Warnings
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+3334735b-059a-41b6-ace4-963db35265c5,T-00893,5,"If the transaction is confirmed to be stuck, terminate it with `SELECT pg_terminate_backend(<session_id>);`.","[2] Queries blocked by an idle session holding a lock
+Queries blocked by an idle session holding a lock (Locks and deadlocks)
+## Symptom
+Queries on a table hang waiting for a lock, and the session holding the lock is idle and
+doing nothing.
+
+## Cause
+A session opened a transaction, took a lock, and then stopped without committing or
+rolling back. It shows as ""idle in transaction"" and keeps its locks until it ends.
+
+## Resolution steps
+1. Find the blocking session with `pg_blocking_pids()` and `pg_stat_activity`.
+2. Check its state and how long it has been idle in transaction.
+3. Confirm with the owning application that the session is stuck, not a long legitimate job.
+4. End it with `pg_terminate_backend(pid)`; its locks are released and waiting queries continue.
+5. Ask the application team to close transactions on error paths.
+
+## Warnings
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+3334735b-059a-41b6-ace4-963db35265c5,T-00893,6,Inform the application team to ensure their application handles errors and transactions properly to prevent such issues in the future.,"[2] Queries blocked by an idle session holding a lock
+Queries blocked by an idle session holding a lock (Locks and deadlocks)
+## Symptom
+Queries on a table hang waiting for a lock, and the session holding the lock is idle and
+doing nothing.
+
+## Cause
+A session opened a transaction, took a lock, and then stopped without committing or
+rolling back. It shows as ""idle in transaction"" and keeps its locks until it ends.
+
+## Resolution steps
+1. Find the blocking session with `pg_blocking_pids()` and `pg_stat_activity`.
+2. Check its state and how long it has been idle in transaction.
+3. Confirm with the owning application that the session is stuck, not a long legitimate job.
+4. End it with `pg_terminate_backend(pid)`; its locks are released and waiting queries continue.
+5. Ask the application team to close transactions on error paths.
+
+## Warnings
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+f77724ab-f42c-408c-bddc-24ead4b16cb7,T-00906,1,"Check the PO in ME23N and note the ordered quantity, the quantity already received, and the over-delivery tolerance.","[1] Goods receipt quantity exceeds the PO quantity
+Goods receipt quantity exceeds the PO quantity (Purchasing and goods receipt)
+## Symptom
+MIGO refuses the goods receipt because the quantity entered is larger than the open
+quantity on the purchase order, even though the vendor really delivered that amount.
+
+## Cause
+Each PO item has an over-delivery tolerance (a percentage on the item's Delivery tab).
+Receipts above the ordered quantity plus that tolerance are blocked, unless the item
+allows unlimited over-delivery.
+
+## Resolution steps
+1. Display the PO in ME23N and note the ordered quantity, the quantity already received
+   and the over-delivery tolerance on the item's Delivery tab.
+2. Post a goods receipt for the quantity that is allowed (up to the tolerance) if the
+   receiving team wants to accept that part now.
+3. For the extra quantity, ask the buyer whether to accept it. If yes, the buyer
+   increases the PO quantity in ME22N and the rest is received afterwards.
+4. If the buyer does not accept the extra quantity, it is returned to the vendor.",,
+f77724ab-f42c-408c-bddc-24ead4b16cb7,T-00906,2,Post a goods receipt for the quantity that is allowed (up to the tolerance) if the receiving team wants to accept that part now.,"[1] Goods receipt quantity exceeds the PO quantity
+Goods receipt quantity exceeds the PO quantity (Purchasing and goods receipt)
+## Symptom
+MIGO refuses the goods receipt because the quantity entered is larger than the open
+quantity on the purchase order, even though the vendor really delivered that amount.
+
+## Cause
+Each PO item has an over-delivery tolerance (a percentage on the item's Delivery tab).
+Receipts above the ordered quantity plus that tolerance are blocked, unless the item
+allows unlimited over-delivery.
+
+## Resolution steps
+1. Display the PO in ME23N and note the ordered quantity, the quantity already received
+   and the over-delivery tolerance on the item's Delivery tab.
+2. Post a goods receipt for the quantity that is allowed (up to the tolerance) if the
+   receiving team wants to accept that part now.
+3. For the extra quantity, ask the buyer whether to accept it. If yes, the buyer
+   increases the PO quantity in ME22N and the rest is received afterwards.
+4. If the buyer does not accept the extra quantity, it is returned to the vendor.",,
+f77724ab-f42c-408c-bddc-24ead4b16cb7,T-00906,3,Ask the buyer whether to accept the extra quantity.,"[1] Goods receipt quantity exceeds the PO quantity
+Goods receipt quantity exceeds the PO quantity (Purchasing and goods receipt)
+## Symptom
+MIGO refuses the goods receipt because the quantity entered is larger than the open
+quantity on the purchase order, even though the vendor really delivered that amount.
+
+## Cause
+Each PO item has an over-delivery tolerance (a percentage on the item's Delivery tab).
+Receipts above the ordered quantity plus that tolerance are blocked, unless the item
+allows unlimited over-delivery.
+
+## Resolution steps
+1. Display the PO in ME23N and note the ordered quantity, the quantity already received
+   and the over-delivery tolerance on the item's Delivery tab.
+2. Post a goods receipt for the quantity that is allowed (up to the tolerance) if the
+   receiving team wants to accept that part now.
+3. For the extra quantity, ask the buyer whether to accept it. If yes, the buyer
+   increases the PO quantity in ME22N and the rest is received afterwards.
+4. If the buyer does not accept the extra quantity, it is returned to the vendor.",,
+f77724ab-f42c-408c-bddc-24ead4b16cb7,T-00906,3,"If yes, increase the PO quantity in ME22N and receive the rest afterwards.","[1] Goods receipt quantity exceeds the PO quantity
+Goods receipt quantity exceeds the PO quantity (Purchasing and goods receipt)
+## Symptom
+MIGO refuses the goods receipt because the quantity entered is larger than the open
+quantity on the purchase order, even though the vendor really delivered that amount.
+
+## Cause
+Each PO item has an over-delivery tolerance (a percentage on the item's Delivery tab).
+Receipts above the ordered quantity plus that tolerance are blocked, unless the item
+allows unlimited over-delivery.
+
+## Resolution steps
+1. Display the PO in ME23N and note the ordered quantity, the quantity already received
+   and the over-delivery tolerance on the item's Delivery tab.
+2. Post a goods receipt for the quantity that is allowed (up to the tolerance) if the
+   receiving team wants to accept that part now.
+3. For the extra quantity, ask the buyer whether to accept it. If yes, the buyer
+   increases the PO quantity in ME22N and the rest is received afterwards.
+4. If the buyer does not accept the extra quantity, it is returned to the vendor.",,
+f77724ab-f42c-408c-bddc-24ead4b16cb7,T-00906,4,"If the buyer does not accept the extra quantity, return it to the vendor.","[1] Goods receipt quantity exceeds the PO quantity
+Goods receipt quantity exceeds the PO quantity (Purchasing and goods receipt)
+## Symptom
+MIGO refuses the goods receipt because the quantity entered is larger than the open
+quantity on the purchase order, even though the vendor really delivered that amount.
+
+## Cause
+Each PO item has an over-delivery tolerance (a percentage on the item's Delivery tab).
+Receipts above the ordered quantity plus that tolerance are blocked, unless the item
+allows unlimited over-delivery.
+
+## Resolution steps
+1. Display the PO in ME23N and note the ordered quantity, the quantity already received
+   and the over-delivery tolerance on the item's Delivery tab.
+2. Post a goods receipt for the quantity that is allowed (up to the tolerance) if the
+   receiving team wants to accept that part now.
+3. For the extra quantity, ask the buyer whether to accept it. If yes, the buyer
+   increases the PO quantity in ME22N and the rest is received afterwards.
+4. If the buyer does not accept the extra quantity, it is returned to the vendor.",,
+7dbc6134-ae70-48f7-9a2c-4c31d427350d,T-01021,1,Verify if other single sign-on applications work.,"[1] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.
+---
+[2] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Resolution steps
+1. Ask whether other single sign-on apps work. If they all fail, it is an account problem
+   in the identity provider, not a cloud problem.
+2. Check that the user is assigned to the cloud console application in the identity
+   provider. A missing assignment causes a redirect loop.
+3. If sign-in works but the console is empty or denies everything, check which groups map
+   to which cloud roles, and request the right group.
+4. Ask the user to retry in a private browser window to rule out a stale session.
+5. If many users fail at once, treat it as a single sign-on outage and escalate.
+
+## Warnings
+Do not create a local cloud user with a password as a workaround for single sign-on.",,
+7dbc6134-ae70-48f7-9a2c-4c31d427350d,T-01021,1,"If they fail, it might be an identity provider issue.","[1] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.
+---
+[2] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Resolution steps
+1. Ask whether other single sign-on apps work. If they all fail, it is an account problem
+   in the identity provider, not a cloud problem.
+2. Check that the user is assigned to the cloud console application in the identity
+   provider. A missing assignment causes a redirect loop.
+3. If sign-in works but the console is empty or denies everything, check which groups map
+   to which cloud roles, and request the right group.
+4. Ask the user to retry in a private browser window to rule out a stale session.
+5. If many users fail at once, treat it as a single sign-on outage and escalate.
+
+## Warnings
+Do not create a local cloud user with a password as a workaround for single sign-on.",,
+7dbc6134-ae70-48f7-9a2c-4c31d427350d,T-01021,2,Check if the user is assigned to the cloud console application in the identity provider.,"[1] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.
+---
+[2] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Resolution steps
+1. Ask whether other single sign-on apps work. If they all fail, it is an account problem
+   in the identity provider, not a cloud problem.
+2. Check that the user is assigned to the cloud console application in the identity
+   provider. A missing assignment causes a redirect loop.
+3. If sign-in works but the console is empty or denies everything, check which groups map
+   to which cloud roles, and request the right group.
+4. Ask the user to retry in a private browser window to rule out a stale session.
+5. If many users fail at once, treat it as a single sign-on outage and escalate.
+
+## Warnings
+Do not create a local cloud user with a password as a workaround for single sign-on.",,
+7dbc6134-ae70-48f7-9a2c-4c31d427350d,T-01021,2,Ensure the assignment is correct.,"[1] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.
+---
+[2] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Resolution steps
+1. Ask whether other single sign-on apps work. If they all fail, it is an account problem
+   in the identity provider, not a cloud problem.
+2. Check that the user is assigned to the cloud console application in the identity
+   provider. A missing assignment causes a redirect loop.
+3. If sign-in works but the console is empty or denies everything, check which groups map
+   to which cloud roles, and request the right group.
+4. Ask the user to retry in a private browser window to rule out a stale session.
+5. If many users fail at once, treat it as a single sign-on outage and escalate.
+
+## Warnings
+Do not create a local cloud user with a password as a workaround for single sign-on.",,
+7dbc6134-ae70-48f7-9a2c-4c31d427350d,T-01021,3,"If the console is empty or denies access, check the mapping between groups and cloud roles.","[1] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.
+---
+[2] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Resolution steps
+1. Ask whether other single sign-on apps work. If they all fail, it is an account problem
+   in the identity provider, not a cloud problem.
+2. Check that the user is assigned to the cloud console application in the identity
+   provider. A missing assignment causes a redirect loop.
+3. If sign-in works but the console is empty or denies everything, check which groups map
+   to which cloud roles, and request the right group.
+4. Ask the user to retry in a private browser window to rule out a stale session.
+5. If many users fail at once, treat it as a single sign-on outage and escalate.
+
+## Warnings
+Do not create a local cloud user with a password as a workaround for single sign-on.",,
+7dbc6134-ae70-48f7-9a2c-4c31d427350d,T-01021,3,Request the appropriate group if needed.,"[1] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.
+---
+[2] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Resolution steps
+1. Ask whether other single sign-on apps work. If they all fail, it is an account problem
+   in the identity provider, not a cloud problem.
+2. Check that the user is assigned to the cloud console application in the identity
+   provider. A missing assignment causes a redirect loop.
+3. If sign-in works but the console is empty or denies everything, check which groups map
+   to which cloud roles, and request the right group.
+4. Ask the user to retry in a private browser window to rule out a stale session.
+5. If many users fail at once, treat it as a single sign-on outage and escalate.
+
+## Warnings
+Do not create a local cloud user with a password as a workaround for single sign-on.",,
+7dbc6134-ae70-48f7-9a2c-4c31d427350d,T-01021,4,Ask the user to try signing in from a private browser window to rule out a stale session.,"[1] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.
+---
+[2] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Resolution steps
+1. Ask whether other single sign-on apps work. If they all fail, it is an account problem
+   in the identity provider, not a cloud problem.
+2. Check that the user is assigned to the cloud console application in the identity
+   provider. A missing assignment causes a redirect loop.
+3. If sign-in works but the console is empty or denies everything, check which groups map
+   to which cloud roles, and request the right group.
+4. Ask the user to retry in a private browser window to rule out a stale session.
+5. If many users fail at once, treat it as a single sign-on outage and escalate.
+
+## Warnings
+Do not create a local cloud user with a password as a workaround for single sign-on.",,
+7dbc6134-ae70-48f7-9a2c-4c31d427350d,T-01021,5,"If the issue affects multiple users, escalate it as a single sign-on outage.","[1] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.
+---
+[2] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Resolution steps
+1. Ask whether other single sign-on apps work. If they all fail, it is an account problem
+   in the identity provider, not a cloud problem.
+2. Check that the user is assigned to the cloud console application in the identity
+   provider. A missing assignment causes a redirect loop.
+3. If sign-in works but the console is empty or denies everything, check which groups map
+   to which cloud roles, and request the right group.
+4. Ask the user to retry in a private browser window to rule out a stale session.
+5. If many users fail at once, treat it as a single sign-on outage and escalate.
+
+## Warnings
+Do not create a local cloud user with a password as a workaround for single sign-on.",,
+07c9cb89-656e-4637-878b-23b5c7cda6b0,T-01539,1,Check the posting date you entered.,"[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+07c9cb89-656e-4637-878b-23b5c7cda6b0,T-01539,1,Ensure it is within the current or previous month.,"[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+07c9cb89-656e-4637-878b-23b5c7cda6b0,T-01539,2,"If the current month is not allowed, check the current period with MMRV.","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+07c9cb89-656e-4637-878b-23b5c7cda6b0,T-01539,3,"If the period is not moved forward, escalate to the materials-management team to run MMPV.","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+07c9cb89-656e-4637-878b-23b5c7cda6b0,T-01539,4,"If the issue persists, contact Finance for approval to post in an older period.","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+05404823-b1c8-454e-b5fd-5ba475420634,T-01614,1,Check the `pg_stat_activity` view for any long-running queries.,"[1] Database server CPU is very high
+Database server CPU is very high (Query performance and indexes)
+## Symptom
+Monitoring shows the database server's CPU near 100 percent and applications are slow.
+
+## Cause
+A few expensive queries usually cause most of the load: a new query without a suitable
+index, a report run at peak time, or a query whose plan changed after data growth.
+
+## Resolution steps
+1. Look at `pg_stat_activity` for long-running active queries right now.
+2. Check `pg_stat_statements` for the queries with the highest total execution time.
+3. If one report or job causes the spike, ask its owner to stop it or run it off-peak.
+4. Send the top queries and their plans to the owning teams for tuning.
+
+## Warnings
+Do not restart the database to clear CPU load; it drops every connection and the load
+usually returns.",,
+05404823-b1c8-454e-b5fd-5ba475420634,T-01614,2,Review `pg_stat_statements` for the queries with the highest execution time.,"[1] Database server CPU is very high
+Database server CPU is very high (Query performance and indexes)
+## Symptom
+Monitoring shows the database server's CPU near 100 percent and applications are slow.
+
+## Cause
+A few expensive queries usually cause most of the load: a new query without a suitable
+index, a report run at peak time, or a query whose plan changed after data growth.
+
+## Resolution steps
+1. Look at `pg_stat_activity` for long-running active queries right now.
+2. Check `pg_stat_statements` for the queries with the highest total execution time.
+3. If one report or job causes the spike, ask its owner to stop it or run it off-peak.
+4. Send the top queries and their plans to the owning teams for tuning.
+
+## Warnings
+Do not restart the database to clear CPU load; it drops every connection and the load
+usually returns.",,
+05404823-b1c8-454e-b5fd-5ba475420634,T-01614,3,Identify if any specific report or job is causing the spike and communicate with its owner.,"[1] Database server CPU is very high
+Database server CPU is very high (Query performance and indexes)
+## Symptom
+Monitoring shows the database server's CPU near 100 percent and applications are slow.
+
+## Cause
+A few expensive queries usually cause most of the load: a new query without a suitable
+index, a report run at peak time, or a query whose plan changed after data growth.
+
+## Resolution steps
+1. Look at `pg_stat_activity` for long-running active queries right now.
+2. Check `pg_stat_statements` for the queries with the highest total execution time.
+3. If one report or job causes the spike, ask its owner to stop it or run it off-peak.
+4. Send the top queries and their plans to the owning teams for tuning.
+
+## Warnings
+Do not restart the database to clear CPU load; it drops every connection and the load
+usually returns.",,
+05404823-b1c8-454e-b5fd-5ba475420634,T-01614,4,"If necessary, send the top queries and their execution plans to the relevant teams for tuning.","[1] Database server CPU is very high
+Database server CPU is very high (Query performance and indexes)
+## Symptom
+Monitoring shows the database server's CPU near 100 percent and applications are slow.
+
+## Cause
+A few expensive queries usually cause most of the load: a new query without a suitable
+index, a report run at peak time, or a query whose plan changed after data growth.
+
+## Resolution steps
+1. Look at `pg_stat_activity` for long-running active queries right now.
+2. Check `pg_stat_statements` for the queries with the highest total execution time.
+3. If one report or job causes the spike, ask its owner to stop it or run it off-peak.
+4. Send the top queries and their plans to the owning teams for tuning.
+
+## Warnings
+Do not restart the database to clear CPU load; it drops every connection and the load
+usually returns.",,
+c36bfb67-3dfe-4d19-9f49-9323336c7352,T-00536,1,Check the `n_dead_tup` and `last_autovacuum` for the table in `pg_stat_user_tables`.,"[1] Table keeps growing although rows are deleted
+Table keeps growing although rows are deleted (Query performance and indexes)
+## Symptom
+A table's size on disk keeps growing and queries on it get slower, even though the
+application deletes or updates old rows regularly.
+
+## Cause
+Updates and deletes leave dead row versions. Autovacuum normally cleans them so the space
+can be reused. If autovacuum cannot keep up, or a long-running transaction stops it from
+removing dead rows, the table bloats.
+
+## Resolution steps
+1. Check `n_dead_tup` and `last_autovacuum` for the table in `pg_stat_user_tables`.
+2. Look for long-running or idle-in-transaction sessions in `pg_stat_activity`; they block
+   cleanup.
+3. Once those sessions end, run `VACUUM (ANALYZE)` on the table.
+4. If autovacuum regularly falls behind on this table, ask the DBA team to tune its
+   autovacuum settings.
+
+## Warnings
+`VACUUM FULL` rewrites the table under an exclusive lock; never run it on a busy table
+without a maintenance window.",,
+c36bfb67-3dfe-4d19-9f49-9323336c7352,T-00536,2,Look for long-running or idle-in-transaction sessions in `pg_stat_activity`.,"[1] Table keeps growing although rows are deleted
+Table keeps growing although rows are deleted (Query performance and indexes)
+## Symptom
+A table's size on disk keeps growing and queries on it get slower, even though the
+application deletes or updates old rows regularly.
+
+## Cause
+Updates and deletes leave dead row versions. Autovacuum normally cleans them so the space
+can be reused. If autovacuum cannot keep up, or a long-running transaction stops it from
+removing dead rows, the table bloats.
+
+## Resolution steps
+1. Check `n_dead_tup` and `last_autovacuum` for the table in `pg_stat_user_tables`.
+2. Look for long-running or idle-in-transaction sessions in `pg_stat_activity`; they block
+   cleanup.
+3. Once those sessions end, run `VACUUM (ANALYZE)` on the table.
+4. If autovacuum regularly falls behind on this table, ask the DBA team to tune its
+   autovacuum settings.
+
+## Warnings
+`VACUUM FULL` rewrites the table under an exclusive lock; never run it on a busy table
+without a maintenance window.",,
+c36bfb67-3dfe-4d19-9f49-9323336c7352,T-00536,3,"Once any blocking sessions end, run `VACUUM (ANALYZE)` on the table.","[1] Table keeps growing although rows are deleted
+Table keeps growing although rows are deleted (Query performance and indexes)
+## Symptom
+A table's size on disk keeps growing and queries on it get slower, even though the
+application deletes or updates old rows regularly.
+
+## Cause
+Updates and deletes leave dead row versions. Autovacuum normally cleans them so the space
+can be reused. If autovacuum cannot keep up, or a long-running transaction stops it from
+removing dead rows, the table bloats.
+
+## Resolution steps
+1. Check `n_dead_tup` and `last_autovacuum` for the table in `pg_stat_user_tables`.
+2. Look for long-running or idle-in-transaction sessions in `pg_stat_activity`; they block
+   cleanup.
+3. Once those sessions end, run `VACUUM (ANALYZE)` on the table.
+4. If autovacuum regularly falls behind on this table, ask the DBA team to tune its
+   autovacuum settings.
+
+## Warnings
+`VACUUM FULL` rewrites the table under an exclusive lock; never run it on a busy table
+without a maintenance window.",,
+c36bfb67-3dfe-4d19-9f49-9323336c7352,T-00536,4,"If autovacuum is consistently falling behind, ask the DBA team to tune its settings.","[1] Table keeps growing although rows are deleted
+Table keeps growing although rows are deleted (Query performance and indexes)
+## Symptom
+A table's size on disk keeps growing and queries on it get slower, even though the
+application deletes or updates old rows regularly.
+
+## Cause
+Updates and deletes leave dead row versions. Autovacuum normally cleans them so the space
+can be reused. If autovacuum cannot keep up, or a long-running transaction stops it from
+removing dead rows, the table bloats.
+
+## Resolution steps
+1. Check `n_dead_tup` and `last_autovacuum` for the table in `pg_stat_user_tables`.
+2. Look for long-running or idle-in-transaction sessions in `pg_stat_activity`; they block
+   cleanup.
+3. Once those sessions end, run `VACUUM (ANALYZE)` on the table.
+4. If autovacuum regularly falls behind on this table, ask the DBA team to tune its
+   autovacuum settings.
+
+## Warnings
+`VACUUM FULL` rewrites the table under an exclusive lock; never run it on a busy table
+without a maintenance window.",,
+dc9e56c7-1c88-42c4-827e-ca2267e3169f,T-01209,1,Confirm the request with your sponsor.,"[1] Wi-Fi access for a visitor
+Wi-Fi access for a visitor (Wireless access)
+## Symptom
+An employee asks for internet access for a visitor, contractor or vendor who is on site.
+
+## Cause
+Visitors may not join the corporate network. Guest access is a separate, isolated network
+with time-limited credentials sponsored by an employee.
+
+## Resolution steps
+1. Confirm the request comes from an employee who sponsors the guest. Visitors cannot
+   request access for themselves.
+2. Create a guest credential or day pass in the guest portal, with an expiry that matches
+   the visit. Never issue a credential without an expiry.
+3. Record the sponsor and the visit dates in the ticket for audit.
+4. If the visitor needs internal systems, explain that this is a separate access request
+   with its own approval. Never put a visitor on the corporate network.
+
+## Warnings
+Guest Wi-Fi is deliberately bandwidth-limited and isolated; ""slow"" guest Wi-Fi is not a
+fault to fix.",,
+dc9e56c7-1c88-42c4-827e-ca2267e3169f,T-01209,2,Create a guest credential or day pass in the guest portal.,"[1] Wi-Fi access for a visitor
+Wi-Fi access for a visitor (Wireless access)
+## Symptom
+An employee asks for internet access for a visitor, contractor or vendor who is on site.
+
+## Cause
+Visitors may not join the corporate network. Guest access is a separate, isolated network
+with time-limited credentials sponsored by an employee.
+
+## Resolution steps
+1. Confirm the request comes from an employee who sponsors the guest. Visitors cannot
+   request access for themselves.
+2. Create a guest credential or day pass in the guest portal, with an expiry that matches
+   the visit. Never issue a credential without an expiry.
+3. Record the sponsor and the visit dates in the ticket for audit.
+4. If the visitor needs internal systems, explain that this is a separate access request
+   with its own approval. Never put a visitor on the corporate network.
+
+## Warnings
+Guest Wi-Fi is deliberately bandwidth-limited and isolated; ""slow"" guest Wi-Fi is not a
+fault to fix.",,
+dc9e56c7-1c88-42c4-827e-ca2267e3169f,T-01209,3,Record the sponsor and the visit dates in the ticket for audit.,"[1] Wi-Fi access for a visitor
+Wi-Fi access for a visitor (Wireless access)
+## Symptom
+An employee asks for internet access for a visitor, contractor or vendor who is on site.
+
+## Cause
+Visitors may not join the corporate network. Guest access is a separate, isolated network
+with time-limited credentials sponsored by an employee.
+
+## Resolution steps
+1. Confirm the request comes from an employee who sponsors the guest. Visitors cannot
+   request access for themselves.
+2. Create a guest credential or day pass in the guest portal, with an expiry that matches
+   the visit. Never issue a credential without an expiry.
+3. Record the sponsor and the visit dates in the ticket for audit.
+4. If the visitor needs internal systems, explain that this is a separate access request
+   with its own approval. Never put a visitor on the corporate network.
+
+## Warnings
+Guest Wi-Fi is deliberately bandwidth-limited and isolated; ""slow"" guest Wi-Fi is not a
+fault to fix.",,
+dc9e56c7-1c88-42c4-827e-ca2267e3169f,T-01209,4,Inform the visitor that guest Wi-Fi is separate from the corporate network.,"[1] Wi-Fi access for a visitor
+Wi-Fi access for a visitor (Wireless access)
+## Symptom
+An employee asks for internet access for a visitor, contractor or vendor who is on site.
+
+## Cause
+Visitors may not join the corporate network. Guest access is a separate, isolated network
+with time-limited credentials sponsored by an employee.
+
+## Resolution steps
+1. Confirm the request comes from an employee who sponsors the guest. Visitors cannot
+   request access for themselves.
+2. Create a guest credential or day pass in the guest portal, with an expiry that matches
+   the visit. Never issue a credential without an expiry.
+3. Record the sponsor and the visit dates in the ticket for audit.
+4. If the visitor needs internal systems, explain that this is a separate access request
+   with its own approval. Never put a visitor on the corporate network.
+
+## Warnings
+Guest Wi-Fi is deliberately bandwidth-limited and isolated; ""slow"" guest Wi-Fi is not a
+fault to fix.",,
+3e4bbfd3-8b5d-4a27-ad25-c9451acdf768,T-01468,1,Check the posting date the user entered.,"[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+3e4bbfd3-8b5d-4a27-ad25-c9451acdf768,T-01468,1,Ensure it is within the current or previous period.,"[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+3e4bbfd3-8b5d-4a27-ad25-c9451acdf768,T-01468,2,Verify the current period with MMRV.,"[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+3e4bbfd3-8b5d-4a27-ad25-c9451acdf768,T-01468,2,"If the period is not current, escalate to the materials-management team to run MMPV.","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+3e4bbfd3-8b5d-4a27-ad25-c9451acdf768,T-01468,3,"If the issue persists, contact Finance for approval to post in a closed period.","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.",,
+4d0047d5-cfe1-4406-b193-1845519824dc,T-00831,1,Check if the issue happens on a cable instead of Wi-Fi.,"[1] Video calls freeze or lag
+Video calls freeze or lag (Call quality and file shares)
+## Symptom
+Video and audio calls freeze, drop or lag, while web browsing seems normal.
+
+## Cause
+Calls need low latency more than bandwidth. Weak Wi-Fi, large uploads on the same
+connection, or VPN routing for a call that does not need it are the usual causes. If a
+whole office is affected, the internet link is saturated.
+
+## Resolution steps
+1. Ask whether it happens on a cable too. If only on Wi-Fi, treat it as a Wi-Fi signal
+   problem (move closer to an access point, or use a cable).
+2. Check for large uploads or backups running at the same time.
+3. If the user is on VPN for a call with outside participants, they can disconnect the VPN
+   for the call.
+4. Ask the user to run the call app's network test during a bad call and send the result.
+5. If many users at one office are affected, escalate as a link-capacity problem.
+
+## Warnings
+Do not ask users to stop company backups to free bandwidth.",,
+4d0047d5-cfe1-4406-b193-1845519824dc,T-00831,2,Verify if there are large uploads or backups running at the same time.,"[1] Video calls freeze or lag
+Video calls freeze or lag (Call quality and file shares)
+## Symptom
+Video and audio calls freeze, drop or lag, while web browsing seems normal.
+
+## Cause
+Calls need low latency more than bandwidth. Weak Wi-Fi, large uploads on the same
+connection, or VPN routing for a call that does not need it are the usual causes. If a
+whole office is affected, the internet link is saturated.
+
+## Resolution steps
+1. Ask whether it happens on a cable too. If only on Wi-Fi, treat it as a Wi-Fi signal
+   problem (move closer to an access point, or use a cable).
+2. Check for large uploads or backups running at the same time.
+3. If the user is on VPN for a call with outside participants, they can disconnect the VPN
+   for the call.
+4. Ask the user to run the call app's network test during a bad call and send the result.
+5. If many users at one office are affected, escalate as a link-capacity problem.
+
+## Warnings
+Do not ask users to stop company backups to free bandwidth.",,
+4d0047d5-cfe1-4406-b193-1845519824dc,T-00831,3,Run the call app's network test during a bad call and send the results.,"[1] Video calls freeze or lag
+Video calls freeze or lag (Call quality and file shares)
+## Symptom
+Video and audio calls freeze, drop or lag, while web browsing seems normal.
+
+## Cause
+Calls need low latency more than bandwidth. Weak Wi-Fi, large uploads on the same
+connection, or VPN routing for a call that does not need it are the usual causes. If a
+whole office is affected, the internet link is saturated.
+
+## Resolution steps
+1. Ask whether it happens on a cable too. If only on Wi-Fi, treat it as a Wi-Fi signal
+   problem (move closer to an access point, or use a cable).
+2. Check for large uploads or backups running at the same time.
+3. If the user is on VPN for a call with outside participants, they can disconnect the VPN
+   for the call.
+4. Ask the user to run the call app's network test during a bad call and send the result.
+5. If many users at one office are affected, escalate as a link-capacity problem.
+
+## Warnings
+Do not ask users to stop company backups to free bandwidth.",,
+4d0047d5-cfe1-4406-b193-1845519824dc,T-00831,4,"If the issue is affecting multiple users, escalate it as a link-capacity problem.","[1] Video calls freeze or lag
+Video calls freeze or lag (Call quality and file shares)
+## Symptom
+Video and audio calls freeze, drop or lag, while web browsing seems normal.
+
+## Cause
+Calls need low latency more than bandwidth. Weak Wi-Fi, large uploads on the same
+connection, or VPN routing for a call that does not need it are the usual causes. If a
+whole office is affected, the internet link is saturated.
+
+## Resolution steps
+1. Ask whether it happens on a cable too. If only on Wi-Fi, treat it as a Wi-Fi signal
+   problem (move closer to an access point, or use a cable).
+2. Check for large uploads or backups running at the same time.
+3. If the user is on VPN for a call with outside participants, they can disconnect the VPN
+   for the call.
+4. Ask the user to run the call app's network test during a bad call and send the result.
+5. If many users at one office are affected, escalate as a link-capacity problem.
+
+## Warnings
+Do not ask users to stop company backups to free bandwidth.",,
+c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,1,Check the status of your claim on the insurance carrier's portal using the claim number.,"[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,2,"If the claim is still pending, contact the insurance carrier's employer support line to escalate the issue, quoting the claim number.","[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,3,"For claims from out-of-network providers, the processing time can vary, but typically takes 30-60 days.","[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,3,Check the carrier's portal for an estimated timeline.,"[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,4,No specific form is required for this process,"[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,4,ensure you have an itemised bill and proof of payment ready.,"[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,5,"If the claim is denied, the insurance carrier will provide a reason and the process to appeal the decision.","[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,6,The denial process can take up to 30 days from the date of the denial notice.,"[1] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.",,
+e6445a37-ccdd-46e1-89e2-d3d3fd518b1a,T-01450,1,Check the application logs to confirm if the issue started after the last database failover.,"[1] Request to run a data fix in production
+Request to run a data fix in production (Access requests and schema changes)
+## Symptom
+A team asks the DBA team to run an `UPDATE` or `DELETE` script in production to correct
+bad data.
+
+## Cause
+Application bugs or bad imports leave wrong data that the application cannot correct
+itself.
+
+## Resolution steps
+1. Require the script, the expected number of affected rows and an approved change request.
+2. Run the script's `WHERE` clause as a `SELECT COUNT(*)` first and compare with the
+   expected number.
+3. Take a backup of the affected rows (or an on-demand backup) before running it.
+4. Run the script in a transaction, check the row count reported, and only then commit.
+
+## Warnings
+Never run a data fix that has no `WHERE` clause or whose row count does not match the
+expected number.",,
+e6445a37-ccdd-46e1-89e2-d3d3fd518b1a,T-01450,2,Verify if the application is running in a read-only transaction mode.,"[1] Request to run a data fix in production
+Request to run a data fix in production (Access requests and schema changes)
+## Symptom
+A team asks the DBA team to run an `UPDATE` or `DELETE` script in production to correct
+bad data.
+
+## Cause
+Application bugs or bad imports leave wrong data that the application cannot correct
+itself.
+
+## Resolution steps
+1. Require the script, the expected number of affected rows and an approved change request.
+2. Run the script's `WHERE` clause as a `SELECT COUNT(*)` first and compare with the
+   expected number.
+3. Take a backup of the affected rows (or an on-demand backup) before running it.
+4. Run the script in a transaction, check the row count reported, and only then commit.
+
+## Warnings
+Never run a data fix that has no `WHERE` clause or whose row count does not match the
+expected number.",,
+e6445a37-ccdd-46e1-89e2-d3d3fd518b1a,T-01450,2,"If so, switch to a read-write transaction.","[1] Request to run a data fix in production
+Request to run a data fix in production (Access requests and schema changes)
+## Symptom
+A team asks the DBA team to run an `UPDATE` or `DELETE` script in production to correct
+bad data.
+
+## Cause
+Application bugs or bad imports leave wrong data that the application cannot correct
+itself.
+
+## Resolution steps
+1. Require the script, the expected number of affected rows and an approved change request.
+2. Run the script's `WHERE` clause as a `SELECT COUNT(*)` first and compare with the
+   expected number.
+3. Take a backup of the affected rows (or an on-demand backup) before running it.
+4. Run the script in a transaction, check the row count reported, and only then commit.
+
+## Warnings
+Never run a data fix that has no `WHERE` clause or whose row count does not match the
+expected number.",,
+e6445a37-ccdd-46e1-89e2-d3d3fd518b1a,T-01450,3,"If the application is using a secrets manager for database credentials, ensure it is fetching the latest password.","[1] Request to run a data fix in production
+Request to run a data fix in production (Access requests and schema changes)
+## Symptom
+A team asks the DBA team to run an `UPDATE` or `DELETE` script in production to correct
+bad data.
+
+## Cause
+Application bugs or bad imports leave wrong data that the application cannot correct
+itself.
+
+## Resolution steps
+1. Require the script, the expected number of affected rows and an approved change request.
+2. Run the script's `WHERE` clause as a `SELECT COUNT(*)` first and compare with the
+   expected number.
+3. Take a backup of the affected rows (or an on-demand backup) before running it.
+4. Run the script in a transaction, check the row count reported, and only then commit.
+
+## Warnings
+Never run a data fix that has no `WHERE` clause or whose row count does not match the
+expected number.
+---
+[4] Password authentication failed after credential rotation
+Password authentication failed after credential rotation (Connections and pools)
+## Symptom
+An application suddenly fails with ""password authentication failed for user"" after a
+scheduled credential rotation, while other applications work.
+
+## Cause
+The database password was rotated in the secrets manager, but this application still uses
+the old password: it caches it at start-up, or reads it from a configuration file instead
+of the secrets manager.
+
+## Resolution steps
+1. Confirm the failing user name and the time the errors began; compare with the rotation
+   time.
+2. Check how the application gets its password: secrets manager or configuration file.
+3. If it uses the secrets manager but caches the value, restart the application so it
+   reads the new password.
+4. If it uses a configuration file, ask the owning team to switch to the secrets manager.
+
+## Warnings
+Do not reset the database password back to the old value; other applications already use
+the new one.",,
+e6445a37-ccdd-46e1-89e2-d3d3fd518b1a,T-01450,4,Restart the application to release any leaked database connections and check if the issue persists.,"[2] Application runs out of database connections
+Application runs out of database connections (Connections and pools)
+## Symptom
+Application logs show ""connection pool exhausted"", ""sorry, too many clients already"", or
+requests waiting for a database connection, while the database server is up.
+
+## Cause
+Either the database reached `max_connections`, or the application's pool is full because
+code paths take connections and never return them (a leak), often after an unhandled
+error. Sessions left ""idle in transaction"" also hold connection slots.
+
+## Resolution steps
+1. Compare the number of connections in `pg_stat_activity` with `SHOW max_connections`.
+2. Group the sessions by application and state; many ""idle in transaction"" sessions from
+   one application point to that application.
+3. Check whether the errors started after a deployment; a new code path that does not
+   close its connection is the usual cause.
+4. As a stop-gap, restart the affected application instance to release leaked connections.
+5. Send the findings to the owning team to fix the leak or pool settings.
+
+## Warnings
+Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",,
+c1b352c3-e9ec-40ea-8acf-2e2e2136c256,T-00591,1,Check the `pg_stat_statements` view for the slow query that caused the 'EXC001' warning.,"[1] A query has become slow
+A query has become slow (Query performance and indexes)
+## Symptom
+A report or application feature that used to be fast is now slow, gradually or suddenly
+after a release or data growth.
+
+## Cause
+The query plan changed: a sequential scan over a large table instead of an index scan,
+because an index is missing or table statistics are out of date. Sometimes the query does
+far more work than needed.
+
+## Resolution steps
+1. Get the exact query from the application log or `pg_stat_statements`.
+2. Run `EXPLAIN (ANALYZE, BUFFERS)` on it (on a replica or test copy if it changes data).
+3. Look for a sequential scan on a large table where an index scan is expected.
+4. If the index exists but is not used, refresh statistics with `ANALYZE` on the table.
+5. If an index is missing or the query is inefficient, send the plan to the owning team.
+
+## Warnings
+Do not create indexes on production tables without the DBA team; building them can lock
+the table.",,
+c1b352c3-e9ec-40ea-8acf-2e2e2136c256,T-00591,2,"Run `EXPLAIN (ANALYZE, BUFFERS)` on the slow query to identify if a sequential scan is causing the issue.","[1] A query has become slow
+A query has become slow (Query performance and indexes)
+## Symptom
+A report or application feature that used to be fast is now slow, gradually or suddenly
+after a release or data growth.
+
+## Cause
+The query plan changed: a sequential scan over a large table instead of an index scan,
+because an index is missing or table statistics are out of date. Sometimes the query does
+far more work than needed.
+
+## Resolution steps
+1. Get the exact query from the application log or `pg_stat_statements`.
+2. Run `EXPLAIN (ANALYZE, BUFFERS)` on it (on a replica or test copy if it changes data).
+3. Look for a sequential scan on a large table where an index scan is expected.
+4. If the index exists but is not used, refresh statistics with `ANALYZE` on the table.
+5. If an index is missing or the query is inefficient, send the plan to the owning team.
+
+## Warnings
+Do not create indexes on production tables without the DBA team; building them can lock
+the table.",,
+c1b352c3-e9ec-40ea-8acf-2e2e2136c256,T-00591,3,"If a sequential scan is identified, refresh statistics on the `sales_data` table with `ANALYZE`.","[1] A query has become slow
+A query has become slow (Query performance and indexes)
+## Symptom
+A report or application feature that used to be fast is now slow, gradually or suddenly
+after a release or data growth.
+
+## Cause
+The query plan changed: a sequential scan over a large table instead of an index scan,
+because an index is missing or table statistics are out of date. Sometimes the query does
+far more work than needed.
+
+## Resolution steps
+1. Get the exact query from the application log or `pg_stat_statements`.
+2. Run `EXPLAIN (ANALYZE, BUFFERS)` on it (on a replica or test copy if it changes data).
+3. Look for a sequential scan on a large table where an index scan is expected.
+4. If the index exists but is not used, refresh statistics with `ANALYZE` on the table.
+5. If an index is missing or the query is inefficient, send the plan to the owning team.
+
+## Warnings
+Do not create indexes on production tables without the DBA team; building them can lock
+the table.",,
+c1b352c3-e9ec-40ea-8acf-2e2e2136c256,T-00591,4,"If the issue persists, send the query plan to the database team for further tuning.","[1] A query has become slow
+A query has become slow (Query performance and indexes)
+## Symptom
+A report or application feature that used to be fast is now slow, gradually or suddenly
+after a release or data growth.
+
+## Cause
+The query plan changed: a sequential scan over a large table instead of an index scan,
+because an index is missing or table statistics are out of date. Sometimes the query does
+far more work than needed.
+
+## Resolution steps
+1. Get the exact query from the application log or `pg_stat_statements`.
+2. Run `EXPLAIN (ANALYZE, BUFFERS)` on it (on a replica or test copy if it changes data).
+3. Look for a sequential scan on a large table where an index scan is expected.
+4. If the index exists but is not used, refresh statistics with `ANALYZE` on the table.
+5. If an index is missing or the query is inefficient, send the plan to the owning team.
+
+## Warnings
+Do not create indexes on production tables without the DBA team; building them can lock
+the table.",,
+46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,1,Check the version table (alembic_version) to see what the tool recorded.,"[1] Schema migration failed halfway
+Schema migration failed halfway (Access requests and schema changes)
+## Symptom
+A schema migration failed during deployment, and it is unclear which changes were applied.
+
+## Cause
+Migrations that are not run in one transaction (for example with `CREATE INDEX
+CONCURRENTLY`) can stop halfway. The migration tool's version table may not match what
+was really applied.
+
+## Resolution steps
+1. Check the version table (for example `alembic_version`) to see what the tool recorded.
+2. Compare the actual schema with what the migration should produce.
+3. Finish or undo the partial change by hand so the schema matches one known version.
+4. Then mark the version or rerun the migration, and record what was done in the ticket.
+
+## Warnings
+Never rerun a failed migration before you know which statements already applied.",,
+46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,2,Compare the actual schema with what the migration should produce.,"[1] Schema migration failed halfway
+Schema migration failed halfway (Access requests and schema changes)
+## Symptom
+A schema migration failed during deployment, and it is unclear which changes were applied.
+
+## Cause
+Migrations that are not run in one transaction (for example with `CREATE INDEX
+CONCURRENTLY`) can stop halfway. The migration tool's version table may not match what
+was really applied.
+
+## Resolution steps
+1. Check the version table (for example `alembic_version`) to see what the tool recorded.
+2. Compare the actual schema with what the migration should produce.
+3. Finish or undo the partial change by hand so the schema matches one known version.
+4. Then mark the version or rerun the migration, and record what was done in the ticket.
+
+## Warnings
+Never rerun a failed migration before you know which statements already applied.",,
+46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,3,Finish or undo the partial change by hand so the schema matches one known version.,"[1] Schema migration failed halfway
+Schema migration failed halfway (Access requests and schema changes)
+## Symptom
+A schema migration failed during deployment, and it is unclear which changes were applied.
+
+## Cause
+Migrations that are not run in one transaction (for example with `CREATE INDEX
+CONCURRENTLY`) can stop halfway. The migration tool's version table may not match what
+was really applied.
+
+## Resolution steps
+1. Check the version table (for example `alembic_version`) to see what the tool recorded.
+2. Compare the actual schema with what the migration should produce.
+3. Finish or undo the partial change by hand so the schema matches one known version.
+4. Then mark the version or rerun the migration, and record what was done in the ticket.
+
+## Warnings
+Never rerun a failed migration before you know which statements already applied.",,
+46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,4,"Mark the version or rerun the migration, and record what was done in the ticket.","[1] Schema migration failed halfway
+Schema migration failed halfway (Access requests and schema changes)
+## Symptom
+A schema migration failed during deployment, and it is unclear which changes were applied.
+
+## Cause
+Migrations that are not run in one transaction (for example with `CREATE INDEX
+CONCURRENTLY`) can stop halfway. The migration tool's version table may not match what
+was really applied.
+
+## Resolution steps
+1. Check the version table (for example `alembic_version`) to see what the tool recorded.
+2. Compare the actual schema with what the migration should produce.
+3. Finish or undo the partial change by hand so the schema matches one known version.
+4. Then mark the version or rerun the migration, and record what was done in the ticket.
+
+## Warnings
+Never rerun a failed migration before you know which statements already applied.",,
+46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,5,Cancel the waiting `ALTER TABLE` session to release the queue at once.,"[2] Schema change hangs and blocks the whole table
+Schema change hangs and blocks the whole table (Locks and deadlocks)
+## Symptom
+An `ALTER TABLE` during a deployment hangs, and soon all queries on that table are blocked
+too, causing an application outage.
+
+## Cause
+`ALTER TABLE` needs an exclusive lock. It waits behind any running transaction on the
+table, and every new query then queues behind the waiting `ALTER TABLE`.
+
+## Resolution steps
+1. Cancel the waiting `ALTER TABLE` session to release the queue at once.
+2. Find the long-running transaction it was waiting for.
+3. Rerun the migration in a quiet window with a short `lock_timeout` (for example a few
+   seconds), so it gives up instead of blocking everyone.
+4. Retry the migration if it times out, rather than letting it wait.
+
+## Warnings
+Never run schema changes on busy tables without a lock timeout.",,
+46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,6,Find the long-running transaction it was waiting for.,"[2] Schema change hangs and blocks the whole table
+Schema change hangs and blocks the whole table (Locks and deadlocks)
+## Symptom
+An `ALTER TABLE` during a deployment hangs, and soon all queries on that table are blocked
+too, causing an application outage.
+
+## Cause
+`ALTER TABLE` needs an exclusive lock. It waits behind any running transaction on the
+table, and every new query then queues behind the waiting `ALTER TABLE`.
+
+## Resolution steps
+1. Cancel the waiting `ALTER TABLE` session to release the queue at once.
+2. Find the long-running transaction it was waiting for.
+3. Rerun the migration in a quiet window with a short `lock_timeout` (for example a few
+   seconds), so it gives up instead of blocking everyone.
+4. Retry the migration if it times out, rather than letting it wait.
+
+## Warnings
+Never run schema changes on busy tables without a lock timeout.",,
+46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,7,"Rerun the migration in a quiet window with a short `lock_timeout` (for example a few seconds), so it gives up instead of blocking everyone.","[2] Schema change hangs and blocks the whole table
+Schema change hangs and blocks the whole table (Locks and deadlocks)
+## Symptom
+An `ALTER TABLE` during a deployment hangs, and soon all queries on that table are blocked
+too, causing an application outage.
+
+## Cause
+`ALTER TABLE` needs an exclusive lock. It waits behind any running transaction on the
+table, and every new query then queues behind the waiting `ALTER TABLE`.
+
+## Resolution steps
+1. Cancel the waiting `ALTER TABLE` session to release the queue at once.
+2. Find the long-running transaction it was waiting for.
+3. Rerun the migration in a quiet window with a short `lock_timeout` (for example a few
+   seconds), so it gives up instead of blocking everyone.
+4. Retry the migration if it times out, rather than letting it wait.
+
+## Warnings
+Never run schema changes on busy tables without a lock timeout.",,
+46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,8,"Retry the migration if it times out, rather than letting it wait.","[2] Schema change hangs and blocks the whole table
+Schema change hangs and blocks the whole table (Locks and deadlocks)
+## Symptom
+An `ALTER TABLE` during a deployment hangs, and soon all queries on that table are blocked
+too, causing an application outage.
+
+## Cause
+`ALTER TABLE` needs an exclusive lock. It waits behind any running transaction on the
+table, and every new query then queues behind the waiting `ALTER TABLE`.
+
+## Resolution steps
+1. Cancel the waiting `ALTER TABLE` session to release the queue at once.
+2. Find the long-running transaction it was waiting for.
+3. Rerun the migration in a quiet window with a short `lock_timeout` (for example a few
+   seconds), so it gives up instead of blocking everyone.
+4. Retry the migration if it times out, rather than letting it wait.
+
+## Warnings
+Never run schema changes on busy tables without a lock timeout.",,
+8aa29522-fd4a-47b9-bf84-16e4fe144e6e,T-01219,1,Confirm the error appears only on the office network or VPN.,"[1] Certificate errors in a desktop tool on the office network
+Certificate errors in a desktop tool on the office network (Firewall and proxy)
+## Symptom
+A developer tool, command-line client or desktop app fails with an SSL or certificate
+error (""unable to get local issuer certificate"", ""self-signed certificate in chain"") on
+the office network, but works at home.
+
+## Cause
+The web proxy inspects encrypted traffic and re-signs it with the company's root
+certificate. Browsers trust that certificate, but some tools use their own certificate
+store and do not.
+
+## Resolution steps
+1. Confirm the error appears only on the office network or VPN.
+2. Point the tool at the company root certificate, which is published on the intranet
+   (most tools have a setting or environment variable for a CA bundle).
+3. If the tool cannot be configured, raise a request for an inspection bypass for that
+   domain, with the business reason.
+
+## Warnings
+Never turn off certificate verification in the tool; it removes protection against
+real interception.",,
+8aa29522-fd4a-47b9-bf84-16e4fe144e6e,T-01219,2,"Point the tool at the company root certificate, which is published on the intranet (most tools have a setting or environment variable for a CA bundle).","[1] Certificate errors in a desktop tool on the office network
+Certificate errors in a desktop tool on the office network (Firewall and proxy)
+## Symptom
+A developer tool, command-line client or desktop app fails with an SSL or certificate
+error (""unable to get local issuer certificate"", ""self-signed certificate in chain"") on
+the office network, but works at home.
+
+## Cause
+The web proxy inspects encrypted traffic and re-signs it with the company's root
+certificate. Browsers trust that certificate, but some tools use their own certificate
+store and do not.
+
+## Resolution steps
+1. Confirm the error appears only on the office network or VPN.
+2. Point the tool at the company root certificate, which is published on the intranet
+   (most tools have a setting or environment variable for a CA bundle).
+3. If the tool cannot be configured, raise a request for an inspection bypass for that
+   domain, with the business reason.
+
+## Warnings
+Never turn off certificate verification in the tool; it removes protection against
+real interception.",,
+8aa29522-fd4a-47b9-bf84-16e4fe144e6e,T-01219,3,"If the tool cannot be configured, raise a request for an inspection bypass for that domain, with the business reason.","[1] Certificate errors in a desktop tool on the office network
+Certificate errors in a desktop tool on the office network (Firewall and proxy)
+## Symptom
+A developer tool, command-line client or desktop app fails with an SSL or certificate
+error (""unable to get local issuer certificate"", ""self-signed certificate in chain"") on
+the office network, but works at home.
+
+## Cause
+The web proxy inspects encrypted traffic and re-signs it with the company's root
+certificate. Browsers trust that certificate, but some tools use their own certificate
+store and do not.
+
+## Resolution steps
+1. Confirm the error appears only on the office network or VPN.
+2. Point the tool at the company root certificate, which is published on the intranet
+   (most tools have a setting or environment variable for a CA bundle).
+3. If the tool cannot be configured, raise a request for an inspection bypass for that
+   domain, with the business reason.
+
+## Warnings
+Never turn off certificate verification in the tool; it removes protection against
+real interception.",,
