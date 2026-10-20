@@ -29,6 +29,10 @@ class Thresholds:
     version: str
     fast: float | None
     assisted: float | None
+    # Shift guard (Week 9): escalate drafts whose routing looks unlike the calibration
+    # data, where the certified risk does not hold. None = guard off.
+    min_dept_prob: float | None = None
+    min_probe_margin: float | None = None
 
 
 @dataclass(frozen=True)
@@ -55,8 +59,22 @@ def _article_topics() -> dict[str, str]:
     return {a.id: a.topic or "none" for a in load_articles(ROOT / "data" / "kb") if a.id}
 
 
-def lane_for(score: float | None, can_answer: bool | None, thresholds: Thresholds | None) -> str:
-    if score is None or not can_answer or thresholds is None:
+def guard_reasons(features: dict, thresholds: Thresholds | None) -> list[str]:
+    """Why the shift guard would escalate this draft (empty: it passes)."""
+    if thresholds is None:
+        return []
+    out = []
+    prob, margin = features.get("rt_dept_max_prob"), features.get("rt_probe_margin")
+    if thresholds.min_dept_prob is not None and (prob is None or prob < thresholds.min_dept_prob):
+        out.append("uncertain routing: possibly outside the knowledge base")
+    if thresholds.min_probe_margin is not None and (margin is None or margin < thresholds.min_probe_margin):
+        out.append("another department matches as well")
+    return out
+
+
+def lane_for(score: float | None, can_answer: bool | None, thresholds: Thresholds | None,
+             guarded: bool = False) -> str:
+    if score is None or not can_answer or thresholds is None or guarded:
         return "escalate"
     if thresholds.fast is not None and score >= thresholds.fast:
         return "fast"
@@ -77,6 +95,8 @@ def decide(features: dict, department: str | None, top_article_key: str | None, 
     row = Row("live", "live", "live", "?", department or "?", topic, "live", can_answer, features, None)
     score = float(model.predict([row])[0])
     reasons = model.top_reasons([row])[0]
+    guard = guard_reasons(features, thresholds)
     if not can_answer:
         reasons = ["the draft says the evidence cannot answer", *reasons]
-    return Decision(round(score, 4), lane_for(score, can_answer, thresholds), reasons[:3], model.version)
+    reasons = [*guard, *reasons]
+    return Decision(round(score, 4), lane_for(score, can_answer, thresholds, bool(guard)), reasons[:3], model.version)
