@@ -6,7 +6,7 @@ title: Wrong date or number format in SAP
 updated: '2026-03-04'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 ---
 
 ## Symptom

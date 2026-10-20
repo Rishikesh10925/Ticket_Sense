@@ -6,7 +6,7 @@ title: Number range exhausted
 updated: '2024-12-10'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 legacy: number-range-exhausted
 ---
 
@@ -22,8 +22,8 @@ documents of that type can be saved.
 
 ## Resolution steps
 1. Note the exact message, the document type and the company code or plant.
-2. Identify the number range object (for example FBN1 for accounting documents, MMNR for
-   materials, or SNRO for the generic view).
+2. Identify the number range object and open it in its transaction (for example FBN1 for
+   accounting documents, MMNR for materials, or SNRO for any object).
 3. Escalate to the SAP configuration team with the object, the interval and the fiscal
    year. Extending or adding an interval is a configuration change.
 4. If the error appeared at the start of a fiscal year, mention it: the new year's

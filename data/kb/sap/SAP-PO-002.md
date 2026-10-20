@@ -6,7 +6,7 @@ title: Purchase order waiting for release
 updated: '2026-06-14'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 legacy: po-blocked-for-approval
 ---
 
@@ -24,8 +24,8 @@ released it, the PO stays blocked for output and follow-on documents.
 2. Tell the requester who the outstanding approver is and ask them to follow up.
 3. Approvers release individual POs in ME29N or several at once in ME28. Editing the PO
    is not a release.
-4. If the approver is away, the deputy configured for that release code can release on
-   their behalf.
+4. If the approver is away, a substitute set up in workflow, or another user holding the
+   same release code in their role, can release it.
 
 ## Warnings
 The helpdesk cannot release a PO for an approver. Changing the PO value to get under the
@@ -34,5 +34,5 @@ release limit is a policy violation.
 ## Key facts
 - The Release Strategy tab in ME23N shows which approvals are outstanding.
 - Approvers release POs in ME29N (individually) or ME28 (collectively).
-- A deputy configured for the release code can release when the approver is absent.
+- An absent approver is covered by a workflow substitute or another holder of the same release code.
 - The helpdesk never releases a PO on an approver's behalf.

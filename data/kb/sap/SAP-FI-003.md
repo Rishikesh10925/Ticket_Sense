@@ -6,7 +6,7 @@ title: General ledger account blocked for posting
 updated: '2025-06-17'
 served: false
 author: S
-reviewer: null
+reviewer: Claude
 ---
 
 ## Symptom

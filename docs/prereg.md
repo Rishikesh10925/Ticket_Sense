@@ -65,6 +65,8 @@ fast lane, and the false-escalation rate. Slices: ticket type, department, seen/
 |---|---|---|
 | 2026-10-19 | Tagged `prereg-v1` with the frozen counts above (1,775 rather than about 1,800 tickets; test 271 and calibration 262 rather than 250). | Exact numbers from the freeze; 28 paraphrases failed generation quality checks and were dropped. |
 
+| 2026-10-20 | KB amendment 1 (`data/benchmark/FREEZE_v1_amend1.json`): SAP-PO-002, SAP-PO-004 and SAP-MAT-002 steps and key facts corrected after an AI-assisted fact-check of the 24 SAP articles. Tickets and splits unchanged. Drafts that cited these articles are regenerated with the corrected text before any human label is collected on them. | Factual errors found in the knowledge base. The 24 SAP articles are recorded as `reviewer: Claude` (AI-checked); this is not the blueprint's human second-member review, which remains outstanding for all 120 articles. |
+
 Standing rule: if the human fact-check of the KB changes an article, the tickets written
 from it are regenerated, the benchmark is refrozen as v1.1, and the change is logged
 here *before* any human label is collected on the affected tickets.

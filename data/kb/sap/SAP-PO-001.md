@@ -6,7 +6,7 @@ title: Goods receipt fails because the PO item is blocked
 updated: '2026-09-02'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 legacy: me023-error-goods-receipt
 ---
 

@@ -6,7 +6,7 @@ title: Posting period closed for goods movements
 updated: '2025-09-30'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 ---
 
 ## Symptom

@@ -6,7 +6,7 @@ title: Not authorised for a transaction
 updated: '2026-05-20'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 legacy: missing-tcode-authorization
 ---
 

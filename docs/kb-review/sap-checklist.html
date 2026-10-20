@@ -1,0 +1,206 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width, initial-scale=1'><title>SAP fact-check</title><style>:root{--bg:#f8fafc;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--link:#4f46e5}@media (prefers-color-scheme:dark){:root{--bg:#0b1120;--card:#131c31;--text:#e2e8f0;--muted:#94a3b8;--border:#1e293b;--link:#a5b4fc}}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,sans-serif}main{max-width:900px;margin:0 auto;padding:16px}h1{font-size:22px}.card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px 16px 12px;margin:14px 0}h2{font-size:17px}a{color:var(--link)}code{font-size:13px}p{margin:6px 0}.fact{display:block;margin:4px 0;cursor:pointer}textarea{width:100%;min-height:44px;margin-top:6px;font:inherit;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px;box-sizing:border-box}</style></head><body><main><section><h1>Fact-check checklist: SAP (24 articles, reviewer R)</h1>
+<p>For each article: open it, click each term, confirm the article uses it correctly.</p>
+<p>All correct ➜ set <code>reviewer: R</code> in the article. Something wrong ➜ note it here and tell Claude.</p>
+<p>Values described as *this organisation's* policy (limits, approvals) are fictional company rules:</p>
+<p>they cannot be looked up, only checked for being stated as policy rather than as a vendor default.</p>
+<p>⭐ = check first (flagged as risky). ⬜ = not checked. 🤖 = AI-checked only (still needs a human). ✅ = human-reviewed.</p>
+</section><section class="card"><h2>🤖 SAP-ACC-001: SAP user account locked</h2>
+<p>File: <a href="../../data/kb/sap/SAP-ACC-001.md" target="_blank" rel="noopener">data/kb/sap/SAP-ACC-001.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+login%2Ffails_to_user_lock+site%3Ahelp.sap.com" target="_blank" rel="noopener">login/fails_to_user_lock</a> · <a href="https://www.google.com/search?q=SAP+SU01+site%3Ahelp.sap.com" target="_blank" rel="noopener">SU01</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> The failed-logon limit is set by login/fails_to_user_lock (5 here).</label>
+<label class=fact><input type=checkbox> Only failed-logon locks may be removed by the helpdesk; administrator locks are escalated to SAP security.</label>
+<label class=fact><input type=checkbox> Unlocking and setting an initial password are both done in SU01.</label>
+<label class=fact><input type=checkbox> An initial password must be changed by the user at the next logon.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-ACC-002: Not authorised for a transaction</h2>
+<p>File: <a href="../../data/kb/sap/SAP-ACC-002.md" target="_blank" rel="noopener">data/kb/sap/SAP-ACC-002.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+SU53+site%3Ahelp.sap.com" target="_blank" rel="noopener">SU53</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> SU53 shows the last failed authorization check for the current user.</label>
+<label class=fact><input type=checkbox> New SAP access always needs manager approval recorded in the request.</label>
+<label class=fact><input type=checkbox> Role changes are made by the SAP security team, not the helpdesk.</label>
+<label class=fact><input type=checkbox> The user must log on again before a newly assigned role takes effect.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-ACC-004: Fiori app tile missing from the launchpad</h2>
+<p>File: <a href="../../data/kb/sap/SAP-ACC-004.md" target="_blank" rel="noopener">data/kb/sap/SAP-ACC-004.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+PFCG+site%3Ahelp.sap.com" target="_blank" rel="noopener">PFCG</a> · <a href="https://www.google.com/search?q=SAP+SU01+site%3Ahelp.sap.com" target="_blank" rel="noopener">SU01</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Fiori tiles come from business catalogs assigned through PFCG roles.</label>
+<label class=fact><input type=checkbox> A newly assigned role may only appear after signing out and clearing the browser cache.</label>
+<label class=fact><input type=checkbox> Missing roles are requested through the access process with manager approval, never copied wholesale from a colleague.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-FI-001: Wrong exchange rate on a foreign-currency posting</h2>
+<p>File: <a href="../../data/kb/sap/SAP-FI-001.md" target="_blank" rel="noopener">data/kb/sap/SAP-FI-001.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+OB08+site%3Ahelp.sap.com" target="_blank" rel="noopener">OB08</a> · <a href="https://www.google.com/search?q=SAP+FB08+site%3Ahelp.sap.com" target="_blank" rel="noopener">FB08</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Exchange rates are maintained in OB08 by currency pair, rate type and date.</label>
+<label class=fact><input type=checkbox> With no rate for the posting date, SAP uses the most recent earlier rate.</label>
+<label class=fact><input type=checkbox> Posted documents with a wrong rate are reversed (FB08) and reposted by Finance only.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-INT-001: Background job not starting or stuck</h2>
+<p>File: <a href="../../data/kb/sap/SAP-INT-001.md" target="_blank" rel="noopener">data/kb/sap/SAP-INT-001.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+SM37+site%3Ahelp.sap.com" target="_blank" rel="noopener">SM37</a> · <a href="https://www.google.com/search?q=SAP+SM50+site%3Ahelp.sap.com" target="_blank" rel="noopener">SM50</a> · <a href="https://www.google.com/search?q=SAP+SM12+site%3Ahelp.sap.com" target="_blank" rel="noopener">SM12</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> "Released" means waiting for the start condition; "Ready" means waiting for a free background work process.</label>
+<label class=fact><input type=checkbox> SM50 shows whether background work processes are busy.</label>
+<label class=fact><input type=checkbox> The job log in SM37 shows the last step a running job reached.</label>
+<label class=fact><input type=checkbox> Hung jobs are cancelled by Basis.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-INT-002: IDoc in status 51</h2>
+<p>File: <a href="../../data/kb/sap/SAP-INT-002.md" target="_blank" rel="noopener">data/kb/sap/SAP-INT-002.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+WE02+site%3Ahelp.sap.com" target="_blank" rel="noopener">WE02</a> · <a href="https://www.google.com/search?q=SAP+WE05+site%3Ahelp.sap.com" target="_blank" rel="noopener">WE05</a> · <a href="https://www.google.com/search?q=SAP+BD87+site%3Ahelp.sap.com" target="_blank" rel="noopener">BD87</a> · <a href="https://www.google.com/search?q=SAP+status+51+site%3Ahelp.sap.com" target="_blank" rel="noopener">status 51</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Status 51 means the application document was not posted.</label>
+<label class=fact><input type=checkbox> The status record in WE02 names the reason for the failure.</label>
+<label class=fact><input type=checkbox> Failed IDocs are reprocessed with BD87 after the cause is fixed.</label>
+<label class=fact><input type=checkbox> Many failures from one partner point to the partner profile or mapping.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-MAT-004: Posting period closed for goods movements</h2>
+<p>File: <a href="../../data/kb/sap/SAP-MAT-004.md" target="_blank" rel="noopener">data/kb/sap/SAP-MAT-004.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+MMPV+site%3Ahelp.sap.com" target="_blank" rel="noopener">MMPV</a> · <a href="https://www.google.com/search?q=SAP+MMRV+site%3Ahelp.sap.com" target="_blank" rel="noopener">MMRV</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Materials management allows postings only in the current and previous period.</label>
+<label class=fact><input type=checkbox> MMRV displays the current period; MMPV moves it forward.</label>
+<label class=fact><input type=checkbox> Postings into older closed periods need Finance approval.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-PO-001: Goods receipt fails because the PO item is blocked</h2>
+<p>File: <a href="../../data/kb/sap/SAP-PO-001.md" target="_blank" rel="noopener">data/kb/sap/SAP-PO-001.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+MIGO+site%3Ahelp.sap.com" target="_blank" rel="noopener">MIGO</a> · <a href="https://www.google.com/search?q=SAP+ME22N+site%3Ahelp.sap.com" target="_blank" rel="noopener">ME22N</a> · <a href="https://www.google.com/search?q=SAP+ME23N+site%3Ahelp.sap.com" target="_blank" rel="noopener">ME23N</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A blocked PO item cannot be goods-receipted in MIGO until the buyer removes the block.</label>
+<label class=fact><input type=checkbox> Blocks are removed by the responsible buyer in ME22N, never by the helpdesk.</label>
+<label class=fact><input type=checkbox> ME23N displays the PO without changing it.</label>
+<label class=fact><input type=checkbox> An item with a deletion indicator needs a new PO item instead of a receipt.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-PO-002: Purchase order waiting for release</h2>
+<p>File: <a href="../../data/kb/sap/SAP-PO-002.md" target="_blank" rel="noopener">data/kb/sap/SAP-PO-002.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+ME23N+site%3Ahelp.sap.com" target="_blank" rel="noopener">ME23N</a> · <a href="https://www.google.com/search?q=SAP+ME29N+site%3Ahelp.sap.com" target="_blank" rel="noopener">ME29N</a> · <a href="https://www.google.com/search?q=SAP+ME28+site%3Ahelp.sap.com" target="_blank" rel="noopener">ME28</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> The Release Strategy tab in ME23N shows which approvals are outstanding.</label>
+<label class=fact><input type=checkbox> Approvers release POs in ME29N (individually) or ME28 (collectively).</label>
+<label class=fact><input type=checkbox> An absent approver is covered by a workflow substitute or another holder of the same release code.</label>
+<label class=fact><input type=checkbox> The helpdesk never releases a PO on an approver's behalf.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-PO-004: Vendor invoice blocked for payment</h2>
+<p>File: <a href="../../data/kb/sap/SAP-PO-004.md" target="_blank" rel="noopener">data/kb/sap/SAP-PO-004.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+MIRO+site%3Ahelp.sap.com" target="_blank" rel="noopener">MIRO</a> · <a href="https://www.google.com/search?q=SAP+MRBR+site%3Ahelp.sap.com" target="_blank" rel="noopener">MRBR</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> MIRO blocks invoices for payment when they differ from the PO or goods receipt beyond tolerance.</label>
+<label class=fact><input type=checkbox> MRBR shows why an invoice is blocked and is used to release it.</label>
+<label class=fact><input type=checkbox> After the missing goods receipt is posted, a quantity block is released by an MRBR run, not automatically.</label>
+<label class=fact><input type=checkbox> Blocked invoices are released by accounts payable, not the helpdesk.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-SYS-001: SAP GUI cannot connect to the server</h2>
+<p>File: <a href="../../data/kb/sap/SAP-SYS-001.md" target="_blank" rel="noopener">data/kb/sap/SAP-SYS-001.md</a> · author S</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Several users unable to connect at once points to a server problem for Basis.</label>
+<label class=fact><input type=checkbox> SAP GUI connects to the dispatcher on port 32 plus the instance number (3200 for instance 00).</label>
+<label class=fact><input type=checkbox> Remote users need the VPN connected before SAP GUI can reach the server.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-ACC-003: Forgotten SAP password</h2>
+<p>File: <a href="../../data/kb/sap/SAP-ACC-003.md" target="_blank" rel="noopener">data/kb/sap/SAP-ACC-003.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+SU01+site%3Ahelp.sap.com" target="_blank" rel="noopener">SU01</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Each SAP system has its own password unless single sign-on is used.</label>
+<label class=fact><input type=checkbox> Self-service reset needs a verified mobile number in the user's profile.</label>
+<label class=fact><input type=checkbox> The helpdesk fallback is an initial password set in SU01 after identity verification.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-FI-002: Posting period not open in finance</h2>
+<p>File: <a href="../../data/kb/sap/SAP-FI-002.md" target="_blank" rel="noopener">data/kb/sap/SAP-FI-002.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+OB52+site%3Ahelp.sap.com" target="_blank" rel="noopener">OB52</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Finance posting periods are controlled per account type in OB52.</label>
+<label class=fact><input type=checkbox> Postings into a closed period are rejected.</label>
+<label class=fact><input type=checkbox> Only the Finance close team opens or closes periods.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-FI-003: General ledger account blocked for posting</h2>
+<p>File: <a href="../../data/kb/sap/SAP-FI-003.md" target="_blank" rel="noopener">data/kb/sap/SAP-FI-003.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+FS00+site%3Ahelp.sap.com" target="_blank" rel="noopener">FS00</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> G/L accounts are blocked for posting in the account master (FS00).</label>
+<label class=fact><input type=checkbox> Blocked accounts usually have a replacement account named by Finance master data.</label>
+<label class=fact><input type=checkbox> Postings go to the replacement account rather than unblocking the old one.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-FI-004: Vendor not included in the payment run</h2>
+<p>File: <a href="../../data/kb/sap/SAP-FI-004.md" target="_blank" rel="noopener">data/kb/sap/SAP-FI-004.md</a> · author S</p>
+<p><b>Look up:</b> (no technical terms; check the steps make sense)</p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> The automatic payment run is F110.</label>
+<label class=fact><input type=checkbox> Items are paid only if due, not blocked, and the vendor has a payment method and bank details.</label>
+<label class=fact><input type=checkbox> The payment run exception list explains why items were not paid.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-INT-003: Interface fails with RFC connection error</h2>
+<p>File: <a href="../../data/kb/sap/SAP-INT-003.md" target="_blank" rel="noopener">data/kb/sap/SAP-INT-003.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+SM59+site%3Ahelp.sap.com" target="_blank" rel="noopener">SM59</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> RFC destinations are tested in SM59.</label>
+<label class=fact><input type=checkbox> A logon failure in the test points to a locked or expired technical user.</label>
+<label class=fact><input type=checkbox> RFC destinations in production are changed only by Basis.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-INT-004: Scheduled job cancelled because a variant is missing</h2>
+<p>File: <a href="../../data/kb/sap/SAP-INT-004.md" target="_blank" rel="noopener">data/kb/sap/SAP-INT-004.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+SM37+site%3Ahelp.sap.com" target="_blank" rel="noopener">SM37</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A job using a deleted or invalid variant ends with status Canceled.</label>
+<label class=fact><input type=checkbox> The SM37 job log names the report, the variant and the error.</label>
+<label class=fact><input type=checkbox> The job owner corrects the variant before the job is rescheduled.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-MAT-001: Material master locked by another user</h2>
+<p>File: <a href="../../data/kb/sap/SAP-MAT-001.md" target="_blank" rel="noopener">data/kb/sap/SAP-MAT-001.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+MM02+site%3Ahelp.sap.com" target="_blank" rel="noopener">MM02</a> · <a href="https://www.google.com/search?q=SAP+SM12+site%3Ahelp.sap.com" target="_blank" rel="noopener">SM12</a> · <a href="https://www.google.com/search?q=SAP+SM04+site%3Ahelp.sap.com" target="_blank" rel="noopener">SM04</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A material is locked while another user edits it in MM02.</label>
+<label class=fact><input type=checkbox> Lock entries are listed in SM12.</label>
+<label class=fact><input type=checkbox> Basis deletes a lock entry only after confirming in SM04 that the session is gone.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-MAT-002: Number range exhausted</h2>
+<p>File: <a href="../../data/kb/sap/SAP-MAT-002.md" target="_blank" rel="noopener">data/kb/sap/SAP-MAT-002.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+FBN1+site%3Ahelp.sap.com" target="_blank" rel="noopener">FBN1</a> · <a href="https://www.google.com/search?q=SAP+MMNR+site%3Ahelp.sap.com" target="_blank" rel="noopener">MMNR</a> · <a href="https://www.google.com/search?q=SAP+SNRO+site%3Ahelp.sap.com" target="_blank" rel="noopener">SNRO</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Each document type draws numbers from a number range interval.</label>
+<label class=fact><input type=checkbox> Year-dependent intervals, such as accounting documents, must be created for every new fiscal year.</label>
+<label class=fact><input type=checkbox> Number range changes are configuration changes made by the SAP configuration team.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-MAT-003: Material not maintained for the plant</h2>
+<p>File: <a href="../../data/kb/sap/SAP-MAT-003.md" target="_blank" rel="noopener">data/kb/sap/SAP-MAT-003.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+MM03+site%3Ahelp.sap.com" target="_blank" rel="noopener">MM03</a> · <a href="https://www.google.com/search?q=SAP+MM01+site%3Ahelp.sap.com" target="_blank" rel="noopener">MM01</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> A material must be extended to each plant before it can be used there.</label>
+<label class=fact><input type=checkbox> MM03 shows which plants a material is maintained for.</label>
+<label class=fact><input type=checkbox> Extensions are made by the master-data team in MM01.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-PO-003: Goods receipt quantity exceeds the PO quantity</h2>
+<p>File: <a href="../../data/kb/sap/SAP-PO-003.md" target="_blank" rel="noopener">data/kb/sap/SAP-PO-003.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+MIGO+site%3Ahelp.sap.com" target="_blank" rel="noopener">MIGO</a> · <a href="https://www.google.com/search?q=SAP+ME23N+site%3Ahelp.sap.com" target="_blank" rel="noopener">ME23N</a> · <a href="https://www.google.com/search?q=SAP+ME22N+site%3Ahelp.sap.com" target="_blank" rel="noopener">ME22N</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> The over-delivery tolerance is set per PO item on its Delivery tab.</label>
+<label class=fact><input type=checkbox> Receipts above ordered quantity plus tolerance are blocked in MIGO.</label>
+<label class=fact><input type=checkbox> The buyer decides whether to accept extra quantity by increasing the PO quantity.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-SYS-002: Short dump during a transaction</h2>
+<p>File: <a href="../../data/kb/sap/SAP-SYS-002.md" target="_blank" rel="noopener">data/kb/sap/SAP-SYS-002.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+ST22+site%3Ahelp.sap.com" target="_blank" rel="noopener">ST22</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> ST22 lists short dumps by user and time.</label>
+<label class=fact><input type=checkbox> TIME_OUT means a dialog step exceeded the allowed runtime; narrowing the selection or running in background avoids it.</label>
+<label class=fact><input type=checkbox> Dumps in custom Z or Y programs go to the development team.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-SYS-003: Printed SAP document never arrives at the printer</h2>
+<p>File: <a href="../../data/kb/sap/SAP-SYS-003.md" target="_blank" rel="noopener">data/kb/sap/SAP-SYS-003.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+SP01+site%3Ahelp.sap.com" target="_blank" rel="noopener">SP01</a> · <a href="https://www.google.com/search?q=SAP+SPAD+site%3Ahelp.sap.com" target="_blank" rel="noopener">SPAD</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> SP01 lists spool requests and is used to reprint them.</label>
+<label class=fact><input type=checkbox> A missing spool request means no output was triggered for the document.</label>
+<label class=fact><input type=checkbox> Output devices are maintained by Basis in SPAD.</label>
+<label class=fact><input type=checkbox> Printer hardware faults belong to desktop support, not SAP.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>
+</section><section class="card"><h2>🤖 SAP-SYS-004: Wrong date or number format in SAP</h2>
+<p>File: <a href="../../data/kb/sap/SAP-SYS-004.md" target="_blank" rel="noopener">data/kb/sap/SAP-SYS-004.md</a> · author S</p>
+<p><b>Look up:</b> <a href="https://www.google.com/search?q=SAP+SU3+site%3Ahelp.sap.com" target="_blank" rel="noopener">SU3</a></p>
+<p><b>Key facts to confirm:</b></p>
+<label class=fact><input type=checkbox> Date and decimal formats are set per user in SU3 on the Defaults tab.</label>
+<label class=fact><input type=checkbox> New formats apply after logging off and on again.</label>
+<label class=fact><input type=checkbox> Display formats do not change the stored data.</label>
+<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea></section></main></body></html>

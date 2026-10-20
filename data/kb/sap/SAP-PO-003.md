@@ -6,7 +6,7 @@ title: Goods receipt quantity exceeds the PO quantity
 updated: '2025-07-29'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 ---
 
 ## Symptom

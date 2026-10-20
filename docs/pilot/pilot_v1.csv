@@ -1,0 +1,2929 @@
+item,draft_id,ticket,draft,evidence,label_R,label_A,label_S,reason_codes,rubric_problem
+1,4f196120-a612-4f00-b43d-4c8d64526fe7,"General ledger blocked
+
+Posting failed for GL account 1002. Error code: 0123456789. Message: 'Posting blocked for account.' Last posting attempt: 2026-01-15 14:30:00.","1. Check the error logs for any recent changes or events that might have triggered the posting block. [1]
+2. Verify if there are any budget controls or service quotas that might have been exceeded, leading to the posting block. [1]
+3. If a service quota is suspected, request a review and potential increase through the cloud provider's process. [1]
+4. Ensure that the GL account 1002 is not part of any retention policy that might be causing the block. [1]","[1] Writes fail because a storage quota is reached
+Writes fail because a storage quota is reached (Object storage)
+## Symptom
+An application or backup job fails with a quota or limit error, or writes start failing
+while reads still work.
+
+## Cause
+A limit was reached: an account-level service quota, a size limit on a volume or file
+share, or a budget control that stops further spending.
+
+## Resolution steps
+1. Read the error to identify which limit was hit.
+2. Check whether old data can be archived or deleted under the retention policy before
+   asking for more space.
+3. Request a service quota increase through the cloud provider's process. It is not
+   instant, so state clearly if production is blocked.
+4. If usage grows steadily, raise a capacity-planning review instead of repeated small
+   increases.
+
+## Warnings
+Do not request the largest possible quota ""to be safe""; it hides runaway growth.
+---
+[2] Website returns 502 or 503 from the load balancer
+Website returns 502 or 503 from the load balancer (Load balancers and certificates)
+## Symptom
+Users get ""502 Bad Gateway"", ""503 Service Unavailable"" or ""504 Gateway Timeout"" from an
+application behind a cloud load balancer.
+
+## Cause
+The code shows where it failed. 503 means the load balancer has no healthy servers. 502
+means a server closed the connection or sent an invalid response. 504 means the server
+did not answer within the load balancer's timeout.
+
+## Resolution steps
+1. Note the exact error code and when it started.
+2. For 503, check the target group: if no servers are healthy, follow the unhealthy-server
+   article.
+3. For 502, check the application logs on the servers for crashes or restarts at that time.
+4. For 504, check for slow requests or a dependency (database, external API) that slowed
+   down.
+5. Send the findings to the application's owning team.
+
+## Warnings
+Do not raise the load balancer timeout to hide 504 errors without the owning team.
+---
+[3] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.
+---
+[4] Load balancer marks servers unhealthy
+Load balancer marks servers unhealthy (Load balancers and certificates)
+## Symptom
+The load balancer marks one or more backend servers unhealthy, so capacity drops or
+requests fail intermittently.
+
+## Cause
+The health check request fails: the application does not answer the configured path with
+the expected status code, it answers too slowly, or a security group blocks the load
+balancer from reaching the server.
+
+## Resolution steps
+1. Check the health check path, port and expected status code in the target settings.
+2. Call that path directly on an affected server and check the response code and time.
+3. If the server answers correctly but is still unhealthy, check the security group allows
+   traffic from the load balancer, and the timeout and threshold settings.
+4. If the application fails the check (slow start, a dependency down), route it to the
+   owning team.
+
+## Warnings
+Do not point the health check at a page that always returns 200 regardless of
+application state; it hides real failures.
+---
+[5] Cannot SSH into a cloud virtual machine
+Cannot SSH into a cloud virtual machine (Virtual machines and snapshots)
+## Symptom
+SSH to a cloud virtual machine times out or is refused, either for a machine that worked
+before or for one that was just launched.
+
+## Cause
+A timeout usually means the network blocks the connection: the security group does not
+allow port 22 from the user's address, or the machine is in a private subnet. A refusal or
+authentication failure means the network is fine but the key or SSH configuration is wrong.",W,,,,
+2,292663f3-9f73-46b5-83d5-9761376a5d8b,"Cloud service not working
+
+Our cloud storage is messed up, can't access files. Tried logging in multiple times, still no luck. Checked network, sems fine but files aren't loading. Tried different browsers and devices, issue persists. Other team members can't access files too, maybe same issue? Need this urgently for our project presentation tomorrow. Can you help us fix this ASAP, please?","(no draft: the model said the evidence cannot answer) The exact error message or logs related to the cloud storage issue.; Whether the issue is specific to certain files or directories.; The type of cloud storage service being used (e.g., object storage, file storage).","[1] Virtual machine disk is full
+Virtual machine disk is full (Virtual machines and snapshots)
+## Symptom
+An application on a cloud virtual machine fails to write files or logs, services stop, or
+SSH sessions fail, and the disk shows 100 percent used.
+
+## Cause
+Logs or data filled the volume. Growing the cloud volume alone is not enough: the
+partition and file system inside the machine must also be extended.
+
+## Resolution steps
+1. If you can still log in, find what is using the space (for example old logs) and ask
+   the owner whether it can be removed.
+2. To add space, increase the volume size in the cloud console.
+3. Inside the machine, extend the partition (`growpart`) and then the file system
+   (`resize2fs` for ext4 or `xfs_growfs` for XFS).
+4. Ask the owner to set up log rotation so it does not fill again.
+
+## Warnings
+Take a snapshot of the volume before resizing.
+---
+[2] Request for additional cloud permissions
+Request for additional cloud permissions (Identity, SSO and permissions)
+## Symptom
+A user or a service account gets ""not authorized to perform"" errors for a cloud action
+and asks for more permissions.
+
+## Cause
+The identity's roles do not include the action on that resource. New projects and new
+services often need permissions nobody requested yet.
+
+## Resolution steps
+1. Get the exact error: it names the action (for example `s3:PutObject`) and the resource.
+2. Ask for the business reason, and for service accounts, the owning team.
+3. Request the narrowest permission: the specific actions on the specific resources, not a
+   broad managed policy such as full admin for the service.
+4. Permissions are granted through group or role membership, never by attaching a policy
+   to an individual user.
+5. For project or temporary access, record a review or expiry date in the ticket.
+
+## Warnings
+Push back on ""just give full access to be safe"". Broad standing permissions are the most
+common cause of cloud security incidents.
+---
+[3] Shared download link to a bucket file has expired
+Shared download link to a bucket file has expired (Object storage)
+## Symptom
+A partner or colleague opens a download link for a file in cloud storage and gets
+""Request has expired"" or access denied, although the link worked earlier.
+
+## Cause
+The link was a pre-signed URL. It works only for the lifetime set when it was created,
+and never longer than the credentials used to sign it. Links signed with temporary role
+credentials stop working when that session ends.
+
+## Resolution steps
+1. Confirm the link contains signature parameters (it is a pre-signed URL, not a public
+   object).
+2. Ask the file owner to generate a new link with an appropriate expiry.
+3. For links that must last days, the owner should sign with credentials that remain
+   valid for that long; the maximum lifetime is seven days.
+4. For recurring sharing with a partner, recommend a proper partner-access setup instead
+   of repeated links.
+
+## Warnings
+Do not make the object or bucket public to replace an expired link.
+---
+[4] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Resolution steps
+1. Ask whether other single sign-on apps work. If they all fail, it is an account problem
+   in the identity provider, not a cloud problem.
+2. Check that the user is assigned to the cloud console application in the identity
+   provider. A missing assignment causes a redirect loop.
+3. If sign-in works but the console is empty or denies everything, check which groups map
+   to which cloud roles, and request the right group.
+4. Ask the user to retry in a private browser window to rule out a stale session.
+5. If many users fail at once, treat it as a single sign-on outage and escalate.
+
+## Warnings
+Do not create a local cloud user with a password as a workaround for single sign-on.
+---
+[5] Writes fail because a storage quota is reached
+Writes fail because a storage quota is reached (Object storage)
+## Symptom
+An application or backup job fails with a quota or limit error, or writes start failing
+while reads still work.
+
+## Cause
+A limit was reached: an account-level service quota, a size limit on a volume or file
+share, or a budget control that stops further spending.
+
+## Resolution steps
+1. Read the error to identify which limit was hit.
+2. Check whether old data can be archived or deleted under the retention policy before
+   asking for more space.
+3. Request a service quota increase through the cloud provider's process. It is not
+   instant, so state clearly if production is blocked.
+4. If usage grows steadily, raise a capacity-planning review instead of repeated small
+   increases.
+
+## Warnings
+Do not request the largest possible quota ""to be safe""; it hides runaway growth.",A,,,,
+3,cab69422-5b11-458f-b1e6-b7a504c4afb9,"Can't sign in to cloud console
+
+Lost my old phone with registered authenticator. Now can't complete multi-factor step. Tried signing in but get stuck. Access to critical cloud resources needed urgently. Please help resolve quickly.","1. Verify your identity through the standard process (manager confirmation plus employee ID). [1]
+2. Contact the identity team to reset your multi-factor registration in the identity provider. [1]
+3. Register the authenticator on your new phone at the next sign-in. [1]
+4. Report your old phone as lost to security if applicable. [1]","[1] Lost phone for cloud console multi-factor sign-in
+Lost phone for cloud console multi-factor sign-in (Identity, SSO and permissions)
+## Symptom
+The user has a new or lost phone and can no longer complete the multi-factor step when
+signing in to the cloud console.
+
+## Cause
+Multi-factor for the console runs through the corporate identity provider. The
+authenticator was registered on the old phone.
+
+## Resolution steps
+1. Verify the user's identity through the standard process (manager confirmation plus
+   employee ID).
+2. Ask the identity team to reset the user's multi-factor registration in the identity
+   provider.
+3. The user registers the authenticator on the new phone at the next sign-in.
+4. If the phone was lost, ask the user to report it to security as a lost device.
+
+## Warnings
+Never turn multi-factor off for an account, even temporarily.
+---
+[2] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.
+---
+[3] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Resolution steps
+1. Ask whether other single sign-on apps work. If they all fail, it is an account problem
+   in the identity provider, not a cloud problem.
+2. Check that the user is assigned to the cloud console application in the identity
+   provider. A missing assignment causes a redirect loop.
+3. If sign-in works but the console is empty or denies everything, check which groups map
+   to which cloud roles, and request the right group.
+4. Ask the user to retry in a private browser window to rule out a stale session.
+5. If many users fail at once, treat it as a single sign-on outage and escalate.
+
+## Warnings
+Do not create a local cloud user with a password as a workaround for single sign-on.
+---
+[4] Cloud access key exposed or committed to a repository
+Cloud access key exposed or committed to a repository (Identity, SSO and permissions)
+## Symptom
+A developer reports that a cloud access key was pushed to a code repository, pasted in a
+chat, or shared in a ticket, or the security team receives an alert that a key appeared
+in a public place.
+
+## Cause
+Long-lived access keys were stored in code or configuration. Anyone who sees the key can
+act with its permissions until it is disabled.
+
+## Resolution steps
+1. Treat it as a security incident at once and notify the security team.
+2. Deactivate the exposed key immediately in the identity console. Do not wait for the
+   developer to finish their work.
+3. Create a new key for the owner only if the workload still needs one, and prefer a role
+   with temporary credentials instead.
+4. Remove the key from the repository history, not just the latest commit. Rotating the
+   key matters more than cleaning the history.
+5. Ask the security team to review the account's activity logs for use of the old key.
+---
+[5] Shared download link to a bucket file has expired
+Shared download link to a bucket file has expired (Object storage)
+## Symptom
+A partner or colleague opens a download link for a file in cloud storage and gets
+""Request has expired"" or access denied, although the link worked earlier.
+
+## Cause
+The link was a pre-signed URL. It works only for the lifetime set when it was created,
+and never longer than the credentials used to sign it. Links signed with temporary role
+credentials stop working when that session ends.
+
+## Resolution steps
+1. Confirm the link contains signature parameters (it is a pre-signed URL, not a public
+   object).
+2. Ask the file owner to generate a new link with an appropriate expiry.
+3. For links that must last days, the owner should sign with credentials that remain
+   valid for that long; the maximum lifetime is seven days.
+4. For recurring sharing with a partner, recommend a proper partner-access setup instead
+   of repeated links.
+
+## Warnings
+Do not make the object or bucket public to replace an expired link.",A,,,,
+4,dbf53bb3-1443-412d-bab4-b1788efd151a,"SAP system acting weird
+
+We are experiencing issues with the SAP system today, it's not functioning as expected. Can you please investigate and provide an update? Thank you for your assistance.","1. Check if your machine is connected to the company's VPN. If not, connect to the VPN. [1]
+2. Try logging in again. If the issue persists, check if other colleagues can log in to the same system. [1, 2]
+3. Verify your SAP system entry in SAP Logon. Ensure the application server, instance number, and system ID are correct. [1, 2]
+4. Test if the dispatcher port is reachable. SAP GUI connects to port 32 followed by the instance number (e.g., 3200 for instance 00). [1, 2]
+5. If the issue is specific to your machine and the entry is correct, reinstall or update SAP GUI from the software centre. [1, 2]","[1] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Symptom
+SAP GUI hangs on ""Connecting"" after the user selects a system in SAP Logon and then
+fails with a connection or timeout error before the logon screen appears.
+
+## Cause
+The user's machine cannot reach the application server: no VPN when working remotely, a
+wrong or outdated system entry in SAP Logon, or the server itself is down.
+---
+[2] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Resolution steps
+1. If the user works remotely, confirm the VPN is connected; see the Networking VPN
+   articles if it is not.
+2. Ask whether colleagues can connect to the same system. If several users are affected,
+   the server is probably down: escalate to Basis at once.
+3. Check the system entry in SAP Logon: application server, instance number and system
+   ID must match the values published by Basis. Entries can change after a system refresh.
+4. Test that the dispatcher port is reachable. SAP GUI connects to port 32 followed by
+   the instance number (3200 for instance 00).
+5. If only this user is affected and the entry is correct, reinstall or update SAP GUI
+   from the software centre.
+
+## Warnings
+Do not change the central SAP Logon landscape file for one user; it is managed by Basis.
+---
+[3] Forgotten SAP password
+Forgotten SAP password (User access and authorisations)
+## Symptom
+The user has forgotten their SAP password but the account is not locked yet, or they
+are asked for a password they never set (first logon to a new system).
+
+## Cause
+SAP passwords are separate from the Windows domain password on systems without single
+sign-on. Users who rarely log on to a system (for example the quality system) forget them.
+
+## Resolution steps
+1. Check whether the system offers single sign-on. If it does, the user should log on
+   from SAP Logon without a password while on the company network or VPN.
+2. If not, ask the user to use the self-service password reset in the SAP portal with
+   their employee ID. This works only if their profile has a verified mobile number.
+3. If self-service is not possible, verify their identity as for an unlock request and
+   set a new initial password in SU01 (Change Password).
+4. Remind the user that each SAP system (development, quality, production) has its own
+   password.
+---
+[4] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Warnings
+The helpdesk never assigns SAP roles itself and never grants SAP_ALL or similar broad
+profiles as a workaround.
+---
+[5] Printed SAP document never arrives at the printer
+Printed SAP document never arrives at the printer (GUI, dumps and printing)
+## Symptom
+A user printed an invoice, purchase order or delivery note from SAP but nothing came out
+of the printer.
+
+## Cause
+SAP creates a spool request and passes it to the output device. The request can fail
+(wrong output device), wait for a printer that is offline, or never be created because
+no output was triggered for the document.
+
+## Resolution steps
+1. Open SP01 and search for spool requests by the user's ID and the time of printing.
+2. If a request exists with an error status, open its log. The most common cause is an
+   output device that points to the wrong or a retired printer.
+3. If the request is fine, reprint it from SP01 to the correct output device.
+4. If no spool request exists, the print was never triggered from SAP. Check the
+   document's output messages; an output type may be missing.
+5. If the printer is offline or out of paper, hand over to desktop support.",M,,,,
+5,c4d64f4d-f090-40a8-adca-199874af25af,"Application connection issues
+
+I'm having trouble connecting our new CRM app to the server. The connection just times out without any error messages. I've checked our internal wiki, but it doesn't have this app's details. I'm not sure if the firewall is blocking it or if it's something else. Do we have a specific rule for this type of application? It's affecting our team's ability to work with customer data. Is there a specific time by which this needs to be resolved for our daily operations to continue smoothly?","1. Collect the source IP or subnet, destination IP or host, port numbers, and protocol (TCP or UDP) for the CRM app. [1]
+2. Raise a firewall change request through the change process, as a new rule is needed for this application. [1]
+3. Test the connection with `Test-NetConnection <host> -Port <port>` once the rule is in place. [1]","[1] Firewall rule needed for an application
+Firewall rule needed for an application (Firewall and proxy)
+## Symptom
+A new application or integration cannot connect to a server or external service; the
+connection times out because the firewall blocks it.
+
+## Cause
+The firewall denies traffic that no rule allows. A new connection needs a rule scoped to
+the exact source, destination, port and protocol.
+
+## Resolution steps
+1. Collect source IP or subnet, destination IP or host, port numbers, protocol (TCP or
+   UDP) and the business reason.
+2. Raise a firewall change request through the change process; rules are never added ad
+   hoc, even for urgent requests.
+3. When the rule is in place, test with the requester, for example with
+   `Test-NetConnection <host> -Port <port>` or the application's own connection test.
+4. For temporary rules (a migration), record an end date so the rule is removed.
+
+## Warnings
+Never request or approve an any-to-any rule, even temporarily.
+---
+[2] VPN client not connecting
+VPN client not connecting (VPN connectivity)
+## Symptom
+The VPN client hangs at ""Connecting..."", or fails at once with an authentication or
+timeout error. Internet access without the VPN works.
+
+## Cause
+Usually one of: the local network blocks the VPN (hotel, airport or public Wi-Fi), the
+user's domain account is locked or its password expired, the VPN adapter was disabled by
+an update, or the VPN gateway itself is down.
+---
+[3] Application cannot send email from the office network
+Application cannot send email from the office network (Firewall and proxy)
+## Symptom
+A script, scanner or application that sends email directly fails to connect to the mail
+server on port 25, while the same email account works in Outlook.
+
+## Cause
+Outbound SMTP on port 25 is blocked for all devices except the company mail relay, to
+stop infected machines from sending spam.
+
+## Resolution steps
+1. Confirm what is sending the email: a device (scanner, printer) or an application.
+2. Configure it to send through the internal mail relay, whose address is on the
+   intranet, instead of an outside mail server.
+3. If the relay needs to accept a new device, raise a request with the device's IP and
+   the sender address it will use.
+
+## Warnings
+Do not request a firewall exception for port 25 to the internet.
+---
+[4] VPN client not connecting
+VPN client not connecting (VPN connectivity)
+## Resolution steps
+1. Confirm the internet works without the VPN by loading any public website.
+2. Ask whether colleagues can connect. If several users fail at the same time, check the
+   gateway status and escalate to network engineering instead of fixing clients one by one.
+3. If the error mentions authentication, check whether the domain account is locked or
+   the password has expired, and fix that first.
+4. If the client hangs at ""Connecting"" with no login prompt, ask the user to retry from a
+   mobile hotspot. If that works, the original network blocks the VPN.
+5. If the VPN network adapter shows as disabled after a Windows update, restart the
+   machine, then reinstall the VPN client from the software centre if it is still missing.
+
+## Warnings
+Do not ask the user to turn off the Windows firewall or antivirus to test the VPN.
+---
+[5] Server name points to the old address after a move
+Server name points to the old address after a move (DHCP and DNS)
+## Symptom
+After a server or application was moved, some users still reach the old system or get
+timeouts, while others reach the new one without problems.
+
+## Cause
+Clients cache DNS answers for the record's time-to-live (TTL). Until the cached entry
+expires, a client keeps using the old IP address. Local hosts-file entries cause the same
+effect permanently.
+
+## Resolution steps
+1. Run `nslookup <name>` on the user's machine and compare the answer with the new address.
+2. If the answer is old, run `ipconfig /flushdns` and test again.
+3. Check the hosts file (`C:\Windows\System32\drivers\etc\hosts`) for an entry for that
+   name and remove it.
+4. If the DNS server itself still answers with the old address, escalate to the team that
+   owns the DNS record.
+
+## Warnings
+Do not edit DNS records yourself; ask the record owner.",M,,,,
+6,11ef1e49-cb0c-4f45-9e20-85c966bd6831,"Office Wi-Fi keeps dropping
+
+Can't stay online during meetings! Laptop disconnects every 5 minutes. Even idle connections drop suddenly. Tried restarting, no change. Blocking work, urgent fix needed.","1. Check if colleagues in the same area are affected. If yes, inform your manager and note the location. [1]
+2. Record the network name and the access point your laptop was last connected to. [1]
+3. Forget the network and reconnect to clear any stale saved profiles. [1]
+4. Go to the software centre and update your wireless driver. [1]
+5. Set your adapter's power management settings to prevent Windows from turning it off to save power. [1]","[1] Office Wi-Fi keeps dropping
+Office Wi-Fi keeps dropping (Wireless access)
+## Symptom
+A laptop repeatedly disconnects from the office Wi-Fi, especially after being idle or
+when the user moves between meeting rooms.
+
+## Cause
+Most often the adapter's power saving turns the radio down when idle, or the laptop holds
+on to a distant access point. When many users in one area drop at once, an access point
+or the wireless controller is at fault.
+
+## Resolution steps
+1. Ask whether colleagues in the same area are affected. If yes, record the location and
+   escalate it as an access point problem.
+2. Note the network name and the access point the laptop was last connected to, from the
+   connection details.
+3. Forget the network and reconnect to clear a stale saved profile.
+4. Set the adapter's power management so Windows cannot turn it off to save power, and
+   update the wireless driver from the software centre.
+
+## Warnings
+Do not tell users to connect to the guest network instead; it has no access to internal
+systems.
+---
+[2] Video calls freeze or lag
+Video calls freeze or lag (Call quality and file shares)
+## Symptom
+Video and audio calls freeze, drop or lag, while web browsing seems normal.
+
+## Cause
+Calls need low latency more than bandwidth. Weak Wi-Fi, large uploads on the same
+connection, or VPN routing for a call that does not need it are the usual causes. If a
+whole office is affected, the internet link is saturated.
+
+## Resolution steps
+1. Ask whether it happens on a cable too. If only on Wi-Fi, treat it as a Wi-Fi signal
+   problem (move closer to an access point, or use a cable).
+2. Check for large uploads or backups running at the same time.
+3. If the user is on VPN for a call with outside participants, they can disconnect the VPN
+   for the call.
+4. Ask the user to run the call app's network test during a bad call and send the result.
+5. If many users at one office are affected, escalate as a link-capacity problem.
+
+## Warnings
+Do not ask users to stop company backups to free bandwidth.
+---
+[3] Corporate Wi-Fi rejects login after a password change
+Corporate Wi-Fi rejects login after a password change (Wireless access)
+## Symptom
+Right after changing their domain password, the user's laptop or phone cannot join the
+corporate Wi-Fi: it keeps asking for credentials or says it cannot connect to the network.
+
+## Cause
+The corporate Wi-Fi authenticates with the domain account. Devices that saved the old
+password keep sending it, fail, and can even lock the account after repeated attempts.
+
+## Resolution steps
+1. Check whether the account is now locked; if so, unlock it first.
+2. On each device that uses the corporate Wi-Fi (laptop, phone, tablet), forget the
+   network.
+3. Reconnect and enter the new password.
+4. If a phone keeps locking the account, turn its Wi-Fi off until it has been updated.
+
+## Warnings
+Do not move the user to the guest network as a fix; they lose access to internal systems.
+---
+[4] Laptop cannot see the corporate Wi-Fi network
+Laptop cannot see the corporate Wi-Fi network (Wireless access)
+## Symptom
+Other people in the room are connected, but the corporate network name does not appear
+in the user's list of available Wi-Fi networks.
+
+## Cause
+The corporate network runs only on the 5 GHz band. An outdated driver, an adapter set to
+2.4 GHz only, or airplane mode or a hardware Wi-Fi switch hides it.
+
+## Resolution steps
+1. Check that airplane mode is off and the Wi-Fi toggle (or keyboard key) is on.
+2. Ask whether other 5 GHz networks are visible. If only 2.4 GHz networks show, check the
+   adapter's band setting and set it to auto or 5 GHz preferred.
+3. Update the wireless driver from the software centre and restart.
+4. If it is still missing, the adapter may be faulty: raise a hardware ticket.
+
+## Warnings
+Do not share a phone hotspot with corporate devices as a long-term workaround.
+---
+[5] File copies are very slow over VPN
+File copies are very slow over VPN (Call quality and file shares)
+## Symptom
+Opening or copying large files from a file share takes minutes over VPN, while it is fast
+in the office.
+
+## Cause
+File shares are designed for low-latency office networks. Over the VPN each file
+operation makes many round trips, so latency, not bandwidth, limits speed. Home Wi-Fi
+adds more latency.
+
+## Resolution steps
+1. Check the user's home connection with a speed test, and ask them to use a cable or sit
+   closer to the router.
+2. For documents, recommend the company's synchronised cloud storage, which is designed
+   for remote work.
+3. For large files used often, copy them once and work locally, then copy back.
+4. If speed is poor for all remote users at once, escalate as a VPN gateway capacity issue.
+
+## Warnings
+Do not tell users to email large files to themselves.",M,,,,
+7,eb8e80d0-30ac-4bd0-b14f-54b4f571e451,"IP conflict warning
+
+Windows says IP conflict, network acting up. Tried restarting, no joy. Printer and test machine share same address. How long until fix? How long until the issue is resolved and the network stabilizes fully?","1. Run `ipconfig /release` and `ipconfig /renew` on your laptop to get a new IP address. [1]
+2. Check the message or event log for the conflicting IP address. [1]
+3. Report the conflicting IP address to network engineering so they can resolve it. [1]
+4. The issue should be resolved within 24 hours. Network stability will fully recover once the conflict is resolved. [1]","[1] Windows reports an IP address conflict
+Windows reports an IP address conflict (DHCP and DNS)
+## Symptom
+Windows shows ""Windows has detected an IP address conflict"" and the connection becomes
+unreliable or drops.
+
+## Cause
+Two devices are using the same IP address, almost always because one of them (a printer,
+a test machine) was given a static address inside the DHCP range.
+
+## Resolution steps
+1. Run `ipconfig /release` and `ipconfig /renew` on the user's laptop to get a new
+   address; this usually restores the connection at once.
+2. Note the conflicting address from the message or the event log.
+3. Report the address to network engineering so they can find the device with the static
+   address and either reserve it or move it outside the DHCP range.
+
+## Warnings
+Do not set a static address on the laptop to escape the conflict; it only moves the
+problem.
+---
+[2] Server name points to the old address after a move
+Server name points to the old address after a move (DHCP and DNS)
+## Symptom
+After a server or application was moved, some users still reach the old system or get
+timeouts, while others reach the new one without problems.
+
+## Cause
+Clients cache DNS answers for the record's time-to-live (TTL). Until the cached entry
+expires, a client keeps using the old IP address. Local hosts-file entries cause the same
+effect permanently.
+
+## Resolution steps
+1. Run `nslookup <name>` on the user's machine and compare the answer with the new address.
+2. If the answer is old, run `ipconfig /flushdns` and test again.
+3. Check the hosts file (`C:\Windows\System32\drivers\etc\hosts`) for an entry for that
+   name and remove it.
+4. If the DNS server itself still answers with the old address, escalate to the team that
+   owns the DNS record.
+
+## Warnings
+Do not edit DNS records yourself; ask the record owner.
+---
+[3] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.
+---
+[4] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.
+---
+[5] Application cannot send email from the office network
+Application cannot send email from the office network (Firewall and proxy)
+## Symptom
+A script, scanner or application that sends email directly fails to connect to the mail
+server on port 25, while the same email account works in Outlook.
+
+## Cause
+Outbound SMTP on port 25 is blocked for all devices except the company mail relay, to
+stop infected machines from sending spam.
+
+## Resolution steps
+1. Confirm what is sending the email: a device (scanner, printer) or an application.
+2. Configure it to send through the internal mail relay, whose address is on the
+   intranet, instead of an outside mail server.
+3. If the relay needs to accept a new device, raise a request with the device's IP and
+   the sender address it will use.
+
+## Warnings
+Do not request a firewall exception for port 25 to the internet.",W,,,,
+8,5d48bdaf-cc8a-40b1-b709-4fa6561e1402,"Bucket object retention time
+
+Not sure how long files stay in the bucket before they move or delete. Also, slow internet speed makes video calls lag sometimes.","1. Check the bucket's lifecycle rules to see how long files are kept before they are moved or deleted. [1]
+2. Understand that changes to retention policies only apply to new files, not existing ones. [1]
+3. For video call issues, check your internet speed and connection stability. [1]","[1] How long files are kept in a bucket
+How long files are kept in a bucket (Object storage)
+## Symptom
+A user asks how long objects in a bucket are kept, why old files moved to archive or
+disappeared, or wants the retention changed.
+
+## Cause
+Lifecycle rules on the bucket move objects to cheaper storage classes or delete them
+after a set number of days.
+
+## Resolution steps
+1. Check the bucket's lifecycle rules for transition and expiration settings.
+2. Explain the current rule to the user in plain terms (for example ""archived after 90
+   days, deleted after 3 years"").
+3. For a change, confirm with the data owner, and with compliance if the bucket holds
+   business records.
+4. Note that rule changes apply going forward: objects already deleted under the old rule
+   are not restored.
+
+## Warnings
+Never shorten retention on a bucket under legal or compliance hold.
+---
+[2] Shared download link to a bucket file has expired
+Shared download link to a bucket file has expired (Object storage)
+## Symptom
+A partner or colleague opens a download link for a file in cloud storage and gets
+""Request has expired"" or access denied, although the link worked earlier.
+
+## Cause
+The link was a pre-signed URL. It works only for the lifetime set when it was created,
+and never longer than the credentials used to sign it. Links signed with temporary role
+credentials stop working when that session ends.
+
+## Resolution steps
+1. Confirm the link contains signature parameters (it is a pre-signed URL, not a public
+   object).
+2. Ask the file owner to generate a new link with an appropriate expiry.
+3. For links that must last days, the owner should sign with credentials that remain
+   valid for that long; the maximum lifetime is seven days.
+4. For recurring sharing with a partner, recommend a proper partner-access setup instead
+   of repeated links.
+
+## Warnings
+Do not make the object or bucket public to replace an expired link.
+---
+[3] Access denied on an object storage bucket
+Access denied on an object storage bucket (Object storage)
+## Symptom
+An application or user gets ""Access Denied"" when reading or writing objects in a storage
+bucket they expect to use.
+
+## Cause
+""Access Denied"" is deliberately generic. The block can come from the caller's identity
+policy, the bucket policy (for example a condition on network or VPC endpoint), or an
+explicit deny anywhere, which always overrides any allow.
+
+## Resolution steps
+1. Get the exact bucket, object key or prefix, and the action that failed (read, write or
+   list).
+2. Check the caller's policies for an explicit deny on that action.
+3. Check the bucket policy for conditions that block the caller, such as a required VPC
+   endpoint or source IP.
+4. If the caller lacks list permission, a missing object can look like access denied. Do
+   not assume the object is gone until access is confirmed.
+5. Request the missing permission through the normal access process.
+
+## Warnings
+Never make a bucket public to fix an access-denied error.
+---
+[4] Writes fail because a storage quota is reached
+Writes fail because a storage quota is reached (Object storage)
+## Symptom
+An application or backup job fails with a quota or limit error, or writes start failing
+while reads still work.
+
+## Cause
+A limit was reached: an account-level service quota, a size limit on a volume or file
+share, or a budget control that stops further spending.
+
+## Resolution steps
+1. Read the error to identify which limit was hit.
+2. Check whether old data can be archived or deleted under the retention policy before
+   asking for more space.
+3. Request a service quota increase through the cloud provider's process. It is not
+   instant, so state clearly if production is blocked.
+4. If usage grows steadily, raise a capacity-planning review instead of repeated small
+   increases.
+
+## Warnings
+Do not request the largest possible quota ""to be safe""; it hides runaway growth.
+---
+[5] Cloud access key exposed or committed to a repository
+Cloud access key exposed or committed to a repository (Identity, SSO and permissions)
+## Warnings
+Deleting the commit is not enough: a pushed key must be treated as compromised and
+deactivated.",M,,,,
+9,83ba07ba-31af-440d-81f9-3cbbcd7eb528,"Leave types and entitlements
+
+Need to knoow about different types of leave and days allowed. Country and job type affect leave days.","1. Explain the categories of leave: annual leave (accrued monthly), sick leave (from the first day of employment), casual leave (short-notice personal leave, limited days per year), and separate policies for bereavement, parental and jury duty leave. [1]
+2. Point the employee to the leave policy page for their own country in the HR portal for exact days allowed. [1]
+3. Inform the employee that unused annual leave carries over to the next year only up to the cap on that page. [1]
+4. Tell the employee their current balance is shown on the Leave page of the HR portal. [1]","[1] Leave types and entitlement
+Leave types and entitlement (Leave and holidays)
+## Symptom
+An employee asks what kinds of leave exist and how many days they are entitled to.
+
+## Cause
+Entitlements depend on the employee's country and employment type, so a single number
+cannot be given; the categories are the same everywhere.
+
+## Resolution steps
+1. Explain the categories: annual leave (accrued monthly), sick leave (from the first day
+   of employment), casual leave (short-notice personal leave, limited days per year), and
+   separate policies for bereavement, parental and jury duty leave.
+2. Point the employee to the leave policy page for their own country in the HR portal for
+   exact days.
+3. Unused annual leave carries over to the next year only up to the cap on that page.
+4. Tell the employee their current balance is shown on the Leave page of the HR portal.
+
+## Warnings
+Do not quote day counts from another country's policy.
+---
+[2] Applying for parental leave
+Applying for parental leave (Leave and holidays)
+## Symptom
+An employee who is expecting or adopting a child asks how to arrange parental leave.
+
+## Cause
+Parental leave has its own policy with notice and documentation requirements, separate
+from annual leave.
+
+## Resolution steps
+1. Ask the employee to notify their manager and HR at least eight weeks before the planned
+   start date.
+2. They submit the parental leave request in the HR portal under Leave, choosing the
+   parental leave type.
+3. They upload the supporting document (medical certificate of expected due date, or
+   adoption placement document).
+4. HR confirms the entitlement for their country and the return date in writing.
+
+## Warnings
+Do not ask for medical details beyond the expected due date.
+---
+[3] How to apply for leave
+How to apply for leave (Leave and holidays)
+## Symptom
+An employee asks how to request time off, or whether a request they sent was received.
+
+## Cause
+Leave is requested and approved only through the HR portal; emails or chat messages to a
+manager do not create a leave record.
+
+## Resolution steps
+1. Submit the request in the HR portal under Leave, choosing the leave type and dates.
+2. The request goes automatically to the direct manager for approval.
+3. Request planned leave at least two weeks ahead where possible.
+4. Sick leave can be recorded afterwards, but within three working days of returning.
+5. If the manager has not responded within five working days, follow up with them
+   directly; silence is not approval.
+
+## Warnings
+Leave agreed only by email or chat is not recorded and may be counted as unpaid absence.
+---
+[4] Final settlement after leaving
+Final settlement after leaving (Onboarding and exit)
+## Symptom
+A former employee asks when they will receive their final pay, or why it has not arrived.
+
+## Cause
+Final settlement is paid after exit clearance is complete: equipment returned and sign-off
+from the manager and IT. It includes salary up to the last day and payment for unused
+annual leave where the country's policy allows it.
+
+## Resolution steps
+1. Check whether exit clearance is complete in the HR portal.
+2. If equipment has not been returned, give the employee the return instructions.
+3. Once clearance is complete, final settlement is paid in the next payroll run.
+4. The final payslip and tax documents appear in the leaver's portal access, which stays
+   open for 90 days after the last day.
+
+## Warnings
+Do not disclose a leaver's settlement details to their former manager.
+---
+[5] Is a date a company holiday?
+Is a date a company holiday? (Leave and holidays)
+## Symptom
+An employee asks whether a specific date is a company holiday, or why their calendar
+differs from a colleague's in another office.
+
+## Cause
+Each country or regional office has its own holiday calendar, published every year in
+the HR portal.
+
+## Resolution steps
+1. Open the current year's holiday calendar for the employee's office in the HR portal.
+2. Check the date there; never answer from memory or an older year's calendar.
+3. Explain that colleagues in other offices follow their own calendars.
+4. Floating holidays, where offered, are booked like annual leave through the leave
+   request.
+
+## Warnings
+Last year's calendar is not valid for this year; dates move.",A,,,,
+10,333127fb-72d5-4d29-9d29-8bc83df580b4,"Employment verification needed
+
+Employee needs a verification letter for bank loan. Can I get this via HR portal or do I ned HR to sign? No rush, just need it for the loan application.","1. Go to the HR portal and request an employment verification letter under Documents. [1]
+2. Select the purpose as 'bank loan' when prompted. [1]
+3. The standard letter will be generated immediately. [1]
+4. No further action is required from HR for this request. [1]","[1] Employment verification letter
+Employment verification letter (Onboarding and exit)
+## Symptom
+An employee needs a letter confirming their employment, for example for a bank loan,
+rental agreement or visa.
+
+## Cause
+Employment letters are generated through the HR portal; HR signs them only when a
+non-standard format is required.
+
+## Resolution steps
+1. The employee requests the letter in the HR portal under Documents, choosing the
+   purpose.
+2. The standard letter (job title, start date and employment status) is generated at once.
+3. Salary is included only if the employee ticks the option to include it.
+4. For a format required by an embassy or bank, the employee uploads the template and HR
+   completes it within five working days.
+
+## Warnings
+HR never confirms employment details to a caller without the employee's written consent.
+---
+[2] Changing bank account for salary
+Changing bank account for salary (Payroll and timesheets)
+## Symptom
+An employee has a new bank account and asks how to have their salary paid into it.
+
+## Cause
+Bank details are changed only by the employee in the HR portal, with verification, to
+prevent payroll fraud.
+
+## Resolution steps
+1. The employee updates the bank details in the HR portal under Personal details, Bank.
+2. They confirm the change with the one-time code sent to their registered phone.
+3. Changes made before the 15th of the month apply to that month's salary; later changes
+   apply from the next month.
+4. Keep the old account open until the first salary arrives in the new one.
+
+## Warnings
+Never change bank details because of an email or call, even from someone claiming to be
+the employee or a manager. This is a common fraud pattern.
+---
+[3] How to apply for leave
+How to apply for leave (Leave and holidays)
+## Symptom
+An employee asks how to request time off, or whether a request they sent was received.
+
+## Cause
+Leave is requested and approved only through the HR portal; emails or chat messages to a
+manager do not create a leave record.
+
+## Resolution steps
+1. Submit the request in the HR portal under Leave, choosing the leave type and dates.
+2. The request goes automatically to the direct manager for approval.
+3. Request planned leave at least two weeks ahead where possible.
+4. Sick leave can be recorded afterwards, but within three working days of returning.
+5. If the manager has not responded within five working days, follow up with them
+   directly; silence is not approval.
+
+## Warnings
+Leave agreed only by email or chat is not recorded and may be counted as unpaid absence.
+---
+[4] Health insurance claim status
+Health insurance claim status (Benefits and insurance)
+## Symptom
+An employee asks how to file a health insurance claim, or why one is still not paid.
+
+## Cause
+Claims are processed by the insurance carrier, not by HR. In-network providers file
+claims themselves; other claims are submitted by the employee in the carrier's portal.
+
+## Resolution steps
+1. Ask whether the provider was in-network. If yes, the provider files the claim.
+2. For other claims, the employee submits through the carrier's portal with an itemised
+   bill and proof of payment.
+3. For status, the employee checks the carrier's portal using the claim number.
+4. If a claim is beyond the carrier's stated turnaround time, HR escalates it through the
+   carrier's employer support line, quoting the claim number only.
+
+## Warnings
+Never ask for or record medical details in a ticket; use the claim number only.
+---
+[5] Applying for an internal job
+Applying for an internal job (Workplace policy and reviews)
+## Symptom
+An employee wants to apply for an open role in another team and asks whether they must
+tell their manager.
+
+## Cause
+Internal moves follow the internal mobility policy: employees can apply after twelve
+months in their current role, and the current manager is informed when the employee is
+shortlisted.
+
+## Resolution steps
+1. Check the employee has completed twelve months in their current role.
+2. The employee applies through the internal jobs page in the HR portal.
+3. The current manager is informed by HR only when the employee is shortlisted.
+4. If selected, the transfer date is agreed between both managers, normally within four
+   weeks.
+
+## Warnings
+Do not tell the current manager about an application before shortlisting.",M,,,,
+11,5b9122d9-c4eb-409f-acb3-fa4f8b7018a4,"New app needs domain setup
+
+Our new service is up but can't be accessed via the company domain. We need a DNS record for it and an HTTPS certificate. When can we get this done? Is there a specific name we should use for the domain? We need this soon for training sessions. Is there a specific name we should use for the domain?","1. Provide the desired domain name for the new service. [1]
+2. The platform team will create an alias DNS record pointing the domain at the load balancer. [1]
+3. Request a TLS certificate for the domain from the platform team. [1]
+4. The platform team will add the certificate to the load balancer's HTTPS listener. [1]
+5. Test the new domain name to ensure the service is accessible via HTTPS. [1]","[1] New service needs a company domain name
+New service needs a company domain name (Load balancers and certificates)
+## Symptom
+A team has a new application running behind a load balancer and wants it reachable under
+a company domain name with HTTPS.
+
+## Cause
+The name needs a DNS record pointing at the load balancer and a certificate for that
+name, both managed by the platform team.
+
+## Resolution steps
+1. Get the desired name, the load balancer, the environment and the owning team.
+2. Request a certificate for the name; it is validated through a DNS record.
+3. Ask the platform team to create an alias record that points the name at the load
+   balancer.
+4. Add the certificate to the load balancer's HTTPS listener and test the site with the
+   new name.
+
+## Warnings
+Do not point records at a load balancer's IP addresses; they change. Use an alias record.
+---
+[2] TLS certificate about to expire
+TLS certificate about to expire (Load balancers and certificates)
+## Symptom
+Monitoring warns that the TLS certificate of a website or API expires soon, or users
+already see a certificate warning in the browser.
+
+## Cause
+Managed certificates renew automatically only if domain validation still works; a changed
+or deleted DNS validation record stops renewal. Manually issued certificates must be
+renewed and installed by hand on every endpoint that uses them.
+
+## Resolution steps
+1. Identify the certificate, its domain and every endpoint that uses it.
+2. For a managed certificate, check its renewal status and that the DNS validation record
+   still exists.
+3. For a manual certificate, request a new one well before expiry and install it on all
+   endpoints and load balancers.
+4. Check the certificate actually served by each endpoint and its new expiry date.
+
+## Warnings
+A certificate that has already expired on a production site is a priority-1 incident; do
+not wait for the normal change window.
+---
+[3] Request for additional cloud permissions
+Request for additional cloud permissions (Identity, SSO and permissions)
+## Symptom
+A user or a service account gets ""not authorized to perform"" errors for a cloud action
+and asks for more permissions.
+
+## Cause
+The identity's roles do not include the action on that resource. New projects and new
+services often need permissions nobody requested yet.
+
+## Resolution steps
+1. Get the exact error: it names the action (for example `s3:PutObject`) and the resource.
+2. Ask for the business reason, and for service accounts, the owning team.
+3. Request the narrowest permission: the specific actions on the specific resources, not a
+   broad managed policy such as full admin for the service.
+4. Permissions are granted through group or role membership, never by attaching a policy
+   to an individual user.
+5. For project or temporary access, record a review or expiry date in the ticket.
+
+## Warnings
+Push back on ""just give full access to be safe"". Broad standing permissions are the most
+common cause of cloud security incidents.
+---
+[4] Shared download link to a bucket file has expired
+Shared download link to a bucket file has expired (Object storage)
+## Symptom
+A partner or colleague opens a download link for a file in cloud storage and gets
+""Request has expired"" or access denied, although the link worked earlier.
+
+## Cause
+The link was a pre-signed URL. It works only for the lifetime set when it was created,
+and never longer than the credentials used to sign it. Links signed with temporary role
+credentials stop working when that session ends.
+
+## Resolution steps
+1. Confirm the link contains signature parameters (it is a pre-signed URL, not a public
+   object).
+2. Ask the file owner to generate a new link with an appropriate expiry.
+3. For links that must last days, the owner should sign with credentials that remain
+   valid for that long; the maximum lifetime is seven days.
+4. For recurring sharing with a partner, recommend a proper partner-access setup instead
+   of repeated links.
+
+## Warnings
+Do not make the object or bucket public to replace an expired link.
+---
+[5] Cloud access key exposed or committed to a repository
+Cloud access key exposed or committed to a repository (Identity, SSO and permissions)
+## Symptom
+A developer reports that a cloud access key was pushed to a code repository, pasted in a
+chat, or shared in a ticket, or the security team receives an alert that a key appeared
+in a public place.
+
+## Cause
+Long-lived access keys were stored in code or configuration. Anyone who sees the key can
+act with its permissions until it is disabled.
+
+## Resolution steps
+1. Treat it as a security incident at once and notify the security team.
+2. Deactivate the exposed key immediately in the identity console. Do not wait for the
+   developer to finish their work.
+3. Create a new key for the owner only if the workload still needs one, and prefer a role
+   with temporary credentials instead.
+4. Remove the key from the repository history, not just the latest commit. Rotating the
+   key matters more than cleaning the history.
+5. Ask the security team to review the account's activity logs for use of the old key.",M,,,,
+12,2b648b51-9fd3-4a68-a48c-b12ba7e53287,"New managed database request
+
+Our team needs a new managed database for the new application. It would be great if it's a PostgreSQL setup with standard policies applied. Thanks for your assistance with this.","1. Please provide the details of the new application, including the expected number of users and the required storage capacity. [1, 2, 3, 4, 5]
+2. Submit a change request with the application details and the business justification. [1, 2, 3, 4, 5]
+3. We will apply standard policies to the new database setup. [1, 2, 3, 4, 5]","[1] Connection rejected with no pg_hba.conf entry
+Connection rejected with no pg_hba.conf entry (Connections and pools)
+## Symptom
+A new application server or a developer gets ""no pg_hba.conf entry for host"" when
+connecting to a PostgreSQL database.
+
+## Cause
+PostgreSQL only accepts connections that match a rule in `pg_hba.conf`, which lists the
+allowed host addresses, databases, users and whether SSL is required. A new host, or a
+client without SSL where SSL is required, matches no rule.
+
+## Resolution steps
+1. Read the full error: it names the client address, user, database and whether SSL was used.
+2. If the client connected without SSL, set the client to require SSL and retry.
+3. If the host is new, raise a change request to add it, with the address, user, database
+   and business reason.
+4. The DBA team adds the rule and reloads the configuration.
+
+## Warnings
+Never request a rule that allows all addresses or ""trust"" authentication.
+---
+[2] Request for access to a database
+Request for access to a database (Access requests and schema changes)
+## Symptom
+A developer or a service asks for read or write access to a database, schema or table.
+
+## Cause
+Access is granted per role. A new project or service often needs access that nobody has
+requested yet.
+
+## Resolution steps
+1. Confirm the exact scope (table, schema or database) and whether read-only or read-write.
+2. Get the manager's approval and the business reason.
+3. Grant the narrowest existing role that fits, for example the schema's read-only role.
+   For a service, create a dedicated role for that service.
+4. Record who, what, why and when in the ticket, and an end date for temporary access.
+
+## Warnings
+Never add a person to the database owner or superuser role to grant access.
+---
+[3] Backup before a change or restore after data loss
+Backup before a change or restore after data loss (Disk space and backups)
+## Symptom
+A team asks for a backup before a risky change, or for a restore after data was lost (a
+bad migration, or an `UPDATE` or `DELETE` without a `WHERE` clause).
+
+## Cause
+Scheduled backups and continuous WAL archiving allow point-in-time recovery to any moment
+inside the retention window.
+
+## Resolution steps
+1. For a pre-change backup, take an on-demand backup and give the requester the backup ID
+   and time before they start.
+2. For a restore, get the exact time the bad change happened from logs or the requester.
+3. Restore to a new database or instance at a point just before that time.
+4. Let the requester verify the data, then copy the needed rows back or plan a cut-over
+   window with them.
+
+## Warnings
+Never restore over the live database before the restored copy is verified.
+---
+[4] Request to run a data fix in production
+Request to run a data fix in production (Access requests and schema changes)
+## Symptom
+A team asks the DBA team to run an `UPDATE` or `DELETE` script in production to correct
+bad data.
+
+## Cause
+Application bugs or bad imports leave wrong data that the application cannot correct
+itself.
+
+## Resolution steps
+1. Require the script, the expected number of affected rows and an approved change request.
+2. Run the script's `WHERE` clause as a `SELECT COUNT(*)` first and compare with the
+   expected number.
+3. Take a backup of the affected rows (or an on-demand backup) before running it.
+4. Run the script in a transaction, check the row count reported, and only then commit.
+
+## Warnings
+Never run a data fix that has no `WHERE` clause or whose row count does not match the
+expected number.
+---
+[5] Application runs out of database connections
+Application runs out of database connections (Connections and pools)
+## Symptom
+Application logs show ""connection pool exhausted"", ""sorry, too many clients already"", or
+requests waiting for a database connection, while the database server is up.
+
+## Cause
+Either the database reached `max_connections`, or the application's pool is full because
+code paths take connections and never return them (a leak), often after an unhandled
+error. Sessions left ""idle in transaction"" also hold connection slots.
+
+## Resolution steps
+1. Compare the number of connections in `pg_stat_activity` with `SHOW max_connections`.
+2. Group the sessions by application and state; many ""idle in transaction"" sessions from
+   one application point to that application.
+3. Check whether the errors started after a deployment; a new code path that does not
+   close its connection is the usual cause.
+4. As a stop-gap, restart the affected application instance to release leaked connections.
+5. Send the findings to the owning team to fix the leak or pool settings.
+
+## Warnings
+Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",W,,,,
+13,12e0d8e0-1f48-4bcd-b0b0-30a63a893479,"Cloud cost spike alert
+
+Cost anomaly alert for project XYZ, $1500+ over last hour. Last week was only $200. Checked recent changes, no new projects. Suspect forgotten test resource or auto-scaling gone wild. Tried scaling down manually, didn't help. Also, desktop freezing issues persist.","1. Check the EC2 instance ID i-01234567890abcdef for any running processes that might be causing high costs. [1]
+2. Verify if auto-scaling policies are configured to scale up unnecessarily, and adjust them if needed. [1]
+3. Review recent logs for any unexpected activity or test resources that might have been forgotten. [1]
+4. Ensure that the security group rules allow necessary inbound traffic to the instance. [3]
+5. Check the data transfer warning for any large outbound data transfers that might be causing the cost spike. [2]
+6. If the issue persists, contact the cloud provider's support for further investigation. [1]","[1] Request for additional cloud permissions
+Request for additional cloud permissions (Identity, SSO and permissions)
+## Symptom
+A user or a service account gets ""not authorized to perform"" errors for a cloud action
+and asks for more permissions.
+
+## Cause
+The identity's roles do not include the action on that resource. New projects and new
+services often need permissions nobody requested yet.
+
+## Resolution steps
+1. Get the exact error: it names the action (for example `s3:PutObject`) and the resource.
+2. Ask for the business reason, and for service accounts, the owning team.
+3. Request the narrowest permission: the specific actions on the specific resources, not a
+   broad managed policy such as full admin for the service.
+4. Permissions are granted through group or role membership, never by attaching a policy
+   to an individual user.
+5. For project or temporary access, record a review or expiry date in the ticket.
+
+## Warnings
+Push back on ""just give full access to be safe"". Broad standing permissions are the most
+common cause of cloud security incidents.
+---
+[2] Cloud access key exposed or committed to a repository
+Cloud access key exposed or committed to a repository (Identity, SSO and permissions)
+## Warnings
+Deleting the commit is not enough: a pushed key must be treated as compromised and
+deactivated.
+---
+[3] Cannot SSH into a cloud virtual machine
+Cannot SSH into a cloud virtual machine (Virtual machines and snapshots)
+## Resolution steps
+1. Check that the instance is running and that both status checks pass. A failed system
+   status check is a host problem: stop and start the instance.
+2. If the connection times out, check that the security group allows inbound port 22 from
+   the user's current IP address.
+3. For machines in a private subnet, connect through the bastion host or the VPN; direct
+   SSH from the internet is not expected to work.
+4. If the connection is refused or authentication fails, confirm the user is using the
+   key pair the instance was launched with and the right user name for the image.
+
+## Warnings
+Never open port 22 to 0.0.0.0/0 (the whole internet) to fix access.
+---
+[4] Writes fail because a storage quota is reached
+Writes fail because a storage quota is reached (Object storage)
+## Symptom
+An application or backup job fails with a quota or limit error, or writes start failing
+while reads still work.
+
+## Cause
+A limit was reached: an account-level service quota, a size limit on a volume or file
+share, or a budget control that stops further spending.
+
+## Resolution steps
+1. Read the error to identify which limit was hit.
+2. Check whether old data can be archived or deleted under the retention policy before
+   asking for more space.
+3. Request a service quota increase through the cloud provider's process. It is not
+   instant, so state clearly if production is blocked.
+4. If usage grows steadily, raise a capacity-planning review instead of repeated small
+   increases.
+
+## Warnings
+Do not request the largest possible quota ""to be safe""; it hides runaway growth.
+---
+[5] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.",W,,,,
+14,6c2bc41c-aff0-4faf-af2c-65759e106d76,"Query failed with timeout
+
+My query keeps timing out and locking up the database. It happens even when I run simple reports. Is there a limit on how long a qery can run? Is there a specific time limit for query execution before it gets canceled due to timeout?","1. Check the query log to see if the timeout was due to a statement or lock timeout. [1]
+2. If it was a statement timeout, analyze the query to see if it can be optimized. [1]
+3. If it was a lock timeout, identify any long-running transactions that might be causing the issue. [1]
+4. Consider increasing the `statement_timeout` for this specific query if it is a legitimate long-running task. [1]","[1] Statement cancelled due to statement or lock timeout
+Statement cancelled due to statement or lock timeout (Locks and deadlocks)
+## Symptom
+A query fails with ""canceling statement due to statement timeout"" or ""canceling statement
+due to lock timeout"".
+
+## Cause
+The database cancels statements that run longer than `statement_timeout`, or wait for a
+lock longer than `lock_timeout`. These limits protect the database from runaway queries
+and long lock queues.
+
+## Resolution steps
+1. Note which message appeared: statement timeout means the query ran too long; lock
+   timeout means it waited too long for another session.
+2. For a statement timeout, get the query and analyse it (see the slow query article).
+3. For a lock timeout, find what held the lock at that time, usually a long transaction
+   or a migration.
+4. If a specific report legitimately needs longer, the owning team can set a higher
+   timeout for that session only.
+
+## Warnings
+Do not raise the timeout for the whole database to make one query pass.
+---
+[2] Application times out connecting to the database
+Application times out connecting to the database (Connections and pools)
+## Symptom
+An application intermittently times out connecting to the database, while connecting
+with a database client from another machine works.
+
+## Cause
+The difference is in the application's environment: the network path from the
+application host, a full connection pool, a connect timeout set too short, or a
+scheduled job that saturates the database at certain times.
+
+## Resolution steps
+1. Check whether the database was at its connection limit when the timeouts happened.
+2. Test the connection from the application host itself; a client working from elsewhere
+   does not prove the application's network path.
+3. Check the application's connect timeout setting; very short values fail under mild load.
+4. If timeouts cluster at the same time of day, look for a backup or batch job then.
+
+## Warnings
+Do not open the database to wider networks to ""test""; test from the application host.
+---
+[3] Nightly database backup failed
+Nightly database backup failed (Disk space and backups)
+## Symptom
+The backup monitoring reports that last night's backup of a database failed or did not run.
+
+## Cause
+Common causes are not enough space in the backup target, an expired credential for the
+backup storage, a backup that overlapped a heavy batch job and timed out, or the
+database being unreachable at the time.
+
+## Resolution steps
+1. Read the backup job's log for the exact error.
+2. Fix the cause: free space or extend the target, renew the storage credential, or move
+   the schedule away from the batch job.
+3. Run an on-demand backup at once, so there is a recent good backup.
+4. Confirm the new backup completed and its size is similar to previous ones.
+
+## Warnings
+A failed backup is not ""fixed"" until a new backup has completed successfully.
+---
+[4] Schema change hangs and blocks the whole table
+Schema change hangs and blocks the whole table (Locks and deadlocks)
+## Symptom
+An `ALTER TABLE` during a deployment hangs, and soon all queries on that table are blocked
+too, causing an application outage.
+
+## Cause
+`ALTER TABLE` needs an exclusive lock. It waits behind any running transaction on the
+table, and every new query then queues behind the waiting `ALTER TABLE`.
+
+## Resolution steps
+1. Cancel the waiting `ALTER TABLE` session to release the queue at once.
+2. Find the long-running transaction it was waiting for.
+3. Rerun the migration in a quiet window with a short `lock_timeout` (for example a few
+   seconds), so it gives up instead of blocking everyone.
+4. Retry the migration if it times out, rather than letting it wait.
+
+## Warnings
+Never run schema changes on busy tables without a lock timeout.
+---
+[5] Database server CPU is very high
+Database server CPU is very high (Query performance and indexes)
+## Symptom
+Monitoring shows the database server's CPU near 100 percent and applications are slow.
+
+## Cause
+A few expensive queries usually cause most of the load: a new query without a suitable
+index, a report run at peak time, or a query whose plan changed after data growth.
+
+## Resolution steps
+1. Look at `pg_stat_activity` for long-running active queries right now.
+2. Check `pg_stat_statements` for the queries with the highest total execution time.
+3. If one report or job causes the spike, ask its owner to stop it or run it off-peak.
+4. Send the top queries and their plans to the owning teams for tuning.
+
+## Warnings
+Do not restart the database to clear CPU load; it drops every connection and the load
+usually returns.",M,,,,
+15,f78b6acd-223e-4a7f-b136-8301331a03bc,"Leave types and entitlements
+
+Could you please explain the different types of leave available? Also, how many days of each leave am I entitled to? I'm not sure about the specifics, so any clarification would be helpful. Thank you for your assistance with this.","1. The different types of leave include annual leave (accrued monthly), sick leave (from the first day of employment), casual leave (short-notice personal leave, limited days per year), and separate policies for bereavement, parental, and jury duty leave. [1]
+2. For exact days of entitlement, refer to the leave policy page for your country in the HR portal. [1]
+3. Unused annual leave carries over to the next year only up to the cap specified on the leave policy page. [1]
+4. Your current leave balance is shown on the Leave page of the HR portal. [1]","[1] Leave types and entitlement
+Leave types and entitlement (Leave and holidays)
+## Symptom
+An employee asks what kinds of leave exist and how many days they are entitled to.
+
+## Cause
+Entitlements depend on the employee's country and employment type, so a single number
+cannot be given; the categories are the same everywhere.
+
+## Resolution steps
+1. Explain the categories: annual leave (accrued monthly), sick leave (from the first day
+   of employment), casual leave (short-notice personal leave, limited days per year), and
+   separate policies for bereavement, parental and jury duty leave.
+2. Point the employee to the leave policy page for their own country in the HR portal for
+   exact days.
+3. Unused annual leave carries over to the next year only up to the cap on that page.
+4. Tell the employee their current balance is shown on the Leave page of the HR portal.
+
+## Warnings
+Do not quote day counts from another country's policy.
+---
+[2] How to apply for leave
+How to apply for leave (Leave and holidays)
+## Symptom
+An employee asks how to request time off, or whether a request they sent was received.
+
+## Cause
+Leave is requested and approved only through the HR portal; emails or chat messages to a
+manager do not create a leave record.
+
+## Resolution steps
+1. Submit the request in the HR portal under Leave, choosing the leave type and dates.
+2. The request goes automatically to the direct manager for approval.
+3. Request planned leave at least two weeks ahead where possible.
+4. Sick leave can be recorded afterwards, but within three working days of returning.
+5. If the manager has not responded within five working days, follow up with them
+   directly; silence is not approval.
+
+## Warnings
+Leave agreed only by email or chat is not recorded and may be counted as unpaid absence.
+---
+[3] Applying for parental leave
+Applying for parental leave (Leave and holidays)
+## Symptom
+An employee who is expecting or adopting a child asks how to arrange parental leave.
+
+## Cause
+Parental leave has its own policy with notice and documentation requirements, separate
+from annual leave.
+
+## Resolution steps
+1. Ask the employee to notify their manager and HR at least eight weeks before the planned
+   start date.
+2. They submit the parental leave request in the HR portal under Leave, choosing the
+   parental leave type.
+3. They upload the supporting document (medical certificate of expected due date, or
+   adoption placement document).
+4. HR confirms the entitlement for their country and the return date in writing.
+
+## Warnings
+Do not ask for medical details beyond the expected due date.
+---
+[4] Final settlement after leaving
+Final settlement after leaving (Onboarding and exit)
+## Symptom
+A former employee asks when they will receive their final pay, or why it has not arrived.
+
+## Cause
+Final settlement is paid after exit clearance is complete: equipment returned and sign-off
+from the manager and IT. It includes salary up to the last day and payment for unused
+annual leave where the country's policy allows it.
+
+## Resolution steps
+1. Check whether exit clearance is complete in the HR portal.
+2. If equipment has not been returned, give the employee the return instructions.
+3. Once clearance is complete, final settlement is paid in the next payroll run.
+4. The final payslip and tax documents appear in the leaver's portal access, which stays
+   open for 90 days after the last day.
+
+## Warnings
+Do not disclose a leaver's settlement details to their former manager.
+---
+[5] Working from home rules and exceptions
+Working from home rules and exceptions (Workplace policy and reviews)
+## Symptom
+An employee asks how many days they must be in the office, or wants an exception to work
+remotely for a period.
+
+## Cause
+Each role is office-based, hybrid or fully remote, as set in the employment terms. Hybrid
+roles have a minimum number of office days per week set by the department.
+
+## Resolution steps
+1. Check the employee's role category in their employment terms.
+2. For hybrid roles, the department's minimum office days apply.
+3. Exceptions (for example temporary full remote for a personal reason) are requested from
+   the manager, who decides with HR informed.
+4. Equipment for home working is requested through the normal equipment request.
+
+## Warnings
+HR clarifies the policy; the manager approves individual exceptions.",A,,,,
+16,2fe42f9d-251b-441a-a37b-76a992f653df,"Network status display needed
+
+Need a large screen to show network health in the break room. Current monitors are too small and hard to read from afar.",(no draft: the model said the evidence cannot answer) The specific model and size of the large screen needed; The budget for purchasing the large screen; The location and mounting requirements for the large screen; The network infrastructure details to ensure the large screen can connect to the network,"[1] Laptop cannot see the corporate Wi-Fi network
+Laptop cannot see the corporate Wi-Fi network (Wireless access)
+## Symptom
+Other people in the room are connected, but the corporate network name does not appear
+in the user's list of available Wi-Fi networks.
+
+## Cause
+The corporate network runs only on the 5 GHz band. An outdated driver, an adapter set to
+2.4 GHz only, or airplane mode or a hardware Wi-Fi switch hides it.
+
+## Resolution steps
+1. Check that airplane mode is off and the Wi-Fi toggle (or keyboard key) is on.
+2. Ask whether other 5 GHz networks are visible. If only 2.4 GHz networks show, check the
+   adapter's band setting and set it to auto or 5 GHz preferred.
+3. Update the wireless driver from the software centre and restart.
+4. If it is still missing, the adapter may be faulty: raise a hardware ticket.
+
+## Warnings
+Do not share a phone hotspot with corporate devices as a long-term workaround.
+---
+[2] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Warnings
+Do not ask users to edit their hosts file for internal names; entries go stale and
+break later.
+---
+[3] Mapped network drive shows a red X
+Mapped network drive shows a red X (Call quality and file shares)
+## Symptom
+A mapped network drive shows as disconnected with a red X, or opening it gives ""network
+path not found"".
+
+## Cause
+The device is off the corporate network, the saved credentials are outdated after a
+password change, or the file server is down.
+
+## Resolution steps
+1. Confirm the device is on the corporate network or VPN.
+2. Open the share by its full path (`\\server\share`). If that works, only the mapping is
+   broken: remove and re-add the mapped drive.
+3. If the user changed their password recently, update the saved credentials in Windows
+   Credential Manager.
+4. If the full path fails too, ask whether colleagues using the same server are affected.
+   If so, escalate to the server team.
+
+## Warnings
+Do not copy files to personal cloud storage as a workaround for an unreachable share.
+---
+[4] Video calls freeze or lag
+Video calls freeze or lag (Call quality and file shares)
+## Symptom
+Video and audio calls freeze, drop or lag, while web browsing seems normal.
+
+## Cause
+Calls need low latency more than bandwidth. Weak Wi-Fi, large uploads on the same
+connection, or VPN routing for a call that does not need it are the usual causes. If a
+whole office is affected, the internet link is saturated.
+
+## Resolution steps
+1. Ask whether it happens on a cable too. If only on Wi-Fi, treat it as a Wi-Fi signal
+   problem (move closer to an access point, or use a cable).
+2. Check for large uploads or backups running at the same time.
+3. If the user is on VPN for a call with outside participants, they can disconnect the VPN
+   for the call.
+4. Ask the user to run the call app's network test during a bad call and send the result.
+5. If many users at one office are affected, escalate as a link-capacity problem.
+
+## Warnings
+Do not ask users to stop company backups to free bandwidth.
+---
+[5] Internet slow for a whole floor
+Internet slow for a whole floor (Call quality and file shares)
+## Symptom
+Many users on the same floor or office report that websites and cloud apps are slow at
+the same time.
+
+## Cause
+A shared link or switch is saturated: a large download or backup, a faulty uplink running
+at reduced speed, or the office internet link reaching capacity.
+
+## Resolution steps
+1. Confirm that several users in the same area are affected, and record when it started.
+2. Ask whether anything unusual is running: large software deployments, backups or
+   video events.
+3. Escalate to network engineering with the location, the time and the number of users;
+   they check link utilisation and uplink errors.
+4. Keep the ticket open as a parent for the other users' reports.
+
+## Warnings
+Do not restart network equipment yourself.",A,,,,
+17,c680c224-e467-435c-bbdc-820309afb8cb,"SSL Errors in Developer Tool
+
+Development tool fails with SSL errors at office. Works fine from home, likely due to different certificate trust. Error message: 'unable to get local issuer certificate'. Office network's proxy re-signs traffic with internal certificate. Browsers automatically trust this, but tools need manual config. Need to add company root cert to tool’s certificate store. Block on deployment, delays critical project features.","1. Confirm the error appears only on the office network or VPN. [1]
+2. Point the tool at the company root certificate, which is published on the intranet. [1]
+3. If the tool cannot be configured, raise a request for an inspection bypass for that domain, with the business reason. [1]","[1] Certificate errors in a desktop tool on the office network
+Certificate errors in a desktop tool on the office network (Firewall and proxy)
+## Symptom
+A developer tool, command-line client or desktop app fails with an SSL or certificate
+error (""unable to get local issuer certificate"", ""self-signed certificate in chain"") on
+the office network, but works at home.
+
+## Cause
+The web proxy inspects encrypted traffic and re-signs it with the company's root
+certificate. Browsers trust that certificate, but some tools use their own certificate
+store and do not.
+
+## Resolution steps
+1. Confirm the error appears only on the office network or VPN.
+2. Point the tool at the company root certificate, which is published on the intranet
+   (most tools have a setting or environment variable for a CA bundle).
+3. If the tool cannot be configured, raise a request for an inspection bypass for that
+   domain, with the business reason.
+
+## Warnings
+Never turn off certificate verification in the tool; it removes protection against
+real interception.
+---
+[2] VPN client not connecting
+VPN client not connecting (VPN connectivity)
+## Symptom
+The VPN client hangs at ""Connecting..."", or fails at once with an authentication or
+timeout error. Internet access without the VPN works.
+
+## Cause
+Usually one of: the local network blocks the VPN (hotel, airport or public Wi-Fi), the
+user's domain account is locked or its password expired, the VPN adapter was disabled by
+an update, or the VPN gateway itself is down.
+---
+[3] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.
+---
+[4] Application cannot send email from the office network
+Application cannot send email from the office network (Firewall and proxy)
+## Symptom
+A script, scanner or application that sends email directly fails to connect to the mail
+server on port 25, while the same email account works in Outlook.
+
+## Cause
+Outbound SMTP on port 25 is blocked for all devices except the company mail relay, to
+stop infected machines from sending spam.
+
+## Resolution steps
+1. Confirm what is sending the email: a device (scanner, printer) or an application.
+2. Configure it to send through the internal mail relay, whose address is on the
+   intranet, instead of an outside mail server.
+3. If the relay needs to accept a new device, raise a request with the device's IP and
+   the sender address it will use.
+
+## Warnings
+Do not request a firewall exception for port 25 to the internet.
+---
+[5] Internet slow for a whole floor
+Internet slow for a whole floor (Call quality and file shares)
+## Symptom
+Many users on the same floor or office report that websites and cloud apps are slow at
+the same time.
+
+## Cause
+A shared link or switch is saturated: a large download or backup, a faulty uplink running
+at reduced speed, or the office internet link reaching capacity.
+
+## Resolution steps
+1. Confirm that several users in the same area are affected, and record when it started.
+2. Ask whether anything unusual is running: large software deployments, backups or
+   video events.
+3. Escalate to network engineering with the location, the time and the number of users;
+   they check link utilisation and uplink errors.
+4. Keep the ticket open as a parent for the other users' reports.
+
+## Warnings
+Do not restart network equipment yourself.",A,,,,
+18,1dcca7ba-ba83-4ec0-80a6-29ac8b5b83c6,"Writes fail - read-only error
+
+App failing with 'cannot execute INSERT in a read-only transaction' Log shows: '2026-02-15 14:30:01 - ERRCODE: 40001' Previously working fine, now suddenly fails Checked connection, seems correct but still error Attached full error logs for review","1. Check if the database connection is set to read-only mode. If so, contact the database administrator to change it. [1]
+2. Run transaction SU53 to identify any missing authorizations. Follow the steps provided in the evidence. [1]
+3. If missing authorizations are found, raise a role-change request with the SAP security team. Provide the SU53 screenshot, transaction code, and business justification. [1]
+4. Ensure the user logs off and logs on again to load the new authorizations. [1]","[1] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.
+---
+[2] Interface fails with RFC connection error
+Interface fails with RFC connection error (Batch jobs and IDocs)
+## Symptom
+An interface or background job that calls another system fails with an RFC
+communication error, or a connection test for the destination fails.
+
+## Cause
+The RFC destination points to a system that is down, has moved, or rejects the stored
+technical user (locked or expired password).
+
+## Resolution steps
+1. Find the RFC destination named in the error.
+2. Run the connection test for it in SM59 and note the result.
+3. If the test fails with a logon error, check whether the technical user in the target
+   system is locked or its password expired; Basis fixes it.
+4. If the target cannot be reached, check whether the target system is up and whether its
+   host name changed.
+5. After the fix, reprocess the failed messages or rerun the job.
+
+## Warnings
+Do not change RFC destinations in production yourself; Basis owns them.
+---
+[3] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.
+---
+[4] Goods receipt fails because the PO item is blocked
+Goods receipt fails because the PO item is blocked (Purchasing and goods receipt)
+## Warnings
+The helpdesk does not change purchase orders. Only the responsible buyer removes a block.
+---
+[5] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Symptom
+SAP GUI hangs on ""Connecting"" after the user selects a system in SAP Logon and then
+fails with a connection or timeout error before the logon screen appears.
+
+## Cause
+The user's machine cannot reach the application server: no VPN when working remotely, a
+wrong or outdated system entry in SAP Logon, or the server itself is down.",W,,,,
+19,a42ed289-aa03-49f8-9ebd-a2f01ce1fa5b,"New approval workflow issues
+
+Just set up the new workflow, but approvals aren't going through. Also, the data export tool keeps freezing. Tried restarting the server and clearing cache, no luck. Need help figuring out what's wrong.","(no draft: the model said the evidence cannot answer) The exact error messages or symptoms related to the approval workflow issues and data export tool freezing.; The user roles and access levels of the person experiencing the issues.; The date and number format settings in SAP, if they are different from the expected settings.","[1] Purchase order waiting for release
+Purchase order waiting for release (Purchasing and goods receipt)
+## Symptom
+A new purchase order cannot be printed or sent to the vendor, and goods cannot be
+received against it. ME23N shows a release strategy on the PO header.
+
+## Cause
+POs above a value limit go through a release strategy. Until every required approver has
+released it, the PO stays blocked for output and follow-on documents.
+
+## Resolution steps
+1. Open the PO in ME23N and go to the Release Strategy tab in the header. It lists each
+   release code and shows which are still outstanding.
+2. Tell the requester who the outstanding approver is and ask them to follow up.
+3. Approvers release individual POs in ME29N or several at once in ME28. Editing the PO
+   is not a release.
+4. If the approver is away, the deputy configured for that release code can release on
+   their behalf.
+
+## Warnings
+The helpdesk cannot release a PO for an approver. Changing the PO value to get under the
+release limit is a policy violation.
+---
+[2] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.
+---
+[3] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Warnings
+The helpdesk never assigns SAP roles itself and never grants SAP_ALL or similar broad
+profiles as a workaround.
+---
+[4] Wrong date or number format in SAP
+Wrong date or number format in SAP (GUI, dumps and printing)
+## Symptom
+SAP shows dates as month/day/year instead of day/month/year, or uses a comma instead of a
+decimal point, so amounts look ten or a thousand times wrong in downloads.
+
+## Cause
+Date and decimal formats are personal settings stored in the user's master record; they
+may differ from Windows regional settings.
+
+## Resolution steps
+1. Open transaction SU3 (own user data) and go to the Defaults tab.
+2. Choose the correct decimal notation and date format.
+3. Save, then log off and log on again so the new settings apply.
+4. Re-export any spreadsheet downloads made with the wrong format.
+
+## Warnings
+The formats affect only how values are displayed and exported, not the stored data; do
+not correct postings because of a display format.
+---
+[5] SAP user account locked
+SAP user account locked (User access and authorisations)
+## Resolution steps
+1. Verify the caller's identity: employee ID plus confirmation from their manager for
+   phone or chat requests.
+2. Open SU01 for the user and check the lock status on the Logon Data tab. ""Locked by
+   incorrect logon"" can be unlocked by the helpdesk. ""Locked by administrator"" cannot.
+3. For a failed-logon lock, unlock the user in SU01 (Lock/Unlock) and set a new initial
+   password with Change Password.
+4. Give the initial password to the user through the approved channel only. SAP forces
+   them to choose a new password at the next logon.
+5. If the user is locked by an administrator, do not unlock. Escalate to the SAP security
+   team with the user ID.
+
+## Warnings
+Never unlock an account locked by an administrator. Never send an initial password to an
+address that has not been verified.",M,,,,
+20,1af3043c-9e8b-480c-b1ca-d7e386cfab3b,"TLS cert expires soon
+
+Monitoring shows our API's TLS cert is due to expire. Users are starting to get certificate warning messages. We've tried restarting services, but the issue persists. Checking DNS, everything seems fine, but certificates might still fail. Need to ensure all endpoints get updated manually if needed. Trying to find a way to avoid downtime.","1. Identify the certificate and its domain. [1]
+2. Check the renewal status of the certificate. [1]
+3. If the certificate is manually issued, request a new one and install it on all endpoints and load balancers. [1]
+4. Verify the new certificate is served by each endpoint. [1]
+5. Ensure the new certificate has a sufficient expiry date. [1]","[1] TLS certificate about to expire
+TLS certificate about to expire (Load balancers and certificates)
+## Symptom
+Monitoring warns that the TLS certificate of a website or API expires soon, or users
+already see a certificate warning in the browser.
+
+## Cause
+Managed certificates renew automatically only if domain validation still works; a changed
+or deleted DNS validation record stops renewal. Manually issued certificates must be
+renewed and installed by hand on every endpoint that uses them.
+
+## Resolution steps
+1. Identify the certificate, its domain and every endpoint that uses it.
+2. For a managed certificate, check its renewal status and that the DNS validation record
+   still exists.
+3. For a manual certificate, request a new one well before expiry and install it on all
+   endpoints and load balancers.
+4. Check the certificate actually served by each endpoint and its new expiry date.
+
+## Warnings
+A certificate that has already expired on a production site is a priority-1 incident; do
+not wait for the normal change window.
+---
+[2] Shared download link to a bucket file has expired
+Shared download link to a bucket file has expired (Object storage)
+## Symptom
+A partner or colleague opens a download link for a file in cloud storage and gets
+""Request has expired"" or access denied, although the link worked earlier.
+
+## Cause
+The link was a pre-signed URL. It works only for the lifetime set when it was created,
+and never longer than the credentials used to sign it. Links signed with temporary role
+credentials stop working when that session ends.
+
+## Resolution steps
+1. Confirm the link contains signature parameters (it is a pre-signed URL, not a public
+   object).
+2. Ask the file owner to generate a new link with an appropriate expiry.
+3. For links that must last days, the owner should sign with credentials that remain
+   valid for that long; the maximum lifetime is seven days.
+4. For recurring sharing with a partner, recommend a proper partner-access setup instead
+   of repeated links.
+
+## Warnings
+Do not make the object or bucket public to replace an expired link.
+---
+[3] Website returns 502 or 503 from the load balancer
+Website returns 502 or 503 from the load balancer (Load balancers and certificates)
+## Symptom
+Users get ""502 Bad Gateway"", ""503 Service Unavailable"" or ""504 Gateway Timeout"" from an
+application behind a cloud load balancer.
+
+## Cause
+The code shows where it failed. 503 means the load balancer has no healthy servers. 502
+means a server closed the connection or sent an invalid response. 504 means the server
+did not answer within the load balancer's timeout.
+
+## Resolution steps
+1. Note the exact error code and when it started.
+2. For 503, check the target group: if no servers are healthy, follow the unhealthy-server
+   article.
+3. For 502, check the application logs on the servers for crashes or restarts at that time.
+4. For 504, check for slow requests or a dependency (database, external API) that slowed
+   down.
+5. Send the findings to the application's owning team.
+
+## Warnings
+Do not raise the load balancer timeout to hide 504 errors without the owning team.
+---
+[4] Cloud access key exposed or committed to a repository
+Cloud access key exposed or committed to a repository (Identity, SSO and permissions)
+## Warnings
+Deleting the commit is not enough: a pushed key must be treated as compromised and
+deactivated.
+---
+[5] How long files are kept in a bucket
+How long files are kept in a bucket (Object storage)
+## Symptom
+A user asks how long objects in a bucket are kept, why old files moved to archive or
+disappeared, or wants the retention changed.
+
+## Cause
+Lifecycle rules on the bucket move objects to cheaper storage classes or delete them
+after a set number of days.
+
+## Resolution steps
+1. Check the bucket's lifecycle rules for transition and expiration settings.
+2. Explain the current rule to the user in plain terms (for example ""archived after 90
+   days, deleted after 3 years"").
+3. For a change, confirm with the data owner, and with compliance if the bucket holds
+   business records.
+4. Note that rule changes apply going forward: objects already deleted under the old rule
+   are not restored.
+
+## Warnings
+Never shorten retention on a bucket under legal or compliance hold.",M,,,,
+21,da1fbb42-a4b8-4694-8dd6-4875b510d1c4,"Posting period issue
+
+Finance posting failed. Error message says period not open. Last month worked fine. Checked OB52, looks correct. Works for other account types. Not sure what changed. Need help resolving.","1. Check the posting date you entered. Ensure it is within the current or previous month. [1]
+2. If the current month is not allowed, check the period with MMRV. [1]
+3. If the period is not moved forward, escalate to the materials-management team to run MMPV. [1]
+4. If the issue persists, contact Finance for approval to post in an older period. [1]","[1] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Symptom
+A goods movement fails with a message that posting is only possible in two named
+periods, for example the current and the previous month.
+
+## Cause
+The materials-management posting period only allows postings in the current and the
+previous period. The period is moved forward each month with MMPV. If the month-end
+change was not run, or the user picks a date in an older period, the posting is refused.
+
+## Resolution steps
+1. Check the posting date the user entered. Ask them to use a date in one of the two
+   periods named in the message, if that matches when the movement really happened.
+2. If the current calendar month is not among the allowed periods, the period was not
+   moved forward. Check the current period with MMRV.
+3. Escalate a missing period change to the materials-management team, who run MMPV.
+4. Postings into an older closed period need Finance approval and are handled by
+   Finance, not the helpdesk.
+---
+[2] Posting period closed for goods movements
+Posting period closed for goods movements (Materials and number ranges)
+## Warnings
+Never post with a false date to get around a closed period; it distorts stock values in
+the wrong month.
+---
+[3] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.
+---
+[4] Not authorised for a transaction
+Not authorised for a transaction (User access and authorisations)
+## Symptom
+Starting a transaction fails with ""You are not authorized to use transaction XXXX"", or
+an action inside a transaction fails with a missing-authorization message.
+
+## Cause
+The user's roles do not contain the authorization object and values that the
+transaction checks. This often happens after a job change, or when a new transaction is
+rolled out without a matching role.
+
+## Resolution steps
+1. Ask the user to reproduce the error and then immediately run transaction SU53. It
+   shows the last failed authorization check: the object, field and value that were missing.
+2. Ask for a screenshot of SU53 and the transaction code.
+3. Confirm with the user's manager that the access fits the user's job. New access always
+   needs manager approval, recorded in the access-request ticket.
+4. Raise a role-change request to the SAP security team with the SU53 screenshot, the
+   transaction code and the business justification.
+5. When the role is assigned, ask the user to log off and log on again so the new
+   authorizations are loaded.
+---
+[5] Goods receipt fails because the PO item is blocked
+Goods receipt fails because the PO item is blocked (Purchasing and goods receipt)
+## Symptom
+Posting a goods receipt in MIGO against a purchase order fails with a message that the
+purchase order item is blocked, so the goods cannot be received.
+
+## Cause
+A buyer has blocked the PO item in ME22N (for example during a dispute with the
+vendor), or the item has a deletion indicator. Blocked items cannot be received until a
+buyer releases them.
+
+## Resolution steps
+1. Display the PO in ME23N and open the item. Check whether the item shows a block or a
+   deletion indicator in the item overview.
+2. Find the buyer from the PO header (purchasing group) and ask whether the block is
+   intentional.
+3. If the block should be removed, the buyer removes it in ME22N and saves the PO.
+4. Retry the goods receipt in MIGO.
+5. If the item has a deletion indicator and the goods have physically arrived, the buyer
+   must create a new PO item; a deleted item cannot be received.",W,,,,
+22,88811866-4cf0-4d5b-ba76-9fe8824f6d3a,"Printed SAP doc not arriving
+
+I printed an invoice in SAP, but the printer didn't spit anything out. I've tried restarting both the printer and the computer, but no luck. All other printers are working fine. Any idea what could be causing this? Could there be a setting specific to SAP documents that might affect printing? Is there a specific policy or limit for SAP document printing that I should be aware of when troubleshooting this issue?","1. Open SP01 and search for spool requests by your user ID and the time of printing. [1]
+2. If a request exists with an error status, open its log to check for issues with the output device. [1]
+3. If the request is fine, reprint it from SP01 to the correct output device. [1]
+4. If no spool request exists, check the document's output messages for missing output types. [1]","[1] Printed SAP document never arrives at the printer
+Printed SAP document never arrives at the printer (GUI, dumps and printing)
+## Symptom
+A user printed an invoice, purchase order or delivery note from SAP but nothing came out
+of the printer.
+
+## Cause
+SAP creates a spool request and passes it to the output device. The request can fail
+(wrong output device), wait for a printer that is offline, or never be created because
+no output was triggered for the document.
+
+## Resolution steps
+1. Open SP01 and search for spool requests by the user's ID and the time of printing.
+2. If a request exists with an error status, open its log. The most common cause is an
+   output device that points to the wrong or a retired printer.
+3. If the request is fine, reprint it from SP01 to the correct output device.
+4. If no spool request exists, the print was never triggered from SAP. Check the
+   document's output messages; an output type may be missing.
+5. If the printer is offline or out of paper, hand over to desktop support.
+---
+[2] Printed SAP document never arrives at the printer
+Printed SAP document never arrives at the printer (GUI, dumps and printing)
+## Warnings
+Do not change output device definitions in SPAD; that is a Basis task.
+---
+[3] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Symptom
+SAP GUI hangs on ""Connecting"" after the user selects a system in SAP Logon and then
+fails with a connection or timeout error before the logon screen appears.
+
+## Cause
+The user's machine cannot reach the application server: no VPN when working remotely, a
+wrong or outdated system entry in SAP Logon, or the server itself is down.
+---
+[4] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.
+---
+[5] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Resolution steps
+1. If the user works remotely, confirm the VPN is connected; see the Networking VPN
+   articles if it is not.
+2. Ask whether colleagues can connect to the same system. If several users are affected,
+   the server is probably down: escalate to Basis at once.
+3. Check the system entry in SAP Logon: application server, instance number and system
+   ID must match the values published by Basis. Entries can change after a system refresh.
+4. Test that the dispatcher port is reachable. SAP GUI connects to port 32 followed by
+   the instance number (3200 for instance 00).
+5. If only this user is affected and the entry is correct, reinstall or update SAP GUI
+   from the software centre.
+
+## Warnings
+Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",A,,,,
+23,b1cb9cae-8ad0-4ab4-bbfe-8e78f36939ad,"Cloud service acting weird
+
+I can't access any cloud services today. Everything was fine yesterday. I tried restarting my computer, but it didn't help. I also cleared my cache and cookies, but nothing changes. I even reinstalled the cloud client, but still can't get in. Other users are experiencing the same issue. It's critical for our project, which is due tomorrow.","(no draft: the model said the evidence cannot answer) Exact error messages or symptoms when trying to access the cloud services; Details about the cloud services being used (e.g., AWS, GCP, Azure); Whether other users are experiencing the same issue; Any recent changes or updates to the cloud services","[1] Request for additional cloud permissions
+Request for additional cloud permissions (Identity, SSO and permissions)
+## Symptom
+A user or a service account gets ""not authorized to perform"" errors for a cloud action
+and asks for more permissions.
+
+## Cause
+The identity's roles do not include the action on that resource. New projects and new
+services often need permissions nobody requested yet.
+
+## Resolution steps
+1. Get the exact error: it names the action (for example `s3:PutObject`) and the resource.
+2. Ask for the business reason, and for service accounts, the owning team.
+3. Request the narrowest permission: the specific actions on the specific resources, not a
+   broad managed policy such as full admin for the service.
+4. Permissions are granted through group or role membership, never by attaching a policy
+   to an individual user.
+5. For project or temporary access, record a review or expiry date in the ticket.
+
+## Warnings
+Push back on ""just give full access to be safe"". Broad standing permissions are the most
+common cause of cloud security incidents.
+---
+[2] Single sign-on to the cloud console fails
+Single sign-on to the cloud console fails (Identity, SSO and permissions)
+## Symptom
+The user cannot sign in to the cloud console through single sign-on: they are sent back to
+the login page, see an identity-provider error, or land on an empty console with access
+denied.
+
+## Cause
+The corporate account is locked or disabled, the user is not assigned to the cloud
+application in the identity provider, or they are assigned but no role or permission set
+is mapped to their group.
+---
+[3] Cloud access key exposed or committed to a repository
+Cloud access key exposed or committed to a repository (Identity, SSO and permissions)
+## Warnings
+Deleting the commit is not enough: a pushed key must be treated as compromised and
+deactivated.
+---
+[4] Cannot SSH into a cloud virtual machine
+Cannot SSH into a cloud virtual machine (Virtual machines and snapshots)
+## Symptom
+SSH to a cloud virtual machine times out or is refused, either for a machine that worked
+before or for one that was just launched.
+
+## Cause
+A timeout usually means the network blocks the connection: the security group does not
+allow port 22 from the user's address, or the machine is in a private subnet. A refusal or
+authentication failure means the network is fine but the key or SSH configuration is wrong.
+---
+[5] Cloud access key exposed or committed to a repository
+Cloud access key exposed or committed to a repository (Identity, SSO and permissions)
+## Symptom
+A developer reports that a cloud access key was pushed to a code repository, pasted in a
+chat, or shared in a ticket, or the security team receives an alert that a key appeared
+in a public place.
+
+## Cause
+Long-lived access keys were stored in code or configuration. Anyone who sees the key can
+act with its permissions until it is disabled.
+
+## Resolution steps
+1. Treat it as a security incident at once and notify the security team.
+2. Deactivate the exposed key immediately in the identity console. Do not wait for the
+   developer to finish their work.
+3. Create a new key for the owner only if the workload still needs one, and prefer a role
+   with temporary credentials instead.
+4. Remove the key from the repository history, not just the latest commit. Rotating the
+   key matters more than cleaning the history.
+5. Ask the security team to review the account's activity logs for use of the old key.",M,,,,
+24,82e64872-3819-4baf-9fff-ffa8e4da58dd,"Colleague's behavior concern
+
+John has been interrupting meetings frequently. It disrupts our workflow and group dynamics. Can you advise on handling this? We need a solution soon.",(no draft: the model said the evidence cannot answer) Specific HR or management procedures for addressing frequent meeting interruptions; Company policies on meeting etiquette and behavior during meetings,"[1] Is a date a company holiday?
+Is a date a company holiday? (Leave and holidays)
+## Symptom
+An employee asks whether a specific date is a company holiday, or why their calendar
+differs from a colleague's in another office.
+
+## Cause
+Each country or regional office has its own holiday calendar, published every year in
+the HR portal.
+
+## Resolution steps
+1. Open the current year's holiday calendar for the employee's office in the HR portal.
+2. Check the date there; never answer from memory or an older year's calendar.
+3. Explain that colleagues in other offices follow their own calendars.
+4. Floating holidays, where offered, are booked like annual leave through the leave
+   request.
+
+## Warnings
+Last year's calendar is not valid for this year; dates move.
+---
+[2] Applying for an internal job
+Applying for an internal job (Workplace policy and reviews)
+## Symptom
+An employee wants to apply for an open role in another team and asks whether they must
+tell their manager.
+
+## Cause
+Internal moves follow the internal mobility policy: employees can apply after twelve
+months in their current role, and the current manager is informed when the employee is
+shortlisted.
+
+## Resolution steps
+1. Check the employee has completed twelve months in their current role.
+2. The employee applies through the internal jobs page in the HR portal.
+3. The current manager is informed by HR only when the employee is shortlisted.
+4. If selected, the transfer date is agreed between both managers, normally within four
+   weeks.
+
+## Warnings
+Do not tell the current manager about an application before shortlisting.
+---
+[3] Resignation and notice period
+Resignation and notice period (Onboarding and exit)
+## Symptom
+An employee wants to resign and asks about the notice period, or a manager has received
+a resignation and asks what to do.
+
+## Cause
+The notice period is set in each employee's contract; offboarding starts when HR is told.
+
+## Resolution steps
+1. Check the notice period in the employee's contract (commonly four weeks, longer for
+   senior roles).
+2. The employee resigns in writing (email is fine) to their manager, copying HR.
+3. The manager informs HR at once so offboarding starts: knowledge transfer, access
+   removal on the last day, and final pay.
+4. Shortening or waiving the notice period needs agreement from both the manager and HR.
+
+## Warnings
+Access is removed on the last working day, not earlier, unless the manager reports a
+security concern.
+---
+[4] Accepting gifts from suppliers
+Accepting gifts from suppliers (Workplace policy and reviews)
+## Symptom
+An employee received or was offered a gift, meal or event ticket from a supplier or
+customer and asks whether they may accept it.
+
+## Cause
+The code of conduct limits gifts to avoid conflicts of interest. Small gifts are allowed;
+larger ones must be declared or refused.
+
+## Resolution steps
+1. Ask for the estimated value and who offered it.
+2. Gifts worth up to the policy limit (50 in local currency) may be accepted without
+   declaration.
+3. Anything above the limit must be declared in the HR portal's gift register before
+   accepting, and the manager approves or declines.
+4. Cash, vouchers and gifts during an active tender are always refused.
+
+## Warnings
+Gifts from a supplier in an active tender must be refused regardless of value.
+---
+[5] Working from home rules and exceptions
+Working from home rules and exceptions (Workplace policy and reviews)
+## Symptom
+An employee asks how many days they must be in the office, or wants an exception to work
+remotely for a period.
+
+## Cause
+Each role is office-based, hybrid or fully remote, as set in the employment terms. Hybrid
+roles have a minimum number of office days per week set by the department.
+
+## Resolution steps
+1. Check the employee's role category in their employment terms.
+2. For hybrid roles, the department's minimum office days apply.
+3. Exceptions (for example temporary full remote for a personal reason) are requested from
+   the manager, who decides with HR informed.
+4. Equipment for home working is requested through the normal equipment request.
+
+## Warnings
+HR clarifies the policy; the manager approves individual exceptions.",A,,,,
+25,a2406e23-c52c-4545-a29f-02f8200074bb,"Schema migration failed
+
+Migration halted before completion; unsure of applied changes. Need assistance to identify and revert partial schema changes.","1. Check the version table (alembic_version) to see what the tool recorded. [1]
+2. Compare the actual schema with what the migration should produce. [1]
+3. Finish or undo the partial change by hand so the schema matches one known version. [1]
+4. Rerun the migration, and record what was done in the ticket. [1]","[1] Schema migration failed halfway
+Schema migration failed halfway (Access requests and schema changes)
+## Symptom
+A schema migration failed during deployment, and it is unclear which changes were applied.
+
+## Cause
+Migrations that are not run in one transaction (for example with `CREATE INDEX
+CONCURRENTLY`) can stop halfway. The migration tool's version table may not match what
+was really applied.
+
+## Resolution steps
+1. Check the version table (for example `alembic_version`) to see what the tool recorded.
+2. Compare the actual schema with what the migration should produce.
+3. Finish or undo the partial change by hand so the schema matches one known version.
+4. Then mark the version or rerun the migration, and record what was done in the ticket.
+
+## Warnings
+Never rerun a failed migration before you know which statements already applied.
+---
+[2] Schema change hangs and blocks the whole table
+Schema change hangs and blocks the whole table (Locks and deadlocks)
+## Symptom
+An `ALTER TABLE` during a deployment hangs, and soon all queries on that table are blocked
+too, causing an application outage.
+
+## Cause
+`ALTER TABLE` needs an exclusive lock. It waits behind any running transaction on the
+table, and every new query then queues behind the waiting `ALTER TABLE`.
+
+## Resolution steps
+1. Cancel the waiting `ALTER TABLE` session to release the queue at once.
+2. Find the long-running transaction it was waiting for.
+3. Rerun the migration in a quiet window with a short `lock_timeout` (for example a few
+   seconds), so it gives up instead of blocking everyone.
+4. Retry the migration if it times out, rather than letting it wait.
+
+## Warnings
+Never run schema changes on busy tables without a lock timeout.
+---
+[3] Backup before a change or restore after data loss
+Backup before a change or restore after data loss (Disk space and backups)
+## Symptom
+A team asks for a backup before a risky change, or for a restore after data was lost (a
+bad migration, or an `UPDATE` or `DELETE` without a `WHERE` clause).
+
+## Cause
+Scheduled backups and continuous WAL archiving allow point-in-time recovery to any moment
+inside the retention window.
+
+## Resolution steps
+1. For a pre-change backup, take an on-demand backup and give the requester the backup ID
+   and time before they start.
+2. For a restore, get the exact time the bad change happened from logs or the requester.
+3. Restore to a new database or instance at a point just before that time.
+4. Let the requester verify the data, then copy the needed rows back or plan a cut-over
+   window with them.
+
+## Warnings
+Never restore over the live database before the restored copy is verified.
+---
+[4] Request for access to a database
+Request for access to a database (Access requests and schema changes)
+## Symptom
+A developer or a service asks for read or write access to a database, schema or table.
+
+## Cause
+Access is granted per role. A new project or service often needs access that nobody has
+requested yet.
+
+## Resolution steps
+1. Confirm the exact scope (table, schema or database) and whether read-only or read-write.
+2. Get the manager's approval and the business reason.
+3. Grant the narrowest existing role that fits, for example the schema's read-only role.
+   For a service, create a dedicated role for that service.
+4. Record who, what, why and when in the ticket, and an end date for temporary access.
+
+## Warnings
+Never add a person to the database owner or superuser role to grant access.
+---
+[5] Request to run a data fix in production
+Request to run a data fix in production (Access requests and schema changes)
+## Symptom
+A team asks the DBA team to run an `UPDATE` or `DELETE` script in production to correct
+bad data.
+
+## Cause
+Application bugs or bad imports leave wrong data that the application cannot correct
+itself.
+
+## Resolution steps
+1. Require the script, the expected number of affected rows and an approved change request.
+2. Run the script's `WHERE` clause as a `SELECT COUNT(*)` first and compare with the
+   expected number.
+3. Take a backup of the affected rows (or an on-demand backup) before running it.
+4. Run the script in a transaction, check the row count reported, and only then commit.
+
+## Warnings
+Never run a data fix that has no `WHERE` clause or whose row count does not match the
+expected number.",A,,,,
+26,76039600-8c7a-49ef-9ca0-60018c4c4c23,"IDoc status 51 - Urgent Attention
+
+Inbound IDoc WE02 shows status 51, no document posted. Expected order not created, blocking our delivery schedule. Tried reprocessing but got same error; need immediate resolution. Customer data seems correct, but could be a missing pricing condition. Urgent: Need SAP expert to investigate and fix.","1. Open the IDoc in WE02 and read the status record for status 51. The error message usually names the missing field or master record. [1]
+2. Fix the cause, or ask the master-data team to create the missing record. [1]
+3. Reprocess the IDoc with BD87. [1]","[1] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.
+---
+[2] Background job not starting or stuck
+Background job not starting or stuck (Batch jobs and IDocs)
+## Resolution steps
+1. Open the job in SM37 and note its status and planned start.
+2. If ""Released"", check the start condition: a future start time or an event that has not
+   been raised yet is normal.
+3. If ""Ready"", check in SM50 whether all background work processes are busy. The job
+   starts when one frees up. Report it to Basis if this persists.
+4. If ""Active"" for too long, open the job log in SM37 and note the last step; check SM12
+   for locks held by the job's user.
+5. A job with no log progress for 30 minutes or more is cancelled by Basis, not the user.
+
+## Warnings
+Do not cancel and reschedule a running job without checking what it was posting; a
+half-finished posting run can leave inconsistent documents.
+---
+[3] Printed SAP document never arrives at the printer
+Printed SAP document never arrives at the printer (GUI, dumps and printing)
+## Symptom
+A user printed an invoice, purchase order or delivery note from SAP but nothing came out
+of the printer.
+
+## Cause
+SAP creates a spool request and passes it to the output device. The request can fail
+(wrong output device), wait for a printer that is offline, or never be created because
+no output was triggered for the document.
+
+## Resolution steps
+1. Open SP01 and search for spool requests by the user's ID and the time of printing.
+2. If a request exists with an error status, open its log. The most common cause is an
+   output device that points to the wrong or a retired printer.
+3. If the request is fine, reprint it from SP01 to the correct output device.
+4. If no spool request exists, the print was never triggered from SAP. Check the
+   document's output messages; an output type may be missing.
+5. If the printer is offline or out of paper, hand over to desktop support.
+---
+[4] Goods receipt fails because the PO item is blocked
+Goods receipt fails because the PO item is blocked (Purchasing and goods receipt)
+## Symptom
+Posting a goods receipt in MIGO against a purchase order fails with a message that the
+purchase order item is blocked, so the goods cannot be received.
+
+## Cause
+A buyer has blocked the PO item in ME22N (for example during a dispute with the
+vendor), or the item has a deletion indicator. Blocked items cannot be received until a
+buyer releases them.
+
+## Resolution steps
+1. Display the PO in ME23N and open the item. Check whether the item shows a block or a
+   deletion indicator in the item overview.
+2. Find the buyer from the PO header (purchasing group) and ask whether the block is
+   intentional.
+3. If the block should be removed, the buyer removes it in ME22N and saves the PO.
+4. Retry the goods receipt in MIGO.
+5. If the item has a deletion indicator and the goods have physically arrived, the buyer
+   must create a new PO item; a deleted item cannot be received.
+---
+[5] Goods receipt quantity exceeds the PO quantity
+Goods receipt quantity exceeds the PO quantity (Purchasing and goods receipt)
+## Symptom
+MIGO refuses the goods receipt because the quantity entered is larger than the open
+quantity on the purchase order, even though the vendor really delivered that amount.
+
+## Cause
+Each PO item has an over-delivery tolerance (a percentage on the item's Delivery tab).
+Receipts above the ordered quantity plus that tolerance are blocked, unless the item
+allows unlimited over-delivery.
+
+## Resolution steps
+1. Display the PO in ME23N and note the ordered quantity, the quantity already received
+   and the over-delivery tolerance on the item's Delivery tab.
+2. Post a goods receipt for the quantity that is allowed (up to the tolerance) if the
+   receiving team wants to accept that part now.
+3. For the extra quantity, ask the buyer whether to accept it. If yes, the buyer
+   increases the PO quantity in ME22N and the rest is received afterwards.
+4. If the buyer does not accept the extra quantity, it is returned to the vendor.",A,,,,
+27,65b6873a-be32-47dd-be41-fa40f40064a9,"Printed document not reaching printer
+
+Printed invoice doesn't show up on the printer queue. Checked the printer status, seems fine. Tried restarting both SAP and the printer, still nothing. Printer log shows no job, even though SAP said it printed. Other documents print fine, so it’s not the printer. SAP settings look correct, nothing is blocked or flagged. Any idea why it’s not printing? What else should I check? Is there a timeout setting for SAP print jobs that could cause them to be canceled before reaching the printer queue?","1. Open SP01 and search for spool requests by the user's ID and the time of printing. [1]
+2. If a request exists with an error status, open its log to check for issues with the output device. [1]
+3. If no spool request exists, check the document's output messages for missing output types. [1]
+4. If the printer is offline or out of paper, contact desktop support for assistance. [1]","[1] Printed SAP document never arrives at the printer
+Printed SAP document never arrives at the printer (GUI, dumps and printing)
+## Symptom
+A user printed an invoice, purchase order or delivery note from SAP but nothing came out
+of the printer.
+
+## Cause
+SAP creates a spool request and passes it to the output device. The request can fail
+(wrong output device), wait for a printer that is offline, or never be created because
+no output was triggered for the document.
+
+## Resolution steps
+1. Open SP01 and search for spool requests by the user's ID and the time of printing.
+2. If a request exists with an error status, open its log. The most common cause is an
+   output device that points to the wrong or a retired printer.
+3. If the request is fine, reprint it from SP01 to the correct output device.
+4. If no spool request exists, the print was never triggered from SAP. Check the
+   document's output messages; an output type may be missing.
+5. If the printer is offline or out of paper, hand over to desktop support.
+---
+[2] Printed SAP document never arrives at the printer
+Printed SAP document never arrives at the printer (GUI, dumps and printing)
+## Warnings
+Do not change output device definitions in SPAD; that is a Basis task.
+---
+[3] SAP GUI cannot connect to the server
+SAP GUI cannot connect to the server (GUI, dumps and printing)
+## Symptom
+SAP GUI hangs on ""Connecting"" after the user selects a system in SAP Logon and then
+fails with a connection or timeout error before the logon screen appears.
+
+## Cause
+The user's machine cannot reach the application server: no VPN when working remotely, a
+wrong or outdated system entry in SAP Logon, or the server itself is down.
+---
+[4] IDoc in status 51
+IDoc in status 51 (Batch jobs and IDocs)
+## Symptom
+An inbound IDoc shows status 51, ""Application document not posted"", in WE02 or WE05,
+and the expected order, delivery or invoice was never created.
+
+## Cause
+The IDoc arrived but the application could not post it. Typical reasons are missing
+master data (customer, vendor or material), a missing pricing condition, or a partner
+profile mismatch.
+
+## Resolution steps
+1. Open the IDoc in WE02 and read the status record for status 51. The error message
+   usually names the missing field or master record.
+2. Fix the cause, or ask the master-data team to create the missing record.
+3. Reprocess the IDoc with BD87.
+4. If many IDocs from the same partner fail at once, check the partner profile and any
+   recent mapping change instead of fixing IDocs one by one.
+
+## Warnings
+Do not reprocess an IDoc repeatedly without reading the error. If the cause was
+intermittent, repeated attempts can create duplicate documents.
+---
+[5] Vendor invoice blocked for payment
+Vendor invoice blocked for payment (Purchasing and goods receipt)
+## Warnings
+Only accounts payable releases blocked invoices. The helpdesk does not.",M,,,,
+28,f71a7edb-5a31-4817-9538-6afaa2c40b70,"Network issue, 169.254 address
+
+PC connects, but No internet. Tried restarting, didn't help. ipconfig shows 169.254.x.x. Other devices work fine nearby. Don't remember changing anything. Last week had same issue, fixed itself. Need working internet ASAP for meeting. Let's check server soon.","1. Run `ipconfig /release` and `ipconfig /renew` to request a new IP address. [1]
+2. Check if the issue persists; if so, try another cable and port. [1]
+3. If the problem continues, restart the network adapter or the machine. [1]
+4. Run `ipconfig /all` to verify the internal DNS servers are correctly configured. [1]
+5. If internal DNS is incorrect, reinstall the network adapter driver from the software centre. [1]
+6. Test the connection from a mobile hotspot to check if the original network blocks the connection. [1]","[1] Connected but no internet, 169.254 address
+Connected but no internet, 169.254 address (DHCP and DNS)
+## Symptom
+The device connects to the network but shows ""No internet"" or ""Limited"", and
+`ipconfig` shows an address starting with 169.254.
+
+## Cause
+A 169.254.x.x address is self-assigned when the device gets no reply from DHCP. One
+device failing points to its cable, port or driver; many devices on the same network
+point to the DHCP server or an exhausted address pool.
+
+## Resolution steps
+1. Disconnect and reconnect to trigger a new DHCP request.
+2. Run `ipconfig /release` and then `ipconfig /renew`.
+3. On a wired desk, try another cable and port.
+4. If several devices on the same floor or network get 169.254 addresses, escalate to
+   network engineering: the DHCP scope may be full or the server unreachable.
+
+## Warnings
+Do not give the device a static IP address as a fix; it can clash with addresses DHCP
+hands out later.
+---
+[2] VPN connected but internal sites do not open
+VPN connected but internal sites do not open (VPN connectivity)
+## Symptom
+The VPN client says it is connected, but internal websites, file shares and SAP do not
+open. Public websites still work.
+
+## Cause
+The VPN tunnel is up but the laptop is not using the internal DNS servers pushed by the
+VPN, or a home router uses the same private address range as an internal network, so
+traffic for that range never enters the tunnel.
+
+## Resolution steps
+1. Ask the user to try an internal resource by IP address. If the IP works but the name
+   does not, it is a DNS problem.
+2. Run `ipconfig /all` and check that the VPN adapter lists the internal DNS servers.
+3. Disconnect and reconnect the VPN; if DNS is still wrong, reinstall the VPN profile from
+   the software centre.
+4. If even IP addresses fail, compare the home network's address range with the internal
+   ranges (for example both using 192.168.1.x). Ask the user to restart the home router
+   or test from a hotspot, and report the overlap to network engineering.
+---
+[3] VPN client not connecting
+VPN client not connecting (VPN connectivity)
+## Resolution steps
+1. Confirm the internet works without the VPN by loading any public website.
+2. Ask whether colleagues can connect. If several users fail at the same time, check the
+   gateway status and escalate to network engineering instead of fixing clients one by one.
+3. If the error mentions authentication, check whether the domain account is locked or
+   the password has expired, and fix that first.
+4. If the client hangs at ""Connecting"" with no login prompt, ask the user to retry from a
+   mobile hotspot. If that works, the original network blocks the VPN.
+5. If the VPN network adapter shows as disabled after a Windows update, restart the
+   machine, then reinstall the VPN client from the software centre if it is still missing.
+
+## Warnings
+Do not ask the user to turn off the Windows firewall or antivirus to test the VPN.
+---
+[4] Windows reports an IP address conflict
+Windows reports an IP address conflict (DHCP and DNS)
+## Symptom
+Windows shows ""Windows has detected an IP address conflict"" and the connection becomes
+unreliable or drops.
+
+## Cause
+Two devices are using the same IP address, almost always because one of them (a printer,
+a test machine) was given a static address inside the DHCP range.
+
+## Resolution steps
+1. Run `ipconfig /release` and `ipconfig /renew` on the user's laptop to get a new
+   address; this usually restores the connection at once.
+2. Note the conflicting address from the message or the event log.
+3. Report the address to network engineering so they can find the device with the static
+   address and either reserve it or move it outside the DHCP range.
+
+## Warnings
+Do not set a static address on the laptop to escape the conflict; it only moves the
+problem.
+---
+[5] VPN client not connecting
+VPN client not connecting (VPN connectivity)
+## Symptom
+The VPN client hangs at ""Connecting..."", or fails at once with an authentication or
+timeout error. Internet access without the VPN works.
+
+## Cause
+Usually one of: the local network blocks the VPN (hotel, airport or public Wi-Fi), the
+user's domain account is locked or its password expired, the VPN adapter was disabled by
+an update, or the VPN gateway itself is down.",R,,,,
+29,1344b2e5-deee-4633-bef2-c5f80ea172dd,"Bucket storage duration query
+
+Need to know how long files stay in our bucket before moving or deleting. Checked the documentation but it's unclear. Some files disappeared, others moved to archive storage. Worried about old data being retained indefinitely. Tried adjusting lifecycle rules but got conflicting info. Need a clear timeline for file retention and movement. Help to avoid data loss or unnecessary costs.","1. Check the bucket's lifecycle rules for transition and expiration settings. [1]
+2. Understand the current rule, for example, 'archived after 90 days, deleted after 3 years'. [1]
+3. If you need to change the retention period, confirm with the data owner and compliance if necessary. [1]
+4. Note that changes to lifecycle rules apply going forward, and objects already deleted under the old rule will not be restored. [1]","[1] How long files are kept in a bucket
+How long files are kept in a bucket (Object storage)
+## Symptom
+A user asks how long objects in a bucket are kept, why old files moved to archive or
+disappeared, or wants the retention changed.
+
+## Cause
+Lifecycle rules on the bucket move objects to cheaper storage classes or delete them
+after a set number of days.
+
+## Resolution steps
+1. Check the bucket's lifecycle rules for transition and expiration settings.
+2. Explain the current rule to the user in plain terms (for example ""archived after 90
+   days, deleted after 3 years"").
+3. For a change, confirm with the data owner, and with compliance if the bucket holds
+   business records.
+4. Note that rule changes apply going forward: objects already deleted under the old rule
+   are not restored.
+
+## Warnings
+Never shorten retention on a bucket under legal or compliance hold.
+---
+[2] Shared download link to a bucket file has expired
+Shared download link to a bucket file has expired (Object storage)
+## Symptom
+A partner or colleague opens a download link for a file in cloud storage and gets
+""Request has expired"" or access denied, although the link worked earlier.
+
+## Cause
+The link was a pre-signed URL. It works only for the lifetime set when it was created,
+and never longer than the credentials used to sign it. Links signed with temporary role
+credentials stop working when that session ends.
+
+## Resolution steps
+1. Confirm the link contains signature parameters (it is a pre-signed URL, not a public
+   object).
+2. Ask the file owner to generate a new link with an appropriate expiry.
+3. For links that must last days, the owner should sign with credentials that remain
+   valid for that long; the maximum lifetime is seven days.
+4. For recurring sharing with a partner, recommend a proper partner-access setup instead
+   of repeated links.
+
+## Warnings
+Do not make the object or bucket public to replace an expired link.
+---
+[3] Access denied on an object storage bucket
+Access denied on an object storage bucket (Object storage)
+## Symptom
+An application or user gets ""Access Denied"" when reading or writing objects in a storage
+bucket they expect to use.
+
+## Cause
+""Access Denied"" is deliberately generic. The block can come from the caller's identity
+policy, the bucket policy (for example a condition on network or VPC endpoint), or an
+explicit deny anywhere, which always overrides any allow.
+
+## Resolution steps
+1. Get the exact bucket, object key or prefix, and the action that failed (read, write or
+   list).
+2. Check the caller's policies for an explicit deny on that action.
+3. Check the bucket policy for conditions that block the caller, such as a required VPC
+   endpoint or source IP.
+4. If the caller lacks list permission, a missing object can look like access denied. Do
+   not assume the object is gone until access is confirmed.
+5. Request the missing permission through the normal access process.
+
+## Warnings
+Never make a bucket public to fix an access-denied error.
+---
+[4] Writes fail because a storage quota is reached
+Writes fail because a storage quota is reached (Object storage)
+## Symptom
+An application or backup job fails with a quota or limit error, or writes start failing
+while reads still work.
+
+## Cause
+A limit was reached: an account-level service quota, a size limit on a volume or file
+share, or a budget control that stops further spending.
+
+## Resolution steps
+1. Read the error to identify which limit was hit.
+2. Check whether old data can be archived or deleted under the retention policy before
+   asking for more space.
+3. Request a service quota increase through the cloud provider's process. It is not
+   instant, so state clearly if production is blocked.
+4. If usage grows steadily, raise a capacity-planning review instead of repeated small
+   increases.
+
+## Warnings
+Do not request the largest possible quota ""to be safe""; it hides runaway growth.
+---
+[5] Cloud access key exposed or committed to a repository
+Cloud access key exposed or committed to a repository (Identity, SSO and permissions)
+## Warnings
+Deleting the commit is not enough: a pushed key must be treated as compromised and
+deactivated.",A,,,,
+30,f1bd33cb-403a-4e05-874c-57a4088ad0a9,"New database request
+
+Our team needs a managed PostgreSQL database for the new project. Can we get that set up, please?","1. Confirm the exact scope (database) and whether read-only or read-write access is needed. [2]
+2. Get the manager's approval and the business reason for the request. [2]
+3. Create a new role for the project if necessary, and grant the required access. [2]
+4. Record the details in the ticket, including who, what, why, and when. [2]
+5. Set an end date for temporary access if it is not permanent. [2]","[1] Connection rejected with no pg_hba.conf entry
+Connection rejected with no pg_hba.conf entry (Connections and pools)
+## Symptom
+A new application server or a developer gets ""no pg_hba.conf entry for host"" when
+connecting to a PostgreSQL database.
+
+## Cause
+PostgreSQL only accepts connections that match a rule in `pg_hba.conf`, which lists the
+allowed host addresses, databases, users and whether SSL is required. A new host, or a
+client without SSL where SSL is required, matches no rule.
+
+## Resolution steps
+1. Read the full error: it names the client address, user, database and whether SSL was used.
+2. If the client connected without SSL, set the client to require SSL and retry.
+3. If the host is new, raise a change request to add it, with the address, user, database
+   and business reason.
+4. The DBA team adds the rule and reloads the configuration.
+
+## Warnings
+Never request a rule that allows all addresses or ""trust"" authentication.
+---
+[2] Request for access to a database
+Request for access to a database (Access requests and schema changes)
+## Symptom
+A developer or a service asks for read or write access to a database, schema or table.
+
+## Cause
+Access is granted per role. A new project or service often needs access that nobody has
+requested yet.
+
+## Resolution steps
+1. Confirm the exact scope (table, schema or database) and whether read-only or read-write.
+2. Get the manager's approval and the business reason.
+3. Grant the narrowest existing role that fits, for example the schema's read-only role.
+   For a service, create a dedicated role for that service.
+4. Record who, what, why and when in the ticket, and an end date for temporary access.
+
+## Warnings
+Never add a person to the database owner or superuser role to grant access.
+---
+[3] Request to run a data fix in production
+Request to run a data fix in production (Access requests and schema changes)
+## Symptom
+A team asks the DBA team to run an `UPDATE` or `DELETE` script in production to correct
+bad data.
+
+## Cause
+Application bugs or bad imports leave wrong data that the application cannot correct
+itself.
+
+## Resolution steps
+1. Require the script, the expected number of affected rows and an approved change request.
+2. Run the script's `WHERE` clause as a `SELECT COUNT(*)` first and compare with the
+   expected number.
+3. Take a backup of the affected rows (or an on-demand backup) before running it.
+4. Run the script in a transaction, check the row count reported, and only then commit.
+
+## Warnings
+Never run a data fix that has no `WHERE` clause or whose row count does not match the
+expected number.
+---
+[4] Application runs out of database connections
+Application runs out of database connections (Connections and pools)
+## Symptom
+Application logs show ""connection pool exhausted"", ""sorry, too many clients already"", or
+requests waiting for a database connection, while the database server is up.
+
+## Cause
+Either the database reached `max_connections`, or the application's pool is full because
+code paths take connections and never return them (a leak), often after an unhandled
+error. Sessions left ""idle in transaction"" also hold connection slots.
+
+## Resolution steps
+1. Compare the number of connections in `pg_stat_activity` with `SHOW max_connections`.
+2. Group the sessions by application and state; many ""idle in transaction"" sessions from
+   one application point to that application.
+3. Check whether the errors started after a deployment; a new code path that does not
+   close its connection is the usual cause.
+4. As a stop-gap, restart the affected application instance to release leaked connections.
+5. Send the findings to the owning team to fix the leak or pool settings.
+
+## Warnings
+Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.
+---
+[5] Backup before a change or restore after data loss
+Backup before a change or restore after data loss (Disk space and backups)
+## Symptom
+A team asks for a backup before a risky change, or for a restore after data was lost (a
+bad migration, or an `UPDATE` or `DELETE` without a `WHERE` clause).
+
+## Cause
+Scheduled backups and continuous WAL archiving allow point-in-time recovery to any moment
+inside the retention window.
+
+## Resolution steps
+1. For a pre-change backup, take an on-demand backup and give the requester the backup ID
+   and time before they start.
+2. For a restore, get the exact time the bad change happened from logs or the requester.
+3. Restore to a new database or instance at a point just before that time.
+4. Let the requester verify the data, then copy the needed rows back or plan a cut-over
+   window with them.
+
+## Warnings
+Never restore over the live database before the restored copy is verified.",W,,,,

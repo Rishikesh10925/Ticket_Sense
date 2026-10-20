@@ -6,7 +6,7 @@ title: Vendor not included in the payment run
 updated: '2024-06-11'
 served: false
 author: S
-reviewer: null
+reviewer: Claude
 ---
 
 ## Symptom

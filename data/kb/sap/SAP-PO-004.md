@@ -6,7 +6,7 @@ title: Vendor invoice blocked for payment
 updated: '2026-03-25'
 served: true
 author: S
-reviewer: null
+reviewer: Claude
 ---
 
 ## Symptom
@@ -23,7 +23,8 @@ an invoice posted before the goods receipt.
 2. Run MRBR (release blocked invoices) for that vendor to see why it is blocked: price,
    quantity or date variance.
 3. For a quantity block caused by a missing goods receipt, ask the receiving team to post
-   the receipt. The block can then be released.
+   the receipt. The invoice is then released by the next MRBR run with automatic release,
+   or by accounts payable in MRBR.
 4. For a price variance, the buyer must confirm the price with the vendor. If it is
    correct, accounts payable releases the invoice in MRBR.
 5. Tell the vendor the invoice will be paid in the next payment run after release.
@@ -34,5 +35,5 @@ Only accounts payable releases blocked invoices. The helpdesk does not.
 ## Key facts
 - MIRO blocks invoices for payment when they differ from the PO or goods receipt beyond tolerance.
 - MRBR shows why an invoice is blocked and is used to release it.
-- A quantity block caused by a missing goods receipt clears once the receipt is posted.
+- After the missing goods receipt is posted, a quantity block is released by an MRBR run, not automatically.
 - Blocked invoices are released by accounts payable, not the helpdesk.
