@@ -328,6 +328,25 @@ export async function getGateThresholds(token: string): Promise<GateThresholdsVi
   return res.json();
 }
 
+// GET /tickets/{id}/decision: the confidence gate's lane and reasons (Week 8).
+export interface TicketDecision {
+  lane: "fast" | "assisted" | "escalate";
+  score: number | null;
+  reasons: string[];
+  model_version: string;
+  thresholds_version: string | null;
+  label_source: "human" | "judge" | null;
+  fast_threshold: number | null;
+  assisted_threshold: number | null;
+  created_at: string;
+}
+
+export async function getTicketDecision(token: string, id: string): Promise<TicketDecision> {
+  const res = await fetch(`${API_URL}/tickets/${id}/decision`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
 export async function getTicketDraft(token: string, id: string): Promise<TicketDraft> {
   const res = await fetch(`${API_URL}/tickets/${id}/draft`, { headers: authHeaders(token) });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
