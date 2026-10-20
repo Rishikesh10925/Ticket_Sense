@@ -12,6 +12,7 @@ check: whether each fact is right is the reviewer's call, recorded by setting
 from __future__ import annotations
 
 import argparse
+import html
 import re
 import sys
 from pathlib import Path
@@ -82,7 +83,53 @@ def main() -> None:
     out = ROOT / "docs" / "kb-review" / f"{args.department}-checklist.md"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"{len(articles)} articles -> {out}")
+    page = out.with_suffix(".html")
+    page.write_text(to_html(lines, args.department), encoding="utf-8")
+    print(f"{len(articles)} articles -> {out} and {page.name}")
+
+
+_LINK = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+
+
+def _inline(text: str) -> str:
+    text = html.escape(text, quote=False)
+    text = re.sub(r"\*\*([^*]+)\*\*", r"<b>\1</b>", text)
+    text = re.sub(r"`([^`]+)`", r"<code>\1</code>", text)
+    return _LINK.sub(lambda m: f'<a href="{m.group(2)}" target="_blank" rel="noopener">{m.group(1)}</a>', text)
+
+
+def to_html(lines: list[str], department: str) -> str:
+    """The same checklist as a browser page: clickable links, tickable facts."""
+    body = []
+    for line in lines:
+        if line.startswith("# "):
+            body.append(f"<h1>{_inline(line[2:])}</h1>")
+        elif line.startswith("## "):
+            body.append(f'</section><section class="card"><h2>{_inline(line[3:])}</h2>')
+        elif line.startswith("- [ ] "):
+            body.append(f"<label class=fact><input type=checkbox> {_inline(line[6:])}</label>")
+        elif line.startswith("Notes:"):
+            body.append('<textarea placeholder="Notes: anything wrong or doubtful? Tell Claude."></textarea>')
+        elif line.strip():
+            body.append(f"<p>{_inline(line)}</p>")
+    style = (
+        ":root{--bg:#f8fafc;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--link:#4f46e5}"
+        "@media (prefers-color-scheme:dark){:root{--bg:#0b1120;--card:#131c31;--text:#e2e8f0;--muted:#94a3b8;"
+        "--border:#1e293b;--link:#a5b4fc}}"
+        "body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,sans-serif}"
+        "main{max-width:900px;margin:0 auto;padding:16px}h1{font-size:22px}"
+        ".card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:4px 16px 12px;margin:14px 0}"
+        "h2{font-size:17px}a{color:var(--link)}code{font-size:13px}p{margin:6px 0}"
+        ".fact{display:block;margin:4px 0;cursor:pointer}"
+        "textarea{width:100%;min-height:44px;margin-top:6px;font:inherit;background:var(--bg);color:var(--text);"
+        "border:1px solid var(--border);border-radius:6px;padding:6px;box-sizing:border-box}"
+    )
+    return (
+        "<!doctype html><html lang=en><head><meta charset=utf-8>"
+        "<meta name=viewport content='width=device-width, initial-scale=1'>"
+        f"<title>{department.upper()} fact-check</title><style>{style}</style></head>"
+        "<body><main><section>" + "\n".join(body) + "</section></main></body></html>\n"
+    )
 
 
 if __name__ == "__main__":
