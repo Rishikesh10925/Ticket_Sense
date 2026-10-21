@@ -168,8 +168,14 @@ class ConfidenceModel:
     def top_reasons(self, rows, k: int = 3) -> list[list[str]]:
         out = []
         for c in self.contributions(rows):
-            order = np.argsort(c)
-            out.append([READABLE.get(FEATURES[j], FEATURES[j]) for j in order[:k] if c[j] < 0])
+            reasons: list[str] = []
+            for j in np.argsort(c):  # most negative first
+                if c[j] >= 0 or len(reasons) == k:
+                    break
+                text = READABLE.get(FEATURES[j], FEATURES[j])
+                if text not in reasons:  # two signals can share a reason (routing prob and entropy)
+                    reasons.append(text)
+            out.append(reasons)
         return out
 
 

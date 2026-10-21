@@ -71,3 +71,10 @@ def test_every_feature_has_a_readable_reason():
 
     missing = [f for f in FEATURES if f not in READABLE]
     assert not missing, f"reasons would show raw feature names: {missing}"
+
+
+def test_top_reasons_are_distinct():
+    rows = _rows()
+    model, _ = fit("logreg", rows[:180], "judge")
+    for reasons in model.top_reasons(rows[180:]):
+        assert len(reasons) == len(set(reasons)) <= 3

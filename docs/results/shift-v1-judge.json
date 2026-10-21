@@ -1,0 +1,315 @@
+{
+ "labels": "judge",
+ "status": "PROVISIONAL (LLM-judge labels)",
+ "thresholds": {
+  "fast": null,
+  "assisted": 0.05
+ },
+ "tuning_topics": [
+  "cloud-provisioning",
+  "hr-expenses",
+  "net-switching"
+ ],
+ "evaluation_topics": [
+  "cloud-cost",
+  "db-replication",
+  "sap-finance"
+ ],
+ "rule": "max unacceptable blocked on tuning topics s.t. validation cost <= 10%",
+ "guard": {
+  "min_dept_prob": 0.5,
+  "min_probe_margin": 0.1
+ },
+ "tuning": {
+  "n": 149,
+  "shown_without_guard": 77,
+  "shown_with_guard": 33,
+  "unacceptable_shown_without_guard": 77,
+  "unacceptable_shown_with_guard": 33,
+  "unacceptable_blocked_share": 0.5714,
+  "acceptable_blocked_share": null,
+  "risk_shown_without_guard": 1.0,
+  "risk_shown_with_guard": 1.0
+ },
+ "evaluation_unseen": {
+  "n": 134,
+  "shown_without_guard": 75,
+  "shown_with_guard": 25,
+  "unacceptable_shown_without_guard": 75,
+  "unacceptable_shown_with_guard": 25,
+  "unacceptable_blocked_share": 0.6667,
+  "acceptable_blocked_share": null,
+  "risk_shown_without_guard": 1.0,
+  "risk_shown_with_guard": 1.0
+ },
+ "validation_known_topics": {
+  "n": 135,
+  "shown_without_guard": 116,
+  "shown_with_guard": 107,
+  "unacceptable_shown_without_guard": 24,
+  "unacceptable_shown_with_guard": 19,
+  "unacceptable_blocked_share": 0.2083,
+  "acceptable_blocked_share": 0.0435,
+  "risk_shown_without_guard": 0.2069,
+  "risk_shown_with_guard": 0.1776
+ },
+ "two_lanes_vs_three": {
+  "three_lane_shown_val": 107,
+  "two_lane_shown_val": 107,
+  "note": "identical while no fast-lane threshold is certified"
+ },
+ "grid": [
+  {
+   "min_dept_prob": null,
+   "min_probe_margin": null,
+   "tune_unacceptable_blocked": 0.0,
+   "val_cost": 0.0
+  },
+  {
+   "min_dept_prob": null,
+   "min_probe_margin": -0.1,
+   "tune_unacceptable_blocked": 0.0649,
+   "val_cost": 0.0
+  },
+  {
+   "min_dept_prob": null,
+   "min_probe_margin": -0.05,
+   "tune_unacceptable_blocked": 0.1429,
+   "val_cost": 0.0
+  },
+  {
+   "min_dept_prob": null,
+   "min_probe_margin": 0.0,
+   "tune_unacceptable_blocked": 0.1948,
+   "val_cost": 0.0
+  },
+  {
+   "min_dept_prob": null,
+   "min_probe_margin": 0.05,
+   "tune_unacceptable_blocked": 0.3117,
+   "val_cost": 0.0
+  },
+  {
+   "min_dept_prob": null,
+   "min_probe_margin": 0.1,
+   "tune_unacceptable_blocked": 0.5584,
+   "val_cost": 0.0
+  },
+  {
+   "min_dept_prob": 0.5,
+   "min_probe_margin": null,
+   "tune_unacceptable_blocked": 0.0779,
+   "val_cost": 0.0435
+  },
+  {
+   "min_dept_prob": 0.5,
+   "min_probe_margin": -0.1,
+   "tune_unacceptable_blocked": 0.1169,
+   "val_cost": 0.0435
+  },
+  {
+   "min_dept_prob": 0.5,
+   "min_probe_margin": -0.05,
+   "tune_unacceptable_blocked": 0.1818,
+   "val_cost": 0.0435
+  },
+  {
+   "min_dept_prob": 0.5,
+   "min_probe_margin": 0.0,
+   "tune_unacceptable_blocked": 0.2208,
+   "val_cost": 0.0435
+  },
+  {
+   "min_dept_prob": 0.5,
+   "min_probe_margin": 0.05,
+   "tune_unacceptable_blocked": 0.3377,
+   "val_cost": 0.0435
+  },
+  {
+   "min_dept_prob": 0.5,
+   "min_probe_margin": 0.1,
+   "tune_unacceptable_blocked": 0.5714,
+   "val_cost": 0.0435
+  },
+  {
+   "min_dept_prob": 0.6,
+   "min_probe_margin": null,
+   "tune_unacceptable_blocked": 0.1558,
+   "val_cost": 0.1413
+  },
+  {
+   "min_dept_prob": 0.6,
+   "min_probe_margin": -0.1,
+   "tune_unacceptable_blocked": 0.1818,
+   "val_cost": 0.1413
+  },
+  {
+   "min_dept_prob": 0.6,
+   "min_probe_margin": -0.05,
+   "tune_unacceptable_blocked": 0.2208,
+   "val_cost": 0.1413
+  },
+  {
+   "min_dept_prob": 0.6,
+   "min_probe_margin": 0.0,
+   "tune_unacceptable_blocked": 0.2597,
+   "val_cost": 0.1413
+  },
+  {
+   "min_dept_prob": 0.6,
+   "min_probe_margin": 0.05,
+   "tune_unacceptable_blocked": 0.3636,
+   "val_cost": 0.1413
+  },
+  {
+   "min_dept_prob": 0.6,
+   "min_probe_margin": 0.1,
+   "tune_unacceptable_blocked": 0.5714,
+   "val_cost": 0.1413
+  },
+  {
+   "min_dept_prob": 0.7,
+   "min_probe_margin": null,
+   "tune_unacceptable_blocked": 0.1948,
+   "val_cost": 0.2826
+  },
+  {
+   "min_dept_prob": 0.7,
+   "min_probe_margin": -0.1,
+   "tune_unacceptable_blocked": 0.2208,
+   "val_cost": 0.2826
+  },
+  {
+   "min_dept_prob": 0.7,
+   "min_probe_margin": -0.05,
+   "tune_unacceptable_blocked": 0.2597,
+   "val_cost": 0.2826
+  },
+  {
+   "min_dept_prob": 0.7,
+   "min_probe_margin": 0.0,
+   "tune_unacceptable_blocked": 0.2857,
+   "val_cost": 0.2826
+  },
+  {
+   "min_dept_prob": 0.7,
+   "min_probe_margin": 0.05,
+   "tune_unacceptable_blocked": 0.3896,
+   "val_cost": 0.2826
+  },
+  {
+   "min_dept_prob": 0.7,
+   "min_probe_margin": 0.1,
+   "tune_unacceptable_blocked": 0.5974,
+   "val_cost": 0.2826
+  },
+  {
+   "min_dept_prob": 0.8,
+   "min_probe_margin": null,
+   "tune_unacceptable_blocked": 0.3506,
+   "val_cost": 0.4457
+  },
+  {
+   "min_dept_prob": 0.8,
+   "min_probe_margin": -0.1,
+   "tune_unacceptable_blocked": 0.3636,
+   "val_cost": 0.4457
+  },
+  {
+   "min_dept_prob": 0.8,
+   "min_probe_margin": -0.05,
+   "tune_unacceptable_blocked": 0.3766,
+   "val_cost": 0.4457
+  },
+  {
+   "min_dept_prob": 0.8,
+   "min_probe_margin": 0.0,
+   "tune_unacceptable_blocked": 0.3896,
+   "val_cost": 0.4457
+  },
+  {
+   "min_dept_prob": 0.8,
+   "min_probe_margin": 0.05,
+   "tune_unacceptable_blocked": 0.4805,
+   "val_cost": 0.4457
+  },
+  {
+   "min_dept_prob": 0.8,
+   "min_probe_margin": 0.1,
+   "tune_unacceptable_blocked": 0.6234,
+   "val_cost": 0.4457
+  },
+  {
+   "min_dept_prob": 0.9,
+   "min_probe_margin": null,
+   "tune_unacceptable_blocked": 0.7662,
+   "val_cost": 0.7717
+  },
+  {
+   "min_dept_prob": 0.9,
+   "min_probe_margin": -0.1,
+   "tune_unacceptable_blocked": 0.7662,
+   "val_cost": 0.7717
+  },
+  {
+   "min_dept_prob": 0.9,
+   "min_probe_margin": -0.05,
+   "tune_unacceptable_blocked": 0.7662,
+   "val_cost": 0.7717
+  },
+  {
+   "min_dept_prob": 0.9,
+   "min_probe_margin": 0.0,
+   "tune_unacceptable_blocked": 0.7662,
+   "val_cost": 0.7717
+  },
+  {
+   "min_dept_prob": 0.9,
+   "min_probe_margin": 0.05,
+   "tune_unacceptable_blocked": 0.8052,
+   "val_cost": 0.7717
+  },
+  {
+   "min_dept_prob": 0.9,
+   "min_probe_margin": 0.1,
+   "tune_unacceptable_blocked": 0.8831,
+   "val_cost": 0.7717
+  },
+  {
+   "min_dept_prob": 0.95,
+   "min_probe_margin": null,
+   "tune_unacceptable_blocked": 0.8961,
+   "val_cost": 0.9565
+  },
+  {
+   "min_dept_prob": 0.95,
+   "min_probe_margin": -0.1,
+   "tune_unacceptable_blocked": 0.8961,
+   "val_cost": 0.9565
+  },
+  {
+   "min_dept_prob": 0.95,
+   "min_probe_margin": -0.05,
+   "tune_unacceptable_blocked": 0.8961,
+   "val_cost": 0.9565
+  },
+  {
+   "min_dept_prob": 0.95,
+   "min_probe_margin": 0.0,
+   "tune_unacceptable_blocked": 0.8961,
+   "val_cost": 0.9565
+  },
+  {
+   "min_dept_prob": 0.95,
+   "min_probe_margin": 0.05,
+   "tune_unacceptable_blocked": 0.9091,
+   "val_cost": 0.9565
+  },
+  {
+   "min_dept_prob": 0.95,
+   "min_probe_margin": 0.1,
+   "tune_unacceptable_blocked": 0.9351,
+   "val_cost": 0.9565
+  }
+ ]
+}
