@@ -48,6 +48,8 @@ export interface Ticket {
   priority: string | null;
   sentiment: string | null;
   status: string;
+  // The confidence gate's lane (Week 9); null before the pipeline has run.
+  lane: "fast" | "assisted" | "escalate" | null;
   // Null for the end_user role even once a draft exists — see
   // app/schemas/tickets.py's build_ticket_out.
   ai_draft_reply: string | null;
@@ -229,12 +231,13 @@ export async function createTicket(
 
 export async function listTickets(
   token: string,
-  filters: { status?: string; priority?: string; departmentId?: string; sort?: string } = {}
+  filters: { status?: string; priority?: string; departmentId?: string; lane?: string; sort?: string } = {}
 ): Promise<Ticket[]> {
   const params = new URLSearchParams();
   if (filters.status) params.set("status", filters.status);
   if (filters.priority) params.set("priority", filters.priority);
   if (filters.departmentId) params.set("department_id", filters.departmentId);
+  if (filters.lane) params.set("lane", filters.lane);
   if (filters.sort) params.set("sort", filters.sort);
   const query = params.toString();
 

@@ -1988,3 +1988,18 @@
   background: var(--color-danger-bg);
   color: var(--color-danger);
 }
+
+/* Week 9 lane workbench: one instruction per lane, shape + colour from the lane tokens. */
+.lane-hint {
+  margin: 0 0 var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-left: 3px solid var(--lane-assisted);
+  background: var(--lane-assisted-bg);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.lane-hint-fast {
+  border-left-color: var(--lane-fast);
+  background: var(--lane-fast-bg);
+}

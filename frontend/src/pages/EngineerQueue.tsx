@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { Card } from "../components";
+import { Card, LaneBadge } from "../components";
 import { listTickets, getAnalyticsSummary, ApiError, type Ticket, type ReviewerBreakdown } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
 import { statusLabel, statusBadgeClass } from "../statusLabels";
@@ -11,6 +11,13 @@ const QUICK_FILTERS: { key: string; label: string }[] = [
   { key: "drafted", label: "Draft in review" },
   { key: "escalated", label: "Escalated" },
   { key: "reviewed", label: "Reviewed" },
+];
+
+const LANE_FILTERS: { key: string; label: string }[] = [
+  { key: "", label: "All lanes" },
+  { key: "fast", label: "Fast" },
+  { key: "assisted", label: "Assisted" },
+  { key: "escalate", label: "Escalated" },
 ];
 
 const SENTIMENT_CLASS: Record<string, string> = {
@@ -24,12 +31,13 @@ export default function EngineerQueue() {
   const navigate = useNavigate();
 
   const [status, setStatus] = useState("");
+  const [lane, setLane] = useState("");
   const [myStats, setMyStats] = useState<ReviewerBreakdown | null>(null);
 
   // Polls every 15 s so tickets the pipeline routes here appear without a reload.
   const queue = useQuery({
-    queryKey: ["queue", status],
-    queryFn: () => listTickets(token!, { status: status || undefined, sort: "priority" }),
+    queryKey: ["queue", status, lane],
+    queryFn: () => listTickets(token!, { status: status || undefined, lane: lane || undefined, sort: "priority" }),
     enabled: !!token,
     refetchInterval: 15_000,
   });
@@ -124,6 +132,21 @@ export default function EngineerQueue() {
               ))}
             </div>
           </Card>
+
+          <Card title="Lane">
+            <div className="quick-filter-list">
+              {LANE_FILTERS.map((f) => (
+                <button
+                  key={f.key}
+                  type="button"
+                  className={`quick-filter-btn${lane === f.key ? " quick-filter-btn-active" : ""}`}
+                  onClick={() => setLane(f.key)}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          </Card>
         </div>
 
         <Card title="Tickets">
@@ -143,6 +166,7 @@ export default function EngineerQueue() {
               <thead>
                 <tr>
                   <th>Subject</th>
+                  <th>Lane</th>
                   <th>Priority</th>
                   <th>Sentiment</th>
                   <th className="col-right">Confidence</th>
@@ -157,6 +181,7 @@ export default function EngineerQueue() {
                     onClick={() => navigate(`/tickets/${ticket.id}`)}
                   >
                     <td className="ticket-table-subject">{ticket.subject}</td>
+                    <td>{ticket.lane ? <LaneBadge lane={ticket.lane} /> : <span className="placeholder-note">—</span>}</td>
                     <td>
                       {ticket.priority ? (
                         <span className={`glance glance-${ticket.priority}`}>

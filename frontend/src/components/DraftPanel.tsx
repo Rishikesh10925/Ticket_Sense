@@ -98,7 +98,7 @@ function GateLine({ decision }: { decision: TicketDecision }) {
   );
 }
 
-function DraftBody({ draft, decision }: { draft: TicketDraft; decision?: TicketDecision }) {
+function DraftBody({ draft, decision, lane }: { draft: TicketDraft; decision?: TicketDecision; lane?: string | null }) {
   const [active, setActive] = useState<number | null>(null);
 
   const claimsByStep = new Map<number, DraftClaim[]>();
@@ -106,7 +106,10 @@ function DraftBody({ draft, decision }: { draft: TicketDraft; decision?: TicketD
     claimsByStep.set(claim.step_index, [...(claimsByStep.get(claim.step_index) ?? []), claim]);
   }
   const supported = draft.claims.filter((c) => c.support !== null && c.support >= SUPPORTED).length;
-  const weak = draft.weakest.filter((c) => c.support !== null && c.support < SUPPORTED);
+  // Assisted lane (Blueprint V2 §9.1): always show the three weakest claims to verify.
+  // Elsewhere only claims below the support line are listed.
+  const assisted = lane === "assisted";
+  const weak = assisted ? draft.weakest : draft.weakest.filter((c) => c.support !== null && c.support < SUPPORTED);
 
   return (
     <div className="draft-panel">
@@ -159,7 +162,7 @@ function DraftBody({ draft, decision }: { draft: TicketDraft; decision?: TicketD
 
           {draft.shown && weak.length > 0 && (
             <div className="draft-weakest">
-              <h4>Check these claims</h4>
+              <h4>{assisted ? "Weakest claims: verify these first" : "Check these claims"}</h4>
               <ul>
                 {weak.map((c) => (
                   <li key={`${c.step_index}-${c.claim_index}`}>
@@ -198,7 +201,17 @@ function DraftBody({ draft, decision }: { draft: TicketDraft; decision?: TicketD
 // The structured draft with inline citations and a side-by-side evidence view
 // (Roadmap Week 5). `version` changes whenever the ticket moves on, so a draft that
 // lands while the page is open is fetched without a reload.
-export default function DraftPanel({ token, ticketId, version }: { token: string; ticketId: string; version: string }) {
+export default function DraftPanel({
+  token,
+  ticketId,
+  version,
+  lane,
+}: {
+  token: string;
+  ticketId: string;
+  version: string;
+  lane?: string | null;
+}) {
   const query = useQuery({
     queryKey: ["draft", ticketId, version],
     queryFn: () => getTicketDraft(token, ticketId),
@@ -225,5 +238,5 @@ export default function DraftPanel({ token, ticketId, version }: { token: string
       </div>
     );
   }
-  return <DraftBody draft={query.data} decision={decision.data} />;
+  return <DraftBody draft={query.data} decision={decision.data} lane={lane} />;
 }
