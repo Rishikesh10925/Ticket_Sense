@@ -20,6 +20,17 @@ import { useAuth } from "../auth/AuthContext";
 import { statusLabel, statusBadgeClass } from "../statusLabels";
 
 const UNROUTED_STATUSES = ["submitted", "classified"];
+
+// Blueprint V2 §9.1: the lane decides how much the engineer is asked to check.
+const LANE_TITLE: Record<string, string> = {
+  fast: "Fast lane: ready to send",
+  assisted: "Assisted lane: verify before sending",
+};
+const LANE_HINT: Record<string, string> = {
+  fast: "The gate is confident in this draft. Read it once and accept, or edit if something is off.",
+  assisted:
+    "The gate wants a check. Start with the weakest claims listed below, compare them with the evidence, then accept, edit or reject.",
+};
 // The pipeline (classify -> route -> retrieve -> draft, see docs/langgraph-pipeline.md)
 // runs as a single background task, so this only ever needs a couple of polls in
 // practice — but it polls through every pre-draft status, not just the pre-route ones,
@@ -464,7 +475,7 @@ export default function TicketDetail() {
           )}
 
           <Card
-            title={isEscalated ? "Evidence" : "AI draft and evidence"}
+            title={isEscalated ? "Evidence" : LANE_TITLE[ticket.lane ?? ""] ?? "AI draft and evidence"}
             className={
               !isEscalated && ticket.confidence_score !== null && ticket.confidence_threshold !== null
                 ? ticket.confidence_score >= ticket.confidence_threshold
@@ -486,7 +497,10 @@ export default function TicketDetail() {
                 </div>
               )}
 
-            <DraftPanel token={token} ticketId={ticket.id} version={ticket.status} />
+            {!isEscalated && ticket.lane && LANE_HINT[ticket.lane] && (
+              <p className={`lane-hint lane-hint-${ticket.lane}`}>{LANE_HINT[ticket.lane]}</p>
+            )}
+            <DraftPanel token={token} ticketId={ticket.id} version={ticket.status} lane={ticket.lane} />
 
             {ticket.status === "drafted" && <ReviewActions token={token} ticket={ticket} onDone={loadTicket} />}
             {ticket.status === "reviewed" && (
