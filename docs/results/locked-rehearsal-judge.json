@@ -11,16 +11,16 @@
  "acceptable_share": 0.7556,
  "best_baseline": "B4 top-1 similarity",
  "proposed": {
-  "aurc": 0.1492,
-  "auroc_unacceptable": 0.656,
-  "ece": 0.08,
-  "brier": 0.1773,
-  "risk_at_50": 0.2059,
-  "risk_at_70": 0.1789,
-  "risk_at_90": 0.2049,
+  "aurc": 0.1337,
+  "auroc_unacceptable": 0.6946,
+  "ece": 0.1055,
+  "brier": 0.1737,
+  "risk_at_50": 0.2206,
+  "risk_at_70": 0.1684,
+  "risk_at_90": 0.1967,
   "aurc_ci95": [
-   0.0796,
-   0.2524
+   0.0721,
+   0.2275
   ]
  },
  "baselines": {
@@ -106,10 +106,10 @@
  "H1": {
   "rule": "paired bootstrap 95% interval of AURC(proposed) - AURC(best baseline) entirely below zero",
   "aurc_difference": {
-   "estimate": -0.0242,
+   "estimate": -0.0398,
    "ci95": [
-    -0.0955,
-    0.0641
+    -0.105,
+    0.0383
    ],
    "resamples": 1000
   },
@@ -118,11 +118,11 @@
  },
  "H2": {
   "rule": "test-side fast-lane risk <= 0.1 in at least 90% of 1000 resplits",
-  "share_within_alpha": 1.0,
-  "resplits_with_closed_lane": 1000,
+  "share_within_alpha": 0.999,
+  "resplits_with_closed_lane": 999,
   "median_test_risk": 0.0,
   "supported": null,
-  "decision": "not testable: the fast lane could not be certified in 1000 of 1000 resplits",
+  "decision": "not testable: the fast lane could not be certified in 999 of 1000 resplits",
   "histogram": {
    "edges": [
     0.0,
@@ -148,7 +148,7 @@
     0.5
    ],
    "counts": [
-    1000,
+    999,
     0,
     0,
     0,
@@ -158,7 +158,7 @@
     0,
     0,
     0,
-    0,
+    1,
     0,
     0,
     0,
@@ -195,12 +195,12 @@
    "A": {
     "n": 93,
     "acceptable_share": 0.7312,
-    "aurc": 0.2296
+    "aurc": 0.197
    },
    "B": {
     "n": 27,
     "acceptable_share": 0.9259,
-    "aurc": 0.0468
+    "aurc": 0.0452
    },
    "C2": {
     "n": 15,
@@ -212,27 +212,27 @@
    "Cloud": {
     "n": 24,
     "acceptable_share": 0.6667,
-    "aurc": 0.3259
+    "aurc": 0.3295
    },
    "Database": {
     "n": 27,
     "acceptable_share": 0.5926,
-    "aurc": 0.5712
+    "aurc": 0.5451
    },
    "HR": {
     "n": 27,
     "acceptable_share": 0.9259,
-    "aurc": 0.0322
+    "aurc": 0.028
    },
    "Networking": {
     "n": 27,
     "acceptable_share": 0.8148,
-    "aurc": 0.0504
+    "aurc": 0.0704
    },
    "SAP": {
     "n": 30,
     "acceptable_share": 0.7667,
-    "aurc": 0.0829
+    "aurc": 0.0745
    }
   }
  },
@@ -242,10 +242,10 @@
    "n": 135,
    "acceptable_share": 0.7556,
    "aurc": {
-    "estimate": 0.1492,
+    "estimate": 0.1337,
     "ci95": [
-     0.0796,
-     0.2524
+     0.0721,
+     0.2275
     ],
     "resamples": 1000
    },
@@ -257,7 +257,7 @@
    "aurc": {
     "estimate": 0.992,
     "ci95": [
-     0.979,
+     0.9785,
      1.0
     ],
     "resamples": 1000

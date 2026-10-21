@@ -91,8 +91,8 @@
   "xgboost": {
    "chosen_params": {
     "n_estimators": 100,
-    "max_depth": 2,
-    "learning_rate": 0.1
+    "max_depth": 3,
+    "learning_rate": 0.05
    },
    "cv": [
     {
@@ -101,7 +101,7 @@
       "max_depth": 2,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.0793
+     "cv_aurc": 0.076
     },
     {
      "params": {
@@ -109,7 +109,7 @@
       "max_depth": 2,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0755
+     "cv_aurc": 0.0747
     },
     {
      "params": {
@@ -117,7 +117,7 @@
       "max_depth": 3,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.0767
+     "cv_aurc": 0.074
     },
     {
      "params": {
@@ -125,7 +125,7 @@
       "max_depth": 3,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0765
+     "cv_aurc": 0.0753
     },
     {
      "params": {
@@ -133,7 +133,7 @@
       "max_depth": 4,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.0803
+     "cv_aurc": 0.0776
     },
     {
      "params": {
@@ -141,7 +141,7 @@
       "max_depth": 4,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0787
+     "cv_aurc": 0.0773
     },
     {
      "params": {
@@ -149,7 +149,7 @@
       "max_depth": 2,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.0758
+     "cv_aurc": 0.0753
     },
     {
      "params": {
@@ -157,7 +157,7 @@
       "max_depth": 2,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0801
+     "cv_aurc": 0.0799
     },
     {
      "params": {
@@ -165,7 +165,7 @@
       "max_depth": 3,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.0792
+     "cv_aurc": 0.0789
     },
     {
      "params": {
@@ -173,7 +173,7 @@
       "max_depth": 3,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0829
+     "cv_aurc": 0.0819
     },
     {
      "params": {
@@ -181,7 +181,7 @@
       "max_depth": 4,
       "learning_rate": 0.05
      },
-     "cv_aurc": 0.082
+     "cv_aurc": 0.0806
     },
     {
      "params": {
@@ -189,25 +189,25 @@
       "max_depth": 4,
       "learning_rate": 0.1
      },
-     "cv_aurc": 0.0839
+     "cv_aurc": 0.0819
     }
    ],
    "val_uncalibrated": {
-    "aurc": 0.1492,
-    "e_aurc": 0.1157,
-    "auroc_unacceptable": 0.656,
-    "ece": 0.2101,
-    "brier": 0.2124
+    "aurc": 0.1337,
+    "e_aurc": 0.1001,
+    "auroc_unacceptable": 0.6946,
+    "ece": 0.1606,
+    "brier": 0.1852
    }
   }
  },
  "chosen": "xgboost",
  "val": {
-  "aurc": 0.1492,
-  "e_aurc": 0.1157,
-  "auroc_unacceptable": 0.656,
-  "ece": 0.08,
-  "brier": 0.1773
+  "aurc": 0.1337,
+  "e_aurc": 0.1001,
+  "auroc_unacceptable": 0.6946,
+  "ece": 0.1055,
+  "brier": 0.1737
  },
  "val_reliability": {
   "bin_edges": [
@@ -230,9 +230,9 @@
    null,
    null,
    null,
-   0.6897,
-   0.7452,
-   0.8305,
+   0.6733,
+   0.7434,
+   0.8413,
    null
   ],
   "accuracy": [
@@ -242,9 +242,9 @@
    null,
    null,
    null,
-   0.4,
-   0.8163,
-   0.7887,
+   0.381,
+   0.8718,
+   0.8,
    null
   ],
   "counts": [
@@ -254,9 +254,9 @@
    0.0,
    0.0,
    0.0,
-   15.0,
-   49.0,
-   71.0,
+   21.0,
+   39.0,
+   75.0,
    0.0
   ]
  },
@@ -302,13 +302,13 @@
   },
   {
    "alpha": 0.3,
-   "threshold": null,
-   "coverage": 0.0
+   "threshold": 0.05,
+   "coverage": 1.0
   },
   {
    "alpha": 0.35,
-   "threshold": null,
-   "coverage": 0.0
+   "threshold": 0.05,
+   "coverage": 1.0
   },
   {
    "alpha": 0.4,
@@ -357,48 +357,48 @@
  },
  "example_reasons": [
   {
-   "ticket_id": "T-00066",
-   "score": 0.691,
+   "ticket_id": "T-00444",
+   "score": 0.753,
    "reasons": [
     "topic often needs rework",
-    "unusual number of claims",
-    "a weakly supported claim"
+    "ticket asks several questions",
+    "unusual ticket length"
    ]
   },
   {
-   "ticket_id": "T-00067",
-   "score": 0.749,
-   "reasons": [
-    "topic often needs rework",
-    "uncertain routing",
-    "a weakly supported claim"
-   ]
-  },
-  {
-   "ticket_id": "T-00068",
-   "score": 0.697,
-   "reasons": [
-    "topic often needs rework",
-    "unusual number of claims",
-    "a weakly supported claim"
-   ]
-  },
-  {
-   "ticket_id": "T-00126",
-   "score": 0.84,
-   "reasons": [
-    "keyword and dense results differ",
-    "a weakly supported claim",
-    "uncertain routing"
-   ]
-  },
-  {
-   "ticket_id": "T-00127",
-   "score": 0.812,
+   "ticket_id": "T-01070",
+   "score": 0.831,
    "reasons": [
     "uncertain routing",
+    "low claim support",
+    "unusual evidence length"
+   ]
+  },
+  {
+   "ticket_id": "T-00727",
+   "score": 0.786,
+   "reasons": [
+    "topic often needs rework",
+    "low claim support",
+    "another department matches as well"
+   ]
+  },
+  {
+   "ticket_id": "T-00987",
+   "score": 0.716,
+   "reasons": [
+    "topic often needs rework",
     "a weakly supported claim",
-    "low reranker score"
+    "low claim support"
+   ]
+  },
+  {
+   "ticket_id": "T-01203",
+   "score": 0.803,
+   "reasons": [
+    "uncertain routing",
+    "a weakly supported claim",
+    "ticket also matches another department"
    ]
   }
  ]

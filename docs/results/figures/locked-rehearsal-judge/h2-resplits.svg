@@ -8,23 +8,23 @@
 <line x1="156.0" y1="40" x2="156.0" y2="330" stroke="#e5e7eb"/>
 <text x="156.0" y="346" text-anchor="middle">0.10</text>
 <line x1="60" y1="272.0" x2="540" y2="272.0" stroke="#e5e7eb"/>
-<text x="54" y="276.0" text-anchor="end">220.00</text>
+<text x="54" y="276.0" text-anchor="end">219.78</text>
 <line x1="252.0" y1="40" x2="252.0" y2="330" stroke="#e5e7eb"/>
 <text x="252.0" y="346" text-anchor="middle">0.20</text>
 <line x1="60" y1="214.0" x2="540" y2="214.0" stroke="#e5e7eb"/>
-<text x="54" y="218.0" text-anchor="end">440.00</text>
+<text x="54" y="218.0" text-anchor="end">439.56</text>
 <line x1="348.0" y1="40" x2="348.0" y2="330" stroke="#e5e7eb"/>
 <text x="348.0" y="346" text-anchor="middle">0.30</text>
 <line x1="60" y1="156.0" x2="540" y2="156.0" stroke="#e5e7eb"/>
-<text x="54" y="160.0" text-anchor="end">660.00</text>
+<text x="54" y="160.0" text-anchor="end">659.34</text>
 <line x1="444.0" y1="40" x2="444.0" y2="330" stroke="#e5e7eb"/>
 <text x="444.0" y="346" text-anchor="middle">0.40</text>
 <line x1="60" y1="98.0" x2="540" y2="98.0" stroke="#e5e7eb"/>
-<text x="54" y="102.0" text-anchor="end">880.00</text>
+<text x="54" y="102.0" text-anchor="end">879.12</text>
 <line x1="540.0" y1="40" x2="540.0" y2="330" stroke="#e5e7eb"/>
 <text x="540.0" y="346" text-anchor="middle">0.50</text>
 <line x1="60" y1="40.0" x2="540" y2="40.0" stroke="#e5e7eb"/>
-<text x="54" y="44.0" text-anchor="end">1100.00</text>
+<text x="54" y="44.0" text-anchor="end">1098.90</text>
 <rect x="60" y="40" width="480" height="290" fill="none" stroke="#6b7280"/>
 <text x="300.0" y="368" text-anchor="middle">fast-lane risk</text>
 <text x="16" y="185.0" text-anchor="middle" transform="rotate(-90 16 185.0)">resplits</text>
@@ -38,7 +38,7 @@
 <rect x="229.0" y="330.0" width="22.0" height="0.0" fill="#2563eb"/>
 <rect x="253.0" y="330.0" width="22.0" height="0.0" fill="#2563eb"/>
 <rect x="277.0" y="330.0" width="22.0" height="0.0" fill="#2563eb"/>
-<rect x="301.0" y="330.0" width="22.0" height="0.0" fill="#2563eb"/>
+<rect x="301.0" y="329.7" width="22.0" height="0.3" fill="#2563eb"/>
 <rect x="325.0" y="330.0" width="22.0" height="0.0" fill="#2563eb"/>
 <rect x="349.0" y="330.0" width="22.0" height="0.0" fill="#2563eb"/>
 <rect x="373.0" y="330.0" width="22.0" height="0.0" fill="#2563eb"/>

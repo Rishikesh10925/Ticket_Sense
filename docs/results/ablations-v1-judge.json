@@ -3,20 +3,20 @@
  "model": "xgboost",
  "params": {
   "n_estimators": 100,
-  "max_depth": 2,
-  "learning_rate": 0.1
+  "max_depth": 3,
+  "learning_rate": 0.05
  },
- "full_val_aurc": 0.1492,
+ "full_val_aurc": 0.1337,
  "status": "PROVISIONAL (LLM-judge labels)",
  "ablations": [
   {
    "dropped": "retrieval",
    "n_features": 7,
-   "val_aurc": 0.1342,
-   "delta_aurc": -0.015,
+   "val_aurc": 0.1397,
+   "delta_aurc": 0.006,
    "delta_ci95": [
-    -0.0362,
-    0.0005
+    -0.0039,
+    0.0186
    ],
    "helps": false,
    "hurts": false
@@ -24,11 +24,11 @@
   {
    "dropped": "reranker",
    "n_features": 3,
-   "val_aurc": 0.1623,
-   "delta_aurc": 0.013,
+   "val_aurc": 0.1459,
+   "delta_aurc": 0.0122,
    "delta_ci95": [
-    -0.0025,
-    0.0345
+    -0.0032,
+    0.0371
    ],
    "helps": false,
    "hurts": false
@@ -36,11 +36,11 @@
   {
    "dropped": "grounding",
    "n_features": 9,
-   "val_aurc": 0.1454,
-   "delta_aurc": -0.0039,
+   "val_aurc": 0.1332,
+   "delta_aurc": -0.0005,
    "delta_ci95": [
-    -0.0272,
-    0.0192
+    -0.0218,
+    0.0195
    ],
    "helps": false,
    "hurts": false
@@ -48,23 +48,23 @@
   {
    "dropped": "consistency",
    "n_features": 1,
-   "val_aurc": 0.1352,
-   "delta_aurc": -0.0141,
+   "val_aurc": 0.137,
+   "delta_aurc": 0.0033,
    "delta_ci95": [
-    -0.0329,
-    -0.0011
+    -0.0085,
+    0.0168
    ],
    "helps": false,
-   "hurts": true
+   "hurts": false
   },
   {
    "dropped": "routing",
    "n_features": 4,
-   "val_aurc": 0.2149,
-   "delta_aurc": 0.0657,
+   "val_aurc": 0.2041,
+   "delta_aurc": 0.0704,
    "delta_ci95": [
-    0.0223,
-    0.1173
+    0.0229,
+    0.1377
    ],
    "helps": true,
    "hurts": false
@@ -72,23 +72,23 @@
   {
    "dropped": "evidence quality",
    "n_features": 3,
-   "val_aurc": 0.1291,
-   "delta_aurc": -0.0202,
+   "val_aurc": 0.1321,
+   "delta_aurc": -0.0016,
    "delta_ci95": [
-    -0.0407,
-    -0.0056
+    -0.0188,
+    0.0127
    ],
    "helps": false,
-   "hurts": true
+   "hurts": false
   },
   {
    "dropped": "ticket",
    "n_features": 4,
-   "val_aurc": 0.1765,
-   "delta_aurc": 0.0272,
+   "val_aurc": 0.151,
+   "delta_aurc": 0.0173,
    "delta_ci95": [
-    0.0042,
-    0.0615
+    0.0015,
+    0.0362
    ],
    "helps": true,
    "hurts": false
@@ -96,11 +96,11 @@
   {
    "dropped": "category history",
    "n_features": 2,
-   "val_aurc": 0.1983,
-   "delta_aurc": 0.0491,
+   "val_aurc": 0.2426,
+   "delta_aurc": 0.1089,
    "delta_ci95": [
-    0.0122,
-    0.1053
+    0.0395,
+    0.1947
    ],
    "helps": true,
    "hurts": false
@@ -108,11 +108,11 @@
   {
    "dropped": "cross-department probe",
    "n_features": 2,
-   "val_aurc": 0.1728,
-   "delta_aurc": 0.0235,
+   "val_aurc": 0.1687,
+   "delta_aurc": 0.035,
    "delta_ci95": [
-    0.0045,
-    0.0519
+    0.0096,
+    0.0737
    ],
    "helps": true,
    "hurts": false
