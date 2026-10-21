@@ -1,0 +1,62 @@
+{
+ "n": 30,
+ "seed": 2026,
+ "cache": "bypassed",
+ "stages": {
+  "redact": {
+   "median_ms": 0.1,
+   "p90_ms": 0.1,
+   "max_ms": 0.2
+  },
+  "classify": {
+   "median_ms": 27.5,
+   "p90_ms": 33.7,
+   "max_ms": 63.4
+  },
+  "route": {
+   "median_ms": 53.3,
+   "p90_ms": 59.5,
+   "max_ms": 68.9
+  },
+  "retrieve": {
+   "median_ms": 477.0,
+   "p90_ms": 555.9,
+   "max_ms": 566.5
+  },
+  "draft": {
+   "median_ms": 5684.9,
+   "p90_ms": 6854.3,
+   "max_ms": 7626.5
+  },
+  "check": {
+   "median_ms": 176.9,
+   "p90_ms": 261.0,
+   "max_ms": 468.4
+  },
+  "signals": {
+   "median_ms": 0.2,
+   "p90_ms": 0.3,
+   "max_ms": 0.5
+  },
+  "gate": {
+   "median_ms": 5.6,
+   "p90_ms": 7.2,
+   "max_ms": 18.4
+  },
+  "total": {
+   "median_ms": 6436.1,
+   "p90_ms": 7688.7,
+   "max_ms": 8544.9
+  }
+ },
+ "tokens": {
+  "llm_calls_per_ticket": 1,
+  "prompt_tokens_median": 1301.0,
+  "completion_tokens_median": 166.0,
+  "total_tokens_mean": 1440.1
+ },
+ "lanes": {
+  "assisted": 20,
+  "escalate": 10
+ }
+}
