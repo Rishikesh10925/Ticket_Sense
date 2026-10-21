@@ -184,7 +184,10 @@ async def load(version: str = "v1", label_source: str = "judge", include_test: b
             features["cs_agreement"] = model_side["b3_claim_agreement"]  # consistency group (§13.2)
         rows.append(Row(draft_id, ticket_id, group_id, typ, dept, topics.get(ticket_id, "none"), split,
                         can_answer, features, label, model_side))
-    return rows
+    # One fixed order whatever the source: row order sets the cross-validation folds and
+    # XGBoost's subsampling, and the database returns rows in storage order (Week 10
+    # fresh-clone test: the same rows in another order gave different tables).
+    return sorted(rows, key=lambda r: r.draft_id)
 
 
 if __name__ == "__main__":
