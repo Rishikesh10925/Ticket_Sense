@@ -3,6 +3,7 @@ import { BarChart, Card, DonutChart, StatCard } from "../../components";
 import { getAnalyticsSummary, ApiError, type AnalyticsSummary } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
 import { statusLabel } from "../../statusLabels";
+import LaneDashboard from "./LaneDashboard";
 
 // Fixed order, validated for CVD-safe adjacent contrast (dataviz skill's default
 // categorical palette) — departments are always rendered in this same slot order
@@ -80,6 +81,8 @@ export default function AdminAnalytics() {
 
   return (
     <>
+      <LaneDashboard />
+
       <div className="stat-grid">
         <StatCard label="Total tickets" value={analytics.total_tickets} accent />
         <StatCard

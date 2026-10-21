@@ -350,6 +350,23 @@ export async function getTicketDecision(token: string, id: string): Promise<Tick
   return res.json();
 }
 
+// GET /analytics/lanes (Week 9 dashboard).
+export interface LaneAnalytics {
+  lane_mix: Record<"fast" | "assisted" | "escalate", number>;
+  total: number;
+  actions: Record<"fast" | "assisted" | "escalate", Record<string, number>>;
+  acceptance_rate: Record<"fast" | "assisted" | "escalate", number | null>;
+  median_pipeline_ms: Record<"fast" | "assisted" | "escalate", number | null>;
+  median_decision_ms: Record<"fast" | "assisted" | "escalate", number | null>;
+  confidence_bins: Record<"fast" | "assisted" | "escalate", number[]>;
+}
+
+export async function getLaneAnalytics(token: string): Promise<LaneAnalytics> {
+  const res = await fetch(`${API_URL}/analytics/lanes`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
 export async function getTicketDraft(token: string, id: string): Promise<TicketDraft> {
   const res = await fetch(`${API_URL}/tickets/${id}/draft`, { headers: authHeaders(token) });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
