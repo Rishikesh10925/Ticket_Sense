@@ -100,9 +100,9 @@ export default function AdminApprovals() {
             return (
               <li key={esc.id} className="approval-item">
                 <div className="approval-item-header">
-                  <strong className="link-button" onClick={() => navigate(`/tickets/${esc.ticket_id}`)}>
+                  <button type="button" className="link-button" onClick={() => navigate(`/tickets/${esc.ticket_id}`)}>
                     {esc.ticket_subject}
-                  </strong>
+                  </button>
                   <span className="status-badge">{esc.department_name ?? "Unrouted"}</span>
                   {esc.priority && <span className={`priority-badge priority-${esc.priority}`}>{esc.priority}</span>}
                 </div>

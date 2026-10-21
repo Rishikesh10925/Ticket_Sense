@@ -64,19 +64,21 @@ export default function NotificationBell({ token }: { token: string }) {
           ) : (
             <ul className="notif-bell-list">
               {pending.slice(0, 6).map((esc) => (
-                <li
-                  key={esc.id}
-                  className="notif-bell-item"
-                  onClick={() => {
-                    setOpen(false);
-                    navigate(`/tickets/${esc.ticket_id}`);
-                  }}
-                >
-                  <span className="notif-bell-item-subject">{esc.ticket_subject}</span>
-                  <span className="notif-bell-item-meta">
-                    {esc.department_name ?? "Unrouted"}
-                    {esc.confidence_score !== null && ` · ${Math.round(esc.confidence_score * 100)}% confidence`}
-                  </span>
+                <li key={esc.id}>
+                  <button
+                    type="button"
+                    className="notif-bell-item"
+                    onClick={() => {
+                      setOpen(false);
+                      navigate(`/tickets/${esc.ticket_id}`);
+                    }}
+                  >
+                    <span className="notif-bell-item-subject">{esc.ticket_subject}</span>
+                    <span className="notif-bell-item-meta">
+                      {esc.department_name ?? "Unrouted"}
+                      {esc.confidence_score !== null && ` · ${Math.round(esc.confidence_score * 100)}% confidence`}
+                    </span>
+                  </button>
                 </li>
               ))}
             </ul>

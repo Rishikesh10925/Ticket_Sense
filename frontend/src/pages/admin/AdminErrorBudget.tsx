@@ -88,7 +88,7 @@ export default function AdminErrorBudget() {
               <th>Fast</th>
               <th>Assisted</th>
               <th>Created</th>
-              <th></th>
+              <th><span className="sr-only">Actions</span></th>
             </tr>
           </thead>
           <tbody>
