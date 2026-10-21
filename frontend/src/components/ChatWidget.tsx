@@ -143,19 +143,21 @@ export default function ChatWidget() {
               ) : (
                 <ul className="chat-widget-contacts">
                   {contacts.map((c) => (
-                    <li key={c.user_id} className="chat-widget-contact" onClick={() => openThread(c)}>
-                      <div className="chat-widget-avatar">{initials(c.full_name)}</div>
-                      <div className="chat-widget-contact-meta">
-                        <span className="chat-widget-contact-name">
-                          {c.full_name}
-                          {!c.is_active && <span className="chat-widget-inactive-tag">inactive</span>}
+                    <li key={c.user_id}>
+                      <button type="button" className="chat-widget-contact" onClick={() => openThread(c)}>
+                        <span className="chat-widget-avatar">{initials(c.full_name)}</span>
+                        <span className="chat-widget-contact-meta">
+                          <span className="chat-widget-contact-name">
+                            {c.full_name}
+                            {!c.is_active && <span className="chat-widget-inactive-tag">inactive</span>}
+                          </span>
+                          <span className="chat-widget-contact-preview">
+                            {c.department_name && <span className="chat-widget-dept">{c.department_name} · </span>}
+                            {c.last_message ?? "No messages yet"}
+                          </span>
                         </span>
-                        <span className="chat-widget-contact-preview">
-                          {c.department_name && <span className="chat-widget-dept">{c.department_name} · </span>}
-                          {c.last_message ?? "No messages yet"}
-                        </span>
-                      </div>
-                      {c.unread_count > 0 && <span className="chat-widget-unread-dot tabular-nums">{c.unread_count}</span>}
+                        {c.unread_count > 0 && <span className="chat-widget-unread-dot tabular-nums">{c.unread_count}</span>}
+                      </button>
                     </li>
                   ))}
                 </ul>

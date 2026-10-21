@@ -132,6 +132,13 @@
 }
 
 .chat-widget-contact {
+  /* a real <button> so contacts are reachable with Tab and Enter (Week 10 a11y pass) */
+  width: 100%;
+  background: none;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
   display: flex;
   align-items: center;
   gap: 10px;

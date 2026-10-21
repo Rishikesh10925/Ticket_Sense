@@ -218,7 +218,7 @@ export default function AdminEngineers() {
                 <th>Email</th>
                 <th>Department</th>
                 <th>Status</th>
-                <th></th>
+                <th><span className="sr-only">Actions</span></th>
               </tr>
             </thead>
             <tbody>

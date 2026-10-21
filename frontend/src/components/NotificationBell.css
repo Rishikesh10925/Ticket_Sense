@@ -88,6 +88,13 @@
 }
 
 .notif-bell-item {
+  /* a real <button>: keyboard users can open a pending approval (Week 10 a11y pass) */
+  width: 100%;
+  background: none;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
   display: flex;
   flex-direction: column;
   gap: 2px;
