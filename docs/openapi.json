@@ -329,6 +329,22 @@
             }
           },
           {
+            "name": "lane",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Lane"
+            }
+          },
+          {
             "name": "sort",
             "in": "query",
             "required": false,
@@ -1037,6 +1053,35 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ConfidenceModelReport"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/analytics/lanes": {
+      "get": {
+        "tags": [
+          "analytics"
+        ],
+        "summary": "Get Lane Analytics",
+        "description": "Week 9 dashboard: how the confidence gate is routing live tickets.\n\n- lane mix: tickets per lane;\n- acceptance: what engineers did with drafts in each lane (accept, edit, reject,\n  escalate, doubt), from their recorded feedback;\n- latency: median pipeline time (ticket created to gate decision) and median\n  engineer decision time (workbench timer) per lane;\n- confidence: the gate's score in ten bins per lane.\nBenchmark drafts are excluded: this is live traffic only.",
+        "operationId": "get_lane_analytics_analytics_lanes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Lane Analytics Analytics Lanes Get"
                 }
               }
             }
@@ -3080,6 +3125,17 @@
           "status": {
             "type": "string",
             "title": "Status"
+          },
+          "lane": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lane"
           },
           "ai_draft_reply": {
             "anyOf": [

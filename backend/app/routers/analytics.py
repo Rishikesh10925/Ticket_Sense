@@ -261,3 +261,76 @@ async def get_confidence_model_report(
         calibration=calibration,
         daily_trend=daily_trend,
     )
+
+
+LANES = ("fast", "assisted", "escalate")
+
+
+@router.get("/lanes")
+async def get_lane_analytics(
+    current_user: User = Depends(require_role("admin")),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """Week 9 dashboard: how the confidence gate is routing live tickets.
+
+    - lane mix: tickets per lane;
+    - acceptance: what engineers did with drafts in each lane (accept, edit, reject,
+      escalate, doubt), from their recorded feedback;
+    - latency: median pipeline time (ticket created to gate decision) and median
+      engineer decision time (workbench timer) per lane;
+    - confidence: the gate's score in ten bins per lane.
+    Benchmark drafts are excluded: this is live traffic only."""
+    from statistics import median
+
+    from sqlalchemy import select
+
+    from app.models.draft import Draft
+    from app.models.gate import GateDecision
+
+    tickets = list(await db.scalars(select(Ticket).where(Ticket.lane.is_not(None))))
+    mix = {lane: sum(1 for t in tickets if t.lane == lane) for lane in LANES}
+
+    lane_of = {t.id: t.lane for t in tickets}
+    feedback = (await db.execute(select(Feedback.ticket_id, Feedback.action, Feedback.time_taken_ms))).all()
+    actions = {lane: {} for lane in LANES}
+    decision_ms: dict[str, list[int]] = {lane: [] for lane in LANES}
+    for ticket_id, action, ms in feedback:
+        lane = lane_of.get(ticket_id)
+        if lane is None or action == "resolve":
+            continue
+        actions[lane][action] = actions[lane].get(action, 0) + 1
+        if ms is not None:
+            decision_ms[lane].append(ms)
+
+    decisions = (await db.execute(
+        select(Draft.ticket_id, GateDecision.score, GateDecision.created_at)
+        .join(Draft, Draft.id == GateDecision.draft_id)
+        .where(Draft.ticket_id.is_not(None))
+    )).all()
+    created = {t.id: t.created_at for t in tickets}
+    pipeline_ms: dict[str, list[float]] = {lane: [] for lane in LANES}
+    bins = {lane: [0] * 10 for lane in LANES}
+    for ticket_id, score, decided_at in decisions:
+        lane = lane_of.get(ticket_id)
+        if lane is None:
+            continue
+        if ticket_id in created:
+            pipeline_ms[lane].append((decided_at - created[ticket_id]).total_seconds() * 1000)
+        if score is not None:
+            bins[lane][min(9, int(score * 10))] += 1
+
+    def med(values):
+        return round(median(values)) if values else None
+
+    return {
+        "lane_mix": mix,
+        "total": len(tickets),
+        "actions": actions,
+        "acceptance_rate": {
+            lane: round((a.get("accept", 0) + a.get("edit", 0)) / sum(a.values()), 4) if sum(a.values()) else None
+            for lane, a in actions.items()
+        },
+        "median_pipeline_ms": {lane: med(v) for lane, v in pipeline_ms.items()},
+        "median_decision_ms": {lane: med(v) for lane, v in decision_ms.items()},
+        "confidence_bins": bins,
+    }
