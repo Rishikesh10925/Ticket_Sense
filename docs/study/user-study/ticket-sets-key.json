@@ -1,0 +1,206 @@
+{
+ "set_a": [
+  {
+   "ticket_id": "T-00854",
+   "type": "A",
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-00071",
+   "type": "A",
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-01726",
+   "type": "C2",
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-01182",
+   "type": "B",
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-00985",
+   "type": "B",
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-01613",
+   "type": "C2",
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-01401",
+   "type": "C1",
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-00338",
+   "type": "A",
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-00131",
+   "type": "A",
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-01297",
+   "type": "C1",
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-00852",
+   "type": "A",
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-00752",
+   "type": "A",
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-00317",
+   "type": "A",
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-01522",
+   "type": "C1",
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-00061",
+   "type": "A",
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-00048",
+   "type": "A",
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-01238",
+   "type": "B",
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-00276",
+   "type": "A",
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-01286",
+   "type": "C1",
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-00003",
+   "type": "A",
+   "department": "Database"
+  }
+ ],
+ "set_b": [
+  {
+   "ticket_id": "T-01325",
+   "type": "C1",
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-00874",
+   "type": "A",
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-01000",
+   "type": "B",
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-00701",
+   "type": "A",
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-00295",
+   "type": "A",
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-00350",
+   "type": "A",
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-00999",
+   "type": "B",
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-00215",
+   "type": "A",
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-00659",
+   "type": "A",
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-01241",
+   "type": "C1",
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-00996",
+   "type": "B",
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-00541",
+   "type": "A",
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-00957",
+   "type": "A",
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-01746",
+   "type": "C2",
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-00451",
+   "type": "A",
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-01711",
+   "type": "C2",
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-01267",
+   "type": "C1",
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-00286",
+   "type": "A",
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-00570",
+   "type": "A",
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-01331",
+   "type": "C1",
+   "department": "HR"
+  }
+ ]
+}

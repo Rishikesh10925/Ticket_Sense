@@ -1,0 +1,293 @@
+{
+ "seed": 2026,
+ "mix_per_set": {
+  "A": 11,
+  "B": 3,
+  "C1": 4,
+  "C2": 2
+ },
+ "set_a": [
+  {
+   "ticket_id": "T-00854",
+   "subject": "Insurance claim not processed",
+   "body": "I submitted my health insurance claim two weeks ago but haven't received any update on it yet. I\u2019m unsure if it was correctly filed or if there are issues with the payment process. Could someone please check the status and let me know what's happening? Thanks for your help; I need this cleared up soon to avoid any delays in coverage.",
+   "attachment_text": null,
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-00071",
+   "subject": "How long are files kept?",
+   "body": "I see old files moved to archive or disappear. Also, wat to change file retention. How long are files kept in the bucket?",
+   "attachment_text": null,
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-01726",
+   "subject": "Wall screen needed",
+   "body": "Need a large screen for network status updates. Currently looking for quotes. Any recommendations for a suitable model? Priority not high but would be great for visibility.",
+   "attachment_text": null,
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-01182",
+   "subject": "Application connection timeout",
+   "body": "New app can't reach server, times out due to firewall block. Need specific rule for source IP, destination, port, and protocol. How long until a new rule can be deployed? How long until a new rule can be deployed to allow the application to connect properly without timeout issues?",
+   "attachment_text": null,
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-00985",
+   "subject": "SAP Login Issue",
+   "body": "Just started, but forgot my SAP password. Tried to log in, but can\u2019t remember the password. Not sure if I set this one myself. Account isn't locked yet, but can\u2019t proceed without it. Hadn\u2019t used this system in a while, so it might be expired. Any ideas on what to do next? How often do SAP passwords need to be changed, anyway?",
+   "attachment_text": null,
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-01613",
+   "subject": "Need help with personal website",
+   "body": "Can't get my website to load properly. Tried adjusting settings but no luck. Website goes blank after a few seconds. Other team members are seeing issues too. Need this fixed by tomorrow morning. Any tips on getting it back online? Thanks in advance for your assistance.",
+   "attachment_text": null,
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-01401",
+   "subject": "Unexpected data transfer charges",
+   "body": "Our bill shows high charges for data leaving the cloud, but no recent changes. Checkked compute and storage costs\u2014they\u2019re normal, but transfer charges are sky-high. Can\u2019t figure out why these costs are so high without recent usage changes.",
+   "attachment_text": null,
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-00338",
+   "subject": "Over-delivery blocked",
+   "body": "MIGO won't accept more tahn PO allows, even with tolerance. Filing cabinet won't close; paperclip stuck.",
+   "attachment_text": null,
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-00131",
+   "subject": "Update Bank Details",
+   "body": "Just joined, need to update bank info for direct deposit. Checked portal, but unsure which section to change. Not sure if I need to fill out forms or just update fields. Worried about making a mistake and delaying my pay. Bank details have changed, so need to make sure everything is correct. Can't find the verification process in the HR portal instructions. Any help on how to do this correctly would be great.",
+   "attachment_text": null,
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-01297",
+   "subject": "Posting failed - GL account blocked",
+   "body": "F1501 - Posting blocked for account 123456789. Error: FS00 - Account under restructuring. Blocked since 2026-02-15T10:00:00Z. Impact: Transactions are failing, urgent attention needed.",
+   "attachment_text": "2026-02-15T10:01:23Z - F1501 - Posting blocked for account 123456789. 2026-02-15T10:01:23Z - FS00 - Account under restructuring. 2026-02-15T10:01:23Z - Transaction failed: Posting blocked for account 123456789.",
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-00852",
+   "subject": "Urgent: Backup Needed for Change",
+   "body": "We need a backup before making this database change today. Our team is working on a migration and wants to ensure data safety. A colleague accidentally deleted data; we need a restore point. Without a recent backup, our work is at risk and could cause delays.",
+   "attachment_text": null,
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-00752",
+   "subject": "Web page blocked",
+   "body": "Can't access important site. Website keeps showing proxy block. Other sites work fine. Tech issue affecting my afternoon. Meeting in 10 needs this data.",
+   "attachment_text": null,
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-00317",
+   "subject": "Urgent: Access to New Project Database",
+   "body": "Could you please grant read access to the new project database for my team? We need this for our upcoming analysis and reporting tasks. The project is due next week, so swift action is required. No one from our team has requested access before, as this database is new. The schema we need access to is 'project_data_2023'. This will help us meet the deadline and ensure timely delivery. Thank you for your prompt attention to this request.",
+   "attachment_text": null,
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-01522",
+   "subject": "Writes fail with read-only error",
+   "body": "Application crashes witth 'cannot execute INSERT in a read-only transaction'. Logs show '08003: Unable to set transaction read-write' Tried restarting, no luck. Error repeats on every write attempt.",
+   "attachment_text": "2026-03-15 10:24:45,999 - 08003 - Unable to set transaction read-write\n2026-03-15 10:25:02,345 - 08003 - Unable to set transaction read-write",
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-00061",
+   "subject": "Cloud console SSO fails",
+   "body": "Can't log in through SSO. Redirects to login page. Got identity-provider error. Landed on empty console with access denied. Checked credentials, still no luck. Permissions and roles messed up? Need help resolving.",
+   "attachment_text": null,
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-00048",
+   "subject": "Printed doc never arrives",
+   "body": "Printed invoice doesn't come out. Printer is fine, but document stuck in queue. Also, computer keeps freezing when I check emails.",
+   "attachment_text": null,
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-01238",
+   "subject": "Requesting leave",
+   "body": "I've tried logging in, but the leave request form isn't appearing. Clicked 'My Requests' several times, still no luck. Sent a chat to HR, but they said to use the portal. Checked my inbox, no leave request email either. Other HR processes work fine, just this one is stuck. Any idea why my leave request isn't showing? How long does it usually take for a leave request to appear after submission?",
+   "attachment_text": null,
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-00276",
+   "subject": "Recurring Wi-Fi Disconnections",
+   "body": "I'm experiencing frequent Wi-Fi drops on my laptop. It happens more often when I'm idle or mve between meeting rooms. The problem seems to occur with the power-saving settings or distant access points. Access points or the wireless controller might be the cause when multiple usrs are affected.",
+   "attachment_text": null,
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-01286",
+   "subject": "Expense claim issue",
+   "body": "Hi IT team, can you help with my expense claim? I've attached my receipt as usual. Manager approval seems fine, but claim isn't showing up. Typing on this keyboard is a bit slow today, too. Checked online for solutions but couldn't find anything helpful. Could it be a delay in the payroll processing? Any ideas on what's going wrong? Thanks a lot! I appreciate your support.",
+   "attachment_text": null,
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-00003",
+   "subject": "Need backup before change",
+   "body": "Our team needs a backup before making a change to the database. The change is risky and could cause data loss. Without a backup, we can't go back if something goes wrong. Please do this backup as soon as possible. If data is lost, we need a restore from the last backup. Can you do this quickly? Thanks!",
+   "attachment_text": null,
+   "department": "Database"
+  }
+ ],
+ "set_b": [
+  {
+   "ticket_id": "T-01325",
+   "subject": "Posting period not open",
+   "body": "Tried closing and reopening OB52, no joy. Finance posting keeps failing, says period not open. Checked date and account type, both correct. Last worked last week, everything fine. Co-worker says periods open, but still getting error. Tried signing out and in again, didn\u2019t help. Small annoyance: Printer is out of ink, again. Any ideas? Driving me nuts!",
+   "attachment_text": null,
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-00874",
+   "subject": "Query performance issue",
+   "body": "Report runs slow, took 30 minutes today. Previously took 1 minute. Just noticed now. Logged at 2026-04-15 14:30:00, error 28012. See attachment for full log. Need it fixed soon, slowing down work.",
+   "attachment_text": "2026-04-15 14:30:00 - ERROR [28012] - Sequential scan on large table. 2026-04-15 14:30:00 - INFO [28013] - More work than necessary.",
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-01000",
+   "subject": "Health insurance claim status",
+   "body": "Employee filed claim last week. Still not paid after 2 weeks. Portal says 'processing'. When should I expect payment? When should I expect payment for the claim that is still processing in the portal after two weeks?",
+   "attachment_text": null,
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-00701",
+   "subject": "IP address conflict detected",
+   "body": "My PC keeps getting this error and connection is unstable. Just tried restarting but no luck; need this fixed urgently.",
+   "attachment_text": null,
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-00295",
+   "subject": "Scheduled job failed",
+   "body": "I noticed a job in SM37 is canceled. The job log mentions a variant doesn't exist. It seems the variant might have been deleted or renamed. Could the issue be related to a selection field? The report usually runs smoothly, but today it stopped. I'm not sure if a related field value changed too. Can someone please check on the variant and selection field? Would appreciate assistance in resolving this.",
+   "attachment_text": null,
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-00350",
+   "subject": "How long files stay in bucket?",
+   "body": "I've noticed some files moved to archive and disappeared. Can you explain? Also, how do I change the retention period for my bucket?",
+   "attachment_text": "2026-01-05 12:00:00 - Object lifecycle moved obj-12345 to GLACIER storage.\n2026-01-15 08:23:45 - Object lifecycle moved obj-67890 to GLACIER storage.\n2026-01-30 11:59:59 - Object lifecycle deleted obj-11111 after 30 days.",
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-00999",
+   "subject": "IDoc status 51 in WE02",
+   "body": "I\u2019m seeing an IDoc with status 51 in WE02. It\u2019s for an invoice but nothing was created. I\u2019m not sure what\u2019s missing to post it. Inbound IDocs are usually fine, but this one failed. Maybe I\u2019m missing some master data or pricing? Do we have a specific checklist for this? How often does this happen? Can someone review this with me? Is there a specific checklist for handling IDocs with status 51?",
+   "attachment_text": null,
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-00215",
+   "subject": "Query timed out or locked",
+   "body": "Sales report query failed. Got 'canceling statement due to statement timeout'. Many users trying to access reports now. Need ths fixed ASAP for meeting prep. Timeouts seem frequent lately. Please investigate and resolve.",
+   "attachment_text": null,
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-00659",
+   "subject": "SSL errors in desktop tool",
+   "body": "Developer tool faiils with SSL errors on office network. Works fine at home. Error: 'unable to get local issuer certificate'. Network proxy issues? Confirmed at home connection. Logs: 2026-03-15 14:45:02 [ERR] unable to get local issuer certificate",
+   "attachment_text": "2026-03-15 14:45:02 [ERR] unable to get local issuer certificate\n2026-03-15 14:45:02 [ERR] self-signed certificate in chain",
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-01241",
+   "subject": "Managed database request",
+   "body": "We need PostgreSQL for our new app. Got error codes 5303 and 42P01 last night. Tried restarting, no luck. Help please, need this by Friday.",
+   "attachment_text": "2026-02-15 10:30:01 - ERROR 5303 - Could not connect to database. 2026-02-15 10:31:02 - ERROR 42P01 - Undefined table 'users'.",
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-00996",
+   "subject": "Office Wi-Fi keeps dropping",
+   "body": "The Wi-Fi on my laptop keeps disconnecting, especially when I move from one room to another. It happens even when I just leave my laptop idle for a while. I have to re-login to the network every time it drops. This is really slowing down my work today. I noticed it happens to other laptops too in the same area. Is there a policy that limits Wi-Fi usage during the day? Is there a policy that limits Wi-Fi usage during the day?",
+   "attachment_text": null,
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-00541",
+   "subject": "Transaction fails with deadlock",
+   "body": "I kep getting 'deadlock detected' when I try to update records. It happens randomly, especially when I do many updates quickly. The system rolls back the transaction, but I have to start over. Sometimes it works fine, but othr times it keeps failing. Not sure what to do, but it's annoying when I need quick updates.",
+   "attachment_text": null,
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-00957",
+   "subject": "Background job stuck in Released/Ready",
+   "body": "I can't start my background jobs in SAP; they stay Released or Ready forever. Sometimes they get Active but then freeze again. The last one was Active for hours, which is unusually long. I\u2019m not sure if I\u2019m doing something wrong or if there\u2019s a system issue. Help please, I can\u2019t finish my tasks today.",
+   "attachment_text": null,
+   "department": "SAP"
+  },
+  {
+   "ticket_id": "T-01746",
+   "subject": "Cloud service acting weird",
+   "body": "The cloud service seems to be slow and inconsistent. It's not consistently failing, but it's definitely not working right. Some tasks take much longer than usual, others complete quickly. There's a noticeable delay in data synchronization. The UI appears to flicker occasionally. It's affecing multiple services within our setup. We need this fixde before end of day.",
+   "attachment_text": null,
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-00451",
+   "subject": "SSH timeout or refused",
+   "body": "Cloud VM SSH fails, times out or gets refused. Checked security groups and keys, but still can't connect.",
+   "attachment_text": null,
+   "department": "Cloud"
+  },
+  {
+   "ticket_id": "T-01711",
+   "subject": "Network issues in office",
+   "body": "I'm having trouble with my connection in the office network. It's acting weird and I can't access resources properly. Sometimes it works fine, but then it just stops responding. I've tried restarting my computer, but it doesn't help. Can you please check what might be causing this?",
+   "attachment_text": null,
+   "department": "Networking"
+  },
+  {
+   "ticket_id": "T-01267",
+   "subject": "Primary database not failover",
+   "body": "Primary database crashed but standby didn't take over. Check showed primary was still active, so failover delayed. System waited for a short time, thought it was okay. Now worried about data loss and system down time. Need help to fix this quickly.",
+   "attachment_text": null,
+   "department": "Database"
+  },
+  {
+   "ticket_id": "T-00286",
+   "subject": "Claim status query",
+   "body": "Employee needs to check claim status. Claim was submitted last week but no update. In-network claims are processed automatically; unsure what happens next. Assistance on portal access or carrier contact needed.",
+   "attachment_text": null,
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-00570",
+   "subject": "Health Insurance Claim Status",
+   "body": "I submitted a claim but haven't received any updates. Can someone check the status? The claim was for an in-network provider. I'm unsure if it\u2019s being processed correctly. Usually, claims should be resolved within 30 days. Is there anything I should do differently?",
+   "attachment_text": null,
+   "department": "HR"
+  },
+  {
+   "ticket_id": "T-01331",
+   "subject": "Daily allowance query",
+   "body": "Employee asks about meal expenses. Need receipts? Tech issue delays response, frustrating.",
+   "attachment_text": null,
+   "department": "HR"
+  }
+ ]
+}
