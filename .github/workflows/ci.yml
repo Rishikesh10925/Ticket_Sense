@@ -41,7 +41,10 @@ jobs:
           uv venv
           uv pip install numpy scipy pandas scikit-learn xgboost pyyaml pytest pytest-cov
       - name: ai/ unit tests (no database, no model server)
-        run: .venv/bin/pytest ai/tests -q --cov=ai/evaluation --cov=ai/generation --cov-report=term
+        # Week 10: at least 70% on the evaluation and pipeline packages (79% when added)
+        run: >-
+          .venv/bin/pytest ai/tests -q --cov=ai/evaluation --cov=ai/generation --cov=ai/gate
+          --cov=ai/security --cov=ai/confidence_model --cov-report=term --cov-fail-under=70
 
   backend:
     runs-on: ubuntu-latest

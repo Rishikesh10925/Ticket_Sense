@@ -1,0 +1,12 @@
+{
+ "what": "evaluation inputs without the locked test (confidence_model/dataset.py export)",
+ "version": "v1",
+ "rows": 1504,
+ "splits": [
+  "calib",
+  "train",
+  "unseen",
+  "val"
+ ],
+ "sha256": "cf1a2a93ebf44528a590f3360cb0c37e72d03dd28478c596badb8860c157366d"
+}

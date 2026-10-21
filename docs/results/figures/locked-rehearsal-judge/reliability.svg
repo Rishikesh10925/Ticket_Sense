@@ -29,7 +29,7 @@
 <text x="300.0" y="368" text-anchor="middle">predicted probability</text>
 <text x="16" y="185.0" text-anchor="middle" transform="rotate(-90 16 185.0)">observed acceptable share</text>
 <line x1="60.0" y1="330.0" x2="540.0" y2="40.0" stroke="#9ca3af" stroke-dasharray="4 4"/>
-<polyline points="372.0,214.0 420.0,93.3 468.0,101.3" fill="none" stroke="#2563eb" stroke-width="2"/>
+<polyline points="372.0,219.5 420.0,77.2 468.0,98.0" fill="none" stroke="#2563eb" stroke-width="2"/>
 <line x1="70" y1="50" x2="90" y2="50" stroke="#2563eb" stroke-width="2"/>
 <text x="96" y="54">proposed</text>
 </svg>
