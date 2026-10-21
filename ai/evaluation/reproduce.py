@@ -13,6 +13,9 @@ Steps, each a separate script so any one can be rerun alone:
     4. confidence model, calibration, lane thresholds (docs/results/confidence-v1-<labels>.json)
     5. feature-group ablations (docs/results/ablations-v1-<labels>.json)
     6. label agreement (docs/results/agreement-v1.json)
+    7. locked-evaluation rehearsal on validation, with figures (judge labels only;
+       docs/results/locked-rehearsal-judge.*). The one real locked-test run is never part
+       of this command: `python ai/evaluation/locked_eval.py --final` (Week 10).
 
 It reads the database the pipeline wrote (drafts, signals, labels) and never the locked
 test split. The numbers are deterministic: same inputs, same tables.
@@ -37,7 +40,7 @@ def steps(labels: str) -> list[tuple[str, list[str]]]:
         ("confidence model", ["ai/confidence_model/train.py", "--labels", labels]),
         ("ablations", ["ai/confidence_model/ablate.py", "--labels", labels]),
         ("agreement", ["ai/evaluation/agreement.py"]),
-    ]
+    ] + ([("locked rehearsal", ["ai/evaluation/locked_eval.py", "--rehearse"])] if labels == "judge" else [])
 
 
 def main() -> None:
