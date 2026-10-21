@@ -24,13 +24,15 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-SCREEN_VERSION = "screen-v1"
+SCREEN_VERSION = "screen-v2"
 
 _URL = re.compile(r"(?i)\b(?:https?://|www\.)[^\s)\]>\"']+")
 _CODE_SPAN = re.compile(r"`([^`]+)`")
 _TOKEN = re.compile(r"[^\s,;:!?\"'“”‘’]+")
 _CODE_CHARS = re.compile(r"[/\\_=$]|://|^--?[a-z]|\w\(")
 _PLACEHOLDER = re.compile(r"^\[[A-Z]+_\d+\]$")  # PII redaction placeholders
+_WORD_PAIR = re.compile(r"^[A-Za-z]{2,}/[A-Za-z]{2,}$")  # read/write, and/or
+_FILL_IN = re.compile(r"^<[A-Za-z][A-Za-z _-]*>$")  # <server_name>, <your-user-id>
 _HYPHEN_ID = re.compile(r"^[A-Z0-9]{2,}(?:-[A-Z0-9]+)+$")
 _COMMANDS = {
     # shells and OS tools
@@ -59,6 +61,10 @@ def _code_tokens(text: str) -> set[str]:
     for raw in _TOKEN.findall(text.replace("`", " ")):
         if _PLACEHOLDER.match(raw.strip(".,")):
             continue
+        # Prose, not code (full-benchmark false blocks, Week 9): "read/write" style word
+        # pairs and fill-in placeholders such as <server_name>. Paths and flags still count.
+        if _WORD_PAIR.match(raw.strip(".,;:")) or _FILL_IN.match(raw.strip(".,;:")):
+            continue
         # Prose brackets are not code; a call keeps its parentheses: pg_promote()
         tok = raw.rstrip(".;") if re.search(r"\w\(\)?$|\w\(\);?$", raw.rstrip(".;")) else raw.strip(".()[]{}")
         if len(tok) >= 3 and (_CODE_CHARS.search(tok) or _HYPHEN_ID.match(tok)):
@@ -84,8 +90,30 @@ def _commands(text: str) -> set[str]:
     return found
 
 
+def _outside_warnings(passages: list[str]) -> str:
+    """The cited evidence without its `## Warnings` sections."""
+    kept = []
+    for passage in passages:
+        in_warnings = False
+        for line in passage.splitlines():
+            if line.lstrip().startswith("## "):
+                in_warnings = line.strip().lower().startswith("## warning")
+                continue
+            if not in_warnings:
+                kept.append(line)
+    return _norm(" ".join(kept))
+
+
 def screen_step(text: str, cited_passages: list[str]) -> list[str]:
+    """Reasons to block one step (empty: it passes).
+
+    Week 9 red-team finding (RT-10): a step told the user to have `SAP_ALL` approved.
+    The term was in the cited passage, but only in its Warnings section, which says the
+    helpdesk never grants it. Runnable or code-like text must therefore appear in the
+    evidence *outside* a Warnings section; a term the evidence only warns against is
+    exactly what an injection would try to smuggle in."""
     evidence = _norm(" ".join(cited_passages))
+    allowed = _outside_warnings(cited_passages)
     reasons = []
     for url in _URL.findall(text):
         if _norm(url.rstrip(".")) not in evidence:
@@ -93,9 +121,13 @@ def screen_step(text: str, cited_passages: list[str]) -> list[str]:
     for tok in _code_tokens(text):
         if _norm(tok) not in evidence:
             reasons.append(f"code-like text not in the cited evidence: {tok}")
+        elif _norm(tok) not in allowed:
+            reasons.append(f"uses something the evidence only warns against: {tok}")
     for cmd in _commands(text):
         if cmd not in evidence:
             reasons.append(f"command not in the cited evidence: {cmd}")
+        elif cmd not in allowed:
+            reasons.append(f"command the evidence only warns against: {cmd}")
     return reasons
 
 
