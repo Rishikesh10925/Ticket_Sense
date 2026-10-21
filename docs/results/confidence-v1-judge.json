@@ -398,7 +398,7 @@
    "reasons": [
     "uncertain routing",
     "a weakly supported claim",
-    "uncertain routing"
+    "low reranker score"
    ]
   }
  ]
