@@ -19,11 +19,19 @@ Steps, each a separate script so any one can be rerun alone:
 
 It reads the database the pipeline wrote (drafts, signals, labels) and never the locked
 test split. The numbers are deterministic: same inputs, same tables.
+
+    python ai/evaluation/reproduce.py --offline
+
+Fresh-clone mode (Week 10): no database, no GPU. Steps 3 to 5 and 7 read the committed
+export data/eval/eval_inputs_v1.jsonl.gz (every split except the locked test, hash
+checked); retrieval and agreement need the database and are skipped. A clean checkout
+then reproduces the committed baseline, model, ablation and rehearsal tables exactly.
 """
 
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 import time
@@ -31,6 +39,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "ai"))
+
+
+DATABASE_ONLY = ("retrieval", "agreement")
 
 
 def steps(labels: str) -> list[tuple[str, list[str]]]:
@@ -47,7 +58,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--labels", choices=["judge", "human"], default="judge")
     parser.add_argument("--skip", nargs="*", default=[], help="step names to skip, e.g. retrieval")
+    parser.add_argument("--offline", action="store_true", help="read the committed export, not the database")
     args = parser.parse_args()
+    env = dict(os.environ)
+    if args.offline:
+        env["TS_EVAL_SOURCE"] = "file"
+        args.skip = [*args.skip, *DATABASE_ONLY]
 
     from confidence_model.dataset import verify_inputs
 
@@ -58,7 +74,7 @@ def main() -> None:
             print(f"{n}. {name}: skipped")
             continue
         started = time.perf_counter()
-        result = subprocess.run([sys.executable, *cmd], cwd=ROOT, capture_output=True, text=True)
+        result = subprocess.run([sys.executable, *cmd], cwd=ROOT, capture_output=True, text=True, env=env)
         if result.returncode != 0:
             sys.exit(f"{n}. {name} FAILED\n{result.stderr[-2000:]}")
         print(f"{n}. {name}: done in {time.perf_counter() - started:.0f} s")
