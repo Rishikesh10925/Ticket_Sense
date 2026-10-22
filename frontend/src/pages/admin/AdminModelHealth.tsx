@@ -35,21 +35,22 @@ export default function AdminModelHealth() {
   return (
     <>
       <div className="stat-grid">
-        <StatCard label="Labeled tickets" value={report.total_labeled} accent />
+        <StatCard label="Gate-scored tickets reviewed" value={report.total_labeled} accent />
         <StatCard
-          label="Overall agreement rate"
+          label="Engineers accepted the draft"
           value={report.overall_agreement_rate !== null ? `${Math.round(report.overall_agreement_rate * 100)}%` : "—"}
           tone="success"
         />
-        <StatCard label="From real reviews" value={report.real_labeled} tone="info" />
-        <StatCard label="From synthetic bootstrap" value={report.synthetic_labeled} />
       </div>
+      <p className="placeholder-note">
+        Live check of the confidence gate (model confidence-v1): every ticket the gate scored that an engineer then
+        reviewed. Benchmark results and certified thresholds are on the Error budget page.
+      </p>
 
       <Card title="Calibration">
         {report.total_labeled === 0 ? (
           <p className="placeholder-note">
-            No labeled feedback yet — this fills in once engineers review drafted tickets (or the synthetic
-            bootstrap set is seeded).
+            No reviewed tickets yet. This fills in once engineers act on drafts the gate scored.
           </p>
         ) : (
           <>

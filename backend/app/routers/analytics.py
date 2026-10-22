@@ -190,20 +190,21 @@ async def get_confidence_model_report(
     current_user: User = Depends(require_role("admin")),
     db: AsyncSession = Depends(get_db),
 ) -> ConfidenceModelReport:
-    """How well the confidence score actually predicts human agreement — a
-    reliability diagram (calibration) plus a day-by-day trend, both built from
-    every Feedback row with a resolvable label (see labels.label_from_feedback)
-    on a ticket that was actually scored. Real and synthetic bootstrap feedback are
-    pooled here (unlike /summary's real_feedback/synthetic_feedback split) because
-    calibration is a property of the model's whole training signal, not of who
-    provided it — total_labeled's real/synthetic breakdown is reported alongside so
-    the split is still visible, not hidden."""
+    """How well the live gate's confidence score predicts engineers' decisions: a
+    reliability diagram plus a day-by-day trend, from every Feedback row with a
+    resolvable label (labels.label_from_feedback).
+
+    Week 11 bug bash: only tickets the current gate scored (they have a lane; migration
+    0022) and only real engineer feedback. Before, this pooled tickets scored by the V1
+    confidence model and the V1 synthetic bootstrap labels, so the page described a model
+    that no longer runs. `synthetic_labeled` is kept in the response and is now always 0."""
     rows = (
         await db.execute(
             select(Feedback, Ticket, User)
             .join(Ticket, Feedback.ticket_id == Ticket.id)
             .join(User, Feedback.reviewer_id == User.id)
-            .where(Ticket.confidence_score.isnot(None))
+            .where(Ticket.confidence_score.isnot(None), Ticket.lane.isnot(None),
+                   User.email != SYNTHETIC_REVIEWER_EMAIL)
         )
     ).all()
 
