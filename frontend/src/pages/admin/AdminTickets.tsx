@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, StatCard } from "../../components";
 import { SearchIcon } from "../../components/icons";
 import { listTickets, listDepartments, ApiError, type Ticket, type Department } from "../../api/client";
@@ -137,7 +137,9 @@ export default function AdminTickets() {
             <tbody>
               {filtered.map((ticket) => (
                 <tr key={ticket.id} className="clickable-row" onClick={() => navigate(`/tickets/${ticket.id}`)}>
-                  <td className="ticket-table-subject">{ticket.subject}</td>
+                  <td className="ticket-table-subject">
+                    <Link to={`/tickets/${ticket.id}`} className="ticket-row-link">{ticket.subject}</Link>
+                  </td>
                   <td>
                     <span className="dept-chip">{departmentName(ticket.department_id)}</span>
                   </td>

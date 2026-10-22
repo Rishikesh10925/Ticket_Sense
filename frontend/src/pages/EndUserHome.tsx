@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AttachmentInput, Button, Card, FormField, StatCard, useToast } from "../components";
 import { CloseIcon, PlusIcon } from "../components/icons";
 import { createTicket, listTickets, ApiError, type Ticket } from "../api/client";
@@ -143,7 +143,9 @@ export default function EndUserHome() {
                   className="clickable-row"
                   onClick={() => navigate(`/tickets/${ticket.id}`)}
                 >
-                  <td className="ticket-table-subject">{ticket.subject}</td>
+                  <td className="ticket-table-subject">
+                    <Link to={`/tickets/${ticket.id}`} className="ticket-row-link">{ticket.subject}</Link>
+                  </td>
                   <td>
                     <span className={statusBadgeClass(ticket.status)}>{statusLabel(ticket.status)}</span>
                   </td>
