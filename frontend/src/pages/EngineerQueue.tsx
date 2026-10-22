@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, LaneBadge } from "../components";
 import { listTickets, getAnalyticsSummary, ApiError, type Ticket, type ReviewerBreakdown } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
@@ -180,7 +180,9 @@ export default function EngineerQueue() {
                     className={`clickable-row${ticket.status === "escalated" ? " row-escalated" : ""}`}
                     onClick={() => navigate(`/tickets/${ticket.id}`)}
                   >
-                    <td className="ticket-table-subject">{ticket.subject}</td>
+                    <td className="ticket-table-subject">
+                      <Link to={`/tickets/${ticket.id}`} className="ticket-row-link">{ticket.subject}</Link>
+                    </td>
                     <td>{ticket.lane ? <LaneBadge lane={ticket.lane} /> : <span className="placeholder-note">—</span>}</td>
                     <td>
                       {ticket.priority ? (
