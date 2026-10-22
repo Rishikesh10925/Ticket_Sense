@@ -12,6 +12,7 @@ from app.routers import (
     health,
     knowledge_base,
     messages,
+    study,
     tickets,
     users,
 )
@@ -37,3 +38,4 @@ app.include_router(escalations.router)
 app.include_router(messages.router)
 app.include_router(annotate.router)
 app.include_router(gate.router)
+app.include_router(study.router)

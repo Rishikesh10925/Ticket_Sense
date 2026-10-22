@@ -24,7 +24,7 @@ class UserCreate(BaseModel):
     email: str
     full_name: str
     password: str
-    role: Literal["end_user", "department_engineer", "admin", "annotator"]
+    role: Literal["end_user", "department_engineer", "admin", "annotator", "participant"]
     department_id: UUID | None = None
 
 
@@ -32,6 +32,6 @@ class UserUpdate(BaseModel):
     """Partial update — role/department reassignment and activate/deactivate.
     All fields optional; only the ones provided are changed."""
 
-    role: Literal["end_user", "department_engineer", "admin", "annotator"] | None = None
+    role: Literal["end_user", "department_engineer", "admin", "annotator", "participant"] | None = None
     department_id: UUID | None = None
     is_active: bool | None = None
