@@ -12,7 +12,7 @@ dependencies = [
     "alembic>=1.13",
     "pgvector>=0.3.6",
     "bcrypt>=4.2",
-    "pyjwt>=2.9",
+    "pyjwt>=2.15",
     "email-validator>=2.2",
     "python-multipart>=0.0.12",
     # ai/graph/nodes.py's classify node loads joblib-pickled scikit-learn pipelines
@@ -23,7 +23,7 @@ dependencies = [
     # ai/ocr/extract.py's PDF text extraction, run on every ticket with a PDF
     # attachment — lightweight (pure Python, no model weights), so no reason to keep
     # it optional the way easyocr is below.
-    "pypdf>=5.0",
+    "pypdf>=6.21.1",
 ]
 
 [project.optional-dependencies]
