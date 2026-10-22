@@ -97,5 +97,11 @@ None beyond the controls above. Raw generator output is the dataset.
 
 ## Distribution and maintenance
 
-Released under an open licence with the repository (data and articles synthetic). A
-version change (v1.1, v2) gets a new freeze record; earlier freezes are never edited.
+- **Package.** `python ai/benchmark/release.py` builds `release/ticketsense-benchmark-v1.zip`:
+  tickets, splits, freeze records, the 120 articles, the red-team set, this datasheet, the
+  labelling rubric, a README and `SHA256SUMS`. It is built only if the freeze verifies, and
+  the same inputs always give the same bytes. No labels are included yet.
+- **Licence.** **To be decided** by the authors before publication (the repository has no
+  licence yet).
+- **Versions.** A version change (v1.1, v2) gets a new freeze record; earlier freezes are
+  never edited.
