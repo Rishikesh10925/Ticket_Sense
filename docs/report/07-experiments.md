@@ -60,5 +60,5 @@ from a fresh clone without a database or GPU, byte for byte (Week 10 check).
 
 Design: 6 to 8 participants, within subject, manual versus workbench, two matched sets of
 20 tickets, counterbalanced; handling time measured on the server, replies graded blind,
-SUS after the workbench ([study kit](../study/user-study/README.md)). Analysis:
-`python ai/study/analyse.py`. **To be filled** after the sessions.
+SUS after the workbench ([study kit](../study/user-study/README.md)). Full design and
+results in [Chapter 11](11-user-experience-and-study.md). **To be filled** after the sessions.

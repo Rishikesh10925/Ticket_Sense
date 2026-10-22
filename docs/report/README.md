@@ -17,6 +17,7 @@ command; anything that waits on human labels, the locked test or the user study 
 | 8 | [Security and responsible AI](08-security-and-responsible-ai.md) | Rishikesh | draft |
 | 9 | [Discussion, limitations and future work](09-discussion.md) | Shivaganesh | draft |
 | 10 | [Appendices](10-appendices.md) | Rishikesh | draft |
+| 11 | [User experience and the user study](11-user-experience-and-study.md) | Aashritha | draft; study results pending |
 
 Related: [results draft](../results-draft.md), [datasheet](../datasheet.md),
 [model card](../model-card.md), [pre-registration](../prereg.md).
