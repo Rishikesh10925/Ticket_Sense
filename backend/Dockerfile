@@ -10,6 +10,9 @@ WORKDIR /app
 # Dependencies first, application code last: a code change then reuses the cached
 # torch / sentence-transformers layers instead of reinstalling them (minutes vs seconds).
 COPY backend/pyproject.toml ./backend/
+# Week 11: pip's 15 s default read timeout failed whole builds on a slow connection
+# (PyPI read timeouts after five retries); a longer timeout and more retries ride it out.
+ENV PIP_DEFAULT_TIMEOUT=120 PIP_RETRIES=10
 # CPU-only torch/torchvision, installed *before* the [ai] extra below — easyocr and
 # sentence-transformers both depend on torch, and left to its own resolution pip
 # pulls the default CUDA build plus several GB of nvidia-* packages neither of them
