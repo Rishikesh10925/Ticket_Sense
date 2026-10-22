@@ -50,6 +50,11 @@ exactly what an injection would add.
 - [Datasheet](../datasheet.md) for the benchmark and [model card](../model-card.md) for the
   classifier and confidence model, with intended use and known failure modes.
 
-## 8.6 Dependency and secret checks
+## 8.6 Dependency and secret checks (Week 11, 2026-10-22)
 
-**To be filled**: results of the Week 11 dependency audit and secret scan.
+| Check | Finding | Action |
+|---|---|---|
+| `npm audit` (frontend) | Production dependencies: 0. Dev only: vite 8.2.0 to 8.2.2 and source-map-js, high (dev-server issues) | `npm audit fix`; 0 remaining |
+| `pip-audit` (backend, all 112 installed packages) | Known vulnerabilities in pyjwt 2.13.0 (login tokens), pypdf 6.16.2 (PDF attachments), pillow 12.3.0, urllib3 2.7.0, certifi, setuptools | Upgraded to pyjwt 2.15.1, pypdf 6.21.2, pillow 13.0.0, urllib3 2.8.0, certifi 2026.10.19, setuptools 84.2.1; minimum versions raised for the two direct dependencies |
+| Secret scan of the full git history (cloud keys, GitHub and API tokens, private keys) | None found; only `.env.example` files are tracked | none |
+| JWT secret default | The app would start in production with a public default signing key | It now refuses to start unless the secret is 32+ characters, outside development and tests |
