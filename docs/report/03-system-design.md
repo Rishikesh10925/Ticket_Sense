@@ -48,9 +48,48 @@ Every gate decision is stored with its score, reasons and threshold version.
 
 ## 3.4 Data model
 
-**To be written**: a diagram of the main tables (tickets, drafts, draft_claims,
-signal_vectors, gate_thresholds, gate_decisions, escalations, annotation and study tables)
-from `backend/app/models/`.
+23 tables (migrations 0001 to 0023). The relationships below are generated from the
+foreign keys in `backend/app/models/`; the knowledge-base embedding tables and messages
+are left out for readability.
+
+```mermaid
+erDiagram
+    departments ||--o{ users : "engineers in"
+    departments ||--o{ tickets : "routed to"
+    departments ||--o{ knowledge_base : owns
+    users ||--o{ tickets : submits
+    knowledge_base ||--o{ kb_chunks : "split into"
+    tickets ||--o{ retrieval_runs : "searched by"
+    retrieval_runs ||--o{ retrieval_hits : returns
+    kb_chunks ||--o{ retrieval_hits : "matched in"
+    tickets ||--o{ drafts : "live drafts"
+    benchmark_tickets ||--o{ drafts : "benchmark drafts"
+    retrieval_runs ||--o{ drafts : "evidence for"
+    drafts ||--o{ draft_claims : "claims, NLI support"
+    drafts ||--o{ signal_vectors : "31 features"
+    drafts ||--o{ judge_verdicts : "LLM judge"
+    drafts ||--o{ gate_decisions : "score, lane, reasons"
+    gate_thresholds ||--o{ gate_decisions : "certified by"
+    tickets ||--o{ feedback : "engineer action"
+    tickets ||--o{ escalations : "senior or admin tier"
+    users ||--o| annotators : "reviewer account"
+    annotators ||--o{ annotation_assignments : "assigned"
+    drafts ||--o{ annotation_assignments : "to label"
+    annotation_assignments ||--o| labels : "rubric label"
+    users ||--o| study_participants : "participant account"
+    study_participants ||--o{ study_tasks : "40 tasks"
+    drafts ||--o{ study_tasks : stimulus
+```
+
+Three design rules follow from this:
+
+- **Everything a decision used is stored with it.** A gate decision points to the draft,
+  its signal vector and the exact threshold version, so any lane can be explained later.
+- **Live and benchmark drafts share one table.** A draft belongs to a live ticket or to a
+  benchmark ticket; the confidence model trains on benchmark drafts and scores live ones
+  with the same features.
+- **Labels never sit on the draft.** Human labels hang off blinded assignments, judge
+  verdicts off the draft, so the two sources cannot be mixed by accident.
 
 ## 3.5 Implementation notes
 
