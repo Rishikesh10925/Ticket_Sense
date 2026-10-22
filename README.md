@@ -21,9 +21,10 @@ draft). A human engineer always makes the final decision.
 
 > [!IMPORTANT]
 > **In development.** This is a final-year capstone at NMIMS MPSTME Hyderabad, built
-> to a 12-week roadmap. Weeks 1 to 8 are implemented and Week 9 is under way. Model and
-> threshold numbers below are **provisional**: they are computed on LLM-judge labels
-> while the human labels the project reports are still being collected.
+> to a 12-week roadmap. The code for Weeks 1 to 10 is implemented and Week 11 is under
+> way. Model and threshold numbers below are **provisional**: they are computed on
+> LLM-judge labels while the human labels the project reports are still being collected,
+> and the sealed locked test has not been evaluated yet.
 
 ## Table of contents
 
@@ -81,29 +82,24 @@ Objectives (from the [pre-registration](docs/prereg.md)):
 | Retrieval | Hybrid search over `kb_chunks`: PostgreSQL full text + pgvector HNSW, reciprocal-rank fusion, cross-encoder rerank; department and served-article filters in SQL; cross-department probe; every run logged (`ai/retrieval/`) |
 | Drafting | Structured JSON drafts with a citation on every step and a can-answer flag; delimited data blocks and schema rejection (`ai/generation/drafting.py`) |
 | Claim checking | Claim splitting and NLI entailment scoring (`cross-encoder/nli-deberta-v3-base`); verbatim-quote rule (`ai/grounding/claims.py`) |
-| Injection defence | Output screen: URLs, commands and code in a step must come from a passage that step cites (`ai/security/output_screen.py`) |
+| Injection defence | Output screen (screen-v2): URLs, commands and code in a step must come from a passage that step cites, and not only from its Warnings section (`ai/security/output_screen.py`) |
 | Signals | A 31-feature signal vector per draft over retrieval, reranker, grounding, consistency, routing, evidence and ticket groups (`ai/signals/features.py`) |
 | Confidence model | Logistic regression and XGBoost with group-aware CV, Platt calibration and top reasons (`ai/confidence_model/`) |
-| Gate | Versioned, certified lane thresholds in the database; every decision logged with score, lane and reasons; tickets routed by lane, with a fail-closed default and an optional shift guard (`ai/gate/service.py`) |
+| Gate | Versioned, certified lane thresholds in the database; every decision logged with score, lane and reasons; tickets routed by lane, with a fail-closed default and a shift guard (department probability below 0.5 or another department within 0.1 escalates) chosen on held-out topics (`ai/gate/service.py`, `ai/confidence_model/shift.py`) |
 | Risk control | Learn-then-Test thresholds on a pre-specified grid; AURC, e-AURC, AUROC, ECE, Brier; group-aware and paired bootstrap (`ai/evaluation/`) |
 | Benchmark | 1,775 synthetic tickets (types A, B, C1, C2) with gold provenance, a leakage-safe split manifest, a freeze record with content hashes and a sealed locked test set (`data/benchmark/`) |
 | Knowledge base | 120 articles in five departments (SAP, Cloud, Database, HR, Networking), 24 withheld to create unseen topics (`data/kb/`) |
-| Web app | React 19 app with end-user, engineer and admin views: ticket detail with cited draft, side-by-side evidence and unsupported-claim highlights; engineer actions with reason codes and a decision timer; admin control centre incl. an **Error Budget** screen |
+| Web app | React 19 app with end-user, engineer and admin views: engineer queue with lane badges and a lane filter; ticket detail with cited draft, side-by-side evidence, unsupported-claim highlights and, in the assisted lane, "weakest claims: verify these first"; engineer actions with reason codes and a decision timer; admin control centre incl. a lane dashboard and an **Error Budget** screen |
 | Labelling | Blinded annotation tool for outside reviewers, seeded assignment planner with double annotation and adjudication; browser pages for the groundedness audit and rubric pilot (`docs/audit/`, `docs/pilot/`) |
-| Evaluation tooling | Baselines B0 to B7, feature-group ablations, kappa / weighted kappa / Fleiss' kappa, LLM groundedness check, red-team runner, latency measurement, one-command reproduction |
-
-### In progress (Week 9)
-
-- Workbench layouts per lane (fast, assisted, escalate)
-- Unseen-topic shift experiments and the values for the shift guard
-- Analytics for lane mix, acceptance, latency and confidence distribution
-- User-study kit (ticket sets, consent form, task script, SUS questionnaire)
+| User study | `/study` screen for `participant` accounts: manual condition (ticket and knowledge-base search, no AI) and workbench condition (lane, reasons, draft, evidence, weakest claims) on two matched sets of 20 tickets, counterbalanced, timed on the server; setup, blind-grading export and H4 analysis scripts ([docs/study/user-study/](docs/study/user-study/README.md)) |
+| Evaluation tooling | Baselines B0 to B7, feature-group ablations, shift experiment, kappa / weighted kappa / Fleiss' kappa, LLM groundedness check, red team through the full pipeline, latency and token cost, one-command reproduction (also offline from a fresh clone), and the locked-test runner that applies the pre-registered H1 to H3 rules once |
 
 ### Planned
 
-- Human labels for 600 drafts (150 double-labelled) and confidence model / thresholds
-  refitted on them
-- Locked-test evaluation (Week 10), shift study, user study (Week 11), release (Week 12)
+- Human labels for 600 drafts (150 double-labelled) and the confidence model and
+  thresholds refitted on them
+- The single locked-test evaluation, once human labels exist
+- User-study sessions with six to eight participants (Week 11) and the release (Week 12)
 
 See [Roadmap](#roadmap).
 
@@ -177,17 +173,19 @@ Lanes ([Blueprint V2 §9.1]):
 │   ├── retrieval/          # Hybrid search, run log, evaluation
 │   ├── security/           # PII redaction, output screen
 │   ├── signals/            # Signal vector, baselines, model-side signals
+│   ├── study/              # User-study ticket sets and H4 analysis
 │   ├── confidence/         # V1 confidence model (superseded by confidence_model/)
 │   └── tests/              # Unit tests for ai/ (no database or model server needed)
 ├── backend/                # FastAPI app (routers, models, schemas, services, scripts) and tests
-├── db/migrations/          # Alembic migrations 0001 to 0022
+├── db/migrations/          # Alembic migrations 0001 to 0023
 ├── data/
 │   ├── kb/                 # 120 knowledge-base articles (Markdown, five departments)
 │   ├── benchmark/          # benchmark_v1.jsonl, splits, FREEZE records
 │   ├── annotation/         # Labelling selection and locked-test seal
+│   ├── eval/               # Evaluation inputs without the locked test, for offline reproduction
 │   ├── redteam/            # 40-ticket injection set
 │   └── sample_screenshots/ # Example ticket attachments used in OCR tests
-├── docs/                   # Design docs, ADRs, results, logbooks, audit and pilot tools
+├── docs/                   # Design docs, ADRs, results, logbooks, report draft, model card, audit and pilot tools
 ├── frontend/               # React app and Playwright end-to-end tests
 ├── docker-compose.yml      # db, api, web
 ├── tasks.py                # Cross-platform task runner (Makefile delegates to it)
@@ -233,12 +231,14 @@ python tasks.py demo
 ```
 
 Activate a certified threshold set for the gate. **Without one, every ticket escalates**
-(the safe default). The provisional set below was certified on LLM-judge labels:
+(the safe default). The provisional set below was certified on LLM-judge labels and
+includes the shift guard:
 
 ```bash
 cd backend
 uv run python -m app.scripts.load_thresholds \
-  --report docs/results/confidence-v1-judge.json --version t-judge-1
+  --report docs/results/confidence-v1-judge.json \
+  --guard docs/results/shift-v1-judge.json --version t-judge-2
 ```
 
 | Service | URL |
@@ -257,9 +257,9 @@ Copy [`.env.example`](.env.example) to `.env`. Never commit `.env`.
 |---|---|---|
 | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT` | Database container | `<db-user>`, `<db-password>`, `ticketsense`, `5432` |
 | `DATABASE_URL` | Backend connection string | `postgresql+asyncpg://<db-user>:<db-password>@localhost:5432/ticketsense` |
-| `APP_ENV` | Environment name | `development` |
+| `APP_ENV` | Environment name; anything other than `development` or `test` requires a real `JWT_SECRET_KEY` | `development` |
 | `CORS_ORIGINS` | Allowed frontend origins, comma-separated | `http://localhost:5173,http://localhost:3000` |
-| `JWT_SECRET_KEY` | Token signing key | `<long-random-secret>` |
+| `JWT_SECRET_KEY` | Token signing key; at least 32 characters outside development (`python -c "import secrets; print(secrets.token_hex(32))"`) | `<long-random-secret>` |
 | `JWT_ALGORITHM`, `JWT_EXPIRE_MINUTES` | Token settings | `HS256`, `60` |
 | `LLM_CLIENT` | Drafting client: `ollama`, or `stub` (offline extractive drafts, never for results) | `ollama` |
 | `LLM_MODEL` | Ollama model tag | `qwen2.5:7b-instruct` |
@@ -275,8 +275,9 @@ Copy [`.env.example`](.env.example) to `.env`. Never commit `.env`.
 |---|---|---|
 | End user | Web app home | Submit a ticket, follow its status and the final reply |
 | Department engineer | Queue → ticket | Review the cited draft and evidence, see the gate's lane and reasons, accept / edit / reject / escalate with reason codes |
-| Admin | Control centre (`/admin`) | Tickets, approvals, users, departments, knowledge base, analytics, model health, error budget |
+| Admin | Control centre (`/admin`) | Tickets, approvals, users, departments, knowledge base, analytics (incl. lane dashboard), model health, error budget |
 | Annotator (outside reviewer) | `/annotate` | Blinded labelling of drafts with the rubric |
+| Study participant | `/study` | The user study's 40 tickets in two conditions; accounts from `python -m app.scripts.setup_study` |
 
 Task runner (`python tasks.py <task>`):
 
@@ -287,7 +288,7 @@ Task runner (`python tasks.py <task>`):
 | `lint` | ruff, mypy (typed research packages), frontend lint |
 | `test` | `ai/tests`, then backend tests (needs Postgres) |
 | `openapi` | Write [`docs/openapi.json`](docs/openapi.json) from the app |
-| `reproduce` | Regenerate every evaluation table ([`ai/evaluation/reproduce.py`](ai/evaluation/reproduce.py)) |
+| `reproduce` | Regenerate every evaluation table and figure ([`ai/evaluation/reproduce.py`](ai/evaluation/reproduce.py)); `python ai/evaluation/reproduce.py --offline` does the same from a fresh clone without the database or a GPU |
 | `demo` | Seed demo users |
 | `e2e` | Playwright end-to-end tests against the running stack |
 
@@ -310,16 +311,17 @@ Interactive docs are served at `/docs`; the frozen spec is
 | Tickets | `POST /tickets`, `GET /tickets` (filters: `status`, `priority`, `department_id`, `lane`, `sort`), `GET /tickets/{id}`, `GET /tickets/{id}/attachment` |
 | Evidence, draft and gate | `GET /tickets/{id}/evidence`, `GET /tickets/{id}/draft`, `GET /tickets/{id}/decision` |
 | Review and escalation | `POST /tickets/{id}/feedback`, `GET /tickets/{id}/escalation`, `POST /tickets/{id}/resolve-escalation`, `GET /escalations/pending`, `POST /escalations/{id}/approve`, `POST /escalations/{id}/reject` |
-| Admin | `GET/POST /users`, `PATCH /users/{id}`, `GET /departments`, `PATCH /departments/{id}/threshold`, `GET/POST /knowledge-base`, `GET /analytics/summary`, `GET /analytics/confidence-model`, `GET /gate/thresholds` |
+| Admin | `GET/POST /users`, `PATCH /users/{id}`, `GET /departments`, `PATCH /departments/{id}/threshold` (V1, no longer used by the gate), `GET/POST /knowledge-base`, `GET /analytics/summary`, `GET /analytics/lanes`, `GET /analytics/confidence-model`, `GET /gate/thresholds` |
 | Messaging | `GET /messages/contacts`, `GET /messages/thread/{other_user_id}`, `POST /messages` |
 | Annotation | `GET /annotate/next`, `POST /annotate/{assignment_id}` |
+| User study | `GET /study/next`, `POST /study/tasks/{task_id}`, `GET /study/kb` |
 
 Scores, drafts, evidence and gate decisions are visible to engineers and admins only;
 end users never see them.
 
 ## Data model
 
-Migrations live in [`db/migrations/versions/`](db/migrations/versions/) (0001 to 0022).
+Migrations live in [`db/migrations/versions/`](db/migrations/versions/) (0001 to 0023).
 Main tables:
 
 | Group | Tables |
@@ -328,6 +330,7 @@ Main tables:
 | Knowledge base | `knowledge_base`, `kb_chunks` (tsvector + vector), `embeddings` |
 | Pipeline log | `retrieval_runs`, `retrieval_hits`, `drafts`, `draft_claims`, `signal_vectors`, `gate_thresholds`, `gate_decisions` |
 | Benchmark and labels | `benchmark_tickets`, `judge_verdicts`, `annotators`, `annotation_assignments`, `labels` |
+| User study | `study_participants`, `study_tasks` |
 
 Full schema documentation: **To be documented** (see the migration files for column
 definitions).
@@ -345,11 +348,18 @@ python tasks.py reproduce # regenerates docs/results/ tables
   automatically) with the offline `stub` drafter and `lexical` claim checker, so they need
   no model server.
 - CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs lint (ruff, mypy,
-  gitleaks), the ai/ unit tests, the backend tests against pgvector, and the frontend
-  lint and build on every push.
+  gitleaks), the ai/ unit tests (failing below 70% coverage of the evaluation and
+  pipeline packages), the backend tests against pgvector, and the frontend lint and build
+  on every push.
 - Evaluation outputs are versioned JSON in [`docs/results/`](docs/results/); training
   and evaluation refuse to run if the benchmark freeze or the locked-test seal no
   longer verifies.
+- A fresh clone with a clean environment reproduces every committed development table
+  and figure byte for byte with `python ai/evaluation/reproduce.py --offline`, from
+  [`data/eval/`](data/eval/), which leaves out the locked test.
+- The locked test is evaluated once, after human labels, with
+  `python ai/evaluation/locked_eval.py --final --confirm "run the locked test once"`;
+  `--rehearse` runs the same code on the validation split.
 
 ## Current status and results
 
@@ -364,12 +374,16 @@ Weekly progress, decisions and findings are in the logbooks:
 | Department routing (classifier v2) | macro-F1 0.911 on validation, 0.829 on unseen topics | [classifier-v2.json](docs/results/classifier-v2.json) |
 | Retrieval, type A tickets | Recall@5 1.000, zero cross-department or withheld-article leakage | [retrieval-v1.json](docs/results/retrieval-v1.json) |
 | Schema-valid drafts | 1,773 / 1,775 (99.9%) | [week 5 logbook](docs/logbook/week05.md) |
-| Prompt-injection red team | 0 of 40 attacks succeed with the output screen (5 of 40 without it) | [redteam-v2.json](docs/results/redteam-v2.json), [redteam-v1.json](docs/results/redteam-v1.json) |
-| Latency per ticket | median 6.8 s, of which drafting 6.0 s | [latency-v1.json](docs/results/latency-v1.json) |
-| Confidence model (provisional) | validation AURC 0.149 vs. 0.173 for the best single baseline | [confidence-v1-judge.json](docs/results/confidence-v1-judge.json), [baselines-v1-judge.json](docs/results/baselines-v1-judge.json) |
+| Prompt-injection red team | 0 of 40 attacks reach an engineer through the full pipeline and gate (5 of 40 succeeded before the output screen) | [redteam-v3-pipeline.json](docs/results/redteam-v3-pipeline.json), [redteam-v1.json](docs/results/redteam-v1.json) |
+| Latency and cost per ticket | median 6.4 s, of which drafting 5.7 s and the gate 6 ms; one LLM call, about 1,440 tokens | [latency-cost.md](docs/latency-cost.md) |
+| Confidence model (provisional) | validation AURC 0.134 vs. 0.174 for the best single baseline (top-1 retrieval similarity); the difference is not yet reliable | [locked-rehearsal-judge.md](docs/results/locked-rehearsal-judge.md) |
+| Shift guard (provisional) | on held-out unseen topics, unacceptable drafts shown fall from 75 to 25, at a cost of 4.35% of acceptable drafts on known topics | [shift-v1-judge.json](docs/results/shift-v1-judge.json) |
 
 "Provisional" means the target labels come from an LLM judge, not from people; these
-numbers show the pipeline works and are not the project's results.
+numbers show the pipeline works and are not the project's results. The results chapter
+in progress is [docs/results-draft.md](docs/results-draft.md); the report draft is in
+[docs/report/](docs/report/README.md) and the model card in
+[docs/model-card.md](docs/model-card.md).
 
 Human work still open: outside reviewer labels (0 of 600), human review of the
 knowledge base (0 of 120 articles; 24 SAP articles AI-checked only), the groundedness
@@ -393,9 +407,14 @@ The repository includes sample ticket attachments used by the OCR tests, for exa
 - Retrieval is filtered by department and served status inside SQL; tests assert zero
   cross-department retrieval.
 - Role-based access with JWT; end users never receive drafts, scores or evidence; the
-  annotator role cannot reach ticket endpoints.
-- Security tests run in CI (`backend/tests/test_security.py`, `test_role_matrix.py`).
+  annotator and participant roles cannot reach ticket endpoints.
+- The API refuses to start outside development with the default or a short
+  `JWT_SECRET_KEY`.
+- Security tests run in CI (`backend/tests/test_security.py`, `test_role_matrix.py`,
+  `test_config_secret.py`).
 - `gitleaks` scans every push. Keep secrets in `.env`, never in the repository.
+- Week 11 checks (`npm audit`, `pip-audit`, a secret scan of the full history) and their
+  fixes are recorded in [docs/report/08-security-and-responsible-ai.md](docs/report/08-security-and-responsible-ai.md).
 
 ## Limitations and known issues
 
@@ -407,12 +426,20 @@ The repository includes sample ticket attachments used by the OCR tests, for exa
 - **No fast lane yet.** On the current calibration data no threshold can be certified
   for a 10% error budget, so shown drafts go to the assisted lane.
 - **Unseen topics.** Thresholds certified on known topics do not hold for unseen ones;
-  the shift guard exists but its values are not set yet (Week 9).
+  the shift guard removes about two thirds of the unacceptable unseen-topic drafts that
+  would otherwise be shown, not all of them.
+- **Small validation set.** Changing only the order of training rows moved validation
+  AURC from 0.149 to 0.134; small differences between models are not meaningful.
+- **Output screen trade-off.** Screen-v2 blocks 87 of 1,484 shown benchmark drafts,
+  including 47 the judge rated acceptable that contain commands not in their evidence.
 - **Human review outstanding.** The benchmark freeze is provisional until the 120
   articles are human-reviewed.
-- **V1 leftovers.** `ai/confidence/` and the per-department threshold
-  (`PATCH /departments/{id}/threshold`, admin Departments screen) no longer route
-  tickets since the Week 9 lane switch.
+- **V1 leftovers.** `ai/confidence/` and `PATCH /departments/{id}/threshold` no longer
+  route tickets since the Week 9 lane switch (the admin Departments screen no longer
+  shows that threshold).
+- **Open issue.** In local development, about one admin page load in twenty showed
+  "Could not load …" in a headless browser while the server answered normally; see
+  [docs/bug-bash-week11.md](docs/bug-bash-week11.md).
 - **Local GPU environment.** `uv run` re-syncs the environment from the lock file and
   installs the CPU build of PyTorch; a CUDA build installed for speed must be reinstalled
   afterwards.
@@ -425,9 +452,9 @@ The repository includes sample ticket attachments used by the OCR tests, for exa
 | 6 | Full pipeline run, security, red team, annotation tool, hard gate | Code done; gate review pending human items |
 | 7 | Signal pipeline, baselines, labelling sprint 1 | Code done; labels pending |
 | 8 | Confidence model, calibration, sealed test set | Code done; labels and kappa pending |
-| 9 | Three-lane gate, workbench, robustness, shift experiments | In progress |
-| 10 | Locked evaluation | Planned |
-| 11 | User study, hardening, writing | Planned |
+| 9 | Three-lane gate, workbench, robustness, shift experiments | Code done; team session and study pilot pending |
+| 10 | Locked evaluation | Runner, rehearsal, coverage and fresh-clone check done; the locked test waits for human labels |
+| 11 | User study, hardening, writing | In progress: study tool, security checks, bug bash and report draft v1 done; study sessions pending |
 | 12 | Final integration, release, presentation | Planned |
 
 Full plan: [docs/plan/](docs/plan/).
