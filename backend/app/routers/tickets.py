@@ -26,9 +26,11 @@ from app.services.ticket_lifecycle import TicketStatus, transition
 
 async def _no_annotators(current_user: User = Depends(get_current_user)) -> None:
     """Outside reviewers (role "annotator") label benchmark drafts through /annotate
-    only; they never create, list or open real tickets (docs/annotation-tool.md)."""
-    if current_user.role == "annotator":
-        raise HTTPException(status_code=http_status.HTTP_403_FORBIDDEN, detail="Annotator accounts cannot use tickets")
+    only; they never create, list or open real tickets (docs/annotation-tool.md). Study
+    participants (role "participant") are restricted the same way to /study (Week 11)."""
+    if current_user.role in ("annotator", "participant"):
+        raise HTTPException(status_code=http_status.HTTP_403_FORBIDDEN,
+                            detail=f"{current_user.role.capitalize()} accounts cannot use tickets")
 
 
 router = APIRouter(prefix="/tickets", tags=["tickets"], dependencies=[Depends(_no_annotators)])

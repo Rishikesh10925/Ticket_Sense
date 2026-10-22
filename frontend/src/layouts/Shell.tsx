@@ -9,6 +9,7 @@ const ROLE_HOME: Record<string, { to: string; label: string; icon: typeof Ticket
   department_engineer: { to: "/engineer", label: "Queue", icon: QueueIcon },
   admin: { to: "/admin", label: "Admin", icon: ShieldIcon },
   annotator: { to: "/annotate", label: "Labelling", icon: EditIcon },
+  participant: { to: "/study", label: "Study", icon: EditIcon },
 };
 
 const ROLE_DISPLAY: Record<string, string> = {
@@ -16,6 +17,7 @@ const ROLE_DISPLAY: Record<string, string> = {
   department_engineer: "Department Engineer",
   admin: "Admin",
   annotator: "Reviewer",
+  participant: "Study participant",
 };
 
 const ROLE_TAG: Record<string, string> = {
@@ -23,6 +25,7 @@ const ROLE_TAG: Record<string, string> = {
   department_engineer: "ENG",
   admin: "ADMIN",
   annotator: "REV",
+  participant: "STU",
 };
 
 function initials(name: string): string {

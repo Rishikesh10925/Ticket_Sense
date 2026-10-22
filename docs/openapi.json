@@ -1492,6 +1492,153 @@
           }
         ]
       }
+    },
+    "/study/next": {
+      "get": {
+        "tags": [
+          "study"
+        ],
+        "summary": "Next Task",
+        "operationId": "next_task_study_next_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/StudyItem"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Next Task Study Next Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ]
+      }
+    },
+    "/study/tasks/{task_id}": {
+      "post": {
+        "tags": [
+          "study"
+        ],
+        "summary": "Submit Task",
+        "operationId": "submit_task_study_tasks__task_id__post",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudySubmission"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Submit Task Study Tasks  Task Id  Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/study/kb": {
+      "get": {
+        "tags": [
+          "study"
+        ],
+        "summary": "Search Kb",
+        "description": "Keyword search over the served knowledge base; the same tool in both conditions.",
+        "operationId": "search_kb_study_kb_get",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KBResult"
+                  },
+                  "title": "Response Search Kb Study Kb Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2569,6 +2716,36 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "KBResult": {
+        "properties": {
+          "article_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article Key"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "article_key",
+          "title",
+          "content"
+        ],
+        "title": "KBResult"
+      },
       "KnowledgeBaseCreate": {
         "properties": {
           "department_id": {
@@ -3024,6 +3201,122 @@
         "title": "ReviewerBreakdown",
         "description": "One department_engineer's own record \u2014 excludes the synthetic-reviewer\nplaceholder (see SYNTHETIC_REVIEWER_EMAIL), since that account isn't a real\nengineer and blending it in would misattribute bootstrap data to a person.\n`resolved` is accept + edit + resolve combined (all three end a ticket, whether\nit had a draft or not); `rejected` is reject; `escalated` is escalate + doubt\ncombined (both send a ticket back without the engineer deciding it).\n`in_review` is *not* per-reviewer data \u2014 it's the current `drafted` count for\nthat engineer's department queue (shared by whoever reviews there), included\nhere so the table reads as one complete row per engineer rather than requiring\na second lookup against by_department."
       },
+      "StudyItem": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "title": "Task Id"
+          },
+          "progress": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Progress"
+          },
+          "section": {
+            "type": "integer",
+            "title": "Section"
+          },
+          "condition": {
+            "type": "string",
+            "enum": [
+              "manual",
+              "workbench"
+            ],
+            "title": "Condition"
+          },
+          "ticket": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Ticket"
+          },
+          "lane": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lane"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "draft": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Draft"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "weakest_claims": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Weakest Claims"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task_id",
+          "progress",
+          "section",
+          "condition",
+          "ticket"
+        ],
+        "title": "StudyItem"
+      },
+      "StudySubmission": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "accept",
+              "edit",
+              "write",
+              "escalate"
+            ],
+            "title": "Action"
+          },
+          "final_reply": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 20000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Reply"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "StudySubmission"
+      },
       "TicketOut": {
         "properties": {
           "id": {
@@ -3281,7 +3574,8 @@
               "end_user",
               "department_engineer",
               "admin",
-              "annotator"
+              "annotator",
+              "participant"
             ],
             "title": "Role"
           },
@@ -3318,7 +3612,8 @@
                   "end_user",
                   "department_engineer",
                   "admin",
-                  "annotator"
+                  "annotator",
+                  "participant"
                 ]
               },
               {

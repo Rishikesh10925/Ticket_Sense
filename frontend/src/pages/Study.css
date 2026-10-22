@@ -1,0 +1,66 @@
+/* User-study screen; builds on the annotation layout (Annotate.css). */
+
+.study-condition {
+  font-weight: 700;
+}
+
+.study-reasons {
+  color: var(--color-text-muted);
+}
+
+.study-claims {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.study-reply {
+  width: 100%;
+  min-height: 180px;
+  font: inherit;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  resize: vertical;
+}
+
+.study-search {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.study-search input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.study-article {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-xs) 0;
+}
+
+.study-article summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.study-article p {
+  white-space: pre-wrap;
+  margin: var(--space-xs) 0 0;
+}
+
+.lane-hint-escalate {
+  border-left-color: var(--lane-escalate);
+  background: var(--lane-escalate-bg);
+}

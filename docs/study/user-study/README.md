@@ -24,12 +24,39 @@ department. They never overlap the locked test, the 600 labelling drafts or the 
 pilot, and no scenario appears twice. The type of each ticket is kept in
 [`ticket-sets-key.json`](ticket-sets-key.json), which participants never see.
 
-### Still to build before Week 11
+### Study tool (built in Week 11)
 
-- **Manual condition:** a study mode of the workbench that shows the ticket and the
-  knowledge-base search but hides the AI draft, the lane and the reasons. **To be built.**
-- **Per-participant accounts and set assignment.** **To be built.**
-- Blind grading sheet for the final replies. **To be built.**
+Participants use the `/study` screen with a `participant` account; it can open nothing
+else in TicketSense.
+
+| Step | Command or screen |
+|---|---|
+| 1. Create accounts and tasks | `python -m app.scripts.setup_study --participants 8` (from `backend/`). Prints each login `p01@study.local` … with a password, **once**: copy them to the facilitator sheet. Codes and orders go to `data/study/participants.json`. |
+| 2. Run a session | The participant logs in and lands on `/study`: 20 tickets in the first condition, a break screen, then 20 in the second. |
+| 3. Export | `python -m app.scripts.export_study` → `data/study/tasks.csv`, `grading_sheet.csv`, `grading_key.csv` |
+| 4. Grade blind | A team member who did not run the sessions fills `grade` (A/M/R/W, labelling rubric) in `grading_sheet.csv`, without opening `grading_key.csv`. |
+| 5. SUS | Type the paper forms into `data/study/sus.csv`: `participant,q1,…,q10` |
+| 6. Analyse | `python ai/study/analyse.py` → `docs/results/study-v1.json` and `.md` |
+
+How the screen works:
+
+- **Manual condition:** the ticket, a reply box and a keyword search over the knowledge
+  base. No draft, lane or reasons.
+- **Workbench condition:** the same, plus the lane with its reasons and, unless the lane is
+  escalate, the AI draft prefilled in the reply box, its evidence and its weakest claims.
+  Sending the draft unchanged is recorded as `accept`, changed as `edit`, a reply without a
+  draft as `write`, and the Escalate button as `escalate`.
+- **Fixed stimuli:** each ticket's lane comes from the live gate (active thresholds) when
+  the accounts are created, and is the same for every participant. With thresholds
+  `t-judge-2` (2026-10-22): no fast lane; set A has 12 assisted and 8 escalated tickets,
+  set B 14 and 6. The sets were matched on type and department, not on lane, so this
+  imbalance is reported with the results.
+- **Timing:** measured on the server, from when a ticket is first shown to when it is
+  sent; no timer is visible to the participant. The two warm-up tickets are done outside
+  the tool.
+
+Checked on 2026-10-22 with a throwaway participant in a headless browser: every step above,
+then the participant and its data were deleted.
 
 ## Session script (about 75 minutes)
 
