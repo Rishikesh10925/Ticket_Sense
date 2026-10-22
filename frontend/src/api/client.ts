@@ -4,7 +4,7 @@ export interface User {
   id: string;
   email: string;
   full_name: string;
-  role: "end_user" | "department_engineer" | "admin" | "annotator";
+  role: "end_user" | "department_engineer" | "admin" | "annotator" | "participant";
   department_id: string | null;
   is_active: boolean;
 }
@@ -207,6 +207,54 @@ export async function submitAnnotation(token: string, assignmentId: string, body
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+}
+
+// --- User study (participants; docs/study/user-study/README.md) -------------------
+
+export interface StudyItem {
+  task_id: string;
+  progress: { done: number; total: number };
+  section: 1 | 2;
+  condition: "manual" | "workbench";
+  ticket: { subject: string; body: string; attachment_text: string | null };
+  lane: "fast" | "assisted" | "escalate" | null;
+  reasons: string[];
+  draft: { steps: { text: string; citations: number[] }[] } | null;
+  evidence: { n: number; title: string; text: string }[];
+  weakest_claims: { step: number; text: string; support: number }[];
+}
+
+export type StudyAction = "accept" | "edit" | "write" | "escalate";
+
+export interface StudyArticle {
+  article_key: string | null;
+  title: string;
+  content: string;
+}
+
+export async function getNextStudyTask(token: string): Promise<StudyItem | null> {
+  const res = await fetch(`${API_URL}/study/next`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function submitStudyTask(
+  token: string,
+  taskId: string,
+  body: { action: StudyAction; final_reply?: string },
+): Promise<void> {
+  const res = await fetch(`${API_URL}/study/tasks/${taskId}`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+}
+
+export async function searchStudyKb(token: string, q: string): Promise<StudyArticle[]> {
+  const res = await fetch(`${API_URL}/study/kb?${new URLSearchParams({ q })}`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
 }
 
 export async function createTicket(

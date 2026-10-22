@@ -6,6 +6,7 @@ import Shell from "./layouts/Shell";
 import { ToastProvider } from "./components";
 import Login from "./pages/Login";
 import Annotate from "./pages/Annotate";
+import Study from "./pages/Study";
 import EndUserHome from "./pages/EndUserHome";
 import EngineerQueue from "./pages/EngineerQueue";
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -26,6 +27,7 @@ const ROLE_HOME: Record<string, string> = {
   department_engineer: "/engineer",
   admin: "/admin",
   annotator: "/annotate",
+  participant: "/study",
 };
 
 function RoleHomeRedirect() {
@@ -52,6 +54,9 @@ export default function App() {
                 </Route>
                 <Route element={<RequireRole role="annotator" />}>
                   <Route path="annotate" element={<Annotate />} />
+                </Route>
+                <Route element={<RequireRole role="participant" />}>
+                  <Route path="study" element={<Study />} />
                 </Route>
                 <Route element={<RequireRole role="admin" />}>
                   <Route path="admin" element={<AdminLayout />}>
