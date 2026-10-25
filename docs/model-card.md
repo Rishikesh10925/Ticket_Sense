@@ -24,7 +24,7 @@ labels for the confidence model). Human-label and locked-test numbers: **To be f
 | Inputs | 31 signals of the draft (retrieval, reranker, grounding, consistency, routing, evidence, ticket) plus two category-history rates; no ticket text |
 | Training labels | LLM judge (`llama3.1:8b`) for development; human labels for the reported model, **To be filled** |
 | Output | A calibrated probability and up to three readable reasons |
-| Thresholds | Learn-then-Test, α 0.10 (fast) and 0.40 (assisted), δ 0.10; with judge labels: fast not certified, assisted 0.05 |
+| Thresholds | Learn-then-Test, α 0.10 (fast) and 0.40 (assisted), δ 0.10; with judge labels: fast not certified, assisted 0.05 with 100% coverage, so the score currently escalates no draft (calibrated scores range from 0.57 up; 22.5% of calibration drafts are unacceptable, under the 40% budget) |
 
 ### Development performance (validation, judge labels)
 
@@ -52,6 +52,10 @@ Best single baseline: top-1 retrieval similarity, AURC 0.174 ([results draft](re
 
 ## 5. Known failure modes
 
+- **The score does not yet decide a lane.** With the current thresholds the assisted lane
+  admits every draft that passes the can-answer flag, the output screen and the shift
+  guard; a low-quality draft on a known topic is not held back by its score. The score
+  only orders drafts and explains them until a fast-lane threshold can be certified.
 - **Confidently wrong routing** on unseen topics: drafts from the wrong department can
   score high. The shift guard removed 50 of 75 such unacceptable drafts on evaluation
   topics; 25 still reached the assisted lane ([shift-v1-judge.json](results/shift-v1-judge.json)).

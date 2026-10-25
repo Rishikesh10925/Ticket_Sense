@@ -77,8 +77,12 @@ Figures: [`figures/locked-rehearsal-judge/`](results/figures/locked-rehearsal-ju
 3. **Fold sensitivity.** Fixing only the row order the model sees changed the
    validation AURC from 0.149 to 0.134 (Week 10). Single-split numbers carry that much
    noise on top of the bootstrap interval.
-4. **The fast lane is closed.** No threshold could be certified at the 10% budget with
-   the calibration data so far, so the three-lane design currently runs as two lanes.
+4. **The fast lane is closed, and the assisted threshold filters nothing.** No threshold
+   could be certified at the 10% budget, so the design runs as two lanes. The assisted
+   threshold was certified at 0.05 with 100% coverage: only 22.5% of calibration drafts
+   are unacceptable (below the 40% budget) and no calibrated score is below 0.57. Known-
+   topic drafts are therefore escalated by the can-answer flag, the output screen and the
+   shift guard, not by their confidence score (report Chapter 6.3).
 5. **Unseen topics.** Almost every unseen-topic draft is unacceptable; the shift guard
    reduces how many reach an engineer but was tuned and evaluated on three topics each.
 6. **Output screen trade-off.** Screen v2 blocks 87 of 1,484 shown drafts on the full

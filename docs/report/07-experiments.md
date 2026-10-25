@@ -35,6 +35,12 @@ Over 1,000 calibration/test resplits, Learn-then-Test certified a fast-lane thre
 **not testable** with judge labels. The assisted lane holds 86% of validation drafts at a
 20.7% unacceptable rate; the escalate lane holds 14% at 47.4%.
 
+That split is **not made by the confidence score.** The assisted threshold sits at 0.05
+with 100% coverage, and no calibrated score is below 0.57, so all 19 escalated validation
+drafts are ones whose drafting model said it could not answer (the pre-registered lane rule
+above excludes the shift guard; with the guard, more escalate). See Chapter 6.3 for why,
+and what it means for the gate.
+
 ## 7.4 Ablations
 
 Dropping a feature group and measuring the change in validation AURC (positive = the group
