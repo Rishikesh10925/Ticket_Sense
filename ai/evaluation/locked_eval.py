@@ -45,13 +45,15 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "ai"))
 
 from evaluation.bootstrap import bootstrap_ci, paired_bootstrap_diff  # noqa: E402
-from evaluation.metrics import (aurc, auroc_unacceptable, brier_score, expected_calibration_error,  # noqa: E402
-                                reliability_bins, risk_at_coverage, risk_coverage_curve)
+from evaluation.metrics import (aurc, auroc_unacceptable, brier_score, excess_aurc,  # noqa: E402
+                                expected_calibration_error, reliability_bins, risk_at_coverage,
+                                risk_coverage_curve)
 from evaluation.risk_control import DEFAULT_GRID, learn_then_test  # noqa: E402
 
 ALPHA, DELTA = 0.10, 0.10
 N_BOOT, N_RESPLITS, SEED = 1000, 1000, 2026
 H2_SHARE = 0.90
+MIN_CLASS = 10  # below this many drafts in one class, AURC and e-AURC describe the base rate
 FINAL_MARK = "locked evaluation (final)"
 PROBABILITIES = ("B1 verbalised", "B2 token probability", "B7 LR on B4+B5+B6")
 BASELINES = ("B1 verbalised", "B2 token probability", "B4 top-1 similarity", "B5 reranker",
@@ -139,12 +141,36 @@ def h2(p: np.ndarray, y: np.ndarray, groups: list[str], calib_share: float) -> d
             "histogram": {"edges": [_r(e) for e in edges], "counts": counts.tolist()}}
 
 
-def topic_block(p: np.ndarray, y: np.ndarray, groups: list[str], lanes: Lanes) -> dict:
+def exposure(rows, p: np.ndarray, y: np.ndarray, lanes: Lanes, guard=None) -> dict:
+    """How many drafts an engineer would see, and how many of those are unacceptable.
+    `guard`: a gate.service.Thresholds carrying the shift guard, or None for no guard."""
+    from gate.service import guard_reasons
+
+    shown = np.array([lanes.of(float(s), r.can_answer) != "escalate" for s, r in zip(p, rows)])
+    if guard is not None:
+        shown &= np.array([not guard_reasons(r.features, guard) for r in rows])
+    bad = shown & (y == 0)
+    return {"n_shown": int(shown.sum()), "shown_share": _r(float(shown.mean())),
+            "unacceptable_shown": int(bad.sum()), "unacceptable_shown_share_of_all": _r(float(bad.mean())),
+            "unacceptable_rate_among_shown": _r(float(1 - y[shown].mean())) if shown.any() else None}
+
+
+def topic_block(rows, p: np.ndarray, y: np.ndarray, lanes: Lanes, guard=None) -> dict:
+    """Pre-registered H3 numbers (AURC, fast-lane risk) plus, from the 2026-10-25 amendment,
+    e-AURC, the class counts, and exposure with and without the shift guard. With very few
+    acceptable (or unacceptable) drafts AURC reflects the base rate, not the ranking."""
+    groups = [r.group_id for r in rows]
+    n_ok = int(y.sum())
     return {"n": int(len(y)), "acceptable_share": _r(float(y.mean())),
+            "n_acceptable": n_ok, "n_unacceptable": int(len(y) - n_ok),
+            "ranking_informative": bool(min(n_ok, len(y) - n_ok) >= MIN_CLASS),
             "aurc": _interval(bootstrap_ci(aurc, p, y, groups=groups, n_resamples=N_BOOT, seed=SEED)),
+            "e_aurc": _interval(bootstrap_ci(excess_aurc, p, y, groups=groups, n_resamples=N_BOOT, seed=SEED)),
             "fast_lane_risk": _interval(bootstrap_ci(fast_risk(lanes.fast), p, y, groups=groups,
                                                      n_resamples=N_BOOT, seed=SEED))
-            if lanes.fast is not None and (p >= lanes.fast).any() else None}
+            if lanes.fast is not None and (p >= lanes.fast).any() else None,
+            "exposure": {"without_guard": exposure(rows, p, y, lanes),
+                         "with_guard": exposure(rows, p, y, lanes, guard) if guard is not None else None}}
 
 
 def lane_block(p: np.ndarray, y: np.ndarray, can_answer: list, lanes: Lanes) -> dict:
@@ -183,7 +209,7 @@ def slices(rows, p: np.ndarray, y: np.ndarray) -> dict:
 
 
 def evaluate(eval_rows, pool_rows, unseen_rows, p_eval, p_pool, p_unseen, baseline_scores: dict,
-             best: str, lanes: Lanes, calib_share: float) -> dict:
+             best: str, lanes: Lanes, calib_share: float, guard=None) -> dict:
     """Everything the pre-registration asks for, from scores already computed."""
     y = np.array([r.acceptable for r in eval_rows], dtype=float)
     groups = [r.group_id for r in eval_rows]
@@ -202,10 +228,10 @@ def evaluate(eval_rows, pool_rows, unseen_rows, p_eval, p_pool, p_unseen, baseli
     }
     report["proposed"]["aurc_ci95"] = _interval(bootstrap_ci(aurc, p_eval, y, groups=groups, n_resamples=N_BOOT,
                                                              seed=SEED))["ci95"]
-    h3 = {"seen": topic_block(p_eval, y, groups, lanes)}
+    h3 = {"seen": topic_block(eval_rows, p_eval, y, lanes, guard)}
     if unseen_rows:
         y_u = np.array([r.acceptable for r in unseen_rows], dtype=float)
-        h3["unseen"] = topic_block(p_unseen, y_u, [r.group_id for r in unseen_rows], lanes)
+        h3["unseen"] = topic_block(unseen_rows, p_unseen, y_u, lanes, guard)
         h3["unseen_lanes"] = lane_block(p_unseen, y_u, [r.can_answer for r in unseen_rows], lanes)
     report["H3"] = {"rule": "report seen vs unseen AURC and fast-lane risk with 95% intervals; "
                             "degradation is an expected finding", **h3}
@@ -250,6 +276,19 @@ def summary_md(report: dict, final: bool) -> str:
     seen, unseen = report["H3"]["seen"], report["H3"].get("unseen")
     lines.append(f"| H3 | reported | AURC seen {seen['aurc']['estimate']} {seen['aurc']['ci95']}"
                  + (f", unseen {unseen['aurc']['estimate']} {unseen['aurc']['ci95']}" if unseen else "") + " |")
+    if unseen:
+        def shown(block, key):
+            e = block["exposure"][key]
+            return "n/a" if e is None else f"{e['n_shown']} of {block['n']} shown, {e['unacceptable_shown']} unacceptable"
+        lines += ["", "| H3 detail | Seen | Unseen |", "|---|---|---|",
+                  f"| Acceptable / unacceptable drafts | {seen['n_acceptable']} / {seen['n_unacceptable']} | "
+                  f"{unseen['n_acceptable']} / {unseen['n_unacceptable']} |",
+                  f"| e-AURC | {seen['e_aurc']['estimate']} {seen['e_aurc']['ci95']} | "
+                  f"{unseen['e_aurc']['estimate']} {unseen['e_aurc']['ci95']}"
+                  + ("" if unseen["ranking_informative"] else " (not informative: under "
+                     f"{MIN_CLASS} drafts in one class)") + " |",
+                  f"| Shown without the shift guard | {shown(seen, 'without_guard')} | {shown(unseen, 'without_guard')} |",
+                  f"| Shown with the shift guard | {shown(seen, 'with_guard')} | {shown(unseen, 'with_guard')} |"]
     lines += ["", "| Method | AURC | 95% interval | AUROC (unacceptable) | ECE | Brier |", "|---|---|---|---|---|---|"]
     rows = [("Proposed", report["proposed"])] + list(report["baselines"].items())
     for name, m in rows:
@@ -294,6 +333,13 @@ def main() -> None:
     model, th = bundle["model"], bundle["thresholds"]
     lanes = Lanes(th["fast"]["threshold"], th["assisted"]["threshold"])
     best = best_baseline(json.loads(table.read_text(encoding="utf-8")))
+    guard = None
+    shift = ROOT / "docs" / "results" / f"shift-v1-{labels}.json"
+    if shift.exists():  # the shift guard chosen for these labels (Week 9); without it, exposure is reported unguarded
+        from gate.service import Thresholds
+
+        g = json.loads(shift.read_text(encoding="utf-8"))["guard"]
+        guard = Thresholds("guard", lanes.fast, lanes.assisted, g["min_dept_prob"], g["min_probe_margin"])
 
     rows = asyncio.run(load("v1", labels, include_test=args.final, reason=FINAL_MARK if args.final else None))
     rows = [r for r in rows if r.acceptable is not None]
@@ -312,7 +358,7 @@ def main() -> None:
     p_eval = model.predict(by[eval_split])
     report = evaluate(by[eval_split], pool, by["unseen"], p_eval, model.predict(pool),
                       model.predict(by["unseen"]) if by["unseen"] else np.array([]), scores(by[eval_split]), best,
-                      lanes, len(by["calib"]) / len(pool))
+                      lanes, len(by["calib"]) / len(pool), guard)
     name = "locked-final" if args.final else "locked-rehearsal-judge"
     report = {"mode": "final" if args.final else "rehearsal (validation split, judge labels; not a result)",
               "labels": labels, "evaluated_split": eval_split, "model": artifact.name,
