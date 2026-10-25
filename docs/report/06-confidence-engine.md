@@ -26,6 +26,34 @@ to 0.05): fast lane α = 0.10, assisted lane α = 0.40, δ = 0.10. With judge la
 threshold can be certified; the assisted threshold is 0.05. The fast lane therefore stays
 closed until human-label calibration certifies one.
 
+### What the assisted threshold does today: nothing
+
+The assisted threshold was certified at **0.05, the lowest point of the grid, with 100%
+coverage** (all 262 calibration drafts). Two facts make that the outcome:
+
+- **The budget is looser than the base rate.** Only 22.5% of calibration drafts are
+  unacceptable (59 of 262), below the 40% assisted budget, so even "show every draft"
+  passes the test. The same holds for any budget of 30% or more; for 25% or less no
+  threshold can be certified at all, because the fixed sequence fails before reaching a
+  useful one (`alpha_curve` in `confidence-v1-judge.json`).
+- **The calibrated scores never come near 0.05.** The lowest score the model gives is
+  0.57 on calibration, 0.62 on validation and 0.63 on unseen topics.
+
+So **no known-topic draft is escalated because of its confidence score.** In the live
+gate a draft reaches the assisted lane unless one of three other checks stops it:
+
+| Check | What escalates | Validation, judge labels |
+|---|---|---|
+| Can-answer flag | The drafting model said the evidence cannot answer | 19 of 135 drafts |
+| Output screen | A step contains a URL, command or code its evidence does not | blocked drafts are never shown |
+| Shift guard | Routing looks unlike the calibration data (department probability below 0.5, or another department within 0.1) | flags 27 of 135 |
+
+The confidence score still matters in three ways: it orders the queue, its reasons are
+shown to the engineer, and it is what the fast lane will use once a threshold can be
+certified. But until then **the gate's protection comes from the can-answer flag, the
+output screen and the shift guard, not from the score.** Whether human labels change this
+(a different unacceptable rate, a different score range) is part of the locked evaluation.
+
 ## 6.4 Shift guard
 
 Thresholds certified on known topics do not hold on unseen ones. The guard escalates a

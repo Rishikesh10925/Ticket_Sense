@@ -19,7 +19,11 @@
 1. No human labels yet; all numbers use an LLM judge measured against one member on 28 drafts.
 2. Synthetic benchmark: paraphrased tickets make retrieval unrealistically easy.
 3. Single-split noise: changing only row order moved validation AURC from 0.149 to 0.134.
-4. Fast lane closed: the three-lane design currently runs as two lanes.
+4. Fast lane closed: the three-lane design currently runs as two lanes. And the assisted
+   threshold (0.05, 100% coverage) filters nothing, because only 22.5% of calibration
+   drafts are unacceptable against a 40% budget and no score falls below 0.57: known-topic
+   drafts are escalated by the can-answer flag, the output screen and the shift guard, not
+   by their confidence score (Chapter 6.3).
 5. Shift guard tuned and evaluated on three topics each.
 6. The output screen blocks some acceptable drafts (47 of 1,484 shown).
 7. Knowledge base not yet human-reviewed by a second member.
