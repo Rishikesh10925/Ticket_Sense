@@ -18,6 +18,7 @@ class FakeRow:
     type: str = "A"
     department: str = "SAP"
     features: dict = field(default_factory=dict)
+    extra: dict = field(default_factory=dict)
 
 
 def rows_and_scores(n=200, signal=1.0, seed=0):
@@ -129,3 +130,34 @@ def test_exposure_without_a_guard_file_is_reported_as_missing():
                          le.Lanes(None, 0.05), calib_share=0.5)
     assert report["H3"]["unseen"]["exposure"]["with_guard"] is None
     assert "n/a" in le.summary_md(report, final=False)
+
+
+def test_b3_competes_for_best_baseline_only_with_full_coverage():
+    def table(coverage):
+        return {"splits": {"val": {"b3_coverage": coverage, "baselines": {
+            "B3 self-consistency": {"aurc": 0.10}, "B4 top-1 similarity": {"aurc": 0.17}}}}}
+    assert le.best_baseline(table(1.0)) == "B3 self-consistency"
+    assert le.best_baseline(table(0.96)) == "B3 self-consistency"
+    assert le.best_baseline(table(0.14)) == "B4 top-1 similarity"  # sparse: computed only for some drafts
+    assert le.best_baseline(table(None)) == "B4 top-1 similarity"
+
+
+def test_b3_scores_zero_without_claims_and_coverage_counts_answering_drafts():
+    from signals.report_baselines import b3_coverage, baseline_scores
+
+    rows = [FakeRow("g1", 1), FakeRow("g2", 0, can_answer=False), FakeRow("g3", 1)]
+    rows[0].extra = {"b3_claim_agreement": 0.8}
+    rows[1].extra = {}
+    rows[2].extra = {}
+    assert list(baseline_scores(rows)["B3 self-consistency"]) == [0.8, 0.0, 0.0]
+    assert b3_coverage(rows) == 0.5  # one of the two answering drafts has B3
+
+
+def test_b3_subset_compares_only_drafts_with_b3():
+    rows, p, y = rows_and_scores(n=80)
+    for i, r in enumerate(rows):
+        r.extra = {"b3_claim_agreement": float(p[i])} if i % 4 else {}
+    out = le.b3_subset(rows, p, y)
+    assert out["n"] == 60 and out["proposed_aurc"] == out["b3_aurc"]  # same scores on the same drafts
+    assert out["aurc_difference"]["estimate"] == 0.0
+    assert le.b3_subset(rows[:10], p[:10], y[:10]) is None  # too few to compare

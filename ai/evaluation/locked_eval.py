@@ -56,8 +56,9 @@ H2_SHARE = 0.90
 MIN_CLASS = 10  # below this many drafts in one class, AURC and e-AURC describe the base rate
 FINAL_MARK = "locked evaluation (final)"
 PROBABILITIES = ("B1 verbalised", "B2 token probability", "B7 LR on B4+B5+B6")
-BASELINES = ("B1 verbalised", "B2 token probability", "B4 top-1 similarity", "B5 reranker",
-             "B6 entailment share", "B7 LR on B4+B5+B6")
+BASELINES = ("B1 verbalised", "B2 token probability", "B3 self-consistency", "B4 top-1 similarity",
+             "B5 reranker", "B6 entailment share", "B7 LR on B4+B5+B6")
+B3_MIN_COVERAGE = 0.95  # B3 competes for "best baseline" only if it covers the answering validation drafts
 
 
 @dataclass(frozen=True)
@@ -76,9 +77,13 @@ class Lanes:
 
 
 def best_baseline(baseline_table: dict) -> str:
-    """Lowest validation AURC among B1 to B7, read from the table written beforehand."""
-    val = baseline_table["splits"]["val"]["baselines"]
-    candidates = {name: m["aurc"] for name, m in val.items() if name in BASELINES}
+    """Lowest validation AURC among B1 to B7, read from the table written beforehand. B3 is a
+    candidate only when it covers at least B3_MIN_COVERAGE of the answering validation drafts
+    (amendment 2026-10-25): on sparse coverage its AURC measures what was computed, not B3."""
+    val_split = baseline_table["splits"]["val"]
+    candidates = {name: m["aurc"] for name, m in val_split["baselines"].items() if name in BASELINES}
+    if (val_split.get("b3_coverage") or 0.0) < B3_MIN_COVERAGE:
+        candidates.pop("B3 self-consistency", None)
     return min(candidates, key=lambda name: candidates[name])
 
 
@@ -208,6 +213,25 @@ def slices(rows, p: np.ndarray, y: np.ndarray) -> dict:
     return out
 
 
+def _b3_coverage(rows) -> float | None:
+    answering = [r for r in rows if r.can_answer]
+    extra = [getattr(r, "extra", {}) or {} for r in answering]
+    return _r(sum(e.get("b3_claim_agreement") is not None for e in extra) / len(extra)) if extra else None
+
+
+def b3_subset(rows, p: np.ndarray, y: np.ndarray) -> dict | None:
+    """Descriptive, not H1: the proposed model against B3 on the drafts that have B3, so a
+    draft without claims cannot decide the comparison either way."""
+    idx = np.array([(getattr(r, "extra", {}) or {}).get("b3_claim_agreement") is not None for r in rows])
+    if idx.sum() < 20 or not 0 < y[idx].sum() < idx.sum():
+        return None
+    b3 = np.array([r.extra["b3_claim_agreement"] for r, keep in zip(rows, idx) if keep], dtype=float)
+    groups = [r.group_id for r, keep in zip(rows, idx) if keep]
+    diff = paired_bootstrap_diff(aurc, p[idx], b3, y[idx], groups=groups, n_resamples=N_BOOT, seed=SEED)
+    return {"n": int(idx.sum()), "proposed_aurc": _r(aurc(p[idx], y[idx])), "b3_aurc": _r(aurc(b3, y[idx])),
+            "aurc_difference": _interval(diff)}
+
+
 def evaluate(eval_rows, pool_rows, unseen_rows, p_eval, p_pool, p_unseen, baseline_scores: dict,
              best: str, lanes: Lanes, calib_share: float, guard=None) -> dict:
     """Everything the pre-registration asks for, from scores already computed."""
@@ -220,6 +244,8 @@ def evaluate(eval_rows, pool_rows, unseen_rows, p_eval, p_pool, p_unseen, baseli
                              "aurc_ci95": _interval(bootstrap_ci(aurc, s, y, groups=groups, n_resamples=N_BOOT,
                                                                 seed=SEED))["ci95"]}
                       for name, s in baseline_scores.items()},
+        "b3_coverage": _b3_coverage(eval_rows),
+        "b3_subset": b3_subset(eval_rows, p_eval, y),
         "H1": h1(p_eval, baseline_scores[best], y, groups),
         "H2": h2(p_pool, np.array([r.acceptable for r in pool_rows], dtype=float),
                  [r.group_id for r in pool_rows], calib_share),
@@ -289,7 +315,8 @@ def summary_md(report: dict, final: bool) -> str:
                      f"{MIN_CLASS} drafts in one class)") + " |",
                   f"| Shown without the shift guard | {shown(seen, 'without_guard')} | {shown(unseen, 'without_guard')} |",
                   f"| Shown with the shift guard | {shown(seen, 'with_guard')} | {shown(unseen, 'with_guard')} |"]
-    lines += ["", "| Method | AURC | 95% interval | AUROC (unacceptable) | ECE | Brier |", "|---|---|---|---|---|---|"]
+    lines += ["", f"B3 covers {report['b3_coverage']} of the answering drafts here (a draft with no claims scores 0).",
+              "", "| Method | AURC | 95% interval | AUROC (unacceptable) | ECE | Brier |", "|---|---|---|---|---|---|"]
     rows = [("Proposed", report["proposed"])] + list(report["baselines"].items())
     for name, m in rows:
         lines.append(f"| {name} | {m['aurc']} | {m['aurc_ci95']} | {m['auroc_unacceptable']} | {m['ece']} | {m['brier']} |")

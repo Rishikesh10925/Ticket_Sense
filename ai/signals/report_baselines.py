@@ -44,10 +44,23 @@ def baseline_scores(rows) -> dict[str, np.ndarray]:
         "B0 always show": np.ones(len(rows)),
         "B1 verbalised": col(lambda r: r.extra.get("b1_verbalised")),
         "B2 token probability": col(lambda r: r.extra.get("b2_mean_prob")),
+        # B3 is claim agreement with sampled re-drafts: undefined for a draft with no claims
+        # (it cannot answer, or failed the schema), which scores 0 like any missing signal.
+        "B3 self-consistency": col(lambda r: r.extra.get("b3_claim_agreement")),
         "B4 top-1 similarity": col(lambda r: r.features.get("ret_top1_dense")),
         "B5 reranker": col(lambda r: r.features.get("rr_top1")),
         "B6 entailment share": col(lambda r: r.features.get("gr_supported_share")),
     }
+
+
+def b3_coverage(rows) -> float | None:
+    """Share of answering drafts (can_answer true) that have B3. B3 is only computed for
+    the drafts selected for labelling, so it is complete on human-labelled data and sparse
+    on judge-labelled development splits."""
+    answering = [r for r in rows if r.can_answer]
+    if not answering:
+        return None
+    return round(sum(r.extra.get("b3_claim_agreement") is not None for r in answering) / len(answering), 4)
 
 
 def fit_b7(train) -> object:
@@ -99,7 +112,7 @@ def main() -> None:
         scores["B7 LR on B4+B5+B6"] = b7.predict_proba(
             np.array([[r.features.get(k) or 0.0 for k in CHEAP] for r in part]))[:, 1]
         report["splits"][split] = {
-            "n": len(part), "acceptable_share": round(float(y.mean()), 4),
+            "n": len(part), "acceptable_share": round(float(y.mean()), 4), "b3_coverage": b3_coverage(part),
             "baselines": table(scores, y, [r.group_id for r in part], args.n_boot),
         }
         b3 = [r for r in part if r.extra.get("b3_claim_agreement") is not None]
