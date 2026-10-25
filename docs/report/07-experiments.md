@@ -51,8 +51,21 @@ did not reliably help on judge labels.
 
 ## 7.5 Unseen topics (H3) and the shift guard
 
-Unseen-topic drafts are almost all unacceptable (0.7% acceptable), so AURC there is near 1
-(0.992). On the three evaluation topics the guard cut unacceptable drafts shown from 75 to
+Only **2 of the 283** unseen-topic drafts are acceptable. With one class that small, AURC
+(0.992) measures the base rate, not the ranking, and so does e-AURC (0.033, interval 0.0 to
+0.068): both are reported as pre-registered or amended, but flagged **not informative**. The
+meaningful question on unseen topics is how many unacceptable drafts reach an engineer:
+
+| Drafts shown (validation and unseen splits, judge labels) | Seen (135) | Unseen (283) |
+|---|---|---|
+| Without the shift guard | 116, of which 24 unacceptable | **152, all unacceptable** |
+| With the shift guard | 107, of which 19 unacceptable | **58, all unacceptable** |
+
+Without the guard more than half of all unseen-topic drafts would be shown, and every one
+of them is wrong. The guard stops 94 of those 152 (62%) at a cost of 9 drafts on known
+topics (5 unacceptable, 4 acceptable). These unseen numbers include the three topics the
+guard was tuned on, so they flatter it; the clean, held-out estimate is from the shift
+experiment: on the three evaluation topics the guard cut unacceptable drafts shown from 75 to
 25, at a cost of 4.35% of acceptable drafts on known topics
 ([shift-v1-judge.json](../results/shift-v1-judge.json)). Error analysis of what still gets
 through: [error-analysis-v1-judge.md](../results/error-analysis-v1-judge.md).

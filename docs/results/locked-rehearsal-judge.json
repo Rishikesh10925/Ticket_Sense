@@ -241,6 +241,9 @@
   "seen": {
    "n": 135,
    "acceptable_share": 0.7556,
+   "n_acceptable": 102,
+   "n_unacceptable": 33,
+   "ranking_informative": true,
    "aurc": {
     "estimate": 0.1337,
     "ci95": [
@@ -249,11 +252,38 @@
     ],
     "resamples": 1000
    },
-   "fast_lane_risk": null
+   "e_aurc": {
+    "estimate": 0.1001,
+    "ci95": [
+     0.0506,
+     0.1702
+    ],
+    "resamples": 1000
+   },
+   "fast_lane_risk": null,
+   "exposure": {
+    "without_guard": {
+     "n_shown": 116,
+     "shown_share": 0.8593,
+     "unacceptable_shown": 24,
+     "unacceptable_shown_share_of_all": 0.1778,
+     "unacceptable_rate_among_shown": 0.2069
+    },
+    "with_guard": {
+     "n_shown": 107,
+     "shown_share": 0.7926,
+     "unacceptable_shown": 19,
+     "unacceptable_shown_share_of_all": 0.1407,
+     "unacceptable_rate_among_shown": 0.1776
+    }
+   }
   },
   "unseen": {
    "n": 283,
    "acceptable_share": 0.0071,
+   "n_acceptable": 2,
+   "n_unacceptable": 281,
+   "ranking_informative": false,
    "aurc": {
     "estimate": 0.992,
     "ci95": [
@@ -262,7 +292,31 @@
     ],
     "resamples": 1000
    },
-   "fast_lane_risk": null
+   "e_aurc": {
+    "estimate": 0.0325,
+    "ci95": [
+     0.0,
+     0.0681
+    ],
+    "resamples": 1000
+   },
+   "fast_lane_risk": null,
+   "exposure": {
+    "without_guard": {
+     "n_shown": 152,
+     "shown_share": 0.5371,
+     "unacceptable_shown": 152,
+     "unacceptable_shown_share_of_all": 0.5371,
+     "unacceptable_rate_among_shown": 1.0
+    },
+    "with_guard": {
+     "n_shown": 58,
+     "shown_share": 0.2049,
+     "unacceptable_shown": 58,
+     "unacceptable_shown_share_of_all": 0.2049,
+     "unacceptable_rate_among_shown": 1.0
+    }
+   }
   },
   "unseen_lanes": {
    "fast": {

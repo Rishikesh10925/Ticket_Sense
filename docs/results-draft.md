@@ -51,7 +51,7 @@ was computed on a subset only and is reported in `baselines-v1-judge.json`.
 |---|---|---|
 | H1 | AURC difference vs B4: -0.040 [-0.105, 0.038], **no reliable improvement** | The interval crosses zero on 135 drafts. The locked test (250) may or may not separate them. |
 | H2 | **not testable**: the fast lane opened in 1 of 1,000 resplits | With judge labels no threshold is certifiable at a 10% error budget; the fast lane stays closed. |
-| H3 | seen AURC 0.134 [0.072, 0.228]; unseen 0.992 [0.979, 1.000] | Unseen-topic drafts are almost all unacceptable (0.7% acceptable), so their AURC is near 1 by construction. The shift guard (Week 9) is the response. |
+| H3 | seen AURC 0.134 [0.072, 0.228]; unseen 0.992 [0.979, 1.000]; unseen drafts shown: 152 of 283 without the shift guard, 58 with it, all unacceptable | Only 2 of 283 unseen drafts are acceptable, so unseen AURC and e-AURC describe the base rate and are flagged not informative; the number of bad drafts shown is the meaningful measure (amendment 2026-10-25). |
 
 Lanes on validation: fast 0%, assisted 86%, escalate 14%. 9.8% of acceptable drafts
 are escalated (false escalations).

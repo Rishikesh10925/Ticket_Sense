@@ -100,3 +100,32 @@ def test_figures_are_svg(tmp_path):
     for path in (line, bars):
         text = path.read_text(encoding="utf-8")
         assert text.startswith("<svg") and text.rstrip().endswith("</svg>")
+
+
+def test_h3_reports_class_counts_e_aurc_and_exposure():
+    from gate.service import Thresholds
+
+    rows, p, y = rows_and_scores(n=120)
+    unseen = [FakeRow(f"u{i}", 0, features={"rt_dept_max_prob": 0.3 if i % 2 else 0.9, "rt_probe_margin": 0.5})
+              for i in range(40)]
+    unseen[0].acceptable = 1
+    p_u = np.full(40, 0.7)
+    guard = Thresholds("g", None, 0.05, 0.5, None)
+    report = le.evaluate(rows, rows, unseen, p, p, p_u, {"B4 top-1 similarity": p}, "B4 top-1 similarity",
+                         le.Lanes(None, 0.05), calib_share=0.5, guard=guard)
+    u = report["H3"]["unseen"]
+    assert (u["n_acceptable"], u["n_unacceptable"]) == (1, 39)
+    assert u["ranking_informative"] is False and "estimate" in u["e_aurc"]
+    assert u["exposure"]["without_guard"]["n_shown"] == 40  # every draft passes a 0.05 threshold
+    assert u["exposure"]["with_guard"]["n_shown"] == 20  # the guard stops the uncertain half
+    assert u["exposure"]["with_guard"]["unacceptable_shown"] == 19
+    md = le.summary_md(report, final=False)
+    assert "not informative" in md and "Shown with the shift guard" in md
+
+
+def test_exposure_without_a_guard_file_is_reported_as_missing():
+    rows, p, y = rows_and_scores(n=60)
+    report = le.evaluate(rows, rows, rows, p, p, p, {"B4 top-1 similarity": p}, "B4 top-1 similarity",
+                         le.Lanes(None, 0.05), calib_share=0.5)
+    assert report["H3"]["unseen"]["exposure"]["with_guard"] is None
+    assert "n/a" in le.summary_md(report, final=False)
