@@ -50,6 +50,19 @@
     0.3827
    ]
   },
+  "B3 self-consistency": {
+   "aurc": 0.2117,
+   "auroc_unacceptable": 0.5749,
+   "ece": null,
+   "brier": null,
+   "risk_at_50": 0.2444,
+   "risk_at_70": 0.2444,
+   "risk_at_90": 0.2444,
+   "aurc_ci95": [
+    0.14,
+    0.2953
+   ]
+  },
   "B4 top-1 similarity": {
    "aurc": 0.1735,
    "auroc_unacceptable": 0.6439,
@@ -103,6 +116,8 @@
    ]
   }
  },
+ "b3_coverage": 0.1638,
+ "b3_subset": null,
  "H1": {
   "rule": "paired bootstrap 95% interval of AURC(proposed) - AURC(best baseline) entirely below zero",
   "aurc_difference": {

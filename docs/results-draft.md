@@ -39,13 +39,16 @@ Validation: 135 drafts, 75.6% acceptable by the judge.
 | Proposed (XGBoost, Platt-calibrated) | 0.134 | [0.072, 0.228] | 0.695 | 0.106 | 0.174 |
 | B1 verbalised confidence | 0.197 | [0.130, 0.274] | 0.622 | 0.177 | 0.210 |
 | B2 token probability | 0.261 | [0.158, 0.383] | 0.459 | 0.084 | 0.197 |
+| B3 self-consistency | 0.212 | [0.140, 0.295] | 0.575 | n/a | n/a |
 | B4 top-1 retrieval similarity | 0.174 | [0.113, 0.248] | 0.644 | n/a | n/a |
 | B5 reranker score | 0.206 | [0.133, 0.291] | 0.628 | n/a | n/a |
 | B6 entailment share | 0.216 | [0.129, 0.325] | 0.545 | n/a | n/a |
 | B7 logistic regression on B4 to B6 | 0.180 | [0.107, 0.307] | 0.625 | 0.060 | 0.174 |
 
 ECE and Brier are only meaningful for scores meant as probabilities. B3 (self-consistency)
-was computed on a subset only and is reported in `baselines-v1-judge.json`.
+needs several re-drafts per ticket, so it was computed only for the 600 drafts selected for
+labelling: here it covers 16% of answering validation drafts and is not eligible as best
+baseline (it needs 95%). On human-labelled data it covers every answering draft.
 
 | Hypothesis | Rehearsal outcome | What it would mean |
 |---|---|---|

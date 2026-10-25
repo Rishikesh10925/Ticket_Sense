@@ -24,6 +24,7 @@ to H2 was logged before any locked-test access.
 | B5 reranker score | 0.206 | [0.133, 0.291] |
 | B6 entailment share | 0.216 | [0.129, 0.325] |
 | B2 token probability | 0.261 | [0.158, 0.383] |
+| B3 self-consistency (covers 16% of answering drafts here) | 0.212 | [0.140, 0.295] |
 
 Paired difference against B4: −0.040 [−0.105, 0.038]: lower, but **no reliable
 improvement** on 135 drafts. Figures: [risk-coverage](../results/figures/locked-rehearsal-judge/risk-coverage.svg),
