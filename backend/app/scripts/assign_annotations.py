@@ -35,7 +35,15 @@ MANIFEST_DIR = ROOT / "data" / "annotation"
 
 
 async def _active_annotators(db) -> list[uuid.UUID]:
-    return list(await db.scalars(select(Annotator.id).where(Annotator.active.is_(True)).order_by(Annotator.pseudonym)))
+    """Active reviewers, never the dev-only demo account (seed_annotation_demo, @demo.local):
+    it must not receive real labelling work (Week 12)."""
+    from app.models import User
+
+    return list(await db.scalars(
+        select(Annotator.id).join(User, User.id == Annotator.user_id)
+        .where(Annotator.active.is_(True), ~User.email.endswith("@demo.local"))
+        .order_by(Annotator.pseudonym)
+    ))
 
 
 async def _next_positions(db) -> tuple[dict, dict]:
