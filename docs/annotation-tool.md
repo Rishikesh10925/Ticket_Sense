@@ -104,3 +104,24 @@ pseudonym. Reviewers see synthetic tickets only.
   reviewer who has not seen it.
 - Migration 0017: one assignment per (draft, annotator), enforced by the database.
 - Timer, keyboard labels and blinding were already in v0.
+
+## Offline review packs (Week 12)
+
+Outside reviewers cannot reach the development laptop, so they label offline: one HTML
+file each, opened in any browser, and one CSV sent back. A pack shows exactly what
+`/annotate` shows (ticket, draft, evidence) and nothing else, saves progress in the
+browser, and records the time spent on each draft.
+
+| Step | Command (from `backend/`) |
+|---|---|
+| 1. Add reviewers | `python -m app.scripts.review_packs add --names <first names>` (pseudonyms REV-01 …; names go only to the git-ignored `data/annotation/packs/reviewers.csv`) |
+| 2. Selected drafts | `python -m app.scripts.review_packs selection` → `data/annotation/selection_v1_drafts.txt` |
+| 3. Plan | `python -m app.scripts.assign_annotations plan --batch sprint1 --drafts ../data/annotation/selection_v1_drafts.txt --overlap 150 --seed 2026` |
+| 4. Packs | `python -m app.scripts.review_packs export` → `data/annotation/packs/review_pack_REV-01.html` … (send each reviewer their file) |
+| 5. Returned files | save to `data/annotation/returned/`, then `python -m app.scripts.review_packs import ../data/annotation/returned/labels_REV-01.csv` |
+| 6. Disagreements | `python -m app.scripts.assign_annotations adjudicate --batch adjud1 --seed 2026`, then `export` and `import` again |
+
+Imports follow the online rules: a label or a skip, never both; labels are final; one
+wrong line rejects the whole file. Every import prints the median time per draft and how
+many answers took under 15 seconds, so rushed packs are visible before any result uses
+them. The demo reviewer (`@demo.local`) never receives real assignments.
