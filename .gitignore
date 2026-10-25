@@ -53,3 +53,7 @@ ai/models/artifacts/v2/baseline_*.joblib
 
 # Release packages (built by ai/benchmark/release.py; published with the GitHub release)
 release/
+
+# Offline review packs and returned label files (names and labels stay local; review_packs.py)
+data/annotation/packs/
+data/annotation/returned/

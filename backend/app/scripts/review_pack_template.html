@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TicketSense review</title>
+<style>
+  :root { --bg:#f6f7fb; --card:#fff; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --blue:#2563eb; --green:#16a34a; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0b1020; --card:#141b2e; --ink:#f1f5f9; --muted:#94a3b8; --line:#263148; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, sans-serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:12px; }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  .muted { color: var(--muted); font-size: 14px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  button { font: inherit; border-radius: 10px; border: 2px solid var(--line); background: var(--card); color: var(--ink); padding: 10px 16px; cursor: pointer; }
+  button.label { flex: 1 1 200px; text-align: left; }
+  button.picked { border-color: var(--blue); background: var(--blue); color: #fff; }
+  button.primary { background: var(--blue); color:#fff; border-color: var(--blue); }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .bar { height: 10px; background: var(--line); border-radius: 6px; overflow: hidden; flex: 1; }
+  .bar span { display:block; height:100%; background: var(--green); }
+  .passage { white-space: pre-wrap; font-size: 15px; border-top:1px solid var(--line); padding-top:8px; margin-top:8px; }
+  ol { padding-left: 1.3em; } li { margin: 4px 0; }
+  .cite { color: var(--blue); font-weight: 600; }
+  textarea { width:100%; font: inherit; padding: 8px; border-radius: 8px; border:1px solid var(--line); background: var(--card); color: var(--ink); }
+  .codes label { display:inline-flex; gap:6px; margin: 4px 12px 4px 0; }
+  .hidden { display:none; }
+  pre { white-space: pre-wrap; background: var(--bg); padding: 8px; border-radius: 8px; }
+  kbd { border:1px solid var(--line); border-radius:4px; padding:0 5px; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const PACK = __PACK__;
+const LABELS = [["A","Acceptable","Correct and complete enough to send as is"],
+                ["M","Minor edit","Correct; under two minutes of wording or order fixes"],
+                ["R","Major rework","Missing key steps or has wrong steps; rewriting is faster"],
+                ["W","Wrong or unsafe","Could mislead or cause harm, or uses a wrong source"]];
+const CODES = ["wrong_source","outdated_source","missing_step","invented_step","did_not_address_question","tone","formatting","other"];
+const KEY = "ts-pack-" + PACK.pseudonym + "-" + PACK.pack_id;
+let st = { i: 0, answers: {} };
+let shownAt = Date.now();
+try { st = JSON.parse(localStorage.getItem(KEY)) || st; } catch {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} }
+function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function cur() { return PACK.items[st.i]; }
+function ans(id) { return st.answers[id] || { codes: [], ms: 0 }; }
+function addTime() {  // time on this item accumulates across visits, capped at one hour
+  const x = cur(); if (!x) return;
+  const a = ans(x.assignment_id); a.ms = Math.min(3600000, (a.ms || 0) + (Date.now() - shownAt));
+  st.answers[x.assignment_id] = a; shownAt = Date.now(); save();
+}
+function done() { return PACK.items.filter(x => ans(x.assignment_id).label || ans(x.assignment_id).skip).length; }
+
+function show() {
+  const x = cur(), a = ans(x.assignment_id), n = PACK.items.length, d = done();
+  const steps = x.draft.steps.map(s => `<li>${esc(s.text)} ${s.citations.map(c => `<span class="cite">[${c}]</span>`).join(" ")}</li>`).join("");
+  document.getElementById("app").innerHTML = `
+    <div class="row" style="margin-bottom:12px"><b>${esc(PACK.pseudonym)}</b><div class="bar"><span style="width:${100*d/n}%"></span></div>
+      <b>${st.i + 1} / ${n}</b> <span class="muted">(${d} done)</span></div>
+    <div class="grid">
+      <div>
+        <div class="card"><div class="muted">Ticket</div><p><b>${esc(x.ticket.subject)}</b></p><p style="white-space:pre-wrap">${esc(x.ticket.body)}</p>
+          ${x.ticket.attachment_text ? `<pre>${esc(x.ticket.attachment_text)}</pre>` : ""}</div>
+        <div class="card"><div class="muted">AI reply (draft)</div>
+          ${x.draft.can_answer === false ? `<p><b>The draft says the evidence is not enough to answer.</b></p>` : ""}
+          <ol>${steps}</ol>
+          ${x.draft.missing_information.length ? `<p class="muted">Asks for: ${esc(x.draft.missing_information.join("; "))}</p>` : ""}</div>
+      </div>
+      <div class="card"><div class="muted">Evidence the AI was given</div>
+        ${x.evidence.length ? x.evidence.map(e => `<div class="passage"><b>[${e.n}] ${esc(e.title)}</b>\n${esc(e.text)}</div>`).join("") : "<p class='muted'>None.</p>"}</div>
+    </div>
+    <div class="card"><b>Your label</b> <span class="muted">(rubric ${esc(PACK.rubric_version)}: judge whether an engineer could send this reply)</span>
+      <div class="row" style="margin-top:8px">${LABELS.map(([v,t,h], k) => `<button class="label ${a.label===v?"picked":""}" onclick="pick('${v}')"><kbd>${k+1}</kbd> <b>${v} · ${t}</b><br><span style="font-size:14px">${h}</span></button>`).join("")}</div>
+      <div class="${a.label && a.label !== "A" ? "" : "hidden"}" style="margin-top:10px"><span class="muted">Reasons (pick any)</span>
+        <div class="codes">${CODES.map(c => `<label><input type="checkbox" ${a.codes.includes(c)?"checked":""} onchange="code('${c}')">${c.replace(/_/g," ")}</label>`).join("")}</div></div>
+      <p class="muted" style="margin:10px 0 4px">Note (optional)</p>
+      <textarea rows="2" maxlength="2000" oninput="note(this.value)">${esc(a.note || "")}</textarea>
+      <div class="row" style="margin-top:10px">
+        <button onclick="go(-1)" ${st.i===0?"disabled":""}>← Back</button>
+        <button onclick="skip()">Skip: unreadable</button>
+        <span style="flex:1"></span>
+        <button onclick="download()" ${d < n ? "title='You can download a partial file too'" : ""}>⬇ Download answers (${d}/${n})</button>
+        <button class="primary" onclick="go(1)" ${a.label || a.skip ? "" : "disabled"}>Next → <kbd>Enter</kbd></button>
+      </div></div>`;
+  window.scrollTo(0, 0);
+}
+function upd(patch) { const x = cur(); st.answers[x.assignment_id] = { ...ans(x.assignment_id), ...patch }; save(); }
+function pick(v) { upd({ label: v, skip: null }); show(); }
+function skip() { upd({ label: null, skip: "unreadable" }); go(1); }
+function code(c) { const s = new Set(ans(cur().assignment_id).codes); s.has(c) ? s.delete(c) : s.add(c); upd({ codes: [...s] }); }
+function note(v) { upd({ note: v }); }
+function go(step) { addTime(); st.i = Math.min(PACK.items.length - 1, Math.max(0, st.i + step)); save(); show(); }
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "TEXTAREA") return;
+  const k = ["1","2","3","4"].indexOf(e.key);
+  if (k >= 0) pick(LABELS[k][0]);
+  const a = ans(cur().assignment_id);
+  if (e.key === "Enter" && (a.label || a.skip)) go(1);
+});
+function cell(v) { v = String(v ?? ""); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+function download() {
+  addTime();
+  const rows = [["pack_id","pseudonym","assignment_id","label","reason_codes","note","skipped_reason","time_taken_ms"]];
+  for (const x of PACK.items) {
+    const a = ans(x.assignment_id);
+    if (!a.label && !a.skip) continue;
+    rows.push([PACK.pack_id, PACK.pseudonym, x.assignment_id, a.label || "", a.label && a.label !== "A" ? a.codes.join(";") : "",
+               a.note || "", a.skip || "", Math.round(a.ms || 0)]);
+  }
+  const blob = new Blob([rows.map(r => r.map(cell).join(",")).join("\r\n") + "\r\n"], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob); link.download = `labels_${PACK.pseudonym}.csv`; link.click();
+}
+window.addEventListener("beforeunload", addTime);
+show();
+</script>
+</body>
+</html>
