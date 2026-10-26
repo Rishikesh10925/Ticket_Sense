@@ -6,8 +6,11 @@ risk-controlled lane thresholds (Roadmap Week 8; Blueprint V2 §13.3 to §13.4).
 
 Train split: fit and group-aware cross-validation. Validation split: choose between
 logistic regression and XGBoost (AURC), compare with the best baseline. Calibration
-split: isotonic calibration, then Learn-then-Test thresholds for the fast (alpha 0.10)
-and assisted (alpha 0.40) lanes with delta 0.10. The locked test split is never read.
+split: Platt calibration (model.py: isotonic was tried and rejected for its ties), then
+Learn-then-Test thresholds for the fast (alpha 0.10) and assisted (alpha 0.40) lanes with
+delta 0.10, certified on the calibration drafts that can answer: a draft that says it
+cannot answer always escalates, so it is never in the population a lane shows (Week 12).
+The locked test split is never read.
 
 With judge labels everything is marked PROVISIONAL: it proves the pipeline and gives
 development numbers, never a result.
@@ -85,15 +88,17 @@ def main() -> None:
     }
 
     p_cal = model.predict(by["calib"])
-    lanes = select_lane_thresholds(p_cal, y["calib"], alpha_fast=0.10, alpha_assisted=0.40, delta=0.10,
-                                   candidates=DEFAULT_GRID)
+    answering = np.array([bool(r.can_answer) for r in by["calib"]])
+    report["n_calib_answering"] = int(answering.sum())
+    lanes = select_lane_thresholds(p_cal[answering], y["calib"][answering], alpha_fast=0.10, alpha_assisted=0.40,
+                                   delta=0.10, candidates=DEFAULT_GRID)
     report["thresholds"] = {name: {"threshold": t.threshold, "n_shown": t.n_shown, "n_unacceptable": t.n_unacceptable,
                                    "coverage": round(t.coverage, 4)}
                             for name, t in (("fast", lanes.fast), ("assisted", lanes.assisted))}
     # Admin screen (§13.4): the certified coverage for any chosen error budget.
     report["alpha_curve"] = []
     for a in (0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.50):
-        t = learn_then_test(p_cal, y["calib"], alpha=a, delta=0.10, candidates=DEFAULT_GRID)
+        t = learn_then_test(p_cal[answering], y["calib"][answering], alpha=a, delta=0.10, candidates=DEFAULT_GRID)
         report["alpha_curve"].append({"alpha": a, "threshold": t.threshold, "coverage": round(t.coverage, 4)})
     for split in ("val", "unseen"):
         p = model.predict(by[split])

@@ -260,6 +260,7 @@
    0.0
   ]
  },
+ "n_calib_answering": 232,
  "thresholds": {
   "fast": {
    "threshold": null,
@@ -269,8 +270,8 @@
   },
   "assisted": {
    "threshold": 0.05,
-   "n_shown": 262,
-   "n_unacceptable": 59,
+   "n_shown": 232,
+   "n_unacceptable": 49,
    "coverage": 1.0
   }
  },
@@ -297,8 +298,8 @@
   },
   {
    "alpha": 0.25,
-   "threshold": null,
-   "coverage": 0.0
+   "threshold": 0.65,
+   "coverage": 0.9397
   },
   {
    "alpha": 0.3,

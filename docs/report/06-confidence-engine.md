@@ -29,13 +29,14 @@ closed until human-label calibration certifies one.
 ### What the assisted threshold does today: nothing
 
 The assisted threshold was certified at **0.05, the lowest point of the grid, with 100%
-coverage** (all 262 calibration drafts). Two facts make that the outcome:
+coverage** of the 232 calibration drafts that can answer (thresholds are certified on
+those, since a draft that cannot answer always escalates). Two facts make that the outcome:
 
-- **The budget is looser than the base rate.** Only 22.5% of calibration drafts are
-  unacceptable (59 of 262), below the 40% assisted budget, so even "show every draft"
-  passes the test. The same holds for any budget of 30% or more; for 25% or less no
-  threshold can be certified at all, because the fixed sequence fails before reaching a
-  useful one (`alpha_curve` in `confidence-v1-judge.json`).
+- **The budget is looser than the base rate.** Only 21.1% of the answering calibration
+  drafts are unacceptable (49 of 232), below the 40% assisted budget, so even "show every
+  draft" passes the test. The same holds for any budget of 30% or more. At 25% a threshold
+  of 0.65 is certified (94% coverage); at 20% or less none can be, because the fixed
+  sequence fails before reaching a useful one (`alpha_curve` in `confidence-v1-judge.json`).
 - **The calibrated scores never come near 0.05.** The lowest score the model gives is
   0.57 on calibration, 0.62 on validation and 0.63 on unseen topics.
 
