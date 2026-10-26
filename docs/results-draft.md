@@ -53,7 +53,7 @@ baseline (it needs 95%). On human-labelled data it covers every answering draft.
 | Hypothesis | Rehearsal outcome | What it would mean |
 |---|---|---|
 | H1 | AURC difference vs B4: -0.040 [-0.105, 0.038], **no reliable improvement** | The interval crosses zero on 135 drafts. The locked test (250) may or may not separate them. |
-| H2 | **not testable**: the fast lane opened in 1 of 1,000 resplits | With judge labels no threshold is certifiable at a 10% error budget; the fast lane stays closed. |
+| H2 | **not testable**: the fast lane opened in 8 of 1,000 resplits | With judge labels no threshold is certifiable at a 10% error budget; the fast lane stays closed. |
 | H3 | seen AURC 0.134 [0.072, 0.228]; unseen 0.992 [0.979, 1.000]; unseen drafts shown: 152 of 283 without the shift guard, 58 with it, all unacceptable | Only 2 of 283 unseen drafts are acceptable, so unseen AURC and e-AURC describe the base rate and are flagged not informative; the number of bad drafts shown is the meaningful measure (amendment 2026-10-25). |
 
 Lanes on validation: fast 0%, assisted 86%, escalate 14%. 9.8% of acceptable drafts
@@ -82,7 +82,7 @@ Figures: [`figures/locked-rehearsal-judge/`](results/figures/locked-rehearsal-ju
    noise on top of the bootstrap interval.
 4. **The fast lane is closed, and the assisted threshold filters nothing.** No threshold
    could be certified at the 10% budget, so the design runs as two lanes. The assisted
-   threshold was certified at 0.05 with 100% coverage: only 22.5% of calibration drafts
+   threshold was certified at 0.05 with 100% coverage: only 21.1% of answering calibration drafts
    are unacceptable (below the 40% budget) and no calibrated score is below 0.57. Known-
    topic drafts are therefore escalated by the can-answer flag, the output screen and the
    shift guard, not by their confidence score (report Chapter 6.3).

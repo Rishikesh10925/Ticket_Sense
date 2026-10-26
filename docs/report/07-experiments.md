@@ -32,8 +32,9 @@ improvement** on 135 drafts. Figures: [risk-coverage](../results/figures/locked-
 
 ## 7.3 Risk control (H2, development)
 
-Over 1,000 calibration/test resplits, Learn-then-Test certified a fast-lane threshold once:
-**not testable** with judge labels. The assisted lane holds 86% of validation drafts at a
+Over 1,000 calibration/test resplits, each refitting calibration on its own calibration side
+and counting only drafts that can answer, Learn-then-Test certified a fast-lane threshold in
+8: **not testable** with judge labels. The assisted lane holds 86% of validation drafts at a
 20.7% unacceptable rate; the escalate lane holds 14% at 47.4%.
 
 That split is **not made by the confidence score.** The assisted threshold sits at 0.05

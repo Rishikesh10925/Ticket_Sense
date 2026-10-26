@@ -24,7 +24,7 @@ labels for the confidence model). Human-label and locked-test numbers: **To be f
 | Inputs | 31 signals of the draft (retrieval, reranker, grounding, consistency, routing, evidence, ticket) plus two category-history rates; no ticket text |
 | Training labels | LLM judge (`llama3.1:8b`) for development; human labels for the reported model, **To be filled** |
 | Output | A calibrated probability and up to three readable reasons |
-| Thresholds | Learn-then-Test, α 0.10 (fast) and 0.40 (assisted), δ 0.10; with judge labels: fast not certified, assisted 0.05 with 100% coverage, so the score currently escalates no draft (calibrated scores range from 0.57 up; 22.5% of calibration drafts are unacceptable, under the 40% budget) |
+| Thresholds | Learn-then-Test, α 0.10 (fast) and 0.40 (assisted), δ 0.10; with judge labels: fast not certified, assisted 0.05 with 100% coverage, so the score currently escalates no draft (calibrated scores range from 0.57 up; 21.1% of answering calibration drafts are unacceptable, under the 40% budget) |
 
 ### Development performance (validation, judge labels)
 

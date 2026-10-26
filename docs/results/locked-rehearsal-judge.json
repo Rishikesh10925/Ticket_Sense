@@ -133,11 +133,11 @@
  },
  "H2": {
   "rule": "test-side fast-lane risk <= 0.1 in at least 90% of 1000 resplits",
-  "share_within_alpha": 0.999,
-  "resplits_with_closed_lane": 999,
+  "share_within_alpha": 0.992,
+  "resplits_with_closed_lane": 992,
   "median_test_risk": 0.0,
   "supported": null,
-  "decision": "not testable: the fast lane could not be certified in 999 of 1000 resplits",
+  "decision": "not testable: the fast lane could not be certified in 992 of 1000 resplits",
   "histogram": {
    "edges": [
     0.0,
@@ -163,17 +163,17 @@
     0.5
    ],
    "counts": [
-    999,
-    0,
-    0,
-    0,
-    0,
-    0,
+    992,
     0,
     0,
     0,
     0,
     1,
+    1,
+    5,
+    1,
+    0,
+    0,
     0,
     0,
     0,
