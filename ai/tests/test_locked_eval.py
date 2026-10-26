@@ -59,14 +59,14 @@ def test_h1_supported_only_when_interval_is_below_zero():
 def test_h2_is_not_testable_when_the_fast_lane_never_opens():
     rows, _, y = rows_and_scores()
     useless = np.full(len(y), 0.5)  # no threshold can be certified at alpha 0.10
-    out = le.h2(useless, y, [r.group_id for r in rows], 0.5)
+    out = le.h2(useless, y, [r.group_id for r in rows], [True] * len(y), 0.5)
     assert out["resplits_with_closed_lane"] == le.N_RESPLITS
     assert out["supported"] is None and out["decision"].startswith("not testable")
 
 
 def test_h2_supported_with_a_well_separated_score():
     rows, p, y = rows_and_scores(n=600, signal=1.0)
-    out = le.h2(p, y, [r.group_id for r in rows], 0.5)
+    out = le.h2(p, y, [r.group_id for r in rows], [True] * len(y), 0.5)
     assert out["resplits_with_closed_lane"] < le.N_RESPLITS // 2
     assert out["supported"] is True and sum(out["histogram"]["counts"]) == le.N_RESPLITS
 
@@ -161,3 +161,34 @@ def test_b3_subset_compares_only_drafts_with_b3():
     assert out["n"] == 60 and out["proposed_aurc"] == out["b3_aurc"]  # same scores on the same drafts
     assert out["aurc_difference"]["estimate"] == 0.0
     assert le.b3_subset(rows[:10], p[:10], y[:10]) is None  # too few to compare
+
+
+def test_h2_never_counts_drafts_that_cannot_answer():
+    rows, p, y = rows_and_scores(n=600, signal=1.0)
+    groups = [r.group_id for r in rows]
+    everyone = le.h2(p, y, groups, [True] * len(y), 0.5)
+    # Mark every unacceptable draft as "cannot answer": the lane can never show them, so
+    # the measured risk among shown drafts must drop to zero.
+    declined = le.h2(p, y, groups, [bool(v) for v in y], 0.5)
+    assert everyone["median_test_risk"] > 0
+    assert declined["median_test_risk"] == 0.0
+
+
+def test_h2_refits_calibration_on_the_calibration_side_only(monkeypatch):
+    from confidence_model import model as cm
+
+    rows, p, y = rows_and_scores(n=200, signal=1.0)
+    groups = [r.group_id for r in rows]
+    fitted_on = []
+    original = cm.PlattCalibrator.fit
+
+    def spy(self, raw, labels):
+        fitted_on.append(len(labels))
+        return original(self, raw, labels)
+
+    monkeypatch.setattr(cm.PlattCalibrator, "fit", spy)
+    monkeypatch.setattr(le, "N_RESPLITS", 20)
+    le.h2(p, y, groups, [True] * len(y), 0.5)
+    assert len(fitted_on) == 20  # one fresh calibration per resplit
+    assert all(n < len(y) for n in fitted_on)  # never on the whole pool, so never on test-side labels
+    assert all(abs(n - len(y) / 2) <= 10 for n in fitted_on)  # about the calibration share

@@ -113,18 +113,31 @@ def h1(p_model: np.ndarray, p_best: np.ndarray, y: np.ndarray, groups: list[str]
             "decision": "supported" if supported else "no reliable improvement"}
 
 
-def h2(p: np.ndarray, y: np.ndarray, groups: list[str], calib_share: float) -> dict:
-    """Resplit the labelled pool by group; certify on one side, measure on the other."""
+def h2(raw: np.ndarray, y: np.ndarray, groups: list[str], can_answer: list, calib_share: float) -> dict:
+    """Resplit the labelled pool by group and repeat the deployed procedure on each split:
+    fit Platt calibration on the calibration side only, certify the fast threshold on its
+    answering drafts, and measure the risk on the test side's answering drafts, the ones
+    the lane could show (amendment 2026-10-26). `raw` = uncalibrated model scores, so no
+    test-side label ever shapes the scores it is judged with."""
+    from confidence_model.model import PlattCalibrator
+
     rng = np.random.default_rng(SEED)
     unique = sorted(set(groups))
     g = np.array(groups)
+    answering = np.array([bool(c) for c in can_answer])
     risks, closed = [], 0
     for _ in range(N_RESPLITS):
         order = rng.permutation(len(unique))
         cal_groups = {unique[i] for i in order[: round(len(unique) * calib_share)]}
         cal = np.isin(g, list(cal_groups))
-        t = learn_then_test(p[cal], y[cal], alpha=ALPHA, delta=DELTA, candidates=DEFAULT_GRID)
-        shown = (~cal) & (p >= t.threshold) if t.threshold is not None else np.zeros(len(p), bool)
+        if len(set(y[cal])) < 2:
+            closed += 1  # calibration needs both classes on the calibration side
+            risks.append(0.0)
+            continue
+        p = PlattCalibrator().fit(raw[cal], y[cal]).predict(raw)
+        fit = cal & answering
+        t = learn_then_test(p[fit], y[fit], alpha=ALPHA, delta=DELTA, candidates=DEFAULT_GRID) if fit.any() else None
+        shown = ((~cal) & answering & (p >= t.threshold)) if t is not None and t.threshold is not None             else np.zeros(len(p), bool)
         if not shown.any():
             closed += 1  # the lane shows nothing on the test side, so it cannot exceed alpha
             risks.append(0.0)
@@ -232,7 +245,7 @@ def b3_subset(rows, p: np.ndarray, y: np.ndarray) -> dict | None:
             "aurc_difference": _interval(diff)}
 
 
-def evaluate(eval_rows, pool_rows, unseen_rows, p_eval, p_pool, p_unseen, baseline_scores: dict,
+def evaluate(eval_rows, pool_rows, unseen_rows, p_eval, raw_pool, p_unseen, baseline_scores: dict,
              best: str, lanes: Lanes, calib_share: float, guard=None) -> dict:
     """Everything the pre-registration asks for, from scores already computed."""
     y = np.array([r.acceptable for r in eval_rows], dtype=float)
@@ -247,8 +260,8 @@ def evaluate(eval_rows, pool_rows, unseen_rows, p_eval, p_pool, p_unseen, baseli
         "b3_coverage": _b3_coverage(eval_rows),
         "b3_subset": b3_subset(eval_rows, p_eval, y),
         "H1": h1(p_eval, baseline_scores[best], y, groups),
-        "H2": h2(p_pool, np.array([r.acceptable for r in pool_rows], dtype=float),
-                 [r.group_id for r in pool_rows], calib_share),
+        "H2": h2(raw_pool, np.array([r.acceptable for r in pool_rows], dtype=float),
+                 [r.group_id for r in pool_rows], [r.can_answer for r in pool_rows], calib_share),
         "lanes": lane_block(p_eval, y, [r.can_answer for r in eval_rows], lanes),
         "slices": slices(eval_rows, p_eval, y),
     }
@@ -383,7 +396,7 @@ def main() -> None:
         return s
 
     p_eval = model.predict(by[eval_split])
-    report = evaluate(by[eval_split], pool, by["unseen"], p_eval, model.predict(pool),
+    report = evaluate(by[eval_split], pool, by["unseen"], p_eval, model.raw(pool),
                       model.predict(by["unseen"]) if by["unseen"] else np.array([]), scores(by[eval_split]), best,
                       lanes, len(by["calib"]) / len(pool), guard)
     name = "locked-final" if args.final else "locked-rehearsal-judge"
