@@ -24,9 +24,12 @@ class TicketStatus(StrEnum):
 # the same "a human-approved response now exists" state. CLOSED is terminal, reachable
 # from either REVIEWED or ESCALATED (an admin rejecting an escalation outright, with no
 # response ever generated).
+# Week 12: SUBMITTED and CLASSIFIED can also go straight to ESCALATED when the pipeline
+# cannot finish (an exception, or a predicted department that does not exist), so no
+# ticket is ever left waiting in an early state with nobody responsible for it.
 _VALID_TRANSITIONS: dict[TicketStatus, set[TicketStatus]] = {
-    TicketStatus.SUBMITTED: {TicketStatus.CLASSIFIED},
-    TicketStatus.CLASSIFIED: {TicketStatus.ROUTED},
+    TicketStatus.SUBMITTED: {TicketStatus.CLASSIFIED, TicketStatus.ESCALATED},
+    TicketStatus.CLASSIFIED: {TicketStatus.ROUTED, TicketStatus.ESCALATED},
     TicketStatus.ROUTED: {TicketStatus.DRAFTED, TicketStatus.ESCALATED},
     TicketStatus.DRAFTED: {TicketStatus.REVIEWED, TicketStatus.ESCALATED},
     TicketStatus.REVIEWED: {TicketStatus.CLOSED},

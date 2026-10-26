@@ -105,7 +105,10 @@ async def approve_escalation(
     engineer = await db.get(User, body.engineer_id)
     if engineer is None or engineer.role != "department_engineer" or not engineer.is_active:
         raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Not an active department engineer")
-    if engineer.department_id != ticket.department_id:
+    if ticket.department_id is None:
+        # The pipeline could not route it (Week 12): the admin's choice of engineer routes it.
+        ticket.department_id = engineer.department_id
+    elif engineer.department_id != ticket.department_id:
         raise HTTPException(
             status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="That engineer isn't in this ticket's department",
