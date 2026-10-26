@@ -12,6 +12,7 @@ Every structured draft is stored in `drafts`, with its claims and support scores
 ticket (`ai_draft_reply`, `ai_draft_citations`) where the engineer sees it.
 """
 
+import logging
 import sys
 import uuid
 from pathlib import Path
@@ -32,6 +33,9 @@ from generation.llm import get_llm_client  # noqa: E402
 from security.pii import REDACTOR_VERSION, restore  # noqa: E402
 from graph.nodes import get_scorer  # noqa: E402
 from graph.pipeline import build_pipeline  # noqa: E402
+
+logger = logging.getLogger(__name__)
+UNFINISHED = (TicketStatus.SUBMITTED, TicketStatus.CLASSIFIED, TicketStatus.ROUTED)
 
 
 def _draft_row(ticket_id: uuid.UUID, result: dict) -> Draft | None:
@@ -87,7 +91,34 @@ def _escalation_reason(ticket: Ticket, result: dict) -> str:
             f"(thresholds {gate.get('thresholds_version')})")
 
 
+def _escalate_to_admin(db, ticket: Ticket, reason: str) -> None:
+    """No draft and no department engineer can take this ticket: an admin routes it by
+    hand (tier `admin`; approving it to an engineer routes it to their department)."""
+    ticket.lane = "escalate"
+    ticket.status = transition(TicketStatus(ticket.status), TicketStatus.ESCALATED)
+    db.add(Escalation(ticket_id=ticket.id, reason=reason, confidence_score=None, tier="admin"))
+
+
 async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
+    """Never leaves a ticket stranded (Week 12): any failure rolls the attempt back and
+    escalates the ticket to an admin, recording only the error type (the message could
+    quote ticket text)."""
+    try:
+        await _run(ticket_id)
+    except Exception as exc:  # the background task has no caller to report to
+        logger.exception("pipeline failed for ticket %s", ticket_id)
+        try:
+            async with SessionLocal() as db:
+                ticket = await db.get(Ticket, ticket_id)
+                if ticket is not None and TicketStatus(ticket.status) in UNFINISHED:
+                    _escalate_to_admin(db, ticket, f"Pipeline error ({type(exc).__name__}): the ticket could not "
+                                                   "be processed automatically and needs manual routing")
+                    await db.commit()
+        except Exception:
+            logger.exception("could not escalate ticket %s after a pipeline failure", ticket_id)
+
+
+async def _run(ticket_id: uuid.UUID) -> None:
     # A background task runs after the request's session (from Depends(get_db)) has
     # already closed, so this opens its own — see app/routers/tickets.py.
     async with SessionLocal() as db:
@@ -133,7 +164,11 @@ async def run_ticket_pipeline(ticket_id: uuid.UUID) -> None:
         await db.flush()
 
         department_id = result.get("department_id")
-        if department_id is not None:
+        if department_id is None:
+            predicted = result.get("department_name") or "none"
+            _escalate_to_admin(db, ticket, f"Could not route: the classifier chose '{predicted}', which is not a "
+                                           "department here")
+        else:
             ticket.department_id = uuid.UUID(department_id)
             ticket.status = transition(TicketStatus(ticket.status), TicketStatus.ROUTED)
             await db.flush()
