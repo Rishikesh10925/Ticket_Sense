@@ -14,12 +14,15 @@
 | 2 | `/tickets` API | A `participant` (study) account could list tickets | Participants are blocked like annotators (found by the study tests) |
 | 3 | Dependencies, JWT secret | See the Week 11 security checks in [report chapter 8](report/08-security-and-responsible-ai.md) | Upgraded; weak secret refused outside development |
 
-## Found, not fixed (needs a decision)
+## Found, fixed after the owner's decision (2026-10-22)
 
-| # | Where | Problem | Why not fixed now |
+| # | Where | Problem | Fix |
 |---|---|---|---|
-| 4 | Admin → Departments | Still shows the V1 per-department confidence threshold ("0–55% goes to your Approvals queue"), which no longer decides anything: lanes come from the certified gate thresholds | Part of the V1 cleanup list awaiting the owner's approval |
-| 5 | Admin → Model health | Shows the V1 confidence model report (121 labels, mostly synthetic bootstrap), not `confidence-v1` | Same |
+| 4 | Admin → Departments | Showed the V1 per-department confidence threshold ("0–55% goes to your Approvals queue"), which no longer decides anything: lanes come from the certified gate thresholds | Threshold control removed; the page lists engineers and articles per department and links to Error budget (`week11-rishikesh-v1-pages`) |
+| 5 | Admin → Model health | Showed the V1 confidence model report (121 labels, mostly synthetic bootstrap) | Counts only tickets the current gate scored and real engineer feedback; tested in `test_model_health.py` |
+
+The V1 code behind them (`PATCH /departments/{id}/threshold`, `ai/confidence/` apart from
+`labels.py`) is still in the repository, awaiting a separate cleanup decision.
 
 ## Open, not reproduced reliably
 
