@@ -57,3 +57,6 @@ release/
 # Offline review packs and returned label files (names and labels stay local; review_packs.py)
 data/annotation/packs/
 data/annotation/returned/
+
+# Paper drafts and notes, kept local (not in the repository)
+paper/
