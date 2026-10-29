@@ -19,7 +19,7 @@ far more work than needed.
 
 ## Warnings
 Do not create indexes on production tables without the DBA team; building them can lock
-the table.",,
+the table.",supported,
 ec037008-9cf9-422b-8a10-9f21c7bf8cd3,T-01774,1,Check the approval status of the purchase order in ME23N.,"[2] Purchase order waiting for release
 Purchase order waiting for release (Purchasing and goods receipt)
 ## Symptom
@@ -41,7 +41,7 @@ released it, the PO stays blocked for output and follow-on documents.
 
 ## Warnings
 The helpdesk cannot release a PO for an approver. Changing the PO value to get under the
-release limit is a policy violation.",,
+release limit is a policy violation.",supported,
 f56a8d16-1539-46e4-ac7a-e21819b803b0,T-01245,2,"If an inactive slot is found, contact the DBA to confirm and remove it.","[1] Database disk almost full
 Database disk almost full (Disk space and backups)
 ## Symptom
@@ -79,7 +79,7 @@ target is full, unreachable or its credentials expired, WAL files pile up locall
 4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
 
 ## Warnings
-Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",supported,
 cc69aaaa-c9f2-4f1a-99bb-bd8390637b87,T-01517,1,`ipconfig /renew` to request a new IP address.,"[1] Connected but no internet, 169.254 address
 Connected but no internet, 169.254 address (DHCP and DNS)
 ## Symptom
@@ -100,7 +100,7 @@ point to the DHCP server or an exhausted address pool.
 
 ## Warnings
 Do not give the device a static IP address as a fix; it can clash with addresses DHCP
-hands out later.",,
+hands out later.",supported,
 3e4bbfd3-8b5d-4a27-ad25-c9451acdf768,T-01468,1,Check the posting date the user entered.,"[1] Posting period closed for goods movements
 Posting period closed for goods movements (Materials and number ranges)
 ## Symptom
@@ -119,7 +119,7 @@ change was not run, or the user picks a date in an older period, the posting is 
    moved forward. Check the current period with MMRV.
 3. Escalate a missing period change to the materials-management team, who run MMPV.
 4. Postings into an older closed period need Finance approval and are handled by
-   Finance, not the helpdesk.",,
+   Finance, not the helpdesk.",supported,
 d061d15e-eae9-4b6c-9def-3e0cb3b38ec4,T-00920,3,Save the changes and log off then log on again.,"[1] Wrong date or number format in SAP
 Wrong date or number format in SAP (GUI, dumps and printing)
 ## Symptom
@@ -138,7 +138,7 @@ may differ from Windows regional settings.
 
 ## Warnings
 The formats affect only how values are displayed and exported, not the stored data; do
-not correct postings because of a display format.",,
+not correct postings because of a display format.",supported,
 a710cebd-c3c6-41f4-aaa8-cd863969d8dc,T-01541,1,Ensure it is within the current or previous month.,"[1] Posting period closed for goods movements
 Posting period closed for goods movements (Materials and number ranges)
 ## Symptom
@@ -157,7 +157,7 @@ change was not run, or the user picks a date in an older period, the posting is 
    moved forward. Check the current period with MMRV.
 3. Escalate a missing period change to the materials-management team, who run MMPV.
 4. Postings into an older closed period need Finance approval and are handled by
-   Finance, not the helpdesk.",,
+   Finance, not the helpdesk.",not_supported,"English: The passage says to use a date in one of the two periods named in the message, and only if that matches when the movement really happened. The claim fixes it as 'current or previous month' and drops that condition; if the period was not moved forward, the allowed periods are not the current month. Telugu: Passage lo message lo cheppina rendu periods lo oka date vaadali, adi kuda movement nijanga jarigina time ki match ayithe matrame ani undi. Claim daanni 'current leda previous month' ga fix chesi aa condition vadilesindi; period move forward avvakapothe allowed periods current month kaavu."
 b54b5e39-1d98-4180-9069-6bf8f49465be,T-01653,1,Check if the report figure is related to a slow query or a recent data growth.,"[1] A query has become slow
 A query has become slow (Query performance and indexes)
 ## Symptom
@@ -197,7 +197,7 @@ index, a report run at peak time, or a query whose plan changed after data growt
 
 ## Warnings
 Do not restart the database to clear CPU load; it drops every connection and the load
-usually returns.",,
+usually returns.",not_supported,"English: The passage is about a slow query and its first step is to get the exact query from the application log or pg_stat_statements. It has no step to check whether a 'report figure' is related to a slow query or data growth; 'report figure' is not in the passage. Telugu: Passage slow query gurinchi, first step application log leda pg_stat_statements nunchi exact query teesukovadam. 'Report figure' slow query leda data growth ki related aa ani check cheyyamani step ledu; 'report figure' passage lo ledu."
 7dbc6134-ae70-48f7-9a2c-4c31d427350d,T-01021,2,Ensure the assignment is correct.,"[1] Single sign-on to the cloud console fails
 Single sign-on to the cloud console fails (Identity, SSO and permissions)
 ## Symptom
@@ -223,7 +223,7 @@ Single sign-on to the cloud console fails (Identity, SSO and permissions)
 5. If many users fail at once, treat it as a single sign-on outage and escalate.
 
 ## Warnings
-Do not create a local cloud user with a password as a workaround for single sign-on.",,
+Do not create a local cloud user with a password as a workaround for single sign-on.",supported,
 3334735b-059a-41b6-ace4-963db35265c5,T-00893,3,Check if there are any long-running transactions that might be causing the issue: `SELECT * FROM pg_stat_activity WHERE state = 'idle in transaction';`.,"[2] Queries blocked by an idle session holding a lock
 Queries blocked by an idle session holding a lock (Locks and deadlocks)
 ## Symptom
@@ -242,7 +242,7 @@ rolling back. It shows as ""idle in transaction"" and keeps its locks until it e
 5. Ask the application team to close transactions on error paths.
 
 ## Warnings
-Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",not_supported,"English: The claim adds a specific SQL command (SELECT * FROM pg_stat_activity WHERE state = 'idle in transaction') that the passage does not give; the passage says to find the blocking session with pg_blocking_pids() and pg_stat_activity and check how long it has been idle in transaction. Telugu: Claim lo oka specific SQL command (SELECT * FROM pg_stat_activity WHERE state = 'idle in transaction') add chesaru, adi passage lo ledu; passage lo pg_blocking_pids() and pg_stat_activity tho blocking session kanukkoni, adi entha sepu idle in transaction lo undo check cheyyamani undi."
 c1b352c3-e9ec-40ea-8acf-2e2e2136c256,T-00591,1,Check the `pg_stat_statements` view for the slow query that caused the 'EXC001' warning.,"[1] A query has become slow
 A query has become slow (Query performance and indexes)
 ## Symptom
@@ -263,7 +263,7 @@ far more work than needed.
 
 ## Warnings
 Do not create indexes on production tables without the DBA team; building them can lock
-the table.",,
+the table.",not_supported,"English: The passage says to get the exact query from the application log or pg_stat_statements, but the 'EXC001' warning is not mentioned anywhere in the passage; that detail is added. Telugu: Passage lo application log leda pg_stat_statements nunchi exact query teesukomani undi, kani 'EXC001' warning passage lo ekkada ledu; aa detail extra ga add chesaru."
 e6445a37-ccdd-46e1-89e2-d3d3fd518b1a,T-01450,1,Check the application logs to confirm if the issue started after the last database failover.,"[1] Request to run a data fix in production
 Request to run a data fix in production (Access requests and schema changes)
 ## Symptom
@@ -283,7 +283,7 @@ itself.
 
 ## Warnings
 Never run a data fix that has no `WHERE` clause or whose row count does not match the
-expected number.",,
+expected number.",not_supported,"English: The passage is about running a data fix script in production; it says nothing about checking application logs or a database failover. The claim's action and condition are not in the passage. Telugu: Passage production lo data fix script run cheyyadam gurinchi; application logs check cheyyadam leda database failover gurinchi emi ledu. Claim lo unna action, condition passage lo levu."
 9444b6f1-3002-456e-92bc-1d9a5bb15955,T-00006,3,"If the provider is out-of-network, the employee should check the carrier's portal using the claim number.","[1] Health insurance claim status
 Health insurance claim status (Benefits and insurance)
 ## Symptom
@@ -302,7 +302,7 @@ claims themselves; other claims are submitted by the employee in the carrier's p
    carrier's employer support line, quoting the claim number only.
 
 ## Warnings
-Never ask for or record medical details in a ticket; use the claim number only.",,
+Never ask for or record medical details in a ticket; use the claim number only.",not_supported,"English: For a provider that is not in-network, the passage says the employee submits the claim through the carrier's portal with an itemised bill and proof of payment. Checking the portal with the claim number is a separate step for status, not tied to out-of-network providers. The claim mixes the two and changes the action. Telugu: Provider in-network kakapothe employee carrier portal lo itemised bill, proof of payment tho claim submit cheyyali ani passage lo undi. Claim number tho portal check cheyyadam status kosam separate step, out-of-network ki link ledu. Claim rendu kalipi action ni marchindi."
 c48ec8cd-639a-4d99-ad1b-dc863e768edc,T-01069,3,"If you miss the cut-off, your hours will be paid in the following cycle.","[1] Missed timesheet deadline
 Missed timesheet deadline (Payroll and timesheets)
 ## Symptom
@@ -321,7 +321,7 @@ the payroll cut-off to be paid in that cycle.
    before quoting a deadline.
 
 ## Warnings
-Do not edit or approve a timesheet on an employee's or manager's behalf.",,
+Do not edit or approve a timesheet on an employee's or manager's behalf.",supported,
 c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,2,"If the claim is still pending, contact the insurance carrier's employer support line to escalate the issue, quoting the claim number.","[1] Health insurance claim status
 Health insurance claim status (Benefits and insurance)
 ## Symptom
@@ -340,7 +340,7 @@ claims themselves; other claims are submitted by the employee in the carrier's p
    carrier's employer support line, quoting the claim number only.
 
 ## Warnings
-Never ask for or record medical details in a ticket; use the claim number only.",,
+Never ask for or record medical details in a ticket; use the claim number only.",not_supported,"English: The passage says HR escalates through the carrier's employer support line only if the claim is beyond the carrier's stated turnaround time. The claim changes the condition to 'still pending' and does not say HR does the escalation. Telugu: Claim carrier cheppina turnaround time daatithe matrame HR employer support line dwara escalate chestundi ani passage lo undi. Claim condition ni 'inka pending lo unte' ga marchindi, escalation HR chestundi ani kuda cheppaledu."
 333b4644-2b97-4240-91b6-1155b7828148,T-00870,3,"Escalate to the SAP configuration team with the number range object, interval, and fiscal year.","[1] Number range exhausted
 Number range exhausted (Materials and number ranges)
 ## Symptom
@@ -360,7 +360,7 @@ documents of that type can be saved.
 3. Escalate to the SAP configuration team with the object, the interval and the fiscal
    year. Extending or adding an interval is a configuration change.
 4. If the error appeared at the start of a fiscal year, mention it: the new year's
-   interval may simply not have been created.",,
+   interval may simply not have been created.",supported,
 46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,1,Check the version table (alembic_version) to see what the tool recorded.,"[1] Schema migration failed halfway
 Schema migration failed halfway (Access requests and schema changes)
 ## Symptom
@@ -378,7 +378,7 @@ was really applied.
 4. Then mark the version or rerun the migration, and record what was done in the ticket.
 
 ## Warnings
-Never rerun a failed migration before you know which statements already applied.",,
+Never rerun a failed migration before you know which statements already applied.",supported,
 5b9122d9-c4eb-409f-acb3-fa4f8b7018a4,T-01135,2,The platform team will create an alias DNS record pointing the domain at the load balancer.,"[1] New service needs a company domain name
 New service needs a company domain name (Load balancers and certificates)
 ## Symptom
@@ -398,7 +398,7 @@ name, both managed by the platform team.
    new name.
 
 ## Warnings
-Do not point records at a load balancer's IP addresses; they change. Use an alias record.",,
+Do not point records at a load balancer's IP addresses; they change. Use an alias record.",supported,
 a710cebd-c3c6-41f4-aaa8-cd863969d8dc,T-01541,3,"If the issue persists, escalate the problem to the materials-management team.","[1] Posting period closed for goods movements
 Posting period closed for goods movements (Materials and number ranges)
 ## Symptom
@@ -417,7 +417,7 @@ change was not run, or the user picks a date in an older period, the posting is 
    moved forward. Check the current period with MMRV.
 3. Escalate a missing period change to the materials-management team, who run MMPV.
 4. Postings into an older closed period need Finance approval and are handled by
-   Finance, not the helpdesk.",,
+   Finance, not the helpdesk.",not_supported,"English: The passage escalates to the materials-management team only for a missing period change (the current month is not among the allowed periods, checked with MMRV), so they can run MMPV. 'If the issue persists' is a different, vaguer condition. Telugu: Period change miss ayinappudu matrame (current month allowed periods lo lekapothe, MMRV tho check chesi) materials-management team ki escalate chesthe varu MMPV run chestaru ani passage lo undi. 'Issue persist ayithe' ane condition vere, adi vague ga undi."
 d182e1ce-b2f2-478f-a697-dbed38c03b6c,T-01605,2,`ipconfig /renew` to ensure a proper DHCP lease.,"[1] Connected but no internet, 169.254 address
 Connected but no internet, 169.254 address (DHCP and DNS)
 ## Symptom
@@ -438,7 +438,7 @@ point to the DHCP server or an exhausted address pool.
 
 ## Warnings
 Do not give the device a static IP address as a fix; it can clash with addresses DHCP
-hands out later.",,
+hands out later.",supported,
 4d0047d5-cfe1-4406-b193-1845519824dc,T-00831,3,Run the call app's network test during a bad call and send the results.,"[1] Video calls freeze or lag
 Video calls freeze or lag (Call quality and file shares)
 ## Symptom
@@ -459,7 +459,7 @@ whole office is affected, the internet link is saturated.
 5. If many users at one office are affected, escalate as a link-capacity problem.
 
 ## Warnings
-Do not ask users to stop company backups to free bandwidth.",,
+Do not ask users to stop company backups to free bandwidth.",supported,
 d182e1ce-b2f2-478f-a697-dbed38c03b6c,T-01605,4,"If the issue persists, contact network engineering to check the DHCP server and address pool.","[1] Connected but no internet, 169.254 address
 Connected but no internet, 169.254 address (DHCP and DNS)
 ## Symptom
@@ -480,7 +480,7 @@ point to the DHCP server or an exhausted address pool.
 
 ## Warnings
 Do not give the device a static IP address as a fix; it can clash with addresses DHCP
-hands out later.",,
+hands out later.",not_supported,"English: The passage escalates to network engineering only when several devices on the same floor or network get 169.254 addresses; a single failing device points to its cable, port or driver. 'If the issue persists' changes this condition. Telugu: Same floor leda network lo several devices ki 169.254 address vasthe matrame network engineering ki escalate cheyyali ani passage lo undi; okka device fail ayithe cable, port leda driver problem. 'Issue persist ayithe' ane condition daanni marchindi."
 3334735b-059a-41b6-ace4-963db35265c5,T-00893,2,Cancel the `ALTER TABLE` session immediately to release the queue: `SELECT pg_cancel_backend(<session_id>);`.,"[1] Schema change hangs and blocks the whole table
 Schema change hangs and blocks the whole table (Locks and deadlocks)
 ## Symptom
@@ -499,7 +499,7 @@ table, and every new query then queues behind the waiting `ALTER TABLE`.
 4. Retry the migration if it times out, rather than letting it wait.
 
 ## Warnings
-Never run schema changes on busy tables without a lock timeout.",,
+Never run schema changes on busy tables without a lock timeout.",not_supported,"English: Cancelling the waiting ALTER TABLE session is in the passage, but the command 'SELECT pg_cancel_backend(<session_id>);' is not; the claim adds a specific command the passage does not give. Telugu: Waiting ALTER TABLE session ni cancel cheyyadam passage lo undi, kani 'SELECT pg_cancel_backend(<session_id>);' command ledu; passage ivvani specific command ni claim add chesindi."
 e6445a37-ccdd-46e1-89e2-d3d3fd518b1a,T-01450,2,"If so, switch to a read-write transaction.","[1] Request to run a data fix in production
 Request to run a data fix in production (Access requests and schema changes)
 ## Symptom
@@ -519,7 +519,7 @@ itself.
 
 ## Warnings
 Never run a data fix that has no `WHERE` clause or whose row count does not match the
-expected number.",,
+expected number.",not_supported,"English: The passage is about running a data fix in production and never mentions switching to a read-write transaction; the action is not in the passage, and 'if so' refers to a condition the passage does not have. Telugu: Passage production lo data fix run cheyyadam gurinchi, read-write transaction ki switch cheyyamani ekkada ledu; aa action passage lo ledu, 'if so' kuda passage lo leni condition ni refer chestundi."
 5b9122d9-c4eb-409f-acb3-fa4f8b7018a4,T-01135,3,Request a TLS certificate for the domain from the platform team.,"[1] New service needs a company domain name
 New service needs a company domain name (Load balancers and certificates)
 ## Symptom
@@ -539,7 +539,7 @@ name, both managed by the platform team.
    new name.
 
 ## Warnings
-Do not point records at a load balancer's IP addresses; they change. Use an alias record.",,
+Do not point records at a load balancer's IP addresses; they change. Use an alias record.",supported,
 dc9e56c7-1c88-42c4-827e-ca2267e3169f,T-01209,1,Confirm the request with your sponsor.,"[1] Wi-Fi access for a visitor
 Wi-Fi access for a visitor (Wireless access)
 ## Symptom
@@ -560,7 +560,7 @@ with time-limited credentials sponsored by an employee.
 
 ## Warnings
 Guest Wi-Fi is deliberately bandwidth-limited and isolated; ""slow"" guest Wi-Fi is not a
-fault to fix.",,
+fault to fix.",not_supported,"English: The passage says the helpdesk confirms the request comes from an employee who sponsors the guest, because visitors cannot request access themselves. 'Confirm the request with your sponsor' is addressed to the visitor and changes who acts. Telugu: Request guest ni sponsor chese employee nunchi vachindha ani helpdesk confirm cheyyali, endukante visitors tamakosam tame request cheyyalemu ani passage lo undi. 'Mee sponsor tho confirm cheyyandi' ani claim visitor ki cheptundi, evaru action teeskovalo marchindi."
 46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,8,"Retry the migration if it times out, rather than letting it wait.","[2] Schema change hangs and blocks the whole table
 Schema change hangs and blocks the whole table (Locks and deadlocks)
 ## Symptom
@@ -579,7 +579,7 @@ table, and every new query then queues behind the waiting `ALTER TABLE`.
 4. Retry the migration if it times out, rather than letting it wait.
 
 ## Warnings
-Never run schema changes on busy tables without a lock timeout.",,
+Never run schema changes on busy tables without a lock timeout.",supported,
 c1b352c3-e9ec-40ea-8acf-2e2e2136c256,T-00591,4,"If the issue persists, send the query plan to the database team for further tuning.","[1] A query has become slow
 A query has become slow (Query performance and indexes)
 ## Symptom
@@ -600,7 +600,7 @@ far more work than needed.
 
 ## Warnings
 Do not create indexes on production tables without the DBA team; building them can lock
-the table.",,
+the table.",not_supported,"English: The passage says to send the plan to the owning team if an index is missing or the query is inefficient. The claim changes the condition to 'if the issue persists' and the recipient to 'the database team'. Telugu: Index miss ayithe leda query inefficient ga unte plan ni owning team ki pampali ani passage lo undi. Claim condition ni 'issue persist ayithe' ga, pampe team ni 'database team' ga marchindi."
 3334735b-059a-41b6-ace4-963db35265c5,T-00893,1,Identify the session that is running the `ALTER TABLE` command with `SELECT * FROM pg_stat_activity WHERE query LIKE '%ALTER TABLE%';`.,"[1] Schema change hangs and blocks the whole table
 Schema change hangs and blocks the whole table (Locks and deadlocks)
 ## Symptom
@@ -619,7 +619,7 @@ table, and every new query then queues behind the waiting `ALTER TABLE`.
 4. Retry the migration if it times out, rather than letting it wait.
 
 ## Warnings
-Never run schema changes on busy tables without a lock timeout.",,
+Never run schema changes on busy tables without a lock timeout.",not_supported,English: The passage does not give any query to identify the ALTER TABLE session; the SQL 'SELECT * FROM pg_stat_activity WHERE query LIKE ...' is added. The passage only says to cancel the waiting ALTER TABLE session. Telugu: ALTER TABLE session ni identify cheyyadaniki passage lo e query ledu; 'SELECT * FROM pg_stat_activity WHERE query LIKE ...' SQL extra ga add chesaru. Passage lo waiting ALTER TABLE session ni cancel cheyyamani matrame undi.
 f56a8d16-1539-46e4-ac7a-e21819b803b0,T-01245,3,Verify that WAL archiving is working correctly by checking `pg_stat_archiver`.,"[3] WAL archiving failing
 WAL archiving failing (Disk space and backups)
 ## Symptom
@@ -636,7 +636,7 @@ target is full, unreachable or its credentials expired, WAL files pile up locall
 4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
 
 ## Warnings
-Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",supported,
 fec7b48e-8200-4602-a6f4-563a3057a73e,T-01528,3,"If an inactive slot is found, contact the DBA to confirm and remove it.","[1] Database disk almost full
 Database disk almost full (Disk space and backups)
 ## Symptom
@@ -656,7 +656,7 @@ or WAL archiving is stuck, or genuine data growth.
    or address bloat.
 
 ## Warnings
-Never delete files from `pg_wal` by hand; it can make the database impossible to start.",,
+Never delete files from `pg_wal` by hand; it can make the database impossible to start.",supported,
 e918b20c-063c-4f37-af60-9c9dcf683797,T-00670,4,Run `ipconfig /flushdns` and try accessing the internal sites again.,"[1] Internal names do not resolve
 Internal names do not resolve (DHCP and DNS)
 ## Symptom
@@ -698,7 +698,7 @@ traffic for that range never enters the tunnel.
    the software centre.
 4. If even IP addresses fail, compare the home network's address range with the internal
    ranges (for example both using 192.168.1.x). Ask the user to restart the home router
-   or test from a hotspot, and report the overlap to network engineering.",,
+   or test from a hotspot, and report the overlap to network engineering.",supported,
 46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,3,Finish or undo the partial change by hand so the schema matches one known version.,"[1] Schema migration failed halfway
 Schema migration failed halfway (Access requests and schema changes)
 ## Symptom
@@ -716,7 +716,7 @@ was really applied.
 4. Then mark the version or rerun the migration, and record what was done in the ticket.
 
 ## Warnings
-Never rerun a failed migration before you know which statements already applied.",,
+Never rerun a failed migration before you know which statements already applied.",supported,
 c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,3,Check the carrier's portal for an estimated timeline.,"[1] Health insurance claim status
 Health insurance claim status (Benefits and insurance)
 ## Symptom
@@ -735,7 +735,7 @@ claims themselves; other claims are submitted by the employee in the carrier's p
    carrier's employer support line, quoting the claim number only.
 
 ## Warnings
-Never ask for or record medical details in a ticket; use the claim number only.",,
+Never ask for or record medical details in a ticket; use the claim number only.",not_supported,English: The passage says the employee checks the carrier's portal for the claim status using the claim number; it does not say the portal shows an 'estimated timeline'. The passage mentions the carrier's stated turnaround time but not that it is in the portal. Telugu: Employee claim number tho carrier portal lo claim status check cheyyali ani passage lo undi; portal lo 'estimated timeline' untundi ani ledu. Carrier turnaround time gurinchi undi kani adi portal lo untundi ani cheppaledu.
 b54b5e39-1d98-4180-9069-6bf8f49465be,T-01653,3,Look for any sequential scans on large tables that might indicate an inefficient query plan.,"[1] A query has become slow
 A query has become slow (Query performance and indexes)
 ## Symptom
@@ -775,7 +775,7 @@ index, a report run at peak time, or a query whose plan changed after data growt
 
 ## Warnings
 Do not restart the database to clear CPU load; it drops every connection and the load
-usually returns.",,
+usually returns.",supported,
 7dbc6134-ae70-48f7-9a2c-4c31d427350d,T-01021,3,"If the console is empty or denies access, check the mapping between groups and cloud roles.","[1] Single sign-on to the cloud console fails
 Single sign-on to the cloud console fails (Identity, SSO and permissions)
 ## Symptom
@@ -801,7 +801,7 @@ Single sign-on to the cloud console fails (Identity, SSO and permissions)
 5. If many users fail at once, treat it as a single sign-on outage and escalate.
 
 ## Warnings
-Do not create a local cloud user with a password as a workaround for single sign-on.",,
+Do not create a local cloud user with a password as a workaround for single sign-on.",supported,
 46c8c5d8-7201-459d-a46e-f87b29db5820,T-00081,2,Compare the actual schema with what the migration should produce.,"[1] Schema migration failed halfway
 Schema migration failed halfway (Access requests and schema changes)
 ## Symptom
@@ -819,7 +819,7 @@ was really applied.
 4. Then mark the version or rerun the migration, and record what was done in the ticket.
 
 ## Warnings
-Never rerun a failed migration before you know which statements already applied.",,
+Never rerun a failed migration before you know which statements already applied.",supported,
 9444b6f1-3002-456e-92bc-1d9a5bb15955,T-00006,2,"If the provider is in-network, ask the provider to check the claim status.","[1] Health insurance claim status
 Health insurance claim status (Benefits and insurance)
 ## Symptom
@@ -838,7 +838,7 @@ claims themselves; other claims are submitted by the employee in the carrier's p
    carrier's employer support line, quoting the claim number only.
 
 ## Warnings
-Never ask for or record medical details in a ticket; use the claim number only.",,
+Never ask for or record medical details in a ticket; use the claim number only.",not_supported,"English: For in-network providers the passage says the provider files the claim; for status, the employee checks the carrier's portal with the claim number. Asking the provider to check the claim status is not in the passage. Telugu: In-network provider ayithe provider claim file chestaru ani passage lo undi; status kosam employee claim number tho carrier portal check cheyyali. Provider ni claim status check cheyyamani adagadam passage lo ledu."
 3334735b-059a-41b6-ace4-963db35265c5,T-00893,6,Inform the application team to ensure their application handles errors and transactions properly to prevent such issues in the future.,"[2] Queries blocked by an idle session holding a lock
 Queries blocked by an idle session holding a lock (Locks and deadlocks)
 ## Symptom
@@ -857,7 +857,7 @@ rolling back. It shows as ""idle in transaction"" and keeps its locks until it e
 5. Ask the application team to close transactions on error paths.
 
 ## Warnings
-Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",supported,
 c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,1,Check the status of your claim on the insurance carrier's portal using the claim number.,"[1] Health insurance claim status
 Health insurance claim status (Benefits and insurance)
 ## Symptom
@@ -876,7 +876,7 @@ claims themselves; other claims are submitted by the employee in the carrier's p
    carrier's employer support line, quoting the claim number only.
 
 ## Warnings
-Never ask for or record medical details in a ticket; use the claim number only.",,
+Never ask for or record medical details in a ticket; use the claim number only.",supported,
 9444b6f1-3002-456e-92bc-1d9a5bb15955,T-00006,4,"If the claim is beyond the carrier's stated turnaround time, HR can escalate it through the carrier's employer support line, quoting the claim number only.","[1] Health insurance claim status
 Health insurance claim status (Benefits and insurance)
 ## Symptom
@@ -895,7 +895,7 @@ claims themselves; other claims are submitted by the employee in the carrier's p
    carrier's employer support line, quoting the claim number only.
 
 ## Warnings
-Never ask for or record medical details in a ticket; use the claim number only.",,
+Never ask for or record medical details in a ticket; use the claim number only.",supported,
 b54b5e39-1d98-4180-9069-6bf8f49465be,T-01653,2,"If it's a slow query, run `EXPLAIN (ANALYZE, BUFFERS)` on the query to understand its execution plan.","[1] A query has become slow
 A query has become slow (Query performance and indexes)
 ## Symptom
@@ -935,7 +935,7 @@ index, a report run at peak time, or a query whose plan changed after data growt
 
 ## Warnings
 Do not restart the database to clear CPU load; it drops every connection and the load
-usually returns.",,
+usually returns.",supported,
 d061d15e-eae9-4b6c-9def-3e0cb3b38ec4,T-00920,1,Open transaction SU3 (own user data) and go to the Defaults tab.,"[1] Wrong date or number format in SAP
 Wrong date or number format in SAP (GUI, dumps and printing)
 ## Symptom
@@ -954,7 +954,7 @@ may differ from Windows regional settings.
 
 ## Warnings
 The formats affect only how values are displayed and exported, not the stored data; do
-not correct postings because of a display format.",,
+not correct postings because of a display format.",supported,
 c48ec8cd-639a-4d99-ad1b-dc863e768edc,T-01069,4,"If you have any questions about the consequences, contact the HR team.","[1] Missed timesheet deadline
 Missed timesheet deadline (Payroll and timesheets)
 ## Symptom
@@ -973,7 +973,7 @@ the payroll cut-off to be paid in that cycle.
    before quoting a deadline.
 
 ## Warnings
-Do not edit or approve a timesheet on an employee's or manager's behalf.",,
+Do not edit or approve a timesheet on an employee's or manager's behalf.",not_supported,"English: The passage has no step about contacting the HR team with questions about consequences. Step 4 in the passage is about contractors and hourly staff having an earlier cut-off. Telugu: Consequences gurinchi questions unte HR team ni contact cheyyamani passage lo e step ledu. Passage lo step 4 contractors, hourly staff ki mundhe cut-off untundi ani cheptundi."
 9444b6f1-3002-456e-92bc-1d9a5bb15955,T-00006,1,"If yes, the provider should have auto-submitted the claim.","[1] Health insurance claim status
 Health insurance claim status (Benefits and insurance)
 ## Symptom
@@ -992,7 +992,7 @@ claims themselves; other claims are submitted by the employee in the carrier's p
    carrier's employer support line, quoting the claim number only.
 
 ## Warnings
-Never ask for or record medical details in a ticket; use the claim number only.",,
+Never ask for or record medical details in a ticket; use the claim number only.",supported,
 d182e1ce-b2f2-478f-a697-dbed38c03b6c,T-01605,3,Try connecting the device to a different port on the switch.,"[1] Connected but no internet, 169.254 address
 Connected but no internet, 169.254 address (DHCP and DNS)
 ## Symptom
@@ -1013,7 +1013,7 @@ point to the DHCP server or an exhausted address pool.
 
 ## Warnings
 Do not give the device a static IP address as a fix; it can clash with addresses DHCP
-hands out later.",,
+hands out later.",not_supported,"English: The passage says 'on a wired desk, try another cable and port'; it does not mention a switch. The claim adds 'on the switch' and drops the wired-desk condition and the cable change. Telugu: Passage lo 'wired desk lo unte vere cable, port try cheyyandi' ani undi; switch gurinchi ledu. Claim 'switch meeda' ani add chesi, wired desk condition, cable change ni vadilesindi."
 ff87dc35-ae5c-4ef0-be82-57fb591f55a4,T-00480,1,Check the HR portal under Payroll Payslips.,"[1] Payslip missing or pay date question
 Payslip missing or pay date question (Payroll and timesheets)
 ## Symptom
@@ -1032,7 +1032,7 @@ employee joined or left mid-month and was paid in a separate run.
 4. Questions about the amount go to payroll with the specific line item.
 
 ## Warnings
-Never share payslip or salary details with anyone except the employee.",,
+Never share payslip or salary details with anyone except the employee.",supported,
 c48ec8cd-639a-4d99-ad1b-dc863e768edc,T-01069,1,"Submit your timesheet in the HR portal as soon as possible, even if late.","[1] Missed timesheet deadline
 Missed timesheet deadline (Payroll and timesheets)
 ## Symptom
@@ -1051,7 +1051,7 @@ the payroll cut-off to be paid in that cycle.
    before quoting a deadline.
 
 ## Warnings
-Do not edit or approve a timesheet on an employee's or manager's behalf.",,
+Do not edit or approve a timesheet on an employee's or manager's behalf.",supported,
 e6445a37-ccdd-46e1-89e2-d3d3fd518b1a,T-01450,4,Restart the application to release any leaked database connections and check if the issue persists.,"[2] Application runs out of database connections
 Application runs out of database connections (Connections and pools)
 ## Symptom
@@ -1073,7 +1073,7 @@ error. Sessions left ""idle in transaction"" also hold connection slots.
 5. Send the findings to the owning team to fix the leak or pool settings.
 
 ## Warnings
-Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",,
+Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",supported,
 e6445a37-ccdd-46e1-89e2-d3d3fd518b1a,T-01450,3,"If the application is using a secrets manager for database credentials, ensure it is fetching the latest password.","[1] Request to run a data fix in production
 Request to run a data fix in production (Access requests and schema changes)
 ## Symptom
@@ -1116,7 +1116,7 @@ of the secrets manager.
 
 ## Warnings
 Do not reset the database password back to the old value; other applications already use
-the new one.",,
+the new one.",supported,
 c4281cad-bdae-42fb-98a6-afa0b7d1fefe,T-01002,4,No specific form is required for this process,"[1] Health insurance claim status
 Health insurance claim status (Benefits and insurance)
 ## Symptom
@@ -1135,7 +1135,7 @@ claims themselves; other claims are submitted by the employee in the carrier's p
    carrier's employer support line, quoting the claim number only.
 
 ## Warnings
-Never ask for or record medical details in a ticket; use the claim number only.",,
+Never ask for or record medical details in a ticket; use the claim number only.",unclear,"English: The passage does not say whether a specific form is required; it only mentions submitting through the carrier's portal with an itemised bill and proof of payment, so this claim can be neither confirmed nor ruled out. Telugu: Specific form avasarama kaada ani passage cheppaledu; carrier portal lo itemised bill, proof of payment tho submit cheyyali ani matrame undi, kabatti ee claim ni confirm cheyyalem, kaadani kuda cheppalem."
 c1b352c3-e9ec-40ea-8acf-2e2e2136c256,T-00591,3,"If a sequential scan is identified, refresh statistics on the `sales_data` table with `ANALYZE`.","[1] A query has become slow
 A query has become slow (Query performance and indexes)
 ## Symptom
@@ -1156,7 +1156,7 @@ far more work than needed.
 
 ## Warnings
 Do not create indexes on production tables without the DBA team; building them can lock
-the table.",,
+the table.",not_supported,"English: The passage says to refresh statistics with ANALYZE only if the index exists but is not used; if the index is missing, the plan goes to the owning team. The claim triggers ANALYZE on any sequential scan and adds a table name 'sales_data' that the passage never mentions. Telugu: Index undi kani use avvakapothe matrame ANALYZE tho statistics refresh cheyyali ani passage lo undi; index lekapothe plan owning team ki vellali. Claim prathi sequential scan ki ANALYZE cheyyamantundi, passage lo leni 'sales_data' table name ni kuda add chesindi."
 4d0047d5-cfe1-4406-b193-1845519824dc,T-00831,2,Verify if there are large uploads or backups running at the same time.,"[1] Video calls freeze or lag
 Video calls freeze or lag (Call quality and file shares)
 ## Symptom
@@ -1177,4 +1177,4 @@ whole office is affected, the internet link is saturated.
 5. If many users at one office are affected, escalate as a link-capacity problem.
 
 ## Warnings
-Do not ask users to stop company backups to free bandwidth.",,
+Do not ask users to stop company backups to free bandwidth.",supported,
