@@ -43,5 +43,22 @@ only. Against one team member on 28 pilot drafts: 82% binary agreement, kappa 0.
 
 ## 4.5 Audit of the claim checker
 
-A groundedness audit compares the NLI checker with human labels on sampled claims; one of
-three members' audits is complete. **To be filled** when all three are in.
+A groundedness audit compares the two automatic claim checkers (NLI, and the
+`llama3.1:8b` LLM check) with human labels. The three members labelled 136 of the 495
+audit claims: every claim where the checkers disagree (88), plus a random sample of the
+claims where they agree (43). Each sampled claim is weighted back to its stratum, and
+5 claims marked `unclear` are left out
+([audit-v1.json](../results/audit-v1.json), `ai/grounding/audit_report.py`).
+
+| Checker | Accuracy | Says "supported" when the human says not | Says "not supported" when the human says supported |
+|---|---|---|---|
+| NLI (support at least 0.5) | 68% (95% CI 58 to 78) | 64% (45 to 79) | 13% |
+| LLM check | 70% (59 to 80) | 79% (62 to 94) | 2% |
+
+The humans judged about 64% of claims supported. Where the checkers disagree, the LLM
+check is right more often (49 of 88, against 39 for NLI). Where they agree, both are
+wrong on 11 of 43 sampled claims. Both checkers are lenient: most claims a human rejects
+(an added command, a dropped condition, a different team) still pass. NLI support is
+therefore a weak signal on its own, which is consistent with the confidence model's
+reliance on many signals rather than one, and the claim checker should not be described
+as a guarantee that a draft is grounded. The sample is small and the intervals are wide.
