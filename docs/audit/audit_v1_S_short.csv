@@ -18,7 +18,7 @@ documents of that type can be saved.
 3. Escalate to the SAP configuration team with the object, the interval and the fiscal
    year. Extending or adding an interval is a configuration change.
 4. If the error appeared at the start of a fiscal year, mention it: the new year's
-   interval may simply not have been created.",,
+   interval may simply not have been created.",supported,
 744e4c20-a392-4e5a-a0c3-7fbf1a2aca63,T-01437,1,Check if the switch port 3/1 is still in the 'err-disabled' state.,"[5] Application cannot send email from the office network
 Application cannot send email from the office network (Firewall and proxy)
 ## Symptom
@@ -37,7 +37,7 @@ stop infected machines from sending spam.
    the sender address it will use.
 
 ## Warnings
-Do not request a firewall exception for port 25 to the internet.",,
+Do not request a firewall exception for port 25 to the internet.",unclear,Ekkada passage discuss chesdhi  email connectivity thoni nka  SMTP port 25 diniki set kaale i mean not switch port 3/1 or its err-disabled status edi 
 7d779d8b-76a9-45b7-8a54-d0fa8a032e38,T-01700,6,"If the issue is specific to your machine and the entry is correct, reinstall or update SAP GUI from the software centre.","[1] SAP GUI cannot connect to the server
 SAP GUI cannot connect to the server (GUI, dumps and printing)
 ## Symptom
@@ -63,7 +63,7 @@ SAP GUI cannot connect to the server (GUI, dumps and printing)
    from the software centre.
 
 ## Warnings
-Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",,
+Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",supported,
 e5cf9179-c44c-4400-9892-587994d75d3a,T-00022,3,"Escalate to the SAP configuration team with the object, interval, and fiscal year.","[1] Number range exhausted
 Number range exhausted (Materials and number ranges)
 ## Symptom
@@ -83,7 +83,7 @@ documents of that type can be saved.
 3. Escalate to the SAP configuration team with the object, the interval and the fiscal
    year. Extending or adding an interval is a configuration change.
 4. If the error appeared at the start of a fiscal year, mention it: the new year's
-   interval may simply not have been created.",,
+   interval may simply not have been created.",supported,
 248a1cf2-d3cd-47b2-9232-577451fdb5cc,T-01044,5,Check SM12 for any database locks held by the job's user.,"[2] Background job not starting or stuck
 Background job not starting or stuck (Batch jobs and IDocs)
 ## Resolution steps
@@ -98,7 +98,7 @@ Background job not starting or stuck (Batch jobs and IDocs)
 
 ## Warnings
 Do not cancel and reschedule a running job without checking what it was posting; a
-half-finished posting run can leave inconsistent documents.",,
+half-finished posting run can leave inconsistent documents.",not_supported,"English: Passage only says check SM12 for 'locks' held by the job's user, and only when the job is 'Active' for too long; 'database locks' is an added technical detail and the condition is dropped. Telugu: Passage lo SM12 lo 'locks' check cheyyamani matrame undi, adi kuda job chala sepu 'Active' lo unte matrame; 'database locks' ane extra detail passage lo ledu, condition kuda claim lo vadilesaru."
 bd8aa55e-1d0a-4fd2-afc8-b0816b9a8401,T-01090,3,"If the `pg_wal` directory is large, check `pg_stat_archiver` for any failed archive commands.","[2] WAL archiving failing
 WAL archiving failing (Disk space and backups)
 ## Symptom
@@ -115,7 +115,7 @@ target is full, unreachable or its credentials expired, WAL files pile up locall
 4. Confirm that archiving resumes and `pg_wal` shrinks as old files are archived.
 
 ## Warnings
-Point-in-time recovery is broken while archiving fails; treat it as urgent.",,
+Point-in-time recovery is broken while archiving fails; treat it as urgent.",supported,
 b06c8bfc-9b9c-4ab8-9942-b7a52d129693,T-01254,4,"If the issue persists, raise a hardware ticket.","[5] Laptop cannot see the corporate Wi-Fi network
 Laptop cannot see the corporate Wi-Fi network (Wireless access)
 ## Symptom
@@ -134,7 +134,7 @@ The corporate network runs only on the 5 GHz band. An outdated driver, an adapte
 4. If it is still missing, the adapter may be faulty: raise a hardware ticket.
 
 ## Warnings
-Do not share a phone hotspot with corporate devices as a long-term workaround.",,
+Do not share a phone hotspot with corporate devices as a long-term workaround.",supported,
 8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,4,"If no specific query is causing the issue, check for idle sessions holding locks with `pg_blocking_pids()` and `pg_stat_activity`.","[2] Queries blocked by an idle session holding a lock
 Queries blocked by an idle session holding a lock (Locks and deadlocks)
 ## Symptom
@@ -153,7 +153,7 @@ rolling back. It shows as ""idle in transaction"" and keeps its locks until it e
 5. Ask the application team to close transactions on error paths.
 
 ## Warnings
-Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",not_supported,English: The condition 'if no specific query is causing the issue' is not in the passage; the passage says to find the blocking session with pg_blocking_pids() and pg_stat_activity when queries hang on a lock held by an idle session. Telugu: 'Specific query problem cause cheyakapothe' ane condition passage lo ledu; passage lo idle session lock pattukunte queries hang ayinappudu blocking session ni pg_blocking_pids() and pg_stat_activity tho kanukkomani matrame undi.
 8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,1,Check the `pg_stat_activity` view for any long-running queries.,"[1] Database server CPU is very high
 Database server CPU is very high (Query performance and indexes)
 ## Symptom
@@ -171,7 +171,7 @@ index, a report run at peak time, or a query whose plan changed after data growt
 
 ## Warnings
 Do not restart the database to clear CPU load; it drops every connection and the load
-usually returns.",,
+usually returns.",supported,
 0cc077b3-e160-4b32-a72d-2d5084f6b092,T-01308,5,Verify the application's connection pool settings and ensure they are not exhausted.,"[4] Application runs out of database connections
 Application runs out of database connections (Connections and pools)
 ## Symptom
@@ -193,7 +193,7 @@ error. Sessions left ""idle in transaction"" also hold connection slots.
 5. Send the findings to the owning team to fix the leak or pool settings.
 
 ## Warnings
-Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",,
+Raising `max_connections` hides a leak and costs memory on the server; fix the leak first.",not_supported,English: The passage has no step to verify the connection pool settings or ensure the pool is not exhausted; it says to send the findings to the owning team to fix the leak or pool settings. Telugu: Passage lo connection pool settings verify cheyyamani leda pool exhausted kakunda chudamani step ledu; findings ni owning team ki pampi leak leda pool settings fix cheyinchamani matrame undi.
 c2ce45e0-fb33-45be-8e24-bcc79fa2ea95,T-00659,1,Check if the company root certificate is published on the intranet.,"[1] Certificate errors in a desktop tool on the office network
 Certificate errors in a desktop tool on the office network (Firewall and proxy)
 ## Symptom
@@ -215,7 +215,7 @@ store and do not.
 
 ## Warnings
 Never turn off certificate verification in the tool; it removes protection against
-real interception.",,
+real interception.",not_supported,"English: The passage does not ask to check whether the root certificate is published; it states it is published on the intranet and says to point the tool at it. Step 1 is actually to confirm the error appears only on the office network or VPN. Telugu: Root certificate publish ayyindha ani check cheyyamani passage cheppaledu; adi intranet lo publish ayi undi ani, tool ni daaniki point cheyyamani undi. Step 1 aithe error office network/VPN lo matrame vastundha confirm cheyyadam."
 e92614c3-f6c8-4b88-9843-a0eab6eda71f,T-00374,2,Point the tool at the company root certificate if available.,"[1] Certificate errors in a desktop tool on the office network
 Certificate errors in a desktop tool on the office network (Firewall and proxy)
 ## Symptom
@@ -237,7 +237,7 @@ store and do not.
 
 ## Warnings
 Never turn off certificate verification in the tool; it removes protection against
-real interception.",,
+real interception.",not_supported,"English: The condition 'if available' is not in the passage; the passage states the root certificate is published on the intranet and the tool should be pointed at it, with no availability condition. Telugu: 'If available' ane condition passage lo ledu; root certificate intranet lo publish ayi undi, tool ni daaniki point cheyyamani direct ga undi, availability condition emi ledu."
 6e04672c-2f21-4921-b02c-3504ab4783a9,T-00764,3,"Pay changes are announced separately from the review cycle, typically after the cycle ends.","[1] How performance reviews work
 How performance reviews work (Workplace policy and reviews)
 ## Symptom
@@ -257,7 +257,7 @@ teams before they are shared. Pay decisions are communicated separately.
 4. Disagreements with a rating are raised with the manager first, then with HR.
 
 ## Warnings
-Do not predict pay changes from a rating.",,
+Do not predict pay changes from a rating.",supported,
 e9c3d757-6ad0-4ccd-86b8-2ef948034271,T-00442,3,"If the on-demand backup fails, free space or extend the target, renew the storage credential, or move the schedule away from the batch job.","[1] Nightly database backup failed
 Nightly database backup failed (Disk space and backups)
 ## Symptom
@@ -276,7 +276,7 @@ database being unreachable at the time.
 4. Confirm the new backup completed and its size is similar to previous ones.
 
 ## Warnings
-A failed backup is not ""fixed"" until a new backup has completed successfully.",,
+A failed backup is not ""fixed"" until a new backup has completed successfully.",not_supported,"English: The condition 'if the on-demand backup fails' changes the order; the passage says to fix the cause (free space/extend target, renew credential, move schedule) first, based on the job log, and only then run the on-demand backup. Telugu: 'On-demand backup fail ayithe' ane condition order ni marchindi; passage lo mundu job log chusi cause fix cheyyali (space free/target extend, credential renew, schedule move), aa tarvatha on-demand backup run cheyyali."
 81ee9cb3-91b9-4f0a-bd17-4451f7e893ae,T-01436,1,Run `ipconfig /release`,"[1] Connected but no internet, 169.254 address
 Connected but no internet, 169.254 address (DHCP and DNS)
 ## Symptom
@@ -297,7 +297,7 @@ point to the DHCP server or an exhausted address pool.
 
 ## Warnings
 Do not give the device a static IP address as a fix; it can clash with addresses DHCP
-hands out later.",,
+hands out later.",supported,
 e9c3d757-6ad0-4ccd-86b8-2ef948034271,T-00442,5,Monitor the backup job to ensure it runs without issues.,"[1] Nightly database backup failed
 Nightly database backup failed (Disk space and backups)
 ## Symptom
@@ -316,7 +316,7 @@ database being unreachable at the time.
 4. Confirm the new backup completed and its size is similar to previous ones.
 
 ## Warnings
-A failed backup is not ""fixed"" until a new backup has completed successfully.",,
+A failed backup is not ""fixed"" until a new backup has completed successfully.",not_supported,"English: The passage does not say to monitor the backup job; it says to confirm the new backup completed and that its size is similar to previous ones. The claim replaces this specific check with a vague monitoring step. Telugu: Backup job ni monitor cheyyamani passage lo ledu; kotha backup complete ayyindha, size mundhu backups ki similar ga undha ani confirm cheyyamani undi. Claim aa specific check ni vadilesi general monitoring step ga marchindi."
 7d779d8b-76a9-45b7-8a54-d0fa8a032e38,T-01700,2,Try logging in again.,"[1] SAP GUI cannot connect to the server
 SAP GUI cannot connect to the server (GUI, dumps and printing)
 ## Symptom
@@ -342,7 +342,7 @@ SAP GUI cannot connect to the server (GUI, dumps and printing)
    from the software centre.
 
 ## Warnings
-Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",,
+Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",not_supported,"English: The passage has no step to simply try logging in again; its steps are to check VPN, ask if colleagues can connect, check the SAP Logon entry, test the dispatcher port, and reinstall/update SAP GUI. Telugu: Malli login try cheyyamani passage lo e step ledu; VPN check, colleagues connect avthunnara ani adagadam, SAP Logon entry check, dispatcher port test, SAP GUI reinstall/update ane steps matrame unnayi."
 04abf6ad-860f-4eb8-96ac-38f00bc6b5f7,T-00998,1,Open the IDoc in WE02 and read the status record for status 51.,"[1] IDoc in status 51
 IDoc in status 51 (Batch jobs and IDocs)
 ## Symptom
@@ -364,7 +364,7 @@ profile mismatch.
 
 ## Warnings
 Do not reprocess an IDoc repeatedly without reading the error. If the cause was
-intermittent, repeated attempts can create duplicate documents.",,
+intermittent, repeated attempts can create duplicate documents.",supported,
 ae8bc591-8c7a-4460-9d75-e9ef4c79aaca,T-01622,2,Verify if there are large uploads or backups running at the same time.,"[1] Video calls freeze or lag
 Video calls freeze or lag (Call quality and file shares)
 ## Symptom
@@ -385,7 +385,7 @@ whole office is affected, the internet link is saturated.
 5. If many users at one office are affected, escalate as a link-capacity problem.
 
 ## Warnings
-Do not ask users to stop company backups to free bandwidth.",,
+Do not ask users to stop company backups to free bandwidth.",supported,
 7d779d8b-76a9-45b7-8a54-d0fa8a032e38,T-01700,3,"If other users are also experiencing issues, inform your IT support team immediately.","[1] SAP GUI cannot connect to the server
 SAP GUI cannot connect to the server (GUI, dumps and printing)
 ## Symptom
@@ -411,7 +411,7 @@ SAP GUI cannot connect to the server (GUI, dumps and printing)
    from the software centre.
 
 ## Warnings
-Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",,
+Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",not_supported,"English: The passage says that if several users are affected, escalate to Basis at once (server probably down); the claim changes the escalation target to a generic 'IT support team'. Telugu: Several users affected ayithe ventane Basis ki escalate cheyyamani passage lo undi (server down ayyi undochu); claim lo daanni general 'IT support team' ga marcharu, adi passage lo ledu."
 8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,7,"If a query is timing out, analyze the query and consider setting a higher `statement_timeout` if it's a legitimate long-running job.","[3] Statement cancelled due to statement or lock timeout
 Statement cancelled due to statement or lock timeout (Locks and deadlocks)
 ## Symptom
@@ -433,7 +433,7 @@ and long lock queues.
    timeout for that session only.
 
 ## Warnings
-Do not raise the timeout for the whole database to make one query pass.",,
+Do not raise the timeout for the whole database to make one query pass.",not_supported,"English: The passage allows a higher timeout only for a specific report that legitimately needs it, set by the owning team for that session only, and warns against raising it for the whole database; the claim drops the 'owning team' and 'that session only' limits. Telugu: Passage lo legitimate ga ekkuva time kavalsina specific report ki matrame, owning team aa session ki matrame higher timeout set cheyyochu ani undi, whole database ki raise cheyyakudadhu ani warning undi; claim lo 'owning team', 'session only' limits ni vadilesaru."
 d24eefb3-b9d8-4f37-9814-9f0e702d1ce6,T-01127,1,Identify the idle session holding the lock using `pg_blocking_pids()` and `pg_stat_activity`.,"[1] Queries blocked by an idle session holding a lock
 Queries blocked by an idle session holding a lock (Locks and deadlocks)
 ## Symptom
@@ -452,7 +452,7 @@ rolling back. It shows as ""idle in transaction"" and keeps its locks until it e
 5. Ask the application team to close transactions on error paths.
 
 ## Warnings
-Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",supported,
 9d05551b-e7d3-4d00-8eae-5c66906ac6ba,T-01183,1,"Collect the source IP or subnet, destination IP or host, port numbers, and protocol (TCP or UDP) for the new application.","[1] Firewall rule needed for an application
 Firewall rule needed for an application (Firewall and proxy)
 ## Symptom
@@ -473,7 +473,7 @@ the exact source, destination, port and protocol.
 4. For temporary rules (a migration), record an end date so the rule is removed.
 
 ## Warnings
-Never request or approve an any-to-any rule, even temporarily.",,
+Never request or approve an any-to-any rule, even temporarily.",supported,
 658d326d-cdc3-4a75-9b55-727517e8ccc3,T-00844,1,Check if other computers in the same area are also affected.,"[1] Office Wi-Fi keeps dropping
 Office Wi-Fi keeps dropping (Wireless access)
 ## Symptom
@@ -496,7 +496,7 @@ or the wireless controller is at fault.
 
 ## Warnings
 Do not tell users to connect to the guest network instead; it has no access to internal
-systems.",,
+systems.",supported,
 81ee9cb3-91b9-4f0a-bd17-4451f7e893ae,T-01436,2,try them if so.,"[1] Connected but no internet, 169.254 address
 Connected but no internet, 169.254 address (DHCP and DNS)
 ## Symptom
@@ -517,7 +517,7 @@ point to the DHCP server or an exhausted address pool.
 
 ## Warnings
 Do not give the device a static IP address as a fix; it can clash with addresses DHCP
-hands out later.",,
+hands out later.",unclear,"English: The claim 'try them if so' is a sentence fragment; it does not say what 'them' is or what condition 'if so' refers to, so it cannot be checked against the passage. Telugu: 'Try them if so' ani claim incomplete ga undi; 'them' ante enti, 'if so' ye condition ni refer chestundo ledu, kabatti passage tho confirm cheyyalem."
 7d779d8b-76a9-45b7-8a54-d0fa8a032e38,T-01700,1,"If not, connect to the VPN.","[1] SAP GUI cannot connect to the server
 SAP GUI cannot connect to the server (GUI, dumps and printing)
 ## Symptom
@@ -526,7 +526,7 @@ fails with a connection or timeout error before the logon screen appears.
 
 ## Cause
 The user's machine cannot reach the application server: no VPN when working remotely, a
-wrong or outdated system entry in SAP Logon, or the server itself is down.",,
+wrong or outdated system entry in SAP Logon, or the server itself is down.",unclear,"English: The cited passage only gives the symptom and cause (no VPN when working remotely); it has no resolution step telling the user to connect to the VPN, and 'if not' has no clear condition it refers to. Telugu: Ee passage lo symptom, cause (remote ga work chestunnapudu VPN lekapovadam) matrame unnayi; VPN connect cheyyamani resolution step ledu, 'if not' ye condition ki refer chestundo clear ga ledu."
 04abf6ad-860f-4eb8-96ac-38f00bc6b5f7,T-00998,3,"If a customer or vendor detail is missing, ask the master-data team to create the missing record.","[1] IDoc in status 51
 IDoc in status 51 (Batch jobs and IDocs)
 ## Symptom
@@ -548,7 +548,7 @@ profile mismatch.
 
 ## Warnings
 Do not reprocess an IDoc repeatedly without reading the error. If the cause was
-intermittent, repeated attempts can create duplicate documents.",,
+intermittent, repeated attempts can create duplicate documents.",supported,
 754151a9-c3e3-441d-8fed-3c4f72702146,T-01162,3,Retry the goods receipt in MIGO after the block has been removed.,"[1] Goods receipt fails because the PO item is blocked
 Goods receipt fails because the PO item is blocked (Purchasing and goods receipt)
 ## Symptom
@@ -568,7 +568,7 @@ buyer releases them.
 3. If the block should be removed, the buyer removes it in ME22N and saves the PO.
 4. Retry the goods receipt in MIGO.
 5. If the item has a deletion indicator and the goods have physically arrived, the buyer
-   must create a new PO item; a deleted item cannot be received.",,
+   must create a new PO item; a deleted item cannot be received.",supported,
 a6396989-f000-4561-acfa-bd3d61d7268b,T-01325,1,Check the posting date you entered.,"[1] Posting period closed for goods movements
 Posting period closed for goods movements (Materials and number ranges)
 ## Symptom
@@ -587,7 +587,7 @@ change was not run, or the user picks a date in an older period, the posting is 
    moved forward. Check the current period with MMRV.
 3. Escalate a missing period change to the materials-management team, who run MMPV.
 4. Postings into an older closed period need Finance approval and are handled by
-   Finance, not the helpdesk.",,
+   Finance, not the helpdesk.",supported,
 0cc077b3-e160-4b32-a72d-2d5084f6b092,T-01308,1,Check the database logs for the exact transaction that is failing.,"[3] Transaction fails with deadlock detected
 Transaction fails with deadlock detected (Locks and deadlocks)
 ## Symptom
@@ -608,7 +608,7 @@ transaction must be retried.
    smaller transactions.
 
 ## Warnings
-A deadlock is not data corruption; do not restore backups because of one.",,
+A deadlock is not data corruption; do not restore backups because of one.",not_supported,"English: The passage says to get the deadlock details from the database log, showing both statements and the locks involved; it does not say to look for 'the exact transaction that is failing', and the claim drops the deadlock context. Telugu: Database log nunchi deadlock details (rendu statements, involved locks) teesukovalani passage lo undi; 'fail avthunna exact transaction' kosam chudamani ledu, claim lo deadlock context kuda ledu."
 8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,6,"If the issue persists, note if any queries are failing due to timeouts or lock waits.","[3] Statement cancelled due to statement or lock timeout
 Statement cancelled due to statement or lock timeout (Locks and deadlocks)
 ## Symptom
@@ -630,7 +630,7 @@ and long lock queues.
    timeout for that session only.
 
 ## Warnings
-Do not raise the timeout for the whole database to make one query pass.",,
+Do not raise the timeout for the whole database to make one query pass.",not_supported,English: The condition 'if the issue persists' is not in the passage; the passage's first step is simply to note which message appeared (statement timeout or lock timeout) when a query is cancelled. Telugu: 'Issue persist ayithe' ane condition passage lo ledu; query cancel ayinappudu ye message vachindo (statement timeout leda lock timeout) note cheyyadam passage lo first step ga undi.
 8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,8,"If a query is waiting for a lock, identify the transaction holding the lock and consider rerunning the migration with a shorter `lock_timeout`.","[5] Schema change hangs and blocks the whole table
 Schema change hangs and blocks the whole table (Locks and deadlocks)
 ## Symptom
@@ -649,7 +649,7 @@ table, and every new query then queues behind the waiting `ALTER TABLE`.
 4. Retry the migration if it times out, rather than letting it wait.
 
 ## Warnings
-Never run schema changes on busy tables without a lock timeout.",,
+Never run schema changes on busy tables without a lock timeout.",not_supported,"English: The passage applies only to a hanging ALTER TABLE migration, not any query waiting for a lock; it says to first cancel the waiting ALTER TABLE session and to rerun the migration in a quiet window with a short lock_timeout. The claim generalises the condition and drops these parts. Telugu: Passage hang ayina ALTER TABLE migration gurinchi matrame, lock kosam wait chese prathi query gurinchi kaadu; mundu waiting ALTER TABLE session cancel cheyyali, quiet window lo short lock_timeout tho migration rerun cheyyali ani undi. Claim condition ni general chesi ee parts vadilesindi."
 9d05551b-e7d3-4d00-8eae-5c66906ac6ba,T-01183,2,"Raise a firewall change request through the change process, as adding a rule is not done ad hoc.","[1] Firewall rule needed for an application
 Firewall rule needed for an application (Firewall and proxy)
 ## Symptom
@@ -670,7 +670,7 @@ the exact source, destination, port and protocol.
 4. For temporary rules (a migration), record an end date so the rule is removed.
 
 ## Warnings
-Never request or approve an any-to-any rule, even temporarily.",,
+Never request or approve an any-to-any rule, even temporarily.",supported,
 248a1cf2-d3cd-47b2-9232-577451fdb5cc,T-01044,4,"If the job is 'Active' for too long, open the job log in SM37 and note the last step.","[2] Background job not starting or stuck
 Background job not starting or stuck (Batch jobs and IDocs)
 ## Resolution steps
@@ -685,7 +685,7 @@ Background job not starting or stuck (Batch jobs and IDocs)
 
 ## Warnings
 Do not cancel and reschedule a running job without checking what it was posting; a
-half-finished posting run can leave inconsistent documents.",,
+half-finished posting run can leave inconsistent documents.",supported,
 c2ce45e0-fb33-45be-8e24-bcc79fa2ea95,T-00659,2,Point the tool at the company root certificate if available.,"[1] Certificate errors in a desktop tool on the office network
 Certificate errors in a desktop tool on the office network (Firewall and proxy)
 ## Symptom
@@ -707,7 +707,7 @@ store and do not.
 
 ## Warnings
 Never turn off certificate verification in the tool; it removes protection against
-real interception.",,
+real interception.",not_supported,"English: The condition 'if available' is not in the passage; the passage states the root certificate is published on the intranet and the tool should be pointed at it, with no availability condition. Telugu: 'If available' ane condition passage lo ledu; root certificate intranet lo publish ayi undi, tool ni daaniki point cheyyamani direct ga undi, availability condition emi ledu."
 e0f5c40c-195d-4aaf-b777-ef9521abf802,T-01121,2,"Identify the number range object (e.g., FBN1 for accounting documents, MMNR for materials, or SNRO for the generic view).","[1] Number range exhausted
 Number range exhausted (Materials and number ranges)
 ## Symptom
@@ -727,7 +727,7 @@ documents of that type can be saved.
 3. Escalate to the SAP configuration team with the object, the interval and the fiscal
    year. Extending or adding an interval is a configuration change.
 4. If the error appeared at the start of a fiscal year, mention it: the new year's
-   interval may simply not have been created.",,
+   interval may simply not have been created.",supported,
 8921f3bf-7f25-47fa-9d3b-3c8b96dcc363,T-01734,5,Confirm with the application team that the idle session is stuck and terminate it if necessary.,"[2] Queries blocked by an idle session holding a lock
 Queries blocked by an idle session holding a lock (Locks and deadlocks)
 ## Symptom
@@ -746,7 +746,7 @@ rolling back. It shows as ""idle in transaction"" and keeps its locks until it e
 5. Ask the application team to close transactions on error paths.
 
 ## Warnings
-Terminating a session rolls back its uncommitted work; confirm it is stuck first.",,
+Terminating a session rolls back its uncommitted work; confirm it is stuck first.",supported,
 744e4c20-a392-4e5a-a0c3-7fbf1a2aca63,T-01437,3,`ipconfig /renew` to ensure your device is getting a proper IP address.,"[1] Connected but no internet, 169.254 address
 Connected but no internet, 169.254 address (DHCP and DNS)
 ## Symptom
@@ -767,7 +767,7 @@ point to the DHCP server or an exhausted address pool.
 
 ## Warnings
 Do not give the device a static IP address as a fix; it can clash with addresses DHCP
-hands out later.",,
+hands out later.",supported,
 0cc077b3-e160-4b32-a72d-2d5084f6b092,T-01308,2,Identify if the transaction is part of a read-only or read-write operation.,"[1] Request for access to a database
 Request for access to a database (Access requests and schema changes)
 ## Symptom
@@ -804,7 +804,7 @@ Reporting is served from a read replica with a read-only role.
 4. For personal data, check with the data protection officer before granting access.
 
 ## Warnings
-Reporting tools never connect to the primary database.",,
+Reporting tools never connect to the primary database.",not_supported,"English: The passage is about access requests: it says to confirm whether the requested access is read-only or read-write. It does not say to identify whether a transaction is part of a read-only or read-write operation, so the claim changes the meaning. Telugu: Passage access requests gurinchi; request chesina access read-only aa read-write aa ani confirm cheyyamani undi. Transaction read-only operation aa read-write operation aa ani identify cheyyamani ledu, kabatti claim meaning marchindi."
 7d779d8b-76a9-45b7-8a54-d0fa8a032e38,T-01700,4,"Ensure the application server, instance number, and system ID are correct.","[1] SAP GUI cannot connect to the server
 SAP GUI cannot connect to the server (GUI, dumps and printing)
 ## Symptom
@@ -830,7 +830,7 @@ SAP GUI cannot connect to the server (GUI, dumps and printing)
    from the software centre.
 
 ## Warnings
-Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",,
+Do not change the central SAP Logon landscape file for one user; it is managed by Basis.",supported,
 754151a9-c3e3-441d-8fed-3c4f72702146,T-01162,2,"If a block is found, contact the buyer to request the block be removed in ME22N.","[1] Goods receipt fails because the PO item is blocked
 Goods receipt fails because the PO item is blocked (Purchasing and goods receipt)
 ## Symptom
@@ -855,7 +855,7 @@ buyer releases them.
 [4] Goods receipt fails because the PO item is blocked
 Goods receipt fails because the PO item is blocked (Purchasing and goods receipt)
 ## Warnings
-The helpdesk does not change purchase orders. Only the responsible buyer removes a block.",,
+The helpdesk does not change purchase orders. Only the responsible buyer removes a block.",not_supported,"English: The passage says to ask the buyer whether the block is intentional, and the buyer removes it in ME22N only if it should be removed; the claim skips this check and asks for removal straight away. Telugu: Block intentional aa ani buyer ni adagamani passage lo undi, remove cheyyali ante matrame buyer ME22N lo remove chestaru; claim ee check ni skip chesi direct ga remove cheyyamani adugutundi."
 248a1cf2-d3cd-47b2-9232-577451fdb5cc,T-01044,1,Check the job status in SM37 and note if it is 'Released' or 'Ready'.,"[1] Background job not starting or stuck
 Background job not starting or stuck (Batch jobs and IDocs)
 ## Symptom
@@ -865,7 +865,7 @@ stays ""Active"" for much longer than usual.
 ## Cause
 ""Released"" means the job is waiting for its start condition (date, time or event).
 ""Ready"" means the start condition is met but no background work process is free. A long
-""Active"" job is usually waiting on a database lock or processing far more data than usual.",,
+""Active"" job is usually waiting on a database lock or processing far more data than usual.",unclear,"English: The cited passage only gives the symptom and cause (what 'Released', 'Ready' and 'Active' mean in SM37); it has no resolution step telling the user to check the job status in SM37, so the action cannot be confirmed. Telugu: Ee passage lo symptom, cause (SM37 lo 'Released', 'Ready', 'Active' ante enti) matrame unnayi; SM37 lo job status check cheyyamani resolution step ledu, kabatti ee action ni confirm cheyyalem."
 e9c3d757-6ad0-4ccd-86b8-2ef948034271,T-00442,4,Run the on-demand backup again to confirm it completes successfully.,"[1] Nightly database backup failed
 Nightly database backup failed (Disk space and backups)
 ## Symptom
@@ -884,4 +884,4 @@ database being unreachable at the time.
 4. Confirm the new backup completed and its size is similar to previous ones.
 
 ## Warnings
-A failed backup is not ""fixed"" until a new backup has completed successfully.",,
+A failed backup is not ""fixed"" until a new backup has completed successfully.",not_supported,"English: The passage does not say to run the on-demand backup 'again'; it says to run one on-demand backup after fixing the cause, then confirm it completed and that its size is similar to previous ones. The claim adds a repeat run and drops the size check. Telugu: On-demand backup ni 'malli' run cheyyamani passage lo ledu; cause fix chesina tarvatha oka on-demand backup run chesi, adi complete ayyindha, size mundhu vaatiki similar ga undha ani confirm cheyyamani undi. Claim extra re-run add chesi size check vadilesindi."
