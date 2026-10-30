@@ -356,7 +356,20 @@ python tasks.py reproduce # regenerates docs/results/ tables
   longer verifies.
 - A fresh clone with a clean environment reproduces every committed development table
   and figure byte for byte with `python ai/evaluation/reproduce.py --offline`, from
-  [`data/eval/`](data/eval/), which leaves out the locked test.
+  [`data/eval/`](data/eval/), which leaves out the locked test. It needs no database,
+  GPU or model server and takes about a minute:
+
+  ```bash
+  python -m venv .venv && .venv/Scripts/pip install -r ai/requirements-reproduce.txt   # Windows
+  python3 -m venv .venv && .venv/bin/pip install -r ai/requirements-reproduce.txt      # Linux/macOS
+  .venv/Scripts/python ai/evaluation/reproduce.py --offline
+  git status   # nothing changed
+  ```
+
+  Checked on 2026-10-30 from a fresh clone of `main`: no file changed. With newer package
+  versions the tables are still identical, but the model file
+  `confidence-v1-judge.joblib` differs in the scikit-learn version it records (the model
+  itself is the same).
 - The locked test is evaluated once, after human labels, with
   `python ai/evaluation/locked_eval.py --final --confirm "run the locked test once"`;
   `--rehearse` runs the same code on the validation split.
@@ -378,6 +391,7 @@ Weekly progress, decisions and findings are in the logbooks:
 | Latency and cost per ticket | median 6.4 s, of which drafting 5.7 s and the gate 6 ms; one LLM call, about 1,440 tokens | [latency-cost.md](docs/latency-cost.md) |
 | Confidence model (provisional) | validation AURC 0.134 vs. 0.174 for the best single baseline (top-1 retrieval similarity); the difference is not yet reliable | [locked-rehearsal-judge.md](docs/results/locked-rehearsal-judge.md) |
 | Shift guard (provisional) | on held-out unseen topics, unacceptable drafts shown fall from 75 to 25, at a cost of 4.35% of acceptable drafts on known topics | [shift-v1-judge.json](docs/results/shift-v1-judge.json) |
+| Claim checker audit (human) | three members labelled 136 claims; NLI accepts 64% (95% CI 45 to 79) of the claims they rejected, the LLM check 79% | [audit-v1.json](docs/results/audit-v1.json) |
 
 "Provisional" means the target labels come from an LLM judge, not from people; these
 numbers show the pipeline works and are not the project's results. The results chapter
@@ -385,9 +399,28 @@ in progress is [docs/results-draft.md](docs/results-draft.md); the report draft 
 [docs/report/](docs/report/README.md) and the model card in
 [docs/model-card.md](docs/model-card.md).
 
-Human work still open: outside reviewer labels (0 of 600), human review of the
-knowledge base (0 of 120 articles; 24 SAP articles AI-checked only), the groundedness
-audit (1 of 3 members done) and the rubric pilot (1 of 3).
+### Done and pending
+
+| Item | Status |
+|---|---|
+| System, benchmark freeze, retrieval, drafting, red team, latency | Done |
+| Baselines, confidence model, thresholds, ablations, shift experiment | Done on **LLM-judge labels only** (provisional) |
+| Locked-evaluation rehearsal on the validation split | Done (judge labels) |
+| Groundedness audit of the claim checkers | Done: 3 of 3 members, 136 claims |
+| Rubric pilot | 1 of 3 members' labels in the repository |
+| Human labels from outside reviewers | **Pending**: 0 of 600 |
+| Locked test (250 sealed tickets) | **Not run**; it runs once, after the human labels |
+| User study | **Not run**: 0 participants |
+| Human review of the knowledge base | **Pending**: 0 of 120 articles (24 SAP articles AI-checked only) |
+
+### Changes to the pre-registered protocol
+
+The hypotheses were tagged `prereg-v1` on 19 October 2026, before any confidence result.
+Every later change was made before the locked test was read and is recorded with its
+reason in the amendment log of [docs/prereg.md](docs/prereg.md): exact frozen counts
+(19 Oct), KB amendment 1 (20 Oct), H2 "not testable" rule (21 Oct), H3 exposure and
+e-AURC additions and B3 added to the locked evaluation (25 Oct), and H2 Platt refit per
+resplit on answering drafts (26 Oct).
 
 ## Screenshots
 
@@ -455,7 +488,7 @@ The repository includes sample ticket attachments used by the OCR tests, for exa
 | 9 | Three-lane gate, workbench, robustness, shift experiments | Code done; team session and study pilot pending |
 | 10 | Locked evaluation | Runner, rehearsal, coverage and fresh-clone check done; the locked test waits for human labels |
 | 11 | User study, hardening, writing | In progress: study tool, security checks, bug bash and report draft v1 done; study sessions pending |
-| 12 | Final integration, release, presentation | Planned |
+| 12 | Final integration, release, presentation | In progress: pipeline failure escalation, audit results, review packs, benchmark release script and fresh-clone check done; human labels, locked test and release tag pending |
 
 Full plan: [docs/plan/](docs/plan/).
 
@@ -473,7 +506,8 @@ workflow ([ADR 001](docs/adr/001-repository-and-workflow.md)):
 ## License
 
 No license has been chosen yet: **To be documented.** Until one is added, all rights are
-reserved by the authors.
+reserved by the authors. Licences of the models, data and main libraries the project
+uses are listed in [docs/third-party-licences.md](docs/third-party-licences.md).
 
 ## Authors and acknowledgements
 
