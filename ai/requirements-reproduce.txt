@@ -1,0 +1,13 @@
+# Exact versions that produced the committed results in docs/results/ and the committed
+# confidence model. With them, `python ai/evaluation/reproduce.py --offline` reproduces
+# every table, figure and the model file byte for byte (Python 3.12). Newer versions give
+# the same tables, but the model file then records a different scikit-learn version.
+numpy==2.5.2
+scipy==1.18.1
+pandas==3.0.5
+scikit-learn==1.9.0
+xgboost==3.4.1
+pyyaml==6.0.3
+joblib==1.5.3
+# figures only (paper/scripts/make_figures.py)
+matplotlib==3.11.2
