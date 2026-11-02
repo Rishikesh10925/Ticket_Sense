@@ -119,3 +119,24 @@ def test_import_rejects_the_whole_file_on_any_error(tmp_path, monkeypatch):
     both = tmp_path / "labels_both.csv"
     _csv(both, pseudonyms[0], [[assigned[pseudonyms[0]][0], "A", "", "", "unreadable", 60000]])
     assert asyncio.run(review_packs.import_csv(both))["stored"] == 0  # label and skip together is invalid
+
+
+def test_returned_excel_file_is_read(tmp_path):
+    import zipfile
+
+    main = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"'
+    rels = 'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"'
+    head = ["pack_id", "pseudonym", "assignment_id", "label", "reason_codes", "note", "skipped_reason", "time_taken_ms"]
+    values = ["p1", "REV-01", "a1", "R", "missing_step", "two steps wrong", "", "95000"]
+
+    def row(n, cells):
+        return f'<row r="{n}">' + "".join(
+            f'<c r="{chr(65 + i)}{n}" t="inlineStr"><is><t>{v}</t></is></c>' for i, v in enumerate(cells)) + "</row>"
+
+    path = tmp_path / "labels_REV-01.xlsx"
+    with zipfile.ZipFile(path, "w") as z:
+        z.writestr("xl/workbook.xml", f'<workbook {main} {rels}><sheets><sheet name="Labels" sheetId="1" r:id="rId1"/></sheets></workbook>')
+        z.writestr("xl/_rels/workbook.xml.rels", '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                   '<Relationship Id="rId1" Type="w" Target="worksheets/sheet1.xml"/></Relationships>')
+        z.writestr("xl/worksheets/sheet1.xml", f"<worksheet {main}><sheetData>{row(1, head)}{row(2, values)}</sheetData></worksheet>")
+    assert review_packs.read_returned(path) == [dict(zip(head, values))]
