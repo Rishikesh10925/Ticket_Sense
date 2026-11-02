@@ -43,12 +43,12 @@
 <div class="wrap" id="app"></div>
 <script>
 const PACK = __PACK__;
-const Q1 = [["A","A: Acceptable","Correct, relevant, usable as written"],["M","M: Minor edit","Small wording or format fix; facts and steps stay correct"],
-            ["R","R: Major rework","Some use, but a fact or step must be corrected first"],["W","W: Wrong or unsafe","Wrong answer, wrong problem, or unsafe"],
-            ["U","U: Can't determine","Not enough trustworthy information. Do not guess"]];
-const Q2 = [["Fully","Fully","Every important claim and instruction is supported"],["Partially","Partially","Some support, but at least one important part has none"],
-            ["Not supported","Not supported","The core lacks support or conflicts with the citations"],["Unclear","Unclear","Support cannot be checked"]];
-const Q3 = [["Yes","Yes","Addresses the specific problem asked"],["No","No","A different problem, or misses the main request"],["Unclear","Unclear","Ticket or link too ambiguous to decide"]];
+const Q1 = [["A","A: Acceptable","Correct, use as it is"],["M","M: Minor edit","Only wording or format to fix"],
+            ["R","R: Major rework","A fact or step must be fixed"],["W","W: Wrong or unsafe","Wrong answer, wrong problem, or unsafe"],
+            ["U","U: Can't tell","Not enough information. Don't guess"]];
+const Q2 = [["Fully","Fully","All important points are in the passages"],["Partially","Partially","Something important is not in them"],
+            ["Not supported","Not supported","The main answer is not in them, or they disagree"],["Unclear","Unclear","Can't check"]];
+const Q3 = [["Yes","Yes","Answers this ticket's problem"],["No","No","Answers a different problem"],["Unclear","Unclear","Can't tell"]];
 const KEY = "air-review-" + PACK.pack_id;
 const ALL = [...PACK.practice.map(x => ({...x, practice:true})), ...PACK.items];
 let st = { screen:"welcome", i:0, a:{}, alone:false };
@@ -67,49 +67,22 @@ function tick() { // time counts only while this page is on screen, at most 20 m
 document.addEventListener("visibilitychange", () => { tick(); active = !document.hidden; shownAt = Date.now(); });
 window.addEventListener("beforeunload", tick);
 function rulesHtml() { return `
-  <h2>Question 1. Is this reply acceptable for this ticket?</h2>
   <table>
-    <tr><td><b>A</b> Acceptable</td><td>Correct, relevant and usable as written, with no substantive correction needed.</td></tr>
-    <tr><td><b>M</b> Minor edit</td><td>Usable after a small wording, formatting or clarity edit. The diagnosis, facts and required procedure stay correct.</td></tr>
-    <tr><td><b>R</b> Major rework</td><td>Some useful content, but a material fact, required step, unsupported instruction or important omission must be corrected before use.</td></tr>
-    <tr><td><b>W</b> Wrong or unsafe</td><td>The central answer, the problem addressed or the procedure is wrong, or following it would be unsafe. A substantially different reply is needed.</td></tr>
-    <tr><td><b>U</b> Can't determine</td><td>The trustworthy information available is not enough to judge. Do not guess.</td></tr>
+    <tr><td><b>Q1. Is the reply OK?</b></td><td><b>A</b> correct, use as it is · <b>M</b> only wording to fix · <b>R</b> a fact or step must be fixed · <b>W</b> wrong, wrong problem, or unsafe · <b>U</b> can't tell, don't guess</td></tr>
+    <tr><td><b>Q2. Do the passages back it up?</b></td><td><b>Fully</b> · <b>Partially</b> (something important is missing from them) · <b>Not supported</b> · <b>Unclear</b></td></tr>
+    <tr><td><b>Q3. Does it answer this ticket?</b></td><td><b>Yes</b> · <b>No</b> (a different problem) · <b>Unclear</b></td></tr>
   </table>
-  <p class="muted">Boundary rule: a correction of a fact or a procedure can never be M. Unsupported commands, policies or error-code meanings need R or W when you can establish the defect; if the reference itself cannot be verified, use U.</p>
-  <h2>Question 2. Do the cited passages support the claims and instructions?</h2>
-  <table>
-    <tr><td><b>Fully</b></td><td>Every important claim or instruction is supported by the passages it cites.</td></tr>
-    <tr><td><b>Partially</b></td><td>Some support exists, but at least one important element has none.</td></tr>
-    <tr><td><b>Not supported</b></td><td>The core of the reply lacks support or conflicts with its citations.</td></tr>
-    <tr><td><b>Unclear</b></td><td>Support cannot be checked.</td></tr>
-  </table>
-  <h2>Question 3. Does the reply address the actual problem in the ticket?</h2>
-  <table>
-    <tr><td><b>Yes</b></td><td>It addresses the specific problem asked.</td></tr>
-    <tr><td><b>No</b></td><td>It answers a different problem or misses the main request.</td></tr>
-    <tr><td><b>Unclear</b></td><td>The ticket or the link to the reply is too ambiguous to decide.</td></tr>
-  </table>
-  <p class="muted">A relevant answer can still be wrong, and a cited passage does not prove the passage itself is correct. Judge the three questions separately.</p>
-  <h2>Example (invented, for illustration only)</h2>
-  <div class="card" style="background:var(--bg)"><b>Ticket:</b> "How do I restore an accidentally deleted cloud file?"<br><b>Reply:</b> "To reset your cloud password, open Account settings and choose Reset password."<br><b>Citation:</b> a passage giving those same password-reset steps.<br><b>Answers:</b> Q1 = W, Q2 = Fully, Q3 = No. The passage supports the password steps, but the reply addresses the wrong problem.</div>
-  <h2>When a reason is needed</h2>
-  <p>Write a short reason for R, W or U, for anything other than "Fully" on Q2, and for "No" or "Unclear" on Q3. Point to the ticket detail or passage that decided it.</p>`; }
-function welcome() { const n = PACK.items.length, low = Math.max(1, Math.round(n * 3 / 60)), high = Math.max(2, Math.round(n * 5 / 60));
+  <p class="muted">Any fix to a fact or a step is R, never M. Example: the ticket asks how to restore a deleted file, the reply explains a password reset, and the passage has those password steps. The answers are Q1 W, Q2 Fully, Q3 No.</p>
+  <p>If an answer is not A/M, Fully or Yes, write a few words of reason in your own words.</p>`; }
+function welcome() { const n = PACK.items.length, low = Math.round(n * 1.5 / 5) * 5, high = Math.round(n * 2.5 / 5) * 5;
   return `<div class="narrow"><div class="card"><h1>Review of AI support replies</h1>
-    <p>Thank you for helping. You will read <b>${n} IT and HR support tickets</b> with a reply written by an AI, and answer three questions about each one. It takes roughly <b>${low} to ${high} hours</b> in total, and you can stop and come back.</p>
-    <h2>How it works</h2>
-    <ol><li>Read the rules on the next screen.</li><li>Try ${PACK.practice.length} practice tickets. They are not counted.</li><li>Do the ${n} real tickets.</li><li>Click <b>Download my Excel file</b> and send that file back to the person who sent you this page.</li></ol>
-    <h2>Please</h2>
-    <ul><li><b>Work alone.</b> Don't discuss tickets with other reviewers until you have sent your file.</li>
-      <li><b>Use your own judgement.</b> Please don't paste tickets into ChatGPT or other AI tools. We are measuring what people think.</li>
-      <li><b>There are no target answers.</b> Honest "wrong" and "can't determine" answers are just as useful as "acceptable".</li>
-      <li><b>Keep this file in one place</b> and use the same browser on a laptop or desktop, because your progress is saved in that browser. It works without internet.</li></ul>
-    <p class="muted">The tickets are invented, not from real people. Your answers are stored under the code ${esc(PACK.reviewer)}, not your name. Time on each ticket is recorded.</p>
-    <div class="row"><button class="primary" onclick="to('rules')">Continue</button></div></div></div>`; }
+    <p>Read <b>${n} support tickets</b>, each with a reply written by an AI, and answer 3 quick questions about each. It takes about <b>${low} to ${high} minutes</b>.</p>
+    ${rulesHtml()}
+    <p class="muted">Work alone, use your own judgement (no ChatGPT), and be honest: "wrong" is as useful as "acceptable". Your progress is saved in this browser. You'll do ${PACK.practice.length} practice ticket first. At the end, click <b>Download my Excel file</b> and send it back.</p>
+    <p><label><input type="checkbox" ${st.alone?"checked":""} onchange="st.alone=this.checked;save();render()"> I will work alone and use my own judgement.</label></p>
+    <div class="row"><button class="primary" ${st.alone?"":"disabled"} onclick="startCases()">${doneOf(PACK.items) ? "Back to the tickets" : "Start"}</button></div></div></div>`; }
 function rules() { return `<div class="narrow"><div class="card"><div class="tag">The rules</div>${rulesHtml()}
-    <p style="margin-top:16px"><label><input type="checkbox" ${st.alone?"checked":""} onchange="st.alone=this.checked;save();render()"> I will work alone and use my own judgement.</label></p>
-    <div class="row"><button onclick="to('welcome')">Back</button><span class="grow"></span>
-    <button class="primary" ${st.alone?"":"disabled"} onclick="startCases()">${doneOf(PACK.items) ? "Back to the tickets" : "Start practice"}</button></div></div></div>`; }
+    <div class="row"><button class="primary" onclick="to('case')">Back to the ticket</button></div></div></div>`; }
 function opts(q, list, val) { return `<div class="row">${list.map(([v,t,h]) => `<button class="opt ${val===v?"picked":""}" onclick="pick('${q}','${v}')" aria-pressed="${val===v}">${esc(t)}<small>${esc(h)}</small></button>`).join("")}</div>`; }
 function caseScreen() {
   const x = ALL[st.i], a = A(x), P = PACK.practice.length, n = PACK.items.length, d = doneOf(PACK.items);
@@ -125,17 +98,16 @@ function caseScreen() {
     </div>
     <div class="card"><div class="tag">Reference passages</div>${x.evidence.map(e => `<div class="passage ${lit===e.n?"on":""}" id="p${e.n}"><b>[${e.n}] ${esc(e.title)}</b>\n${esc(e.text)}</div>`).join("")}</div></div>
     <div class="card">
-      <div class="q" style="margin-top:0"><b>Q1. Is the reply an acceptable response to this ticket?</b>${opts("q1",Q1,a.q1)}</div>
-      <div class="q"><b>Q2. Do the cited passages support the important claims and instructions?</b>${opts("q2",Q2,a.q2)}</div>
-      <div class="q"><b>Q3. Does the reply address the actual problem in the ticket?</b>${opts("q3",Q3,a.q3)}</div>
-      <div class="q"><b>Reason ${reason ? `<span class="need">(needed: at least a few words)</span>` : `<span class="muted">(optional here)</span>`}</b>
-        <span class="muted">Point to the ticket detail or passage that decided it.</span>
-        <textarea id="reason" rows="2" maxlength="1500" oninput="note(this.value)">${esc(a.reason||"")}</textarea></div>
+      <div class="q" style="margin-top:0"><b>Q1. Is the reply OK?</b>${opts("q1",Q1,a.q1)}</div>
+      <div class="q"><b>Q2. Do the passages back it up?</b>${opts("q2",Q2,a.q2)}</div>
+      <div class="q"><b>Q3. Does it answer this ticket?</b>${opts("q3",Q3,a.q3)}</div>
+      <div class="q"><b>Reason ${reason ? `<span class="need">(needed: a few words)</span>` : `<span class="muted">(optional)</span>`}</b>
+        <textarea id="reason" rows="2" maxlength="1500" placeholder="e.g. step 2 is not in the passages" oninput="note(this.value)" onpaste="pasted()">${esc(a.reason||"")}</textarea></div>
       <div class="row" style="margin-top:12px"><button onclick="go(-1)" ${st.i===0?"disabled":""}>Back</button><span class="grow"></span>
         <span class="muted" id="hint">${ok ? "" : "Answer all three questions" + (reason ? " and give a reason" : "")}</span>
         <button class="primary" id="next" ${ok?"":"disabled"} onclick="go(1)">${st.i===ALL.length-1?"Finish":"Next"}</button></div></div>`;
 }
-function pause() { return `<div class="narrow"><div class="card"><h1>Practice finished</h1><p>If any rule was unclear, ask the person who sent you this page now, before you start. Ask about the rules only, not about a specific ticket's answer.</p><p>Your answers from here on count.</p>
+function pause() { return `<div class="narrow"><div class="card"><h1>Practice done</h1><p>If a rule is unclear, ask now. From here on your answers count.</p>
   <div class="row"><button onclick="st.i=${PACK.practice.length-1};to('case')">Back to practice</button><span class="grow"></span><button class="primary" onclick="st.i=${PACK.practice.length};to('case')">Start the ${PACK.items.length} tickets</button></div></div></div>`; }
 function finish() { const d = doneOf(PACK.items), n = PACK.items.length, missing = PACK.items.map((x,k)=>[x,k]).filter(([x]) => !finished(A(x)));
   return `<div class="narrow"><div class="card"><h1>${d===n ? "All done. Thank you!" : `${d} of ${n} done`}</h1>
@@ -147,6 +119,7 @@ function to(s) { tick(); st.screen = s; lit = 0; save(); render(); window.scroll
 function startCases() { const first = PACK.practice.length + doneOf(PACK.items) ? ALL.findIndex(x => !finished(A(x))) : 0; st.i = first < 0 ? ALL.length-1 : first; to(first < 0 ? "finish" : "case"); }
 function pick(q,v) { const s = window.scrollY; const a = A(ALL[st.i]); a[q] = v; a.saved = new Date().toISOString(); save(); render(); window.scrollTo(0,s); }
 function note(v) { const a = A(ALL[st.i]); a.reason = v; a.saved = new Date().toISOString(); save(); const ok = finished(a); document.getElementById("next").disabled = !ok; document.getElementById("hint").textContent = ok ? "" : "Answer all three questions" + (needsReason(a) ? " and give a reason" : ""); }
+function pasted() { A(ALL[st.i]).pasted = true; save(); }  // recorded so the team can check reasons were the reviewer's own
 function light(n) { lit = n; const s = window.scrollY; render(); window.scrollTo(0,s); const el = document.getElementById("p"+n); if (el) el.scrollIntoView({block:"nearest"}); }
 function go(d) { tick(); const next = st.i + d, P = PACK.practice.length;
   if (d > 0 && next === P && P) return to("pause");
@@ -169,9 +142,9 @@ function zip(files) { const enc = new TextEncoder(), parts = [], central = []; l
 function xmlText(v) { return String(v ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g," ").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
 function colName(i) { return String.fromCharCode(65+i); }
 function sheet(rows, widths) { return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols>${widths.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join("")}</cols><sheetData>${rows.map((r,y)=>`<row r="${y+1}">${r.map((v,x)=>typeof v==="number"?`<c r="${colName(x)}${y+1}"><v>${v}</v></c>`:`<c r="${colName(x)}${y+1}" t="inlineStr"><is><t xml:space="preserve">${xmlText(v)}</t></is></c>`).join("")}</row>`).join("")}</sheetData></worksheet>`; }
-function rowsFor(list) { const head = ["pack_id","reviewer","case","draft_id","finished","q1","q2","q3","reason","seconds","saved_at"];
-  return [head, ...list.map((x,k) => { const a = A(x); return [PACK.pack_id,PACK.reviewer,k+1,x.id,finished(a)?"yes":"no",a.q1||"",a.q2||"",a.q3||"",a.reason||"",Math.round((a.ms||0)/1000),a.saved||""]; })]; }
-function downloadXlsx() { tick(); const w = [10,9,6,38,9,5,14,9,70,8,25];
+function rowsFor(list) { const head = ["pack_id","reviewer","case","draft_id","finished","q1","q2","q3","reason","seconds","saved_at","pasted"];
+  return [head, ...list.map((x,k) => { const a = A(x); return [PACK.pack_id,PACK.reviewer,k+1,x.id,finished(a)?"yes":"no",a.q1||"",a.q2||"",a.q3||"",a.reason||"",Math.round((a.ms||0)/1000),a.saved||"",a.pasted?"yes":"no"]; })]; }
+function downloadXlsx() { tick(); const w = [10,9,6,38,9,5,14,9,70,8,25,7];
   const data = zip([
     ["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`],
     ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`],

@@ -43,7 +43,8 @@ BLIND = ROOT / "paper" / "revision" / "blind_c1_verdicts.jsonl"  # the blinded j
 TEMPLATE = Path(__file__).with_name("human_audit_template.html")
 PROMPT = "draft-v2"
 MAIN_SPLITS = ("val", "unseen")
-PRACTICE_CASES = 3
+PRACTICE_CASES = 3  # frozen in the manifest
+PRACTICE_SHOWN = 1  # pages show one, to keep the review short (second round)
 
 
 async def load(splits: tuple[str, ...]) -> list[dict]:
@@ -147,7 +148,7 @@ def export(reviewers: int) -> list[Path]:
         raise SystemExit("--reviewers must be even: each case needs two different reviewers")
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     packets = asyncio.run(_packets({c["draft_id"] for c in manifest["cases"]} | set(manifest["practice"])))
-    practice = [packets[i] for i in manifest["practice"]]
+    practice = [packets[i] for i in manifest["practice"][:PRACTICE_SHOWN]]
     written, assignment = [], {}
     for p, cases in enumerate(split_into_pairs(manifest["cases"], reviewers // 2, manifest["seed"])):
         pair = [f"HA-{2 * p + 1:02d}", f"HA-{2 * p + 2:02d}"]
@@ -172,6 +173,9 @@ def _read(path: Path, known: set[str]) -> tuple[str, dict[str, dict], list[str]]
             problems += [f"{path.name}: case {r['case']}: {b}" for b in bad]
             if not bad:
                 finished[r["draft_id"]] = r
+    pasted = sum(r.get("pasted") == "yes" for r in rows)
+    if pasted:
+        problems.append(f"{path.name}: {pasted} reasons were pasted, not typed: check they are the reviewer's own")
     return reviewer, finished, problems
 
 

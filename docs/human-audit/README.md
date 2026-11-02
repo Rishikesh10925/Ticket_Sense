@@ -54,7 +54,9 @@ These ratings are reported separately as disclosed prior ratings.
 
 **Second round: four reviewers in two pairs of 20 cases each** (`export --reviewers 4`).
 The pairs are HA-01 + HA-02 and HA-03 + HA-04, with each pair getting a similar mix of part
-and group. The sample, seed, rubric and pages are unchanged, apart from new pack ids.
+and group. The sample, seed and rubric are unchanged. The pages are shorter: the rules are on one
+screen in plain words, one practice ticket is shown instead of three, and the Excel file has
+a `pasted` column that marks reasons pasted rather than typed. `collect` warns about these.
 
 ## Running it
 
