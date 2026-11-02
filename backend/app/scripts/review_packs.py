@@ -2,14 +2,15 @@
 
 Reviewers label on their own laptops without reaching this machine: each gets one HTML
 file (a "review pack") with exactly what the /annotate screen shows (ticket, draft,
-evidence; never score, lane, model, type, split or overlap) and sends back one CSV.
+evidence; never score, lane, model, type, split or overlap) and sends back one Excel
+file (a CSV from an older pack is accepted too).
 
     python -m app.scripts.review_packs add --names Asha Ravi Meena Kiran Divya
     python -m app.scripts.review_packs selection
     python -m app.scripts.assign_annotations plan --batch sprint1 \
         --drafts data/annotation/selection_v1_drafts.txt --overlap 150 --seed 2026
     python -m app.scripts.review_packs export
-    python -m app.scripts.review_packs import data/annotation/returned/labels_REV-01.csv
+    python -m app.scripts.review_packs import data/annotation/returned/labels_REV-01.xlsx
     python -m app.scripts.assign_annotations adjudicate --batch adjud1 --seed 2026   # then export + import again
 
 `add` creates one annotator account per name with a pseudonym REV-01, REV-02, ...; the
@@ -17,7 +18,7 @@ database stores only the pseudonym. The name-to-pseudonym list goes to
 data/annotation/packs/reviewers.csv, which is git-ignored, so names never reach the
 repository or any report. `selection` writes the 600 selected drafts' ids (current
 prompt version) for the planner. `export` writes one pack per reviewer with their
-unfinished assignments. `import` stores a returned CSV as labels with the same rules as
+unfinished assignments. `import` stores a returned file as labels with the same rules as
 the online tool (labels are final; label or skip, not both) and reports quick answers.
 """
 
@@ -136,8 +137,18 @@ async def export() -> list[Path]:
     return written
 
 
+def read_returned(path: Path) -> list[dict[str, str]]:
+    """Rows of a returned file: the Excel file a pack downloads, or a CSV from an older pack."""
+    if path.suffix.lower() == ".xlsx":
+        sys.path.insert(0, str(ROOT / "ai"))
+        from evaluation.human_audit import read_xlsx
+
+        return read_xlsx(path).get("Labels", [])
+    return list(csv.DictReader(path.open(encoding="utf-8-sig")))
+
+
 async def import_csv(path: Path) -> dict:
-    rows = list(csv.DictReader(path.open(encoding="utf-8-sig")))
+    rows = read_returned(path)
     report = {"file": path.name, "rows": len(rows), "stored": 0, "already_labelled": 0, "errors": [], "quick": 0}
     times = []
     async with SessionLocal() as db:
@@ -146,7 +157,7 @@ async def import_csv(path: Path) -> dict:
                 body = LabelIn(label=row["label"] or None,
                                reason_codes=[c for c in row["reason_codes"].split(";") if c],
                                note=row["note"] or None, skipped_reason=row["skipped_reason"] or None,
-                               time_taken_ms=int(row["time_taken_ms"]))
+                               time_taken_ms=int(float(row["time_taken_ms"])))
             except (ValueError, KeyError) as exc:
                 report["errors"].append(f"line {n}: {exc}".splitlines()[0])
                 continue

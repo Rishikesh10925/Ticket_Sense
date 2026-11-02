@@ -118,7 +118,7 @@ browser, and records the time spent on each draft.
 | 2. Selected drafts | `python -m app.scripts.review_packs selection` → `data/annotation/selection_v1_drafts.txt` |
 | 3. Plan | `python -m app.scripts.assign_annotations plan --batch sprint1 --drafts ../data/annotation/selection_v1_drafts.txt --overlap 150 --seed 2026` |
 | 4. Packs | `python -m app.scripts.review_packs export` → `data/annotation/packs/review_pack_REV-01.html` … (send each reviewer their file) |
-| 5. Returned files | save to `data/annotation/returned/`, then `python -m app.scripts.review_packs import ../data/annotation/returned/labels_REV-01.csv` |
+| 5. Returned files | save to `data/annotation/returned/`, then `python -m app.scripts.review_packs import ../data/annotation/returned/labels_REV-01.xlsx` (the Excel file the page downloads; an older CSV works too) |
 | 6. Disagreements | `python -m app.scripts.assign_annotations adjudicate --batch adjud1 --seed 2026`, then `export` and `import` again |
 
 Imports follow the online rules: a label or a skip, never both; labels are final; one
