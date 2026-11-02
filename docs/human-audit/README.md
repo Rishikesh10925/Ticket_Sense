@@ -41,6 +41,21 @@ Judge disagreements come from a blinded re-grade run only on unseen-topic C1 dra
 group contains only C1. Shortfall rule: none is expected for N = 40; a new case needs a
 separately frozen extension.
 
+## Reviewer rounds
+
+**First round (2 November 2026): two reviewers, all 40 cases.** Both files came back
+complete, and they are kept unchanged in `data/annotation/returned/human_audit_v1/first_round_2_reviewers_40_each/`,
+together with the pages that were sent. They are not used in the main analysis, for two
+reasons. First, one reviewer's reasons were entered at 12 or more characters per second of
+visible page time, on all 40 cases, which suggests the text was written outside the page.
+That conflicts with the rule that each reviewer works alone using their own judgement.
+Second, the pair agreed on acceptable versus not acceptable on 19 of 40 cases (kappa 0.01).
+These ratings are reported separately as disclosed prior ratings.
+
+**Second round: four reviewers in two pairs of 20 cases each** (`export --reviewers 4`).
+The pairs are HA-01 + HA-02 and HA-03 + HA-04, with each pair getting a similar mix of part
+and group. The sample, seed, rubric and pages are unchanged, apart from new pack ids.
+
 ## Running it
 
 From `backend/`, with the database running:
