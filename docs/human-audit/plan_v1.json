@@ -1,0 +1,52 @@
+{
+ "protocol": "Independent Human Annotation Sampling Protocol, 31 October 2026",
+ "mode": "H",
+ "n": 40,
+ "seed": 20261102,
+ "nli_pass": 0.5,
+ "prompt_version": "draft-v2",
+ "counts": {
+  "drafts_read": 418,
+  "excluded_not_answering_or_no_evidence": 150,
+  "eligible_drafts": 268,
+  "eligible_scenarios": 110,
+  "by_split_type": {
+   "unseen/C1": {
+    "drafts": 152,
+    "scenarios": 69
+   },
+   "val/A": {
+    "drafts": 85,
+    "scenarios": 30
+   },
+   "val/B": {
+    "drafts": 25,
+    "scenarios": 9
+   },
+   "val/C2": {
+    "drafts": 6,
+    "scenarios": 2
+   }
+  }
+ },
+ "available_scenarios": {
+  "A": 30,
+  "B": 9,
+  "C1": 69,
+  "C2": 2
+ },
+ "random_quota": {
+  "A": 7,
+  "B": 7,
+  "C1": 8,
+  "C2": 2
+ },
+ "targeted_quota": {
+  "nli_pass_suspected_error": 8,
+  "judge_disagreement": 5,
+  "other_controls": 3
+ },
+ "selected_cases": 40,
+ "manifest_sha256": "1a0bd32999b5d5624e3af55f3bead26f4fb5041420e176e8e4df83676f068120",
+ "blind_verdicts_sha256": "a29638eb6bc2a89c09eb1d7450ed0653b02e8ee0827cc073c7a5d2f89f3aa706"
+}
