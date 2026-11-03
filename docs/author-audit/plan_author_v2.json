@@ -1,0 +1,35 @@
+{
+ "protocol": "Three-Author Human Annotation Protocol, AUTHOR-v2, 3 November 2026",
+ "rubric": "AUTHOR-v2",
+ "sample": "human_audit_v1 (mode H, N = 40, seed 20261102), reused: a disjoint sample is infeasible",
+ "seed": 20261103,
+ "authors": {
+  "AUTH-R": "Rishikesh",
+  "AUTH-A": "Aashritha",
+  "AUTH-S": "Shivaganesh"
+ },
+ "eligible_scenarios": {
+  "A": 30,
+  "B": 9,
+  "C1": 69,
+  "C2": 2
+ },
+ "exposure": {
+  "external_pilot": "all 40 cases were rated by outside reviewers in two pilot rounds (80 ratings); those ratings are not shown to authors and are not pooled",
+  "AUTH-R": "ran the selection and the pilot, and saw pilot agreement summaries; per-case exposure is declared on each page",
+  "AUTH-A": "declared per case on each page",
+  "AUTH-S": "declared per case on each page"
+ },
+ "cases": 40,
+ "batch_sizes": {
+  "1": 20,
+  "2": 20
+ },
+ "practice_kinds": {
+  "irrelevant_but_well_cited": 2,
+  "relevant_partly_unsupported": 2,
+  "correct_and_supported": 2
+ },
+ "manifest_sha256": "4fbf2d392f83b8f5bbd7137b9bca7130975c9dd3d71cec172fd29c526de72e30",
+ "sample_manifest_sha256": "1a0bd32999b5d5624e3af55f3bead26f4fb5041420e176e8e4df83676f068120"
+}
