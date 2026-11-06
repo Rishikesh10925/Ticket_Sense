@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Author Adjudication</title>
+<style>
+  :root { --bg:#f5f6f8; --card:#fff; --ink:#17202e; --muted:#5b6675; --line:#d9dee6; --accent:#1f5f8b; --accent-ink:#fff; --soft:#e8f1f7; --warn:#a33a1f; --ok:#22703f; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#10151d; --card:#19202b; --ink:#eef1f5; --muted:#a2adba; --line:#303a48; --accent:#7cc0ea; --accent-ink:#0c1a24; --soft:#1e3140; --warn:#f0997d; --ok:#79cf97; } }
+  :root[data-theme="dark"] { --bg:#10151d; --card:#19202b; --ink:#eef1f5; --muted:#a2adba; --line:#303a48; --accent:#7cc0ea; --accent-ink:#0c1a24; --soft:#1e3140; --warn:#f0997d; --ok:#79cf97; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui,"Segoe UI",sans-serif; }
+  .wrap { max-width:1180px; margin:0 auto; padding:16px; }
+  .narrow { max-width:760px; margin:0 auto; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:12px; overflow-wrap:anywhere; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
+  @media (max-width:820px) { .grid { grid-template-columns:1fr; } }
+  h1 { font-size:26px; margin:4px 0 8px; } h2 { font-size:18px; margin:18px 0 6px; }
+  .tag { color:var(--muted); font-size:13px; font-weight:600; letter-spacing:.03em; text-transform:uppercase; margin-bottom:6px; }
+  .muted { color:var(--muted); font-size:14px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .grow { flex:1; }
+  button { font:inherit; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink); padding:9px 14px; cursor:pointer; min-height:42px; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:var(--accent-ink); font-weight:600; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .opt { text-align:left; flex:1 1 150px; }
+  .opt.picked { border:2px solid var(--accent); background:var(--soft); font-weight:600; }
+  .opt small { display:block; font-weight:400; color:var(--muted); font-size:13px; line-height:1.35; }
+  .bar { height:8px; background:var(--line); border-radius:5px; overflow:hidden; flex:1; min-width:80px; }
+  .bar span { display:block; height:100%; background:var(--ok); }
+  .passage { white-space:pre-wrap; font-size:14.5px; border-top:1px solid var(--line); padding:8px 6px; margin-top:8px; border-radius:6px; }
+  .passage.on { background:var(--soft); outline:2px solid var(--accent); }
+  ol { padding-left:1.4em; margin:6px 0; } li { margin:6px 0; }
+  .cite { font:inherit; font-weight:600; color:var(--accent); background:none; border:0; padding:0 2px; min-height:0; text-decoration:underline; }
+  textarea { width:100%; font:inherit; padding:8px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--ink); }
+  pre { white-space:pre-wrap; overflow-wrap:anywhere; background:var(--bg); padding:8px; border-radius:6px; font-size:14px; margin:8px 0 0; }
+  table { border-collapse:collapse; width:100%; font-size:15px; } td,th { border-top:1px solid var(--line); padding:7px 8px; text-align:left; vertical-align:top; }
+  .need { color:var(--warn); font-size:14px; font-weight:600; }
+  .q { margin-top:14px; } .q > b { display:block; margin-bottom:6px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const PACK = __PACK__;
+const OPTS = {q1: ["A","M","R","W","U"], q2: ["Fully","Partially","Not supported","Unclear"], q3: ["Yes","No","Unclear"]};
+const NAMES = {q1: "Q1. Acceptable for this ticket?", q2: "Q2. Do the cited passages support the claims?", q3: "Q3. Addresses the specific problem?"};
+const KEY = "author-adjudication-" + PACK.pack_id;
+let st = { screen:"welcome", i:0, d:{} };
+try { st = {...st, ...(JSON.parse(localStorage.getItem(KEY)) || {})}; } catch {}
+let lit = 0;
+function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} }
+function esc(s) { return String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function D(x, q) { const k = x.id + "|" + q; return st.d[k] || (st.d[k] = {}); }
+function decided(x, q) { const d = D(x, q); return !!(d.value && (d.why || "").trim().length >= 10); }
+function caseDone(x) { return x.disputed.every(q => decided(x, q)); }
+function doneCount() { return PACK.items.filter(caseDone).length; }
+function welcome() { const n = PACK.items.length, k = PACK.items.reduce((s, x) => s + x.disputed.length, 0);
+  return `<div class="narrow"><div class="card"><div class="tag">Three-author audit · ${esc(PACK.rubric)} · ${esc(PACK.batch_label)}</div><h1>Resolve the disagreements</h1>
+    <p>All three original files are locked. This page lists the <b>${n} tickets</b> where you disagreed, <b>${k} questions</b> in all. Do it <b>together</b>, all three of you.</p>
+    <ol><li>For each disputed question, each author says which ticket detail, claim or passage decided their answer.</li>
+      <li>Check the passages (and a trusted outside reference if needed), then record a decision and why.</li>
+      <li>If the evidence can't settle it, choose <b>Unresolved</b>. A majority vote is not proof, and forcing agreement is worse than an honest "unresolved".</li></ol>
+    <p class="muted">Your original answers are never changed: this file is kept next to them. At the end, download the Excel file and keep it with the others.</p>
+    <div class="row"><button class="primary" onclick="to('case')">${doneCount() ? "Continue" : "Start"}</button></div></div></div>`; }
+function decision(x, q) {
+  const d = D(x, q);
+  return `<div class="q"><b>Decision on ${esc(NAMES[q])}</b>
+    <div class="row">${[...OPTS[q], "Unresolved"].map(v => `<button class="opt ${d.value===v?"picked":""}" onclick="pick('${q}','${v}')" aria-pressed="${d.value===v}">${esc(v)}</button>`).join("")}</div>
+    <textarea rows="2" maxlength="1500" placeholder="Why: the decisive ticket detail, claim or passage" oninput="why('${q}', this.value)">${esc(d.why||"")}</textarea>
+    <input type="text" maxlength="500" placeholder="References consulted (optional)" value="${esc(d.refs||"")}" oninput="refs('${q}', this.value)" style="width:100%;margin-top:6px;padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit"></div>`; }
+function caseScreen() {
+  const x = PACK.items[st.i], n = PACK.items.length, d = doneCount();
+  const steps = x.steps.map(s => `<li>${esc(s.text)} ${(s.citations||[]).map(c => `<button class="cite" onclick="light(${c})">[${c}]</button>`).join(" ")}</li>`).join("");
+  const authors = Object.keys(x.ratings);
+  const grid = `<table><tr><th></th>${authors.map(a => `<th>${esc(PACK.names[a])}</th>`).join("")}</tr>
+    ${["q1","q2","q3"].map(q => `<tr><td style="white-space:nowrap"><b>${q.toUpperCase()}</b><br>${x.disputed.includes(q) ? ` <span class="need">disputed</span>` : ` <span class="muted">agreed</span>`}</td>${authors.map(a => `<td><b>${esc(x.ratings[a][q])}</b></td>`).join("")}</tr>`).join("")}
+    <tr><td style="white-space:nowrap"><b>Reason</b></td>${authors.map(a => `<td class="muted">${esc(x.ratings[a].reason || "(none)")}</td>`).join("")}</tr></table>`;
+  return `<div class="row" style="margin-bottom:12px"><b>Ticket ${st.i+1} of ${n}</b><div class="bar"><span style="width:${100*d/n}%"></span></div><span class="muted">${d} of ${n} resolved</span>
+      <button onclick="downloadXlsx()">Save Excel so far</button></div>
+    <div class="grid"><div>
+      <div class="card"><div class="tag">Ticket</div><b>${esc(x.subject)}</b><p style="white-space:pre-wrap;margin:6px 0 0">${esc(x.body)}</p>${x.attachment ? `<pre>${esc(x.attachment)}</pre>` : ""}</div>
+      <div class="card"><div class="tag">AI reply</div><ol>${steps}</ol>${(x.missing||[]).length ? `<p class="muted">The reply also asks for: ${esc(x.missing.join("; "))}</p>` : ""}</div>
+      <div class="card"><div class="tag">Original answers (locked)</div>${grid}</div>
+      <div class="card">${x.disputed.map(q => decision(x, q)).join("")}
+      <div class="row" style="margin-top:12px"><button onclick="go(-1)" ${st.i===0?"disabled":""}>Back</button><span class="grow"></span>
+        <span class="muted" id="hint">${caseDone(x) ? "" : "Decide each disputed question and say why"}</span>
+        <button class="primary" id="next" ${caseDone(x)?"":"disabled"} onclick="go(1)">${st.i===n-1?"Finish":"Next"}</button></div></div>
+    </div>
+    <div class="card" style="position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto"><div class="tag">Passages</div>${x.evidence.map(e => `<div class="passage ${lit===e.n?"on":""}" id="p${e.n}"><b>[${e.n}] ${esc(e.title)}</b>
+${esc(e.text)}</div>`).join("")}</div></div>`;
+}
+function finish() { const d = doneCount(), n = PACK.items.length, left = PACK.items.map((x,k)=>[x,k]).filter(([x]) => !caseDone(x));
+  const un = Object.values(st.d).filter(v => v.value === "Unresolved").length;
+  return `<div class="narrow"><div class="card"><h1>${d===n ? "All disagreements handled" : `${d} of ${n} done`}</h1>
+    ${d===n ? `<p>${un} question${un===1?"":"s"} left unresolved. Download the file and keep it with the three rating files.</p>` : `<p>Still to do: ${left.map(([x,k]) => `<button onclick="st.i=${k};to('case')">${k+1}</button>`).join(" ")}</p>`}
+    <div class="row"><button class="primary" onclick="downloadXlsx()">Download the adjudication Excel file</button><button onclick="st.i=${n-1};to('case')">Back to the tickets</button></div>
+    <p class="muted">File name: ${esc(fileName())}</p></div></div>`; }
+function render() { const f = {welcome, case:caseScreen, finish}[st.screen] || welcome; document.getElementById("app").innerHTML = f(); }
+function to(s) { st.screen = s; lit = 0; save(); render(); window.scrollTo(0,0); }
+function pick(q, v) { const s = window.scrollY; const d = D(PACK.items[st.i], q); d.value = v; d.at = new Date().toISOString(); save(); render(); window.scrollTo(0,s); }
+function why(q, v) { const x = PACK.items[st.i], d = D(x, q); d.why = v; d.at = new Date().toISOString(); save();
+  document.getElementById("next").disabled = !caseDone(x); document.getElementById("hint").textContent = caseDone(x) ? "" : "Decide each disputed question and say why"; }
+function refs(q, v) { D(PACK.items[st.i], q).refs = v; save(); }
+function light(n) { lit = n; const s = window.scrollY; render(); window.scrollTo(0,s); const el = document.getElementById("p"+n); if (el) el.scrollIntoView({block:"nearest"}); }
+function go(d) { const next = st.i + d; if (next >= PACK.items.length) return to("finish"); st.i = Math.max(0, next); lit = 0; save(); render(); window.scrollTo(0,0); }
+function fileName() { return `author_adjudication_${PACK.batch}.xlsx`; }
+
+// A real .xlsx, built here so the page works offline: a zip (stored, not compressed) of SpreadsheetML.
+const CRC = (() => { const t = []; for (let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c = c&1 ? 0xEDB88320^(c>>>1) : c>>>1; t[n]=c>>>0; } return t; })();
+function crc32(b) { let c = 0xFFFFFFFF; for (let i=0;i<b.length;i++) c = CRC[(c^b[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+function zip(files) { const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  const le = (v,n) => { const a = new Uint8Array(n); for (let i=0;i<n;i++) a[i] = (v/2**(8*i))&255; return a; };
+  const cat = l => { const o = new Uint8Array(l.reduce((s,a)=>s+a.length,0)); let p=0; for (const a of l){ o.set(a,p); p+=a.length; } return o; };
+  for (const [name,text] of files) { const nm = enc.encode(name), data = enc.encode(text), crc = crc32(data);
+    const common = [le(20,2),le(0x0800,2),le(0,2),le(0,2),le(33,2),le(crc,4),le(data.length,4),le(data.length,4),le(nm.length,2),le(0,2)];
+    const local = cat([le(0x04034b50,4),...common,nm,data]);
+    central.push(cat([le(0x02014b50,4),le(20,2),...common,le(0,2),le(0,2),le(0,2),le(0,4),le(off,4),nm]));
+    parts.push(local); off += local.length; }
+  const dir = cat(central);
+  return cat([...parts,dir,le(0x06054b50,4),le(0,2),le(0,2),le(files.length,2),le(files.length,2),le(dir.length,4),le(off,4),le(0,2)]); }
+function xmlText(v) { return String(v ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g," ").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+function colName(i) { return String.fromCharCode(65+i); }
+function sheet(rows, widths) { return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols>${widths.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join("")}</cols><sheetData>${rows.map((r,y)=>`<row r="${y+1}">${r.map((v,x)=>typeof v==="number"?`<c r="${colName(x)}${y+1}"><v>${v}</v></c>`:`<c r="${colName(x)}${y+1}" t="inlineStr"><is><t xml:space="preserve">${xmlText(v)}</t></is></c>`).join("")}</row>`).join("")}</sheetData></worksheet>`; }
+function rowsFor() { const head = ["pack_id","rubric","batch","case","draft_id","question",...Object.keys(PACK.names).map(a => a + "_answer"),"decision","rationale","references","decided_at"];
+  const out = [head];
+  PACK.items.forEach((x, k) => x.disputed.forEach(q => { const d = D(x, q);
+    out.push([PACK.pack_id, PACK.rubric, PACK.batch, k+1, x.id, q, ...Object.keys(PACK.names).map(a => x.ratings[a][q]), d.value||"", d.why||"", d.refs||"", d.at||""]); }));
+  return out; }
+function downloadXlsx() { const w = [16,10,8,6,38,6,10,10,10,12,70,30,25];
+  const data = zip([
+    ["[Content_Types].xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`],
+    ["_rels/.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`],
+    ["xl/workbook.xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Adjudication" sheetId="1" r:id="rId1"/></sheets></workbook>`],
+    ["xl/_rels/workbook.xml.rels",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>`],
+    ["xl/worksheets/sheet1.xml",sheet(rowsFor(),w)],
+  ]);
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([data],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  link.download = fileName(); render(); document.body.appendChild(link); link.click(); link.remove();
+}
+render();
+</script>
+</body>
+</html>

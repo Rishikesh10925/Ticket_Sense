@@ -54,3 +54,14 @@ def test_analysis_reports_denominators_and_weights_part_one():
     assert out["counts"]["II/judge_disagreement"] == {"incomplete": 1, "selected": 1}
     assert r["disagreements"]["q1_binary"] == ["b"]
     assert r["agreement"]["q1_binary"]["all_agree"] == 1 and r["agreement"]["q1_binary"]["two_of_three"] == 1
+
+
+def test_adjudication_is_reported_apart_and_never_overrides_unanimity():
+    from evaluation.author_audit import adjudicated_outcomes
+    cases = [{"draft_id": i, "part": "II", "group": "g", "type": "A"} for i in "abcd"]
+    w, a = rating(q1="W"), rating(q1="A")
+    ratings = {"R": {"a": w, "b": w, "c": w, "d": w}, "S": {"a": w, "b": a, "c": a, "d": a}, "T": {"a": w, "b": w, "c": w, "d": w}}
+    decisions = {("b", "q1"): "R", ("c", "q1"): "Unresolved", ("d", "q1"): "M", ("a", "q1"): "A"}
+    out = adjudicated_outcomes(cases, ratings, decisions)["grounded_but_unacceptable"]["II/g"]
+    # a: unanimous originals win; b: R with agreed Fully -> positive; c: unresolved; d: M -> negative
+    assert out == {"adjudicated_negative": 1, "adjudicated_positive": 1, "selected": 4, "unanimous_positive": 1, "unresolved": 1}

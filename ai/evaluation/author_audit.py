@@ -210,3 +210,36 @@ def analyse(cases: list[dict], ratings: dict[str, dict[str, dict[str, str]]],
             "part_I_weighted_bounds": [round(lower, 4), round(upper, 4)],
         }
     return report
+
+
+UNDETERMINED = {"q1": "U", "q2": "Unclear", "q3": "Unclear"}  # "Unresolved" decides nothing
+
+
+def adjudicated_outcomes(cases: list[dict], ratings: dict[str, dict[str, dict[str, str]]],
+                         decisions: dict[tuple[str, str], str]) -> dict[str, Any]:
+    """Outcomes after the joint discussion, reported apart from the original-rating ones.
+    `decisions`: (draft id, question) -> the agreed answer or "Unresolved". An undisputed
+    question keeps the answer all authors gave. Original unanimity always wins: a case all
+    three rated positive or negative is never re-decided here."""
+    authors = sorted(ratings)
+    report: dict[str, Any] = {}
+    for name, rule in OUTCOMES.items():
+        table: dict[str, Counter] = defaultdict(Counter)
+        for c in cases:
+            i = c["draft_id"]
+            rows = [ratings[a][i] for a in authors if i in ratings[a]]
+            status = outcome_status(rows, rule, len(authors))
+            if status not in ("unanimous_positive", "unanimous_negative", "incomplete"):
+                agreed = {}
+                for q in ("q1", "q2", "q3"):
+                    answers = {r[q] for r in rows}
+                    value = next(iter(answers)) if len(answers) == 1 else decisions.get((i, q), "Unresolved")
+                    agreed[q] = UNDETERMINED[q] if value == "Unresolved" else value
+                agreed["reason"] = ""
+                verdict = rule(agreed)
+                status = "unresolved" if verdict is None else f"adjudicated_{'positive' if verdict else 'negative'}"
+            table[f"{c['part']}/{c['group']}"][status] += 1
+            table[f"{c['part']}/{c['group']}"]["selected"] += 1
+        report[name] = {k: dict(sorted(v.items())) for k, v in sorted(table.items())}
+    report["questions"] = dict(sorted(Counter(("unresolved" if v == "Unresolved" else "decided") for v in decisions.values()).items()))
+    return report

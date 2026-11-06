@@ -4,6 +4,8 @@ Excel files (docs/author-audit/README.md). Logic is in ai/evaluation/author_audi
     python -m app.scripts.author_audit freeze
     python -m app.scripts.author_audit export --batch 1      # then --batch 2
     python -m app.scripts.author_audit collect ../data/annotation/returned/author_v2/*.xlsx
+    python -m app.scripts.author_audit adjudication --batch 1       # one page for the joint discussion
+    python -m app.scripts.author_audit adjudicated ../data/annotation/returned/author_v2/author_adjudication_batch1.xlsx
 
 The sample is the frozen human-audit sample (seed 20261102): a new disjoint sample cannot
 fill even N = 20 (no C2 and 2 B scenarios are left). The 80 outside ratings of it stay a
@@ -25,7 +27,7 @@ from pathlib import Path
 from app.scripts import human_audit as ha
 
 sys.path.insert(0, str(ha.ROOT / "ai"))
-from evaluation.author_audit import RUBRIC, analyse, check_rating  # noqa: E402
+from evaluation.author_audit import RUBRIC, adjudicated_outcomes, analyse, check_rating  # noqa: E402
 from evaluation.human_audit import NLI_PASS, read_xlsx  # noqa: E402
 
 OUT = ha.ROOT / "data" / "annotation" / "packs" / "author_v2"
@@ -33,6 +35,7 @@ RETURNED = ha.ROOT / "data" / "annotation" / "returned" / "author_v2"
 MANIFEST = OUT / "manifest_hidden.json"
 PLAN = ha.ROOT / "docs" / "author-audit" / "plan_author_v2.json"
 TEMPLATE = Path(__file__).with_name("author_audit_template.html")
+ADJUDICATION_TEMPLATE = Path(__file__).with_name("author_adjudication_template.html")
 AUTHORS = {"AUTH-R": "Rishikesh", "AUTH-A": "Aashritha", "AUTH-S": "Shivaganesh"}
 SEED = 20261103
 # Practice kinds the protocol asks for, picked from stored values on training drafts.
@@ -157,12 +160,78 @@ def collect(files: list[Path]) -> dict:
     return report
 
 
+def _locked(batch: str) -> dict[str, dict[str, dict]]:
+    """The three original exports of a batch, as kept by collect: author -> draft id -> row."""
+    out: dict[str, dict[str, dict]] = {code: {} for code in AUTHORS}
+    for f in sorted(RETURNED.glob(f"author_ratings_*_batch{batch}*.xlsx")):
+        for r in read_xlsx(f).get("Ratings", []):
+            if r["finished"] == "yes" and not check_rating(r):
+                out[r["author"]][r["draft_id"]] = r
+    return out
+
+
+def adjudication(batch: str) -> Path:
+    """A page for the three authors to go through their disagreements together, after all
+    three exports are locked. It shows the original answers and records separate decisions."""
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    ratings = _locked(batch)
+    ids = manifest["batches"][batch]
+    if any(len(ratings[c]) < len(ids) for c in AUTHORS):
+        raise SystemExit(f"batch {batch} is not complete for all three authors: run collect first")
+    disputed = {i: [q for q in ("q1", "q2", "q3") if len({ratings[c][i][q] for c in AUTHORS}) > 1] for i in ids}
+    disputed = {i: qs for i, qs in disputed.items() if qs}
+    packets = asyncio.run(ha._packets(set(disputed)))
+    items = [{"id": i, **packets[i]["packet"], "disputed": disputed[i],
+              "ratings": {c: {k: ratings[c][i][k] for k in ("q1", "q2", "q3", "reason")} for c in AUTHORS}}
+             for i in sorted(disputed)]
+    random.Random(f"{SEED}-adjudication-{batch}").shuffle(items)
+    pack = {"pack_id": f"ADJ-{batch}-{SEED}", "rubric": RUBRIC, "batch": f"batch{batch}", "batch_label": f"batch {batch}",
+            "names": AUTHORS, "items": items}
+    html = ADJUDICATION_TEMPLATE.read_text(encoding="utf-8").replace("__PACK__", json.dumps(pack, ensure_ascii=False).replace("</", "<\\/"))
+    path = OUT / f"Author_Adjudication_batch{batch}.html"
+    path.write_text(html, encoding="utf-8")
+    return path
+
+
+def adjudicated(path: Path) -> dict:
+    """Read the joint decisions, keep the file as it arrived, and report outcomes after
+    adjudication apart from the original-rating ones. Original ratings are not touched."""
+    rows = read_xlsx(path).get("Adjudication", [])
+    if not rows:
+        raise SystemExit(f"{path.name}: no Adjudication sheet")
+    batch = rows[0]["batch"].removeprefix("batch")
+    RETURNED.mkdir(parents=True, exist_ok=True)
+    if path.resolve().parent != RETURNED.resolve():
+        shutil.copy2(path, RETURNED / path.name)
+    problems = [f"case {r['case']} {r['question']}: no decision with a reason" for r in rows
+                if not r["decision"] or len(r["rationale"].strip()) < 10]
+    decisions = {(r["draft_id"], r["question"]): r["decision"] for r in rows if r["decision"]}
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    cases = [c for c in manifest["cases"] if c["draft_id"] in set(manifest["batches"][batch])]
+    report = adjudicated_outcomes(cases, _locked(batch), decisions) | {"batch": batch, "problems": problems}
+    (OUT / f"06_adjudicated_outcomes_batch{batch}.json").write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
+    by = {(r["draft_id"], r["question"]): r for r in rows}
+    log = OUT / "05_adjudication_log.csv"
+    table = list(csv.DictReader(log.open(encoding="utf-8")))
+    for row in table:
+        if d := by.get((row["draft_id"], row["question"])):
+            row |= {"references_consulted": d["references"], "adjudicated_label": d["decision"], "rationale": d["rationale"],
+                    "status": "unresolved" if d["decision"] == "Unresolved" else "decided" if d["decision"] else "open"}
+    with log.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=list(table[0]))
+        w.writeheader()
+        w.writerows(table)
+    return report
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="cmd", required=True)
     sub.add_parser("freeze")
     sub.add_parser("export").add_argument("--batch", choices=["1", "2"], required=True)
     sub.add_parser("collect").add_argument("files", nargs="+", type=Path)
+    sub.add_parser("adjudication").add_argument("--batch", choices=["1", "2"], required=True)
+    sub.add_parser("adjudicated").add_argument("file", type=Path)
     args = parser.parse_args()
     if args.cmd == "freeze":
         m = freeze()
@@ -170,6 +239,10 @@ def main() -> None:
     elif args.cmd == "export":
         for p in export(args.batch):
             print(p.relative_to(ha.ROOT))
+    elif args.cmd == "adjudication":
+        print(adjudication(args.batch).relative_to(ha.ROOT))
+    elif args.cmd == "adjudicated":
+        print(json.dumps(adjudicated(args.file), indent=1))
     else:
         r = collect(args.files)
         print(json.dumps({k: r[k] for k in ("selected", "complete", "agreement", "problems")}, indent=1))
