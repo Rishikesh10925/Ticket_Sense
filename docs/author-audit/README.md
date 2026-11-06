@@ -75,6 +75,28 @@ The agreement report covers:
 The adjudication log lists every Q1, Q2 and Q3 disagreement, with each author's original
 answer and reason and blank columns for the decision.
 
+## Adjudication
+
+```bash
+python -m app.scripts.author_audit adjudication --batch 1     # needs all three batch files collected
+python -m app.scripts.author_audit adjudicated <author_adjudication_batch1.xlsx>
+```
+
+The page lists each case where the authors disagreed. It shows the ticket, the reply and the
+passages, then the three locked answers and reasons side by side. For every disputed
+question, the authors record a decision together, or **Unresolved**, with the decisive detail
+and any reference consulted.
+
+`adjudicated` keeps the returned file and fills in the decisions in `05_adjudication_log.csv`.
+It also writes `06_adjudicated_outcomes_batch1.json`, where outcomes after adjudication are
+counted separately:
+- a case that all three authors rated the same way in the originals keeps that status;
+- every other case becomes adjudicated positive, adjudicated negative or unresolved.
+
+**Deviation (6 November 2026): batch 1 was adjudicated before batch 2 was rated.** The
+authors chose to discuss batch 1 first. Batch 2 ratings may therefore reflect what was agreed
+in that discussion, so agreement is reported for each batch separately as well as overall.
+
 ## Reporting
 
 - A "grounded but unacceptable" finding needs all three original ratings to give Q1 R or W
