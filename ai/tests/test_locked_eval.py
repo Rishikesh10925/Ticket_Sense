@@ -95,6 +95,21 @@ def test_final_run_refuses_without_confirmation(monkeypatch, tmp_path):
         le.main()
 
 
+def test_final_run_needs_explicit_labels(monkeypatch, tmp_path):
+    monkeypatch.setattr("sys.argv", ["locked_eval.py", "--final", "--confirm", "run the locked test once"])
+    monkeypatch.setattr(le, "ROOT", tmp_path)
+    with pytest.raises(SystemExit, match="--labels"):
+        le.main()
+
+
+def test_judge_final_summary_says_it_is_not_human_labels():
+    rows, p, y = rows_and_scores(n=120)
+    report = le.evaluate(rows, rows, [], p, p, np.array([]), {"B4 top-1 similarity": p},
+                         "B4 top-1 similarity", le.Lanes(0.8, 0.5), 0.5)
+    text = le.summary_md(report, final=True, labels="judge")
+    assert "with judge labels" in text and "not human labels" in text
+
+
 def test_figures_are_svg(tmp_path):
     line = line_chart(tmp_path / "a.svg", "t", "x", "y", {"s": ([0, 0.5, 1], [0.1, 0.2, 0.3])}, diagonal=True)
     bars = bar_chart(tmp_path / "b.svg", "t", "x", "y", [0, 0.1, 0.2], [3, 5], marker=0.1)
