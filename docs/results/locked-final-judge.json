@@ -1,0 +1,378 @@
+{
+ "mode": "final",
+ "labels": "judge",
+ "evaluated_split": "test",
+ "model": "confidence-v1-judge.joblib",
+ "thresholds": {
+  "fast": null,
+  "assisted": 0.05
+ },
+ "n": 271,
+ "acceptable_share": 0.4982,
+ "best_baseline": "B4 top-1 similarity",
+ "proposed": {
+  "aurc": 0.3523,
+  "auroc_unacceptable": 0.6946,
+  "ece": 0.2849,
+  "brier": 0.3106,
+  "risk_at_50": 0.3456,
+  "risk_at_70": 0.4,
+  "risk_at_90": 0.459,
+  "aurc_ci95": [
+   0.2632,
+   0.4518
+  ]
+ },
+ "baselines": {
+  "B1 verbalised": {
+   "aurc": 0.4093,
+   "auroc_unacceptable": 0.6551,
+   "ece": 0.3736,
+   "brier": 0.3767,
+   "risk_at_50": 0.3684,
+   "risk_at_70": 0.4744,
+   "risk_at_90": 0.484,
+   "aurc_ci95": [
+    0.3262,
+    0.4979
+   ]
+  },
+  "B2 token probability": {
+   "aurc": 0.5006,
+   "auroc_unacceptable": 0.4949,
+   "ece": 0.2016,
+   "brier": 0.2918,
+   "risk_at_50": 0.5294,
+   "risk_at_70": 0.5263,
+   "risk_at_90": 0.4918,
+   "aurc_ci95": [
+    0.3917,
+    0.6123
+   ]
+  },
+  "B3 self-consistency": {
+   "aurc": 0.3623,
+   "auroc_unacceptable": 0.6569,
+   "ece": null,
+   "brier": null,
+   "risk_at_50": 0.375,
+   "risk_at_70": 0.4526,
+   "risk_at_90": 0.5018,
+   "aurc_ci95": [
+    0.2764,
+    0.4588
+   ]
+  },
+  "B4 top-1 similarity": {
+   "aurc": 0.3977,
+   "auroc_unacceptable": 0.7184,
+   "ece": null,
+   "brier": null,
+   "risk_at_50": 0.3015,
+   "risk_at_70": 0.3789,
+   "risk_at_90": 0.4631,
+   "aurc_ci95": [
+    0.2966,
+    0.4959
+   ]
+  },
+  "B5 reranker": {
+   "aurc": 0.3528,
+   "auroc_unacceptable": 0.7244,
+   "ece": null,
+   "brier": null,
+   "risk_at_50": 0.3382,
+   "risk_at_70": 0.3789,
+   "risk_at_90": 0.4672,
+   "aurc_ci95": [
+    0.2659,
+    0.4458
+   ]
+  },
+  "B6 entailment share": {
+   "aurc": 0.422,
+   "auroc_unacceptable": 0.6214,
+   "ece": null,
+   "brier": null,
+   "risk_at_50": 0.3957,
+   "risk_at_70": 0.4256,
+   "risk_at_90": 0.5018,
+   "aurc_ci95": [
+    0.332,
+    0.5186
+   ]
+  },
+  "B7 LR on B4+B5+B6": {
+   "aurc": 0.3958,
+   "auroc_unacceptable": 0.6788,
+   "ece": 0.2333,
+   "brier": 0.2846,
+   "risk_at_50": 0.3309,
+   "risk_at_70": 0.4105,
+   "risk_at_90": 0.4672,
+   "aurc_ci95": [
+    0.2907,
+    0.5042
+   ]
+  }
+ },
+ "b3_coverage": 0.9132,
+ "b3_subset": {
+  "n": 200,
+  "proposed_aurc": 0.264,
+  "b3_aurc": 0.3127,
+  "aurc_difference": {
+   "estimate": -0.0487,
+   "ci95": [
+    -0.1336,
+    0.03
+   ],
+   "resamples": 1000
+  }
+ },
+ "H1": {
+  "rule": "paired bootstrap 95% interval of AURC(proposed) - AURC(best baseline) entirely below zero",
+  "aurc_difference": {
+   "estimate": -0.0454,
+   "ci95": [
+    -0.1355,
+    0.0661
+   ],
+   "resamples": 1000
+  },
+  "supported": false,
+  "decision": "no reliable improvement"
+ },
+ "H2": {
+  "rule": "test-side fast-lane risk <= 0.1 in at least 90% of 1000 resplits",
+  "share_within_alpha": 0.999,
+  "resplits_with_closed_lane": 999,
+  "median_test_risk": 0.0,
+  "supported": null,
+  "decision": "not testable: the fast lane could not be certified in 999 of 1000 resplits",
+  "histogram": {
+   "edges": [
+    0.0,
+    0.025,
+    0.05,
+    0.075,
+    0.1,
+    0.125,
+    0.15,
+    0.175,
+    0.2,
+    0.225,
+    0.25,
+    0.275,
+    0.3,
+    0.325,
+    0.35,
+    0.375,
+    0.4,
+    0.425,
+    0.45,
+    0.475,
+    0.5
+   ],
+   "counts": [
+    999,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  }
+ },
+ "lanes": {
+  "fast": {
+   "n": 0,
+   "share": 0.0,
+   "unacceptable_rate": null
+  },
+  "assisted": {
+   "n": 219,
+   "share": 0.8081,
+   "unacceptable_rate": 0.4749
+  },
+  "escalate": {
+   "n": 52,
+   "share": 0.1919,
+   "unacceptable_rate": 0.6154
+  },
+  "unacceptable_kept_out_of_fast": 1.0,
+  "false_escalation_rate": 0.1481
+ },
+ "slices": {
+  "type": {
+   "A": {
+    "n": 128,
+    "acceptable_share": 0.6641,
+    "aurc": 0.2149
+   },
+   "B": {
+    "n": 41,
+    "acceptable_share": 0.7805,
+    "aurc": 0.2235
+   },
+   "C1": {
+    "n": 72,
+    "acceptable_share": 0.0,
+    "aurc": null
+   },
+   "C2": {
+    "n": 30,
+    "acceptable_share": 0.6,
+    "aurc": 0.1069
+   }
+  },
+  "department": {
+   "Cloud": {
+    "n": 45,
+    "acceptable_share": 0.5111,
+    "aurc": 0.4713
+   },
+   "Database": {
+    "n": 56,
+    "acceptable_share": 0.4286,
+    "aurc": 0.4157
+   },
+   "HR": {
+    "n": 56,
+    "acceptable_share": 0.6429,
+    "aurc": 0.1904
+   },
+   "Networking": {
+    "n": 56,
+    "acceptable_share": 0.4286,
+    "aurc": 0.4245
+   },
+   "SAP": {
+    "n": 58,
+    "acceptable_share": 0.4828,
+    "aurc": 0.3297
+   }
+  }
+ },
+ "H3": {
+  "rule": "report seen vs unseen AURC and fast-lane risk with 95% intervals; degradation is an expected finding",
+  "seen": {
+   "n": 271,
+   "acceptable_share": 0.4982,
+   "n_acceptable": 135,
+   "n_unacceptable": 136,
+   "ranking_informative": true,
+   "aurc": {
+    "estimate": 0.3523,
+    "ci95": [
+     0.2632,
+     0.4518
+    ],
+    "resamples": 1000
+   },
+   "e_aurc": {
+    "estimate": 0.1967,
+    "ci95": [
+     0.1419,
+     0.2634
+    ],
+    "resamples": 1000
+   },
+   "fast_lane_risk": null,
+   "exposure": {
+    "without_guard": {
+     "n_shown": 219,
+     "shown_share": 0.8081,
+     "unacceptable_shown": 104,
+     "unacceptable_shown_share_of_all": 0.3838,
+     "unacceptable_rate_among_shown": 0.4749
+    },
+    "with_guard": {
+     "n_shown": 167,
+     "shown_share": 0.6162,
+     "unacceptable_shown": 59,
+     "unacceptable_shown_share_of_all": 0.2177,
+     "unacceptable_rate_among_shown": 0.3533
+    }
+   }
+  },
+  "unseen": {
+   "n": 283,
+   "acceptable_share": 0.0071,
+   "n_acceptable": 2,
+   "n_unacceptable": 281,
+   "ranking_informative": false,
+   "aurc": {
+    "estimate": 0.992,
+    "ci95": [
+     0.9785,
+     1.0
+    ],
+    "resamples": 1000
+   },
+   "e_aurc": {
+    "estimate": 0.0325,
+    "ci95": [
+     0.0,
+     0.0681
+    ],
+    "resamples": 1000
+   },
+   "fast_lane_risk": null,
+   "exposure": {
+    "without_guard": {
+     "n_shown": 152,
+     "shown_share": 0.5371,
+     "unacceptable_shown": 152,
+     "unacceptable_shown_share_of_all": 0.5371,
+     "unacceptable_rate_among_shown": 1.0
+    },
+    "with_guard": {
+     "n_shown": 58,
+     "shown_share": 0.2049,
+     "unacceptable_shown": 58,
+     "unacceptable_shown_share_of_all": 0.2049,
+     "unacceptable_rate_among_shown": 1.0
+    }
+   }
+  },
+  "unseen_lanes": {
+   "fast": {
+    "n": 0,
+    "share": 0.0,
+    "unacceptable_rate": null
+   },
+   "assisted": {
+    "n": 152,
+    "share": 0.5371,
+    "unacceptable_rate": 1.0
+   },
+   "escalate": {
+    "n": 131,
+    "share": 0.4629,
+    "unacceptable_rate": 0.9847
+   },
+   "unacceptable_kept_out_of_fast": 1.0,
+   "false_escalation_rate": 1.0
+  }
+ },
+ "figures": [
+  "docs\\results\\figures\\locked-final-judge\\risk-coverage.svg",
+  "docs\\results\\figures\\locked-final-judge\\reliability.svg",
+  "docs\\results\\figures\\locked-final-judge\\h2-resplits.svg"
+ ]
+}

@@ -22,7 +22,9 @@ python ai/evaluation/reproduce.py --offline      # every development table and f
 ```
 
 The full system (database, models, pipeline) is described in the root README. The locked
-test is evaluated once with `python ai/evaluation/locked_eval.py --final` after human labels.
+test was evaluated once, on 11 November 2026, with
+`python ai/evaluation/locked_eval.py --final --labels judge` (against LLM-judge labels; see
+the 2026-11-11 amendment).
 
 ## D. Pre-registration and amendments
 
