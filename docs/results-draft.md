@@ -2,7 +2,11 @@
 
 - Owner: Shivaganesh. Roadmap Week 10: "write the Results draft"; logbook: "evaluation
   record and limitations list".
-- Status: **draft before the locked test**. Every number below is a development number,
+- Status: **the locked test was run once on 2026-11-11, against LLM-judge labels** (the human
+  labelling was cancelled; amendment 2026-11-11 in [prereg.md](prereg.md)). Its results are in
+  [results/locked-final-judge.md](results/locked-final-judge.md): H1 no reliable improvement,
+  H2 not testable, H3 large degradation on unseen topics. Every number below this line is a
+  development number,
   from the validation split with LLM-judge labels (`--rehearse`). The pre-registered
   results come from one run of `ai/evaluation/locked_eval.py --final` on the locked test
   with human labels. That run replaces every table here and is reported whatever it shows
@@ -13,7 +17,7 @@
 ```bash
 python ai/evaluation/reproduce.py              # every development table and figure
 python ai/evaluation/reproduce.py --offline    # the same from a fresh clone, no database or GPU
-python ai/evaluation/locked_eval.py --final --confirm "run the locked test once"   # once, after human labels
+python ai/evaluation/locked_eval.py --final --labels judge --confirm "run the locked test once"   # run once, 2026-11-11
 ```
 
 A fresh clone with a clean virtual environment reproduces every committed table and figure
@@ -25,8 +29,8 @@ leaves out the locked test.
 | Item | State on 2026-10-21 |
 |---|---|
 | Benchmark freeze and locked-test seal | verified on every run |
-| Locked test read | **never**: `data/annotation/locked_test_access.log` does not exist |
-| Human labels collected | 0 of the 600 selected drafts (250 locked test, 200 calibration, 150 train and validation) |
+| Locked test read | **once**, 2026-11-11 11:36 UTC, judge labels (`data/annotation/locked_test_access.log`) |
+| Human labels collected | none: the 600-draft labelling was cancelled; human evidence is the three-author audit (`docs/author-audit/`) |
 | Best baseline for H1 | chosen from the validation table before the final run; with judge labels it is B4 (top-1 similarity) |
 | Rule changes | one clarification, logged in the prereg amendment log on 2026-10-21 before any test access: H2 is "not testable" if the fast lane opens in fewer than half of the resplits |
 

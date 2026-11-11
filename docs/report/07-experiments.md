@@ -3,8 +3,19 @@
 *Owners: Shivaganesh (7.1 to 7.6), Aashritha (7.7). Draft v1.*
 
 > All numbers in 7.2 to 7.6 are **development numbers**: validation split, LLM-judge labels.
-> The pre-registered results come from one run of `ai/evaluation/locked_eval.py --final`
-> on the locked test with human labels and replace these tables: **To be filled**.
+> The pre-registered results come from the one run of `ai/evaluation/locked_eval.py --final`,
+> made on 11 November 2026 against **LLM-judge labels** because the human labelling was
+> cancelled (amendment 2026-11-11 in [prereg.md](../prereg.md)). Full tables:
+> [locked-final-judge.md](../results/locked-final-judge.md).
+>
+> | Hypothesis | Locked-test decision |
+> |---|---|
+> | H1 | **No reliable improvement.** AURC 0.352 against 0.398 for the best validation baseline (B4); paired difference −0.045 [−0.136, 0.066] on 271 drafts. |
+> | H2 | **Not testable.** Learn-then-Test certified no fast-lane threshold in 999 of 1,000 resplits; the fast lane stays closed (fast 0%, assisted 81%, escalate 19%). |
+> | H3 | **Large degradation on unseen topics.** Seen AURC 0.352 [0.263, 0.452]; unseen 0.992, where only 2 of 283 drafts are acceptable, so the ranking is not informative there. The shift guard cuts unseen drafts shown from 152 to 58 (all unacceptable). |
+>
+> These are held-out results against the judge, not against humans; the judge's agreement
+> with human raters is reported in the human-audit and three-author-audit sections.
 
 ## 7.1 Protocol
 
