@@ -23,10 +23,10 @@
 |---|---|---|
 | Benchmark frozen with hashes; locked test sealed | ✅ | `data/benchmark/FREEZE_v1.json`, `data/annotation/locked_test_seal.json` |
 | Pre-registration and amendment log | ✅ | `docs/prereg.md` |
-| Human labels (600 drafts, 150 double-labelled) | 👤 0 of 600 | Annotation tool `/annotate` |
+| Human labels (600 drafts, 150 double-labelled) | ❌ cancelled; human evidence is the three-author audit | `docs/author-audit/` |
 | Groundedness audit | ✅ all three members, 136 claims | `docs/audit/`, `docs/results/audit-v1.json` |
 | Rubric pilot labels | 👤 Rishikesh done; Aashritha and Shivaganesh pending | `docs/pilot/` |
-| Locked-test evaluation, exactly once | 👤 waits for human labels | `ai/evaluation/locked_eval.py --final` |
+| Locked-test evaluation, exactly once | judge labels (prereg amendment 2026-11-11) | `ai/evaluation/locked_eval.py --final --labels judge` |
 | A second member reproduces the headline numbers | 👤 after the locked test | |
 | Baselines B0 to B7 with intervals, ablations, shift study | ✅ (development numbers) | `docs/results/` |
 | Red team through the full pipeline | ✅ 0 of 40 | `docs/results/redteam-v3-pipeline.json` |
