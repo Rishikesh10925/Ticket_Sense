@@ -199,9 +199,9 @@ an admin with the reason recorded. No ticket is left waiting with nobody respons
 
 | Lane | When | What the engineer sees |
 |---|---|---|
-| 🟢 **Fast** | score ≥ certified fast threshold, and the draft can answer | Pre-filled draft with citations |
-| 🟡 **Assisted** | score ≥ certified assisted threshold | Draft marked "verify", evidence side by side, weakest claims first |
-| 🔴 **Escalate** | otherwise, or the draft cannot answer, the shift guard fires, or nothing is certified | No AI draft; evidence only |
+| **Fast** | score ≥ certified fast threshold, and the draft can answer | Pre-filled draft with citations |
+| **Assisted** | score ≥ certified assisted threshold | Draft marked "verify", evidence side by side, weakest claims first |
+| **Escalate** | otherwise, or the draft cannot answer, the shift guard fires, or nothing is certified | No AI draft; evidence only |
 
 - **Fail closed.** A lane whose threshold could not be certified stays shut; with no
   active threshold set, every ticket escalates.
