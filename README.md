@@ -100,55 +100,50 @@ locally; no external AI API is called.
 
 ```mermaid
 flowchart TB
-    subgraph Clients["Web app · React 19 + TypeScript"]
-        direction LR
-        U["End user<br/>submit, follow, read reply"]
-        EN["Engineer<br/>queue, workbench, actions"]
-        AD["Admin<br/>console, analytics, error budget"]
-        AN["Annotator / participant<br/>labelling, user study"]
+    subgraph WEB["React 19 web app"]
+        direction TB
+        U["End user<br/>submit and follow tickets"]
+        EN["Engineer<br/>queue and workbench"]
+        AD["Admin<br/>console and analytics"]
+        AN["Annotator and participant<br/>labelling and user study"]
     end
 
-    subgraph API["FastAPI service · async"]
+    subgraph SRV["FastAPI service"]
         direction LR
-        RT["Routers<br/>auth, tickets, escalations,<br/>analytics, annotate, study"]
-        RB["JWT + role-based access<br/>scores hidden from end users"]
-        BG["Background task<br/>run_ticket_pipeline"]
+        RB["JWT and role checks<br/>scores hidden from end users"] --> RT["Routers<br/>tickets, escalations, analytics,<br/>annotate, study"]
+        RT -->|"POST /tickets"| BG["Background task<br/>run_ticket_pipeline"]
     end
 
-    subgraph AI["AI pipeline · LangGraph StateGraph"]
-        PL["11 nodes<br/>extract to gate"]
-    end
+    PL["LangGraph pipeline<br/>11 nodes, extract to gate"]
 
-    subgraph Models["Local models"]
-        direction LR
+    subgraph MOD["Local models"]
+        direction TB
         OL["Ollama<br/>qwen2.5:7b-instruct"]
-        ST["sentence-transformers<br/>MiniLM, ms-marco rerank,<br/>DeBERTa NLI"]
-        CM["scikit-learn / XGBoost<br/>router + confidence model"]
+        ST["sentence-transformers<br/>embed, rerank, NLI"]
+        CM["scikit-learn and XGBoost<br/>router and confidence model"]
     end
 
-    subgraph DB["PostgreSQL 16 + pgvector"]
-        direction LR
-        KB[("kb_chunks<br/>tsvector + HNSW")]
+    subgraph PG["PostgreSQL 16 + pgvector"]
+        direction TB
+        KB[("kb_chunks<br/>full text + HNSW")]
         LOG[("Pipeline log<br/>retrieval, drafts, claims,<br/>signals, gate decisions")]
         TH[("gate_thresholds<br/>versioned, certified")]
     end
 
-    subgraph Offline["Offline research loop · ai/"]
+    subgraph OFF["Offline research loop"]
         direction LR
-        BM["Frozen benchmark<br/>1,775 tickets"] --> BD["Batch drafts"] --> JG["LLM judge<br/>llama3.1:8b"] --> TR["Train + calibrate"] --> LTT["Learn-then-Test<br/>certify thresholds"]
+        BM["Frozen benchmark<br/>1,775 tickets"] --> BD["Batch drafts"]
+        BD --> JG["LLM judge<br/>llama3.1:8b"]
+        JG --> TR["Train and calibrate"]
+        TR --> LTT["Learn-then-Test<br/>certify thresholds"]
     end
 
-    Clients -- "REST + JWT" --> RT
-    RT --> RB
-    RT -- "POST /tickets" --> BG --> PL
-    PL --> OL
-    PL --> ST
-    PL --> CM
-    PL -- "hybrid search" --> KB
-    PL -- "writes every stage" --> LOG
-    PL -- "reads active set" --> TH
-    LTT -- "load_thresholds" --> TH
-    LOG -. "analytics, workbench" .-> RT
+    WEB -->|"REST + JWT"| SRV
+    SRV -->|"each new ticket"| PL
+    PL -->|"inference"| MOD
+    PL -->|"search KB, log every stage,<br/>read active thresholds"| PG
+    OFF -->|"load_thresholds"| PG
+    PG -.->|"workbench and analytics"| SRV
 ```
 
 ### The ticket pipeline
@@ -160,17 +155,30 @@ small, separately tested function in [`ai/graph/nodes.py`](ai/graph/nodes.py).
 
 ```mermaid
 flowchart LR
-    IN(["Ticket +<br/>attachment"]) --> X["extract<br/>OCR, PDF, logs"]
-    X --> R["redact<br/>PII removed"]
-    R --> C["classify<br/>department, priority,<br/>uncertainty"]
-    C --> RO["route<br/>assign department"]
-    RO --> RV["retrieve<br/>keyword + vector,<br/>RRF, rerank"]
-    RV --> D["draft<br/>cited JSON +<br/>output screen"]
-    D --> K["check<br/>claim-level NLI"]
-    K --> S["signals<br/>31 features"]
-    S --> G{"gate<br/>score + lane"}
-    G -- "fast / assisted" --> SH["show<br/>draft to engineer"]
-    G -- "escalate" --> ES["escalate<br/>no AI draft"]
+    IN(["Ticket +<br/>attachment"]) --> S1
+
+    subgraph S1["Stage 1: understand"]
+        direction TB
+        X["extract<br/>OCR, PDF, logs"] --> R["redact<br/>PII removed"]
+        R --> C["classify<br/>department, priority,<br/>uncertainty"]
+        C --> RO["route<br/>assign department"]
+    end
+
+    subgraph S2["Stage 2: answer"]
+        direction TB
+        RV["retrieve<br/>keyword + vector,<br/>RRF, rerank"] --> D["draft<br/>cited JSON +<br/>output screen"]
+        D --> K["check<br/>claim-level NLI"]
+    end
+
+    subgraph S3["Stage 3: decide"]
+        direction TB
+        S["signals<br/>31 features"] --> G{"gate<br/>score + lane"}
+        G -->|"fast or assisted"| SH["show<br/>draft to engineer"]
+        G -->|"escalate"| ES["escalate<br/>no AI draft"]
+    end
+
+    S1 --> S2
+    S2 --> S3
 ```
 
 | Node | What it does | What it records |
@@ -189,32 +197,20 @@ an admin with the reason recorded. No ticket is left waiting with nobody respons
 
 ### The confidence gate
 
-<table>
-<tr>
-<td width="55%" valign="top">
-
-| Lane | When | Engineer sees |
+| Lane | When | What the engineer sees |
 |---|---|---|
-| **Fast** | score ≥ certified fast threshold, and the draft can answer | Pre-filled draft with citations |
-| **Assisted** | score ≥ certified assisted threshold | Draft marked "verify", evidence side by side, weakest claims first |
-| **Escalate** | otherwise, or cannot answer, or the shift guard fires, or nothing is certified | No AI draft; evidence only |
+| 🟢 **Fast** | score ≥ certified fast threshold, and the draft can answer | Pre-filled draft with citations |
+| 🟡 **Assisted** | score ≥ certified assisted threshold | Draft marked "verify", evidence side by side, weakest claims first |
+| 🔴 **Escalate** | otherwise, or the draft cannot answer, the shift guard fires, or nothing is certified | No AI draft; evidence only |
 
-</td>
-<td width="45%" valign="top">
-
-**Fail closed.** A lane whose threshold could not be certified stays shut, and with no
-active threshold set every ticket escalates.
-
-**Certified, not tuned.** Thresholds come from Learn-then-Test on calibration data, which
-controls the fast lane's unacceptable-draft rate at the budget α with high probability.
-
-**Shift guard.** Escalates when the router's department probability is below 0.5, or
-another department's knowledge base matches the ticket within 0.1 — the cases where
-certified risk no longer holds.
-
-</td>
-</tr>
-</table>
+- **Fail closed.** A lane whose threshold could not be certified stays shut; with no
+  active threshold set, every ticket escalates.
+- **Certified, not tuned.** Thresholds come from Learn-then-Test on calibration data,
+  which controls the fast lane's unacceptable-draft rate at the budget α with high
+  probability.
+- **Shift guard.** Escalates when the router's department probability is below 0.5, or
+  another department's knowledge base matches the ticket within 0.1: the cases where the
+  certified risk no longer holds.
 
 ### Ticket lifecycle
 
