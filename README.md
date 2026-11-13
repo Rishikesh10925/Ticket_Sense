@@ -1,109 +1,93 @@
 <div align="center">
 
+<img src="frontend/public/favicon.svg" alt="TicketSense logo" width="72" height="72">
+
 # TicketSense
 
-**Calibrated, evidence-grounded ticket resolution with risk-controlled human escalation**
+### Knowing when an AI draft deserves to be shown
 
-![Status: In Development](https://img.shields.io/badge/status-in%20development-orange)
+**Evidence-grounded support-ticket resolution with a calibrated confidence gate<br>and risk-controlled human escalation**
+
 [![CI](https://github.com/Rishikesh10925/Ticket_Sense/actions/workflows/ci.yml/badge.svg)](https://github.com/Rishikesh10925/Ticket_Sense/actions/workflows/ci.yml)
-![Python 3.12](https://img.shields.io/badge/python-3.12-blue)
-![Node 24](https://img.shields.io/badge/node-24-green)
+![Status](https://img.shields.io/badge/status-week%2012%20of%2012-orange)
+![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-async-009688?logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL%2016-pgvector-4169E1?logo=postgresql&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
+![LangGraph](https://img.shields.io/badge/pipeline-LangGraph-1C3C3C)
+![Ollama](https://img.shields.io/badge/LLM-local%20via%20Ollama-000000?logo=ollama&logoColor=white)
+
+[Overview](#overview) ·
+[How it works](#how-it-works) ·
+[Results](#results) ·
+[Quick start](#quick-start) ·
+[Progress](#development-progress) ·
+[Docs](#documentation)
 
 </div>
 
-TicketSense classifies and routes IT and HR support tickets, retrieves evidence from a
-department-scoped knowledge base, drafts a cited reply with a local language model, and
-checks every claim in that draft against its evidence. An independently trained
-confidence model then turns those checks into a calibrated score, and a statistically
-controlled gate sends the ticket down one of three lanes: **fast** (pre-filled draft),
-**assisted** (draft marked "verify", with its weakest claims) or **escalate** (no AI
-draft). A human engineer always makes the final decision.
+---
+
+TicketSense routes IT and HR support tickets to the right department, drafts a cited reply
+from a department-scoped knowledge base with a **local** language model, checks every claim
+in that draft against its evidence, and then decides — with a calibrated score and
+statistically certified thresholds — whether an engineer should see the draft at all.
+A human engineer always makes the final call.
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+**Grounded by construction**<br>
+Every step of a draft cites a knowledge-base passage. Claims are checked by an NLI model;
+commands and URLs the evidence does not contain are blocked.
+
+</td>
+<td width="33%" valign="top">
+
+**Gated, not trusted**<br>
+A 31-signal confidence model scores each draft. A Learn-then-Test procedure certifies the
+lane thresholds, and the gate fails closed when nothing is certified.
+
+</td>
+<td width="33%" valign="top">
+
+**Measured honestly**<br>
+Hypotheses pre-registered before any result, a sealed test read exactly once, and every
+development table reproducible offline from a fresh clone.
+
+</td>
+</tr>
+</table>
 
 > [!IMPORTANT]
-> **In development.** This is a final-year capstone at NMIMS MPSTME Hyderabad, built
-> to a 12-week roadmap. The code for Weeks 1 to 10 is implemented and Week 11 is under
-> way. Model and threshold numbers below are **provisional**: they are computed on
-> LLM-judge labels while the human labels the project reports are still being collected,
-> and the sealed locked test has not been evaluated yet.
+> **Week 12 of a 12-week roadmap.** TicketSense is a final-year B.Tech capstone at NMIMS
+> MPSTME Hyderabad. The system is complete and the sealed locked test was evaluated
+> **once, on 11 November 2026, against LLM-judge labels**. The planned 600-draft human
+> labelling was cancelled; the human evaluation is a three-author audit, still in
+> progress. All confidence numbers below are therefore **pilot results on judge labels**.
 
-## Table of contents
+## Overview
 
-- [Problem and objectives](#problem-and-objectives)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Technology stack](#technology-stack)
-- [Repository structure](#repository-structure)
-- [Getting started](#getting-started)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [API](#api)
-- [Data model](#data-model)
-- [Testing and evaluation](#testing-and-evaluation)
-- [Current status and results](#current-status-and-results)
-- [Screenshots](#screenshots)
-- [Security](#security)
-- [Limitations and known issues](#limitations-and-known-issues)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
-- [Authors and acknowledgements](#authors-and-acknowledgements)
-
-## Problem and objectives
-
-A language model answering a support ticket can state something plausible that is not
-true for the organisation, and its own stated confidence correlates poorly with whether
-it is right. A system that trusts that number either passes wrong answers on or
+A language model answering a support ticket can state something plausible that is simply
+not true for the organisation, and its own stated confidence correlates poorly with
+whether it is right. A system that trusts that number either passes wrong answers on or
 escalates almost everything.
 
-TicketSense asks one question: **can a support system reliably decide when its own AI
-draft deserves to be shown, with a measurable guarantee rather than a hunch?**
+TicketSense asks one question: **can a support system decide when its own AI draft
+deserves to be shown, with a measurable guarantee rather than a hunch?**
 
-Objectives (from the [pre-registration](docs/prereg.md)):
+The [pre-registration](docs/prereg.md) (tag `prereg-v1`, 19 October 2026) fixes four
+objectives before any confidence result existed:
 
-1. An independently trained confidence model that ranks drafts by correctness better
-   than single signals (verbalised confidence, token probability, self-consistency,
-   top-1 retrieval similarity, entailment share).
-2. A risk-controlled fast lane whose unacceptable-draft rate stays at or below a chosen
-   budget α, selected with a Learn-then-Test procedure.
-3. An honest measurement of how the gate degrades on topics the knowledge base does not
-   cover.
-4. A small user study of whether the lanes reduce handling time without increasing
-   accepted errors.
+| | Objective | Hypothesis |
+|---|---|---|
+| 1 | A confidence model that ranks drafts by correctness better than any single signal (verbalised confidence, token probability, self-consistency, top-1 retrieval similarity, entailment share) | H1 |
+| 2 | A fast lane whose unacceptable-draft rate stays within a chosen budget α, certified with Learn-then-Test | H2 |
+| 3 | An honest measurement of how the gate degrades on topics the knowledge base does not cover | H3 |
+| 4 | A small user study of whether the lanes cut handling time without more accepted errors | H4 |
 
-## Features
-
-### Implemented
-
-| Area | What exists |
-|---|---|
-| Intake | Ticket form with optional attachment; OCR for images, text extraction for PDFs and logs (`ai/ocr/`) |
-| Privacy | PII redaction (emails, phone numbers, Aadhaar, PAN, card numbers, secrets) before any model call or log (`ai/security/pii.py`) |
-| Routing | Department and priority classifier v2 (MiniLM embeddings + TF-IDF, logistic regression) with max-probability and entropy uncertainty (`ai/models/classifier_v2.py`) |
-| Retrieval | Hybrid search over `kb_chunks`: PostgreSQL full text + pgvector HNSW, reciprocal-rank fusion, cross-encoder rerank; department and served-article filters in SQL; cross-department probe; every run logged (`ai/retrieval/`) |
-| Drafting | Structured JSON drafts with a citation on every step and a can-answer flag; delimited data blocks and schema rejection (`ai/generation/drafting.py`) |
-| Claim checking | Claim splitting and NLI entailment scoring (`cross-encoder/nli-deberta-v3-base`); verbatim-quote rule (`ai/grounding/claims.py`) |
-| Injection defence | Output screen (screen-v2): URLs, commands and code in a step must come from a passage that step cites, and not only from its Warnings section (`ai/security/output_screen.py`) |
-| Signals | A 31-feature signal vector per draft over retrieval, reranker, grounding, consistency, routing, evidence and ticket groups (`ai/signals/features.py`) |
-| Confidence model | Logistic regression and XGBoost with group-aware CV, Platt calibration and top reasons (`ai/confidence_model/`) |
-| Gate | Versioned, certified lane thresholds in the database; every decision logged with score, lane and reasons; tickets routed by lane, with a fail-closed default and a shift guard (department probability below 0.5 or another department within 0.1 escalates) chosen on held-out topics (`ai/gate/service.py`, `ai/confidence_model/shift.py`) |
-| Risk control | Learn-then-Test thresholds on a pre-specified grid; AURC, e-AURC, AUROC, ECE, Brier; group-aware and paired bootstrap (`ai/evaluation/`) |
-| Benchmark | 1,775 synthetic tickets (types A, B, C1, C2) with gold provenance, a leakage-safe split manifest, a freeze record with content hashes and a sealed locked test set (`data/benchmark/`) |
-| Knowledge base | 120 articles in five departments (SAP, Cloud, Database, HR, Networking), 24 withheld to create unseen topics (`data/kb/`) |
-| Web app | React 19 app with end-user, engineer and admin views: engineer queue with lane badges and a lane filter; ticket detail with cited draft, side-by-side evidence, unsupported-claim highlights and, in the assisted lane, "weakest claims: verify these first"; engineer actions with reason codes and a decision timer; admin control centre incl. a lane dashboard and an **Error Budget** screen |
-| Labelling | Blinded annotation tool for outside reviewers, seeded assignment planner with double annotation and adjudication; browser pages for the groundedness audit and rubric pilot (`docs/audit/`, `docs/pilot/`) |
-| User study | `/study` screen for `participant` accounts: manual condition (ticket and knowledge-base search, no AI) and workbench condition (lane, reasons, draft, evidence, weakest claims) on two matched sets of 20 tickets, counterbalanced, timed on the server; setup, blind-grading export and H4 analysis scripts ([docs/study/user-study/](docs/study/user-study/README.md)) |
-| Evaluation tooling | Baselines B0 to B7, feature-group ablations, shift experiment, kappa / weighted kappa / Fleiss' kappa, LLM groundedness check, red team through the full pipeline, latency and token cost, one-command reproduction (also offline from a fresh clone), and the locked-test runner that applies the pre-registered H1 to H3 rules once |
-
-### Planned
-
-- Human labels for 600 drafts (150 double-labelled) and the confidence model and
-  thresholds refitted on them
-- The single locked-test evaluation, once human labels exist
-- User-study sessions with six to eight participants (Week 11) and the release (Week 12)
-
-See [Roadmap](#roadmap).
-
-## Architecture
+## How it works
 
 The pipeline is a LangGraph `StateGraph` ([`ai/graph/pipeline.py`](ai/graph/pipeline.py))
 that runs as a background task after a ticket is created
@@ -111,145 +95,198 @@ that runs as a background task after a ticket is created
 
 ```mermaid
 flowchart LR
-    T[Ticket + attachment] --> X[extract<br/>OCR / PDF / log]
-    X --> R[redact<br/>PII]
-    R --> C[classify<br/>classifier v2]
-    C --> RT[route<br/>department]
-    RT --> RV[retrieve<br/>hybrid + rerank]
-    RV --> D[draft<br/>cited JSON]
-    D --> K[check<br/>NLI claims]
-    K --> S[signals<br/>31 features]
-    S --> G{gate<br/>confidence model +<br/>certified thresholds}
-    G -->|fast / assisted| SH[show draft<br/>to engineer]
-    G -->|escalate| E[no draft<br/>senior queue]
-    SH --> H[Engineer decides:<br/>accept / edit / reject / escalate]
+    T(["Ticket + attachment"]) --> X["Extract<br/>OCR, PDF, logs"]
+    X --> R["Redact<br/>PII"]
+    R --> C["Classify and route<br/>department, priority"]
+    C --> RV["Retrieve<br/>hybrid search + rerank"]
+    RV --> D["Draft<br/>cited JSON, Qwen 2.5 7B"]
+    D --> K["Check claims<br/>NLI + output screen"]
+    K --> S["Signals<br/>31 features"]
+    S --> G{"Confidence<br/>gate"}
+    G -->|fast| F["Pre-filled draft"]
+    G -->|assisted| A["Draft marked verify<br/>+ weakest claims"]
+    G -->|escalate| E["No AI draft<br/>senior queue"]
+    F --> H(["Engineer decides<br/>accept, edit, reject, escalate"])
+    A --> H
     E --> H
 ```
 
-Each stage writes what it produced: retrieval runs and every candidate's scores
-(`retrieval_runs`, `retrieval_hits`), the structured draft and per-claim support
-(`drafts`, `draft_claims`), the signal vector (`signal_vectors`) and the gate's decision
-(`gate_decisions`). Design notes: [docs/langgraph-pipeline.md](docs/langgraph-pipeline.md),
-[docs/architecture.md](docs/architecture.md) (V1, partly superseded), and the ADRs in
-[docs/adr/](docs/adr/).
+Every stage writes what it produced, so any decision can be audited afterwards:
+retrieval runs and every candidate's scores (`retrieval_runs`, `retrieval_hits`), the
+structured draft and per-claim support (`drafts`, `draft_claims`), the signal vector
+(`signal_vectors`) and the gate's decision with score, lane and top reasons
+(`gate_decisions`).
 
-Lanes ([Blueprint V2 §9.1]):
+### The three lanes
 
-| Lane | Condition | What the engineer sees |
+| Lane | When | What the engineer sees |
 |---|---|---|
-| Fast | score ≥ fast threshold | Pre-filled draft with citations |
-| Assisted | between the thresholds | Draft marked "verify", evidence, weakest claims |
-| Escalate | below the assisted threshold, the draft cannot answer, the shift guard fires, or no thresholds are certified | No AI draft; evidence; senior queue |
+| **Fast** | score ≥ certified fast threshold | Pre-filled draft with citations |
+| **Assisted** | between the two thresholds | Draft marked "verify", side-by-side evidence, weakest claims first |
+| **Escalate** | below the assisted threshold, the draft cannot answer, the shift guard fires, or no thresholds are certified | No AI draft; evidence only; senior queue |
 
-[Blueprint V2 §9.1]: docs/plan/
+The **shift guard** escalates a ticket when the router is unsure (department probability
+below 0.5, or another department within 0.1). It was chosen on held-out topics to limit
+damage on questions the knowledge base does not cover.
 
-## Technology stack
+## Features
 
-| Layer | Tools |
-|---|---|
-| Backend | Python 3.12, FastAPI, SQLAlchemy 2 (async) with asyncpg, Alembic, Pydantic settings, PyJWT, bcrypt |
-| Database | PostgreSQL 16 with pgvector (`pgvector/pgvector:pg16`) |
-| AI pipeline | LangGraph, sentence-transformers (`all-MiniLM-L6-v2`, `cross-encoder/ms-marco-MiniLM-L-6-v2`, `cross-encoder/nli-deberta-v3-base`), scikit-learn, XGBoost, EasyOCR, pypdf |
-| Language models | Local, via [Ollama](https://ollama.com): `qwen2.5:7b-instruct` drafts; `llama3.1:8b` is the offline judge ([ADR 002](docs/adr/002-llm-provider.md)) |
-| Frontend | React 19, TypeScript, Vite, React Router 7, TanStack Query 5 |
-| Tooling | uv, ruff, mypy, pytest, oxlint, Playwright, Docker Compose, GitHub Actions |
+Everything in this table is implemented and in `main`.
 
-## Repository structure
+| Area | What exists | Where |
+|---|---|---|
+| **Intake** | Ticket form with optional attachment; OCR for images, text extraction for PDFs and logs | [`ai/ocr/`](ai/ocr/) |
+| **Privacy** | PII redaction (emails, phone numbers, Aadhaar, PAN, card numbers, secrets) before any model call or log | [`ai/security/pii.py`](ai/security/pii.py) |
+| **Routing** | Department and priority classifier v2 (MiniLM embeddings + TF-IDF, logistic regression) with max-probability and entropy uncertainty | [`ai/models/classifier_v2.py`](ai/models/classifier_v2.py) |
+| **Retrieval** | PostgreSQL full text + pgvector HNSW, reciprocal-rank fusion, cross-encoder rerank; department and served-article filters inside SQL; every run logged | [`ai/retrieval/`](ai/retrieval/) |
+| **Drafting** | Structured JSON drafts, a citation on every step, a can-answer flag; delimited data blocks and schema rejection | [`ai/generation/drafting.py`](ai/generation/drafting.py) |
+| **Claim checking** | Claim splitting, NLI entailment (`nli-deberta-v3-base`), verbatim-quote rule | [`ai/grounding/claims.py`](ai/grounding/claims.py) |
+| **Injection defence** | Output screen: URLs, commands and code in a step must come from a passage that step cites, not only from its Warnings section | [`ai/security/output_screen.py`](ai/security/output_screen.py) |
+| **Signals** | 31 features over retrieval, reranker, grounding, consistency, routing, evidence and ticket groups | [`ai/signals/features.py`](ai/signals/features.py) |
+| **Confidence model** | Logistic regression and XGBoost, group-aware CV, Platt calibration, top reasons per decision | [`ai/confidence_model/`](ai/confidence_model/) |
+| **Gate** | Versioned certified thresholds in the database, fail-closed default, shift guard, every decision logged | [`ai/gate/service.py`](ai/gate/service.py) |
+| **Risk control** | Learn-then-Test on a pre-specified grid; AURC, e-AURC, AUROC, ECE, Brier; group-aware and paired bootstrap | [`ai/evaluation/`](ai/evaluation/) |
+| **Benchmark** | 1,775 synthetic tickets (types A, B, C1, C2) with gold provenance, leakage-safe splits, content-hash freeze, sealed locked test | [`data/benchmark/`](data/benchmark/) |
+| **Knowledge base** | 120 articles in five departments; 24 withheld to create unseen topics | [`data/kb/`](data/kb/) |
+| **Web app** | End-user, engineer and admin views; lane badges and filter; cited draft with side-by-side evidence and unsupported-claim highlights; reason-coded actions with a decision timer | [`frontend/`](frontend/) |
+| **Admin console** | Tickets, approvals, customers, engineers, departments, knowledge base, analytics (lane dashboard), model health, error budget | [`frontend/src/`](frontend/src/) |
+| **Human evaluation tools** | Blinded annotation tool, assignment planner with double annotation, groundedness-audit and three-author audit pages with Krippendorff's alpha and adjudication | [`docs/audit/`](docs/audit/), [`docs/author-audit/`](docs/author-audit/) |
+| **User-study tool** | `/study` screen: manual vs workbench condition on two matched sets of 20 tickets, counterbalanced, timed on the server; blind-grading export and H4 analysis | [`docs/study/user-study/`](docs/study/user-study/README.md) |
+| **Evaluation tooling** | Baselines B0–B7, ablations, shift experiment, kappa family, LLM groundedness check, full-pipeline red team, latency and cost, one-command reproduction, one-shot locked-test runner | [`ai/evaluation/`](ai/evaluation/) |
 
-```text
-.
-├── ai/                     # The research pipeline (importable from the backend)
-│   ├── benchmark/          # Ticket generator, splits, validator, freeze, KB loader
-│   ├── confidence_model/   # Dataset loader, model, training, ablations, artifacts
-│   ├── embeddings/         # Chunking and KB ingestion
-│   ├── evaluation/         # Metrics, bootstrap, risk control, agreement, latency, reproduce
-│   ├── gate/               # Gate service (scoring, lanes, shift guard)
-│   ├── generation/         # LLM client and cache, structured drafting, batch drafting
-│   ├── graph/              # LangGraph nodes and pipeline
-│   ├── grounding/          # NLI claim checker, consistency, LLM check, audit selection
-│   ├── judge/              # LLM judge and batch judging
-│   ├── models/             # Classifiers (V1 and v2) and artifacts
-│   ├── redteam/            # Prompt-injection red-team runner
-│   ├── retrieval/          # Hybrid search, run log, evaluation
-│   ├── security/           # PII redaction, output screen
-│   ├── signals/            # Signal vector, baselines, model-side signals
-│   ├── study/              # User-study ticket sets and H4 analysis
-│   ├── confidence/         # V1 confidence model (superseded by confidence_model/)
-│   └── tests/              # Unit tests for ai/ (no database or model server needed)
-├── backend/                # FastAPI app (routers, models, schemas, services, scripts) and tests
-├── db/migrations/          # Alembic migrations 0001 to 0023
-├── data/
-│   ├── kb/                 # 120 knowledge-base articles (Markdown, five departments)
-│   ├── benchmark/          # benchmark_v1.jsonl, splits, FREEZE records
-│   ├── annotation/         # Labelling selection and locked-test seal
-│   ├── eval/               # Evaluation inputs without the locked test, for offline reproduction
-│   ├── redteam/            # 40-ticket injection set
-│   └── sample_screenshots/ # Example ticket attachments used in OCR tests
-├── docs/                   # Design docs, ADRs, results, logbooks, report draft, model card, audit and pilot tools
-├── frontend/               # React app and Playwright end-to-end tests
-├── docker-compose.yml      # db, api, web
-├── tasks.py                # Cross-platform task runner (Makefile delegates to it)
-└── render.yaml             # Render deployment blueprint (API + database)
-```
+## Results
 
-## Getting started
+Development and locked-test numbers, each linked to the committed file it comes from.
 
-### Prerequisites
+### System
+
+| Measure | Value | Source |
+|---|---|---|
+| Benchmark | 1,775 tickets, frozen; train 824 · val 135 · calib 262 · test 271 · unseen 283 | [FREEZE_v1.json](data/benchmark/FREEZE_v1.json) |
+| Department routing | macro-F1 **0.911** on validation, 0.829 on unseen topics | [classifier-v2.json](docs/results/classifier-v2.json) |
+| Retrieval (type A tickets) | Recall@5 **1.000**; zero cross-department or withheld-article leakage | [retrieval-v1.json](docs/results/retrieval-v1.json) |
+| Schema-valid drafts | 1,773 of 1,775 (99.9%) | [week 5 logbook](docs/logbook/week05.md) |
+| Prompt-injection red team | **0 of 40** attacks reach an engineer through the full pipeline and gate (5 of 40 got through before the output screen) | [redteam-v3-pipeline.json](docs/results/redteam-v3-pipeline.json) |
+| Latency and cost | median **6.4 s** per ticket (drafting 5.7 s, gate 6 ms); one LLM call, about 1,440 tokens | [latency-cost.md](docs/latency-cost.md) |
+| Claim-checker audit (human) | 3 members, 136 claims: NLI accepts 64% (95% CI 45–79) of the claims they rejected; the LLM check 79% | [audit-v1.json](docs/results/audit-v1.json) |
+
+### Locked test — run once, 11 November 2026, judge labels
+
+271 sealed drafts, 49.8% acceptable. Nothing was refitted.
+
+| Hypothesis | Decision | Detail |
+|---|---|---|
+| **H1** confidence model beats single signals | No reliable improvement | AURC 0.352 [0.263, 0.452] vs 0.398 for B4 (top-1 similarity); difference −0.045 [−0.136, 0.066] |
+| **H2** certified fast lane | Not testable | No fast threshold certified in 999 of 1,000 resplits |
+| **H3** degradation on unseen topics | Reported | Unseen AURC 0.992 (only 2 of 283 drafts acceptable); the shift guard cuts unseen drafts shown from 152 to 58 |
+
+Lane mix on the test set: fast 0%, assisted 81%, escalate 19%. Full table with all
+baselines: [locked-final-judge.md](docs/results/locked-final-judge.md).
+
+<table>
+<tr>
+<td width="50%"><img src="docs/results/figures/locked-final-judge/risk-coverage.svg" alt="Risk-coverage curves of the proposed model and baselines on the locked test"></td>
+<td width="50%"><img src="docs/results/figures/locked-final-judge/reliability.svg" alt="Reliability diagram of the proposed model on the locked test"></td>
+</tr>
+<tr>
+<td align="center"><sub>Risk–coverage, proposed vs baselines</sub></td>
+<td align="center"><sub>Reliability diagram</sub></td>
+</tr>
+</table>
+
+**What this means.** Held out, the confidence model is no better than its best single
+signal: the direction matches validation, but the interval crosses zero. The fast lane
+never opens on these labels, so in practice every answering draft goes to the assisted
+lane or is escalated. On unseen topics almost every draft is unacceptable; the guard
+reduces exposure but does not remove it.
+
+## Quick start
+
+<details open>
+<summary><b>Prerequisites</b></summary>
 
 - [Docker](https://docs.docker.com/get-docker/) with Compose
 - [uv](https://docs.astral.sh/uv/) and Python 3.12 (`backend/pyproject.toml` requires ≥ 3.11)
 - Node.js 24 and npm (the CI version)
-- [Ollama](https://ollama.com) for drafting with the local model; a GPU is recommended.
-  Without one, set `LLM_CLIENT=stub` (see [Configuration](#configuration)).
+- [Ollama](https://ollama.com) for drafting; a GPU is recommended. Without one, set
+  `LLM_CLIENT=stub` (offline extractive drafts, never for results).
 
-### Install and run
+</details>
+
+**1. Clone and configure**
 
 ```bash
 git clone https://github.com/Rishikesh10925/Ticket_Sense.git
 cd Ticket_Sense
-cp .env.example .env              # then edit the placeholders, see Configuration
-
+cp .env.example .env              # then replace the placeholders, see Configuration
 ollama pull qwen2.5:7b-instruct   # the drafting model
+```
 
+**2. Install and start** — `db`, `api` and `web` with Docker Compose; migrations run on API start
+
+```bash
 python tasks.py setup             # backend (+ai, dev extras) and frontend dependencies
-python tasks.py up                # db, api and web with Docker Compose (migrations run on API start)
+python tasks.py up                # docker compose up -d --build
 ```
 
 On Linux and macOS, `make <task>` runs the same tasks.
 
-Then load the knowledge base into the database (embeds articles into `kb_chunks`):
+**3. Load the knowledge base, demo accounts and gate thresholds**
 
 ```bash
 uv run --project backend --extra ai python ai/embeddings/embed_knowledge_base.py
-```
-
-Create demo accounts (one per role; credentials are listed in
-[docs/authentication.md](docs/authentication.md)):
-
-```bash
 python tasks.py demo
-```
 
-Activate a certified threshold set for the gate. **Without one, every ticket escalates**
-(the safe default). The provisional set below was certified on LLM-judge labels and
-includes the shift guard:
-
-```bash
 cd backend
 uv run python -m app.scripts.load_thresholds \
   --report docs/results/confidence-v1-judge.json \
   --guard docs/results/shift-v1-judge.json --version t-judge-2
 ```
 
+> [!NOTE]
+> Without an active threshold set **every ticket escalates** — the gate fails closed.
+> `t-judge-2` was certified on LLM-judge labels and includes the shift guard.
+
+**4. Open the app**
+
 | Service | URL |
 |---|---|
 | Web app | http://localhost:3000 |
 | API | http://localhost:8000 (`GET /health`) |
-| API docs (FastAPI) | http://localhost:8000/docs |
+| Interactive API docs | http://localhost:8000/docs |
 
-The frontend can also run with hot reload via `npm run dev` in `frontend/`.
+The frontend also runs with hot reload via `npm run dev` in `frontend/`.
 
-## Configuration
+### Demo accounts
+
+Created by `python tasks.py demo` ([`seed_demo_users.py`](backend/app/scripts/seed_demo_users.py)) and, for
+the annotator, [`seed_annotation_demo.py`](backend/app/scripts/seed_annotation_demo.py). Password for all: `Demo@123`.
+These are for local development only.
+
+| Role | Email | Lands on |
+|---|---|---|
+| End user | `customer@demo.local` | `/end-user` |
+| Engineer (Networking) | `engineer@demo.local` | `/engineer` |
+| Engineers (SAP · Cloud · HR) | `rishikesh.engineer@demo.local` · `aashritha.engineer@demo.local` · `shivaganesh.engineer@demo.local` | `/engineer` |
+| Admin | `admin@demo.local` | `/admin` |
+| Annotator | `reviewer@demo.local` | `/annotate` |
+
+### A five-minute tour
+
+1. **As the end user**, submit a ticket such as *"VPN keeps disconnecting every 10 minutes"*.
+   The pipeline runs in the background (about 6 s median).
+2. **As the Networking engineer**, open it from the queue: the cited draft, the evidence
+   beside it, the lane, the score and the gate's top reasons. Accept, edit, reject or
+   escalate with a reason code.
+3. **As the end user** again, read the final reply. End users never see drafts, scores or
+   evidence.
+4. **As the admin**, open **Analytics** for the lane mix, engineer actions and latency, and
+   **Error Budget** for the gate's risk budget.
+
+<details>
+<summary><b>Configuration</b> — environment variables in <code>.env</code></summary>
+
+<br>
 
 Copy [`.env.example`](.env.example) to `.env`. Never commit `.env`.
 
@@ -257,29 +294,26 @@ Copy [`.env.example`](.env.example) to `.env`. Never commit `.env`.
 |---|---|---|
 | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT` | Database container | `<db-user>`, `<db-password>`, `ticketsense`, `5432` |
 | `DATABASE_URL` | Backend connection string | `postgresql+asyncpg://<db-user>:<db-password>@localhost:5432/ticketsense` |
-| `APP_ENV` | Environment name; anything other than `development` or `test` requires a real `JWT_SECRET_KEY` | `development` |
+| `APP_ENV` | Anything other than `development` or `test` requires a real `JWT_SECRET_KEY` | `development` |
 | `CORS_ORIGINS` | Allowed frontend origins, comma-separated | `http://localhost:5173,http://localhost:3000` |
-| `JWT_SECRET_KEY` | Token signing key; at least 32 characters outside development (`python -c "import secrets; print(secrets.token_hex(32))"`) | `<long-random-secret>` |
+| `JWT_SECRET_KEY` | Token signing key; ≥ 32 characters outside development | `<long-random-secret>` |
 | `JWT_ALGORITHM`, `JWT_EXPIRE_MINUTES` | Token settings | `HS256`, `60` |
-| `LLM_CLIENT` | Drafting client: `ollama`, or `stub` (offline extractive drafts, never for results) | `ollama` |
+| `LLM_CLIENT` | `ollama`, or `stub` (offline extractive drafts, never for results) | `ollama` |
 | `LLM_MODEL` | Ollama model tag | `qwen2.5:7b-instruct` |
 | `OLLAMA_HOST` | Ollama URL for local runs | `http://localhost:11434` |
-| `OLLAMA_HOST_FROM_DOCKER` | Ollama URL seen from the API container (compose) | `http://host.docker.internal:11434` |
-| `GROUNDING_SCORER` | Claim checker: `nli`, or `lexical` (tests only) | `nli` |
-| `TS_DEVICE_EMBED`, `TS_DEVICE_RERANK`, `TS_DEVICE_NLI` | Optional: pin a local model to `cpu` or `cuda` ([`ai/devices.py`](ai/devices.py)) | `cpu`, `cpu`, `cuda` |
-| `TEST_DATABASE_URL` | Optional: test database (default `ticketsense_test` on localhost) | `postgresql+asyncpg://…/ticketsense_test` |
+| `OLLAMA_HOST_FROM_DOCKER` | Ollama URL seen from the API container | `http://host.docker.internal:11434` |
+| `GROUNDING_SCORER` | `nli`, or `lexical` (tests only) | `nli` |
+| `TS_DEVICE_EMBED`, `TS_DEVICE_RERANK`, `TS_DEVICE_NLI` | Optional: pin a model to `cpu` or `cuda` ([`ai/devices.py`](ai/devices.py)) | `cpu`, `cpu`, `cuda` |
+| `TEST_DATABASE_URL` | Optional test database (default `ticketsense_test` on localhost) | `postgresql+asyncpg://…/ticketsense_test` |
 
-## Usage
+Generate a secret with `python -c "import secrets; print(secrets.token_hex(32))"`.
 
-| Role | Where | What they do |
-|---|---|---|
-| End user | Web app home | Submit a ticket, follow its status and the final reply |
-| Department engineer | Queue → ticket | Review the cited draft and evidence, see the gate's lane and reasons, accept / edit / reject / escalate with reason codes |
-| Admin | Control centre (`/admin`) | Tickets, approvals, users, departments, knowledge base, analytics (incl. lane dashboard), model health, error budget |
-| Annotator (outside reviewer) | `/annotate` | Blinded labelling of drafts with the rubric |
-| Study participant | `/study` | The user study's 40 tickets in two conditions; accounts from `python -m app.scripts.setup_study` |
+</details>
 
-Task runner (`python tasks.py <task>`):
+<details>
+<summary><b>Task runner</b> — <code>python tasks.py &lt;task&gt;</code></summary>
+
+<br>
 
 | Task | Does |
 |---|---|
@@ -288,76 +322,124 @@ Task runner (`python tasks.py <task>`):
 | `lint` | ruff, mypy (typed research packages), frontend lint |
 | `test` | `ai/tests`, then backend tests (needs Postgres) |
 | `openapi` | Write [`docs/openapi.json`](docs/openapi.json) from the app |
-| `reproduce` | Regenerate every evaluation table and figure ([`ai/evaluation/reproduce.py`](ai/evaluation/reproduce.py)); `python ai/evaluation/reproduce.py --offline` does the same from a fresh clone without the database or a GPU |
+| `reproduce` | Regenerate every evaluation table and figure ([`reproduce.py`](ai/evaluation/reproduce.py)) |
 | `demo` | Seed demo users |
 | `e2e` | Playwright end-to-end tests against the running stack |
 
-Offline research scripts (each documents its own options in its docstring), for example:
-[`ai/generation/batch_drafts.py`](ai/generation/batch_drafts.py),
-[`ai/judge/batch_judge.py`](ai/judge/batch_judge.py),
-[`ai/signals/build_features.py`](ai/signals/build_features.py),
-[`ai/confidence_model/train.py`](ai/confidence_model/train.py),
-[`ai/redteam/run_redteam.py`](ai/redteam/run_redteam.py).
+Offline research scripts document their options in their docstrings, for example
+[`batch_drafts.py`](ai/generation/batch_drafts.py), [`batch_judge.py`](ai/judge/batch_judge.py),
+[`build_features.py`](ai/signals/build_features.py), [`train.py`](ai/confidence_model/train.py)
+and [`run_redteam.py`](ai/redteam/run_redteam.py).
 
-## API
+</details>
 
-Interactive docs are served at `/docs`; the frozen spec is
-[docs/openapi.json](docs/openapi.json) and the contract with status per endpoint is
-[docs/api-contract.md](docs/api-contract.md).
+## Technology stack
+
+| Layer | Technologies |
+|---|---|
+| **Backend** | Python 3.12 · FastAPI · SQLAlchemy 2 (async, asyncpg) · Alembic · Pydantic settings · PyJWT · bcrypt |
+| **Database** | PostgreSQL 16 + pgvector (`pgvector/pgvector:pg16`) — full text and HNSW vectors in one store |
+| **AI pipeline** | LangGraph · sentence-transformers (`all-MiniLM-L6-v2`, `ms-marco-MiniLM-L-6-v2`, `nli-deberta-v3-base`) · scikit-learn · XGBoost · EasyOCR · pypdf |
+| **Language models** | Local via [Ollama](https://ollama.com): `qwen2.5:7b-instruct` drafts, `llama3.1:8b` is the offline judge ([ADR 002](docs/adr/002-llm-provider.md)) |
+| **Frontend** | React 19 · TypeScript · Vite · React Router 7 · TanStack Query 5 |
+| **Quality** | uv · ruff · mypy · pytest · oxlint · Playwright · gitleaks · Docker Compose · GitHub Actions |
+
+## Project structure
+
+```text
+Ticket_Sense/
+├── ai/                       The research pipeline, importable from the backend
+│   ├── benchmark/            Ticket generator, splits, validator, freeze, release
+│   ├── confidence_model/     Dataset, model, training, ablations, shift guard
+│   ├── embeddings/           Chunking and knowledge-base ingestion
+│   ├── evaluation/           Metrics, bootstrap, risk control, agreement, reproduce, locked test
+│   ├── gate/                 Gate service: scoring, lanes, shift guard
+│   ├── generation/           LLM client and cache, structured drafting
+│   ├── graph/                LangGraph nodes and pipeline
+│   ├── grounding/            NLI claim checker, consistency, LLM check
+│   ├── judge/                LLM judge and batch judging
+│   ├── models/               Department and priority classifiers
+│   ├── ocr/                  Attachment text extraction
+│   ├── redteam/              Prompt-injection red-team runner
+│   ├── retrieval/            Hybrid search, run log, evaluation
+│   ├── security/             PII redaction, output screen
+│   ├── signals/              Signal vector, baselines
+│   ├── study/                User-study ticket sets and H4 analysis
+│   └── tests/                Unit tests (no database or model server needed)
+├── backend/                  FastAPI app: routers, models, schemas, services, scripts, tests
+├── db/migrations/            Alembic migrations 0001 to 0023
+├── data/
+│   ├── kb/                   120 knowledge-base articles (Markdown, five departments)
+│   ├── benchmark/            benchmark_v1.jsonl, splits, FREEZE records
+│   ├── annotation/           Labelling selection and locked-test seal
+│   ├── eval/                 Evaluation inputs without the locked test, for offline reproduction
+│   └── redteam/              40-ticket injection set
+├── docs/                     Design docs, ADRs, results, logbooks, report, model card, audits
+├── frontend/                 React app and Playwright end-to-end tests
+├── docker-compose.yml        db, api, web
+├── tasks.py                  Cross-platform task runner (the Makefile delegates to it)
+└── render.yaml               Render deployment blueprint (API + database)
+```
+
+<details>
+<summary><b>API reference</b></summary>
+
+<br>
+
+Interactive docs at `/docs`; frozen spec in [docs/openapi.json](docs/openapi.json); contract
+with status per endpoint in [docs/api-contract.md](docs/api-contract.md).
 
 | Group | Endpoints |
 |---|---|
 | Health and auth | `GET /health`, `POST /auth/register`, `POST /auth/login`, `GET /auth/me` |
-| Tickets | `POST /tickets`, `GET /tickets` (filters: `status`, `priority`, `department_id`, `lane`, `sort`), `GET /tickets/{id}`, `GET /tickets/{id}/attachment` |
-| Evidence, draft and gate | `GET /tickets/{id}/evidence`, `GET /tickets/{id}/draft`, `GET /tickets/{id}/decision` |
+| Tickets | `POST /tickets`, `GET /tickets` (filters `status`, `priority`, `department_id`, `lane`, `sort`), `GET /tickets/{id}`, `GET /tickets/{id}/attachment` |
+| Evidence, draft, gate | `GET /tickets/{id}/evidence`, `GET /tickets/{id}/draft`, `GET /tickets/{id}/decision` |
 | Review and escalation | `POST /tickets/{id}/feedback`, `GET /tickets/{id}/escalation`, `POST /tickets/{id}/resolve-escalation`, `GET /escalations/pending`, `POST /escalations/{id}/approve`, `POST /escalations/{id}/reject` |
-| Admin | `GET/POST /users`, `PATCH /users/{id}`, `GET /departments`, `PATCH /departments/{id}/threshold` (V1, no longer used by the gate), `GET/POST /knowledge-base`, `GET /analytics/summary`, `GET /analytics/lanes`, `GET /analytics/confidence-model`, `GET /gate/thresholds` |
+| Admin | `GET/POST /users`, `PATCH /users/{id}`, `GET /departments`, `PATCH /departments/{id}/threshold` (V1, unused by the gate), `GET/POST /knowledge-base`, `GET /analytics/summary`, `GET /analytics/lanes`, `GET /analytics/confidence-model`, `GET /gate/thresholds` |
 | Messaging | `GET /messages/contacts`, `GET /messages/thread/{other_user_id}`, `POST /messages` |
 | Annotation | `GET /annotate/next`, `POST /annotate/{assignment_id}` |
 | User study | `GET /study/next`, `POST /study/tasks/{task_id}`, `GET /study/kb` |
 
-Scores, drafts, evidence and gate decisions are visible to engineers and admins only;
-end users never see them.
+Scores, drafts, evidence and gate decisions are visible to engineers and admins only.
 
-## Data model
+</details>
+
+<details>
+<summary><b>Data model</b></summary>
+
+<br>
 
 Migrations live in [`db/migrations/versions/`](db/migrations/versions/) (0001 to 0023).
-Main tables:
 
 | Group | Tables |
 |---|---|
-| Accounts and tickets | `users`, `departments`, `tickets` (incl. redacted text, lane), `feedback`, `escalations` (tier), `messages` |
+| Accounts and tickets | `users`, `departments`, `tickets` (redacted text, lane), `feedback`, `escalations` (tier), `messages` |
 | Knowledge base | `knowledge_base`, `kb_chunks` (tsvector + vector), `embeddings` |
 | Pipeline log | `retrieval_runs`, `retrieval_hits`, `drafts`, `draft_claims`, `signal_vectors`, `gate_thresholds`, `gate_decisions` |
 | Benchmark and labels | `benchmark_tickets`, `judge_verdicts`, `annotators`, `annotation_assignments`, `labels` |
 | User study | `study_participants`, `study_tasks` |
 
-Full schema documentation: **To be documented** (see the migration files for column
-definitions).
+</details>
 
-## Testing and evaluation
+## Testing and reproducibility
 
 ```bash
-python tasks.py lint
-python tasks.py test      # ai/ unit tests, then backend tests against Postgres
-python tasks.py e2e       # needs the running stack
-python tasks.py reproduce # regenerates docs/results/ tables
+python tasks.py lint        # ruff, mypy, frontend lint
+python tasks.py test        # ai/ unit tests, then backend tests against Postgres
+python tasks.py e2e         # Playwright, needs the running stack
+python tasks.py reproduce   # regenerate docs/results/
 ```
 
-- Backend tests run against a separate `ticketsense_test` database (created and migrated
-  automatically) with the offline `stub` drafter and `lexical` claim checker, so they need
-  no model server.
-- CI ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs lint (ruff, mypy,
-  gitleaks), the ai/ unit tests (failing below 70% coverage of the evaluation and
-  pipeline packages), the backend tests against pgvector, and the frontend lint and build
-  on every push.
-- Evaluation outputs are versioned JSON in [`docs/results/`](docs/results/); training
-  and evaluation refuse to run if the benchmark freeze or the locked-test seal no
-  longer verifies.
-- A fresh clone with a clean environment reproduces every committed development table
-  and figure byte for byte with `python ai/evaluation/reproduce.py --offline`, from
-  [`data/eval/`](data/eval/), which leaves out the locked test. It needs no database,
-  GPU or model server and takes about a minute:
+- **CI** ([`ci.yml`](.github/workflows/ci.yml)) runs on every push: ruff, mypy, gitleaks;
+  `ai/` unit tests with a 70% coverage floor on the evaluation and pipeline packages;
+  backend tests against pgvector; frontend lint, type check and build.
+- **Backend tests** use a separate `ticketsense_test` database with the offline `stub`
+  drafter and `lexical` claim checker, so they need no model server.
+- **Integrity checks.** Training and evaluation refuse to run if the benchmark freeze or
+  the locked-test seal no longer verifies.
+- **Offline reproduction.** A fresh clone rebuilds every committed development table and
+  figure byte for byte from [`data/eval/`](data/eval/) — no database, GPU or model server,
+  about a minute. Last checked 2026-10-30: no file changed.
 
   ```bash
   python -m venv .venv && .venv/Scripts/pip install -r ai/requirements-reproduce.txt   # Windows
@@ -366,157 +448,175 @@ python tasks.py reproduce # regenerates docs/results/ tables
   git status   # nothing changed
   ```
 
-  Checked on 2026-10-30 from a fresh clone of `main`: no file changed. With newer package
-  versions the tables are still identical, but the model file
-  `confidence-v1-judge.joblib` differs in the scikit-learn version it records (the model
-  itself is the same).
-- The locked test is evaluated once, after human labels, with
-  `python ai/evaluation/locked_eval.py --final --confirm "run the locked test once"`;
-  `--rehearse` runs the same code on the validation split.
-
-## Current status and results
-
-Weekly progress, decisions and findings are in the logbooks:
-[week 1](docs/logbook/week01.md) · [2](docs/logbook/week02.md) ·
-[3](docs/logbook/week03.md) · [4](docs/logbook/week04.md) · [5](docs/logbook/week05.md) ·
-[6](docs/logbook/week06.md) · [7](docs/logbook/week07.md) · [8](docs/logbook/week08.md).
-
-| Measure | Value | Source |
-|---|---|---|
-| Benchmark | 1,775 tickets, frozen; splits train 824 / val 135 / calib 262 / test 271 / unseen 283 | [FREEZE_v1.json](data/benchmark/FREEZE_v1.json) |
-| Department routing (classifier v2) | macro-F1 0.911 on validation, 0.829 on unseen topics | [classifier-v2.json](docs/results/classifier-v2.json) |
-| Retrieval, type A tickets | Recall@5 1.000, zero cross-department or withheld-article leakage | [retrieval-v1.json](docs/results/retrieval-v1.json) |
-| Schema-valid drafts | 1,773 / 1,775 (99.9%) | [week 5 logbook](docs/logbook/week05.md) |
-| Prompt-injection red team | 0 of 40 attacks reach an engineer through the full pipeline and gate (5 of 40 succeeded before the output screen) | [redteam-v3-pipeline.json](docs/results/redteam-v3-pipeline.json), [redteam-v1.json](docs/results/redteam-v1.json) |
-| Latency and cost per ticket | median 6.4 s, of which drafting 5.7 s and the gate 6 ms; one LLM call, about 1,440 tokens | [latency-cost.md](docs/latency-cost.md) |
-| Confidence model (provisional) | validation AURC 0.134 vs. 0.174 for the best single baseline (top-1 retrieval similarity); the difference is not yet reliable | [locked-rehearsal-judge.md](docs/results/locked-rehearsal-judge.md) |
-| Shift guard (provisional) | on held-out unseen topics, unacceptable drafts shown fall from 75 to 25, at a cost of 4.35% of acceptable drafts on known topics | [shift-v1-judge.json](docs/results/shift-v1-judge.json) |
-| Claim checker audit (human) | three members labelled 136 claims; NLI accepts 64% (95% CI 45 to 79) of the claims they rejected, the LLM check 79% | [audit-v1.json](docs/results/audit-v1.json) |
-
-"Provisional" means the target labels come from an LLM judge, not from people; these
-numbers show the pipeline works and are not the project's results. The results chapter
-in progress is [docs/results-draft.md](docs/results-draft.md); the report draft is in
-[docs/report/](docs/report/README.md) and the model card in
-[docs/model-card.md](docs/model-card.md).
-
-### Done and pending
-
-| Item | Status |
-|---|---|
-| System, benchmark freeze, retrieval, drafting, red team, latency | Done |
-| Baselines, confidence model, thresholds, ablations, shift experiment | Done on **LLM-judge labels only** (provisional) |
-| Locked-evaluation rehearsal on the validation split | Done (judge labels) |
-| Groundedness audit of the claim checkers | Done: 3 of 3 members, 136 claims |
-| Rubric pilot | 1 of 3 members' labels in the repository |
-| Human labels from outside reviewers | **Pending**: 0 of 600 |
-| Locked test (250 sealed tickets) | **Not run**; it runs once, after the human labels |
-| User study | **Not run**: 0 participants |
-| Human review of the knowledge base | **Pending**: 0 of 120 articles (24 SAP articles AI-checked only) |
-
-### Changes to the pre-registered protocol
-
-The hypotheses were tagged `prereg-v1` on 19 October 2026, before any confidence result.
-Every later change was made before the locked test was read and is recorded with its
-reason in the amendment log of [docs/prereg.md](docs/prereg.md): exact frozen counts
-(19 Oct), KB amendment 1 (20 Oct), H2 "not testable" rule (21 Oct), H3 exposure and
-e-AURC additions and B3 added to the locked evaluation (25 Oct), and H2 Platt refit per
-resplit on answering drafts (26 Oct).
-
-## Screenshots
-
-Application screenshots: **To be documented.**
-
-The repository includes sample ticket attachments used by the OCR tests, for example
-[`data/sample_screenshots/networking_vpn_error.png`](data/sample_screenshots/networking_vpn_error.png).
+- **Locked test.** [`locked_eval.py`](ai/evaluation/locked_eval.py) applies the
+  pre-registered H1–H3 rules. `--rehearse` runs the same code on the validation split.
+  The single `--final` run (`--labels judge`) was made on 2026-11-11 and is not repeated.
 
 ## Security
 
-- PII is redacted before any model call, retrieval log or stored draft; the original
-  values stay only on the ticket row ([`ai/security/pii.py`](ai/security/pii.py)).
-- Ticket text, attachments and evidence reach the model only inside delimited data
-  blocks with tag neutralising; drafts must validate against a JSON schema with a
-  citation on every step; the output screen blocks URLs, commands and code that the
-  cited evidence does not contain.
-- Retrieval is filtered by department and served status inside SQL; tests assert zero
-  cross-department retrieval.
-- Role-based access with JWT; end users never receive drafts, scores or evidence; the
-  annotator and participant roles cannot reach ticket endpoints.
-- The API refuses to start outside development with the default or a short
-  `JWT_SECRET_KEY`.
-- Security tests run in CI (`backend/tests/test_security.py`, `test_role_matrix.py`,
-  `test_config_secret.py`).
-- `gitleaks` scans every push. Keep secrets in `.env`, never in the repository.
-- Week 11 checks (`npm audit`, `pip-audit`, a secret scan of the full history) and their
-  fixes are recorded in [docs/report/08-security-and-responsible-ai.md](docs/report/08-security-and-responsible-ai.md).
+- **PII** is redacted before any model call, retrieval log or stored draft
+  ([`pii.py`](ai/security/pii.py)).
+- **Prompt injection.** Ticket text, attachments and evidence reach the model only inside
+  delimited data blocks; drafts must validate against a JSON schema with a citation on
+  every step; the output screen blocks URLs, commands and code the cited evidence lacks.
+- **Isolation.** Retrieval is filtered by department and served status inside SQL; tests
+  assert zero cross-department retrieval.
+- **Access control.** JWT with role-based access; end users never receive drafts, scores
+  or evidence; annotator and participant roles cannot reach ticket endpoints.
+- **Secrets.** The API refuses to start outside development with a default or short
+  `JWT_SECRET_KEY`; gitleaks scans every push.
+- Security tests: [`test_security.py`](backend/tests/test_security.py),
+  [`test_role_matrix.py`](backend/tests/test_role_matrix.py),
+  [`test_config_secret.py`](backend/tests/test_config_secret.py). Week 11 audit and fixes:
+  [08-security-and-responsible-ai.md](docs/report/08-security-and-responsible-ai.md).
 
-## Limitations and known issues
+## Development progress
 
-- **Synthetic data.** The benchmark and knowledge base are synthetic; retrieval on it is
-  saturated (Recall@5 = 1.0), so retrieval numbers are an upper bound. See
-  [docs/datasheet.md](docs/datasheet.md).
-- **Provisional labels.** Model, baseline and threshold numbers use LLM-judge labels until
-  human labels are collected.
-- **No fast lane yet.** On the current calibration data no threshold can be certified
-  for a 10% error budget, so shown drafts go to the assisted lane.
-- **Unseen topics.** Thresholds certified on known topics do not hold for unseen ones;
-  the shift guard removes about two thirds of the unacceptable unseen-topic drafts that
-  would otherwise be shown, not all of them.
-- **Small validation set.** Changing only the order of training rows moved validation
-  AURC from 0.149 to 0.134; small differences between models are not meaningful.
-- **Output screen trade-off.** Screen-v2 blocks 87 of 1,484 shown benchmark drafts,
-  including 47 the judge rated acceptable that contain commands not in their evidence.
-- **Human review outstanding.** The benchmark freeze is provisional until the 120
-  articles are human-reviewed.
-- **V1 leftovers.** `ai/confidence/` and `PATCH /departments/{id}/threshold` no longer
-  route tickets since the Week 9 lane switch (the admin Departments screen no longer
-  shows that threshold).
-- **Open issue.** In local development, about one admin page load in twenty showed
-  "Could not load …" in a headless browser while the server answered normally; see
-  [docs/bug-bash-week11.md](docs/bug-bash-week11.md).
-- **Local GPU environment.** `uv run` re-syncs the environment from the lock file and
-  installs the CPU build of PyTorch; a CUDA build installed for speed must be reinstalled
-  afterwards.
+<table>
+<tr>
+<th width="34%">✅ Completed</th>
+<th width="33%">🔄 In progress</th>
+<th width="33%">⏳ Upcoming</th>
+</tr>
+<tr>
+<td valign="top">
 
-## Roadmap
+- Full system: three roles, gated pipeline, fail-closed lanes
+- Benchmark freeze and sealed locked test
+- Hybrid retrieval, cited drafting, claim checking
+- Red team through the full pipeline (0 of 40)
+- Baselines B0–B7, confidence model, ablations, shift study
+- Groundedness audit (3 members, 136 claims)
+- Locked test, run once (judge labels)
+- Report chapters drafted; logbooks weeks 1–12
+- Offline reproduction from a fresh clone
 
-| Week | Focus | Status |
+</td>
+<td valign="top">
+
+- Three-author audit: batch 1 rated, adjudication in progress
+- Final report
+- Rubric pilot: 1 of 3 members' labels in the repository
+
+</td>
+<td valign="top">
+
+- Three-author audit batch 2
+- User study with 6–8 participants (tool ready)
+- Human review of the knowledge base (24 of 120 articles AI-checked only, none human-reviewed)
+- Fresh-setup timing; release tag `v1.0`
+- Demo video, slides and rehearsals
+- Licence decision
+
+</td>
+</tr>
+</table>
+
+### Roadmap
+
+| Week | Milestone | Status |
 |---|---|---|
-| 1–5 | Foundations, walking skeleton, data engine, hybrid retrieval, cited drafts | ✅ Done (`v0.1`, `prereg-v1`, `v0.2`) |
-| 6 | Full pipeline run, security, red team, annotation tool, hard gate | Code done; gate review pending human items |
-| 7 | Signal pipeline, baselines, labelling sprint 1 | Code done; labels pending |
-| 8 | Confidence model, calibration, sealed test set | Code done; labels and kappa pending |
-| 9 | Three-lane gate, workbench, robustness, shift experiments | Code done; team session and study pilot pending |
-| 10 | Locked evaluation | Runner, rehearsal, coverage and fresh-clone check done; the locked test waits for human labels |
-| 11 | User study, hardening, writing | In progress: study tool, security checks, bug bash and report draft v1 done; study sessions pending |
-| 12 | Final integration, release, presentation | In progress: pipeline failure escalation, audit results, review packs, benchmark release script and fresh-clone check done; human labels, locked test and release tag pending |
+| 1–5 | Foundations, walking skeleton, data engine, hybrid retrieval, cited drafts | ✅ `v0.1`, `prereg-v1`, `v0.2` |
+| 6 | Full pipeline, security, red team, annotation tool, hard gate | ✅ |
+| 7 | Signal pipeline, baselines | ✅ on judge labels |
+| 8 | Confidence model, calibration, sealed test set | ✅ on judge labels |
+| 9 | Three-lane gate, reviewer workbench, shift guard | ✅ |
+| 10 | Analytics dashboard, evaluation suite, locked-test rehearsal | ✅ |
+| 11 | User-study tool, security hardening, bug bash, report draft v1 | ✅ tool ready · sessions pending |
+| 12 | Locked test, human evaluation, release, presentation | 🔄 locked test done · author audit, `v1.0` and presentation pending |
 
+Weekly evidence and decisions: logbooks
+[1](docs/logbook/week01.md) · [2](docs/logbook/week02.md) · [3](docs/logbook/week03.md) ·
+[4](docs/logbook/week04.md) · [5](docs/logbook/week05.md) · [6](docs/logbook/week06.md) ·
+[7](docs/logbook/week07.md) · [8](docs/logbook/week08.md) · [9](docs/logbook/week09.md) ·
+[10](docs/logbook/week10.md) · [11](docs/logbook/week11.md) · [12](docs/logbook/week12.md).
 Full plan: [docs/plan/](docs/plan/).
+
+<details>
+<summary><b>Changes to the pre-registered protocol</b></summary>
+
+<br>
+
+Hypotheses were tagged `prereg-v1` on 19 October 2026, before any confidence result. Every
+later change was logged with its reason in [docs/prereg.md](docs/prereg.md) before the data
+it affects was read:
+
+- exact frozen counts (19 Oct); KB amendment 1 (20 Oct); H2 "not testable" rule (21 Oct)
+- H3 exposure and e-AURC, B3 added to the locked evaluation (25 Oct); H2 Platt refit per resplit (26 Oct)
+- outside-reviewer audit kept as an exploratory pilot (2 Nov); 600-draft labelling cancelled in favour of the three-author audit (3 Nov)
+- locked test run once against LLM-judge labels (11 Nov)
+
+</details>
+
+## Limitations
+
+- **Synthetic data.** Benchmark and knowledge base are synthetic; retrieval is saturated
+  (Recall@5 = 1.0), so retrieval numbers are an upper bound ([datasheet](docs/datasheet.md)).
+- **Judge labels.** Confidence results use LLM-judge labels. Humans agree poorly even with
+  each other on these drafts (three-author batch 1: Krippendorff's alpha 0.21 on
+  acceptable vs not), so the judge is not a stand-in for people.
+- **No fast lane.** No threshold is certified for a 10% error budget, so shown drafts go to
+  the assisted lane.
+- **Unseen topics.** Thresholds certified on known topics do not hold for unseen ones; the
+  shift guard reduces exposure but does not remove it.
+- **Permissive claim checker.** NLI passes most claims the members rejected in the
+  groundedness audit.
+- **Output-screen trade-off.** Screen-v2 blocks 87 of 1,484 shown benchmark drafts,
+  including 47 the judge rated acceptable that contain commands not in their evidence.
+- **Knowledge-base review.** No article is human-reviewed yet; the freeze is provisional
+  until it is ([checklists](docs/kb-review/)).
+- **V1 leftovers.** `ai/confidence/` and `PATCH /departments/{id}/threshold` no longer
+  route tickets since the Week 9 lane switch.
+- **Local GPU.** `uv run` re-syncs from the lock file and installs CPU PyTorch; a CUDA build
+  must be reinstalled afterwards.
+
+## Documentation
+
+| Topic | Documents |
+|---|---|
+| Design | [Architecture](docs/architecture.md) (V1, partly superseded) · [LangGraph pipeline](docs/langgraph-pipeline.md) · [ADRs](docs/adr/) · [Ticket lifecycle](docs/ticket-lifecycle.md) · [Authentication](docs/authentication.md) |
+| Research | [Pre-registration](docs/prereg.md) · [Results draft](docs/results-draft.md) · [Results data](docs/results/) · [Confidence model](docs/confidence-model.md) · [Retrieval](docs/retrieval.md) |
+| Report | [Chapters 1–11](docs/report/README.md) · [Model card](docs/model-card.md) · [Datasheet](docs/datasheet.md) · [Third-party licences](docs/third-party-licences.md) |
+| Human evaluation | [Labelling rubric](docs/labelling-rubric.md) · [Groundedness audit](docs/audit/) · [Three-author audit](docs/author-audit/README.md) · [User study](docs/study/user-study/README.md) |
+| Project | [Logbooks](docs/logbook/) · [Submission checklist](docs/submission-checklist.md) · [Definition of done](docs/definition-of-done.md) · [Demo storyboard](docs/demo/storyboard.md) |
+
+> **Screenshots.** Application screenshots are not yet in the repository. The figures in
+> [Results](#results) are generated by the evaluation code.
 
 ## Contributing
 
-This is a three-person capstone; outside contributions are not expected yet. The team
-workflow ([ADR 001](docs/adr/001-repository-and-workflow.md)):
+This is a three-person capstone; outside contributions are not expected yet. Team workflow
+([ADR 001](docs/adr/001-repository-and-workflow.md)):
 
-- One branch per member per week (`week<N>-<member>-<topic>`), merged into `main` only
-  when CI is green; no pull requests.
+- One branch per member per piece of work (`week<N>-<member>-<topic>`), merged into `main`
+  only when CI is green; no pull requests.
 - Short, lowercase commit messages.
-- A change is done when it meets [docs/definition-of-done.md](docs/definition-of-done.md).
-- Run `python tasks.py lint` and `python tasks.py test` before pushing.
+- A change is done when it meets [docs/definition-of-done.md](docs/definition-of-done.md);
+  run `python tasks.py lint` and `python tasks.py test` before pushing.
 
 ## License
 
-No license has been chosen yet: **To be documented.** Until one is added, all rights are
-reserved by the authors. Licences of the models, data and main libraries the project
-uses are listed in [docs/third-party-licences.md](docs/third-party-licences.md).
+No licence has been chosen yet; until one is added, all rights are reserved by the authors.
+Licences of the models, data and libraries used are listed in
+[docs/third-party-licences.md](docs/third-party-licences.md).
 
 ## Authors and acknowledgements
 
-- Rishikesh ([@Rishikesh10925](https://github.com/Rishikesh10925))
-- Aashritha Reddy ([@AashrithaReddy-19](https://github.com/AashrithaReddy-19))
-- Shivaganesh ([@shivv-14](https://github.com/shivv-14))
+<table>
+<tr>
+<td align="center" width="33%"><a href="https://github.com/Rishikesh10925"><b>Rishikesh</b></a><br><sub>@Rishikesh10925</sub></td>
+<td align="center" width="33%"><a href="https://github.com/AashrithaReddy-19"><b>Aashritha Reddy</b></a><br><sub>@AashrithaReddy-19</sub></td>
+<td align="center" width="33%"><a href="https://github.com/shivv-14"><b>Shivaganesh</b></a><br><sub>@shivv-14</sub></td>
+</tr>
+</table>
 
 B.Tech CSE (Data Science), NMIMS MPSTME Hyderabad.
 
-Built on open models and libraries including Qwen2.5 and Llama 3.1 (via Ollama),
-sentence-transformers models (`all-MiniLM-L6-v2`, `ms-marco-MiniLM-L-6-v2`,
-`nli-deberta-v3-base`), LangGraph, FastAPI, PostgreSQL with pgvector, and React.
+Built on open models and libraries including Qwen 2.5 and Llama 3.1 (via Ollama),
+sentence-transformers (`all-MiniLM-L6-v2`, `ms-marco-MiniLM-L-6-v2`, `nli-deberta-v3-base`),
+LangGraph, FastAPI, PostgreSQL with pgvector, and React.
+
+<div align="center">
+<br>
+<sub>TicketSense · a human always makes the final decision</sub>
+</div>
