@@ -375,10 +375,17 @@ uv run python -m app.scripts.load_thresholds \
 | Service | URL |
 |---|---|
 | Web app | http://localhost:3000 |
+| Web app (Vercel) | https://ticketsense-beryl.vercel.app |
 | API | http://localhost:8000 (`GET /health`) |
 | Interactive API docs | http://localhost:8000/docs |
 
 The frontend also runs with hot reload via `npm run dev` in `frontend/`.
+
+> [!NOTE]
+> The Vercel deployment is the frontend only, built to call the API at
+> `http://localhost:8000`. It works in a browser on the same machine while the local API
+> is running (with `https://ticketsense-beryl.vercel.app` in `CORS_ORIGINS`); drafting
+> needs the local Ollama models, so there is no hosted backend.
 
 ### Demo accounts
 
