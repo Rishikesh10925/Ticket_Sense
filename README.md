@@ -18,7 +18,7 @@
 ![Ollama](https://img.shields.io/badge/LLM-local%20via%20Ollama-000000?logo=ollama&logoColor=white)
 
 [Overview](#overview) ·
-[How it works](#how-it-works) ·
+[Architecture](#architecture) ·
 [Results](#results) ·
 [Quick start](#quick-start) ·
 [Progress](#development-progress) ·
@@ -87,47 +87,170 @@ objectives before any confidence result existed:
 | 3 | An honest measurement of how the gate degrades on topics the knowledge base does not cover | H3 |
 | 4 | A small user study of whether the lanes cut handling time without more accepted errors | H4 |
 
-## How it works
+## Architecture
 
-The pipeline is a LangGraph `StateGraph` ([`ai/graph/pipeline.py`](ai/graph/pipeline.py))
-that runs as a background task after a ticket is created
-([`backend/app/services/pipeline.py`](backend/app/services/pipeline.py)).
+TicketSense has two halves that meet in one database table. The **online path** serves
+tickets: a React app, a FastAPI service and a LangGraph pipeline that drafts and gates
+each ticket in the background. The **offline research loop** labels drafts, trains the
+confidence model and certifies lane thresholds; its only hand-off to production is a
+versioned row in `gate_thresholds`. Every model, including the language models, runs
+locally; no external AI API is called.
+
+### System overview
+
+```mermaid
+flowchart TB
+    subgraph WEB["React 19 web app"]
+        direction TB
+        U["End user<br/>submit and follow tickets"]
+        EN["Engineer<br/>queue and workbench"]
+        AD["Admin<br/>console and analytics"]
+        AN["Annotator and participant<br/>labelling and user study"]
+    end
+
+    subgraph SRV["FastAPI service"]
+        direction LR
+        RB["JWT and role checks<br/>scores hidden from end users"] --> RT["Routers<br/>tickets, escalations, analytics,<br/>annotate, study"]
+        RT -->|"POST /tickets"| BG["Background task<br/>run_ticket_pipeline"]
+    end
+
+    PL["LangGraph pipeline<br/>11 nodes, extract to gate"]
+
+    subgraph MOD["Local models"]
+        direction TB
+        OL["Ollama<br/>qwen2.5:7b-instruct"]
+        ST["sentence-transformers<br/>embed, rerank, NLI"]
+        CM["scikit-learn and XGBoost<br/>router and confidence model"]
+    end
+
+    subgraph PG["PostgreSQL 16 + pgvector"]
+        direction TB
+        KB[("kb_chunks<br/>full text + HNSW")]
+        LOG[("Pipeline log<br/>retrieval, drafts, claims,<br/>signals, gate decisions")]
+        TH[("gate_thresholds<br/>versioned, certified")]
+    end
+
+    subgraph OFF["Offline research loop"]
+        direction LR
+        BM["Frozen benchmark<br/>1,775 tickets"] --> BD["Batch drafts"]
+        BD --> JG["LLM judge<br/>llama3.1:8b"]
+        JG --> TR["Train and calibrate"]
+        TR --> LTT["Learn-then-Test<br/>certify thresholds"]
+    end
+
+    WEB -->|"REST + JWT"| SRV
+    SRV -->|"each new ticket"| PL
+    PL -->|"inference"| MOD
+    PL -->|"search KB, log every stage,<br/>read active thresholds"| PG
+    OFF -->|"load_thresholds"| PG
+    PG -.->|"workbench and analytics"| SRV
+```
+
+### The ticket pipeline
+
+`POST /tickets` returns immediately; the graph in
+[`ai/graph/pipeline.py`](ai/graph/pipeline.py) then runs as a background task
+([`backend/app/services/pipeline.py`](backend/app/services/pipeline.py)). Each node is a
+small, separately tested function in [`ai/graph/nodes.py`](ai/graph/nodes.py).
 
 ```mermaid
 flowchart LR
-    T(["Ticket + attachment"]) --> X["Extract<br/>OCR, PDF, logs"]
-    X --> R["Redact<br/>PII"]
-    R --> C["Classify and route<br/>department, priority"]
-    C --> RV["Retrieve<br/>hybrid search + rerank"]
-    RV --> D["Draft<br/>cited JSON, Qwen 2.5 7B"]
-    D --> K["Check claims<br/>NLI + output screen"]
-    K --> S["Signals<br/>31 features"]
-    S --> G{"Confidence<br/>gate"}
-    G -->|fast| F["Pre-filled draft"]
-    G -->|assisted| A["Draft marked verify<br/>+ weakest claims"]
-    G -->|escalate| E["No AI draft<br/>senior queue"]
-    F --> H(["Engineer decides<br/>accept, edit, reject, escalate"])
-    A --> H
-    E --> H
+    IN(["Ticket +<br/>attachment"]) --> S1
+
+    subgraph S1["Stage 1: understand"]
+        direction TB
+        X["extract<br/>OCR, PDF, logs"] --> R["redact<br/>PII removed"]
+        R --> C["classify<br/>department, priority,<br/>uncertainty"]
+        C --> RO["route<br/>assign department"]
+    end
+
+    subgraph S2["Stage 2: answer"]
+        direction TB
+        RV["retrieve<br/>keyword + vector,<br/>RRF, rerank"] --> D["draft<br/>cited JSON +<br/>output screen"]
+        D --> K["check<br/>claim-level NLI"]
+    end
+
+    subgraph S3["Stage 3: decide"]
+        direction TB
+        S["signals<br/>31 features"] --> G{"gate<br/>score + lane"}
+        G -->|"fast or assisted"| SH["show<br/>draft to engineer"]
+        G -->|"escalate"| ES["escalate<br/>no AI draft"]
+    end
+
+    S1 --> S2
+    S2 --> S3
 ```
 
-Every stage writes what it produced, so any decision can be audited afterwards:
-retrieval runs and every candidate's scores (`retrieval_runs`, `retrieval_hits`), the
-structured draft and per-claim support (`drafts`, `draft_claims`), the signal vector
-(`signal_vectors`) and the gate's decision with score, lane and top reasons
-(`gate_decisions`).
+| Node | What it does | What it records |
+|---|---|---|
+| `extract` | Text from image attachments (EasyOCR), PDFs (pypdf) and logs | Augmented ticket text |
+| `redact` | Removes emails, phone numbers, Aadhaar, PAN, card numbers and secrets before any model sees the text | Redacted text on the ticket |
+| `classify` · `route` | Classifier v2 predicts department and priority with max-probability and entropy | Department, uncertainty |
+| `retrieve` | PostgreSQL full text + pgvector HNSW, reciprocal-rank fusion, cross-encoder rerank, scoped to the department and served articles **inside the SQL**; a cross-department probe measures how well other departments match | `retrieval_runs`, `retrieval_hits` with every candidate's scores |
+| `draft` | Qwen 2.5 7B writes a JSON draft with a citation on every step and a can-answer flag; ticket and evidence are passed as delimited data; the output screen removes URLs, commands and code the cited passages lack | `drafts` |
+| `check` | Splits the draft into claims and scores each against its cited passage with NLI | `draft_claims` |
+| `signals` | Builds the 31-feature vector: retrieval, reranker, grounding, consistency, routing, evidence and ticket groups | `signal_vectors` |
+| `gate` | Calibrated confidence score, lane from the active certified thresholds, top reasons | `gate_decisions`, ticket lane |
 
-### The three lanes
+If any stage fails, or the predicted department does not exist, the ticket escalates to
+an admin with the reason recorded. No ticket is left waiting with nobody responsible.
+
+### The confidence gate
 
 | Lane | When | What the engineer sees |
 |---|---|---|
-| **Fast** | score ≥ certified fast threshold | Pre-filled draft with citations |
-| **Assisted** | between the two thresholds | Draft marked "verify", side-by-side evidence, weakest claims first |
-| **Escalate** | below the assisted threshold, the draft cannot answer, the shift guard fires, or no thresholds are certified | No AI draft; evidence only; senior queue |
+| **Fast** | score ≥ certified fast threshold, and the draft can answer | Pre-filled draft with citations |
+| **Assisted** | score ≥ certified assisted threshold | Draft marked "verify", evidence side by side, weakest claims first |
+| **Escalate** | otherwise, or the draft cannot answer, the shift guard fires, or nothing is certified | No AI draft; evidence only |
 
-The **shift guard** escalates a ticket when the router is unsure (department probability
-below 0.5, or another department within 0.1). It was chosen on held-out topics to limit
-damage on questions the knowledge base does not cover.
+- **Fail closed.** A lane whose threshold could not be certified stays shut; with no
+  active threshold set, every ticket escalates.
+- **Certified, not tuned.** Thresholds come from Learn-then-Test on calibration data,
+  which controls the fast lane's unacceptable-draft rate at the budget α with high
+  probability.
+- **Shift guard.** Escalates when the router's department probability is below 0.5, or
+  another department's knowledge base matches the ticket within 0.1: the cases where the
+  certified risk no longer holds.
+
+### Ticket lifecycle
+
+The status machine in
+[`ticket_lifecycle.py`](backend/app/services/ticket_lifecycle.py) has no automatic
+resolution: a ticket reaches `reviewed` only when a person has written or approved its reply.
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    [*] --> submitted
+    submitted --> classified
+    classified --> routed
+    routed --> drafted: gate shows a draft
+    routed --> escalated: gate escalates
+    submitted --> escalated: pipeline failure
+    classified --> escalated: unknown department
+    drafted --> reviewed: engineer accepts, edits or rejects
+    drafted --> escalated: engineer escalates
+    escalated --> reviewed: admin assigns, engineer answers
+    escalated --> closed: admin rejects
+    reviewed --> closed
+    closed --> [*]
+```
+
+### Design principles
+
+| Principle | How it shows up in the code |
+|---|---|
+| **A human always decides** | The lifecycle has no automatic resolution; a draft is a suggestion an engineer accepts, edits, rejects or escalates |
+| **Fail closed** | Missing thresholds, a cannot-answer draft, a shift-guard trip or a pipeline error all escalate |
+| **Everything is logged** | Each node persists its output, so any lane decision can be traced back to its evidence and signals |
+| **Isolation in the database** | Department and served-article filters are part of the retrieval SQL, and tests assert zero cross-department hits |
+| **Data is not instructions** | Ticket text, attachments and evidence reach the model only inside delimited blocks; drafts must pass a JSON schema and the output screen |
+| **Research and serving share code** | The offline loop and the live gate import the same `ai/` packages, so what is evaluated is what runs |
+
+Further reading: [LangGraph pipeline](docs/langgraph-pipeline.md) ·
+[system design chapter](docs/report/03-system-design.md) ·
+[confidence engine chapter](docs/report/06-confidence-engine.md) ·
+[ticket lifecycle](docs/ticket-lifecycle.md) · [ADRs](docs/adr/)
 
 ## Features
 
