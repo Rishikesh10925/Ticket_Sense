@@ -637,6 +637,7 @@ python tasks.py reproduce   # regenerate docs/results/
 - Fresh-setup timing; release tag `v1.0`
 - Demo video, slides and rehearsals
 - Licence decision
+- Future: Chrome extension that answers from the knowledge base or pre-fills the right complaint portal ([details](#future-enhancements))
 
 </td>
 </tr>
@@ -677,6 +678,57 @@ it affects was read:
 - locked test run once against LLM-judge labels (11 Nov)
 
 </details>
+
+### Future enhancements
+
+> [!NOTE]
+> **Planned, not implemented.** Nothing in this section exists in the repository yet.
+
+#### TicketSense browser extension: answer from the knowledge base, or file the complaint for you
+
+A Chrome extension (Manifest V3) that brings TicketSense to wherever the user already is.
+The user describes a problem in a side panel; the extension sends it to the TicketSense API,
+which runs the same pipeline as the web app. **If the knowledge base can answer**, the user
+gets the cited answer in the panel. **If it cannot**, the extension opens the right
+complaint portal for that department or organisation, fills in the form from the ticket,
+and leaves the final **Submit** to the user.
+
+```mermaid
+flowchart LR
+    U(["User describes<br/>the problem"]) --> P["Extension side panel"]
+    P -->|"REST + token"| API["TicketSense API"]
+    API --> PIPE["Existing pipeline<br/>redact, route, retrieve,<br/>draft, check, gate"]
+    PIPE --> Q{"Can the knowledge<br/>base answer?"}
+    Q -->|"yes, certified lane"| ANS["Cited answer<br/>in the panel"]
+    Q -->|"no, or escalate"| REG["Portal registry<br/>department to portal URL"]
+    REG --> TAB["Open the portal<br/>in a new tab"]
+    TAB --> FILL["Content script fills<br/>the form from the ticket"]
+    FILL --> SUB(["User reviews<br/>and clicks Submit"])
+    ANS --> FB["Helpful or not<br/>feedback to the API"]
+```
+
+| Part | What it would involve |
+|---|---|
+| **Extension shell** | Manifest V3 service worker and side panel, reusing the React components and API client from [`frontend/`](frontend/) |
+| **Answer path** | A new end-user answer endpoint that returns a draft only when the gate certifies it. Today end users never see drafts and the fast lane is closed on current labels, so this path depends on a certified fast lane |
+| **Portal registry** | An admin-managed table mapping each department (or organisation) to its complaint portal URL and form adapter, edited from the admin console |
+| **Form adapters** | One small adapter per supported portal that maps ticket fields (subject, description, category, attachment) to that site's form fields; unknown portals fall back to copy-to-clipboard with the portal link |
+| **Status tracking** | Store the portal's reference number back on the ticket so the user and admin can follow it in TicketSense |
+
+**Design rules carried over from TicketSense**
+
+- **A human submits.** The extension pre-fills but never submits a third-party form on its
+  own: the user reviews and clicks Submit, which also respects each site's terms, sign-in
+  and CAPTCHAs.
+- **Fail closed.** If the gate is not certain, the user is sent to the portal rather than
+  shown an uncertain answer.
+- **Privacy first.** The PII redaction step runs before any model call, as it does now;
+  the original values go only into the form the user is looking at.
+- **Least privilege.** Host permissions only for registered portal domains and the
+  TicketSense API, requested at install time and listed in the store description.
+
+Other ideas under consideration: human-labelled thresholds so the fast lane can open;
+a hosted backend with a GPU so the deployed web app works beyond one machine.
 
 ## Limitations
 
