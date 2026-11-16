@@ -553,6 +553,62 @@ export async function updateDepartmentThreshold(
   return res.json();
 }
 
+// Complaint portals for the browser extension (migration 0024): where a ticket the
+// knowledge base cannot answer is filed. One per department, plus one default.
+export const PORTAL_FIELDS = ["subject", "description", "category", "priority", "name", "email", "ticket_ref"] as const;
+
+export interface ComplaintPortal {
+  id: string;
+  department_id: string | null;
+  department_name: string | null;
+  name: string;
+  url: string;
+  field_map: Record<string, string>;
+  reference_selector: string | null;
+  active: boolean;
+  updated_at: string;
+}
+
+export interface ComplaintPortalInput {
+  department_id: string | null;
+  name: string;
+  url: string;
+  field_map: Record<string, string>;
+  reference_selector: string | null;
+  active: boolean;
+}
+
+async function errorText(res: Response): Promise<string> {
+  try {
+    const body = await res.json();
+    if (Array.isArray(body.detail)) return body.detail.map((d: { msg: string }) => d.msg).join("; ");
+    return body.detail ?? res.statusText;
+  } catch {
+    return res.statusText;
+  }
+}
+
+export async function listPortals(token: string): Promise<ComplaintPortal[]> {
+  const res = await fetch(`${API_URL}/portals`, { headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+  return res.json();
+}
+
+export async function savePortal(token: string, body: ComplaintPortalInput): Promise<ComplaintPortal> {
+  const res = await fetch(`${API_URL}/portals`, {
+    method: "PUT",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new ApiError(res.status, await errorText(res));
+  return res.json();
+}
+
+export async function deletePortal(token: string, portalId: string): Promise<void> {
+  const res = await fetch(`${API_URL}/portals/${portalId}`, { method: "DELETE", headers: authHeaders(token) });
+  if (!res.ok) throw new ApiError(res.status, await parseErrorDetail(res));
+}
+
 export interface ReviewActionCounts {
   accept: number;
   edit: number;

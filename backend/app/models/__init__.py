@@ -9,6 +9,7 @@ from app.models.feedback import Feedback
 from app.models.kb_chunk import KBChunk
 from app.models.knowledge_base import KnowledgeBase
 from app.models.message import Message
+from app.models.portal import ComplaintPortal
 from app.models.retrieval_run import RetrievalHit, RetrievalRun
 from app.models.study import StudyParticipant, StudyTask
 from app.models.ticket import Ticket
@@ -19,6 +20,7 @@ __all__ = [
     "Annotator",
     "Base",
     "BenchmarkTicket",
+    "ComplaintPortal",
     "Department",
     "Draft",
     "DraftClaim",

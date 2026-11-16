@@ -5,7 +5,9 @@ from app.config import settings
 from app.routers import (
     analytics,
     annotate,
+    assist,
     auth,
+    demo_portal,
     departments,
     escalations,
     gate,
@@ -39,3 +41,6 @@ app.include_router(messages.router)
 app.include_router(annotate.router)
 app.include_router(gate.router)
 app.include_router(study.router)
+app.include_router(assist.router)
+app.include_router(assist.portals_router)
+app.include_router(demo_portal.router)

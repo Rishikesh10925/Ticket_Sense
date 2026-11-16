@@ -11,6 +11,7 @@ const TABS = [
   { to: "/admin/engineers", label: "Engineers" },
   { to: "/admin/departments", label: "Departments" },
   { to: "/admin/knowledge-base", label: "Knowledge Base" },
+  { to: "/admin/portals", label: "Complaint Portals" },
   { to: "/admin/analytics", label: "Analytics" },
   { to: "/admin/model-health", label: "Model Health" },
   { to: "/admin/error-budget", label: "Error Budget" },

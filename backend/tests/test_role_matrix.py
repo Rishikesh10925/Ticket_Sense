@@ -42,6 +42,9 @@ MATRIX = [
     ("GET", f"/messages/thread/{NIL}", None, STAFF),
     ("POST", "/messages", {"recipient_id": NIL, "body": "hi"}, STAFF),
     ("GET", "/tickets", None, ANY_SIGNED_IN),
+    ("GET", "/portals", None, ADMIN),
+    ("PUT", "/portals", {"name": "P", "url": "https://example.org/c"}, ADMIN),
+    ("DELETE", f"/portals/{NIL}", None, ADMIN),
 ]
 
 

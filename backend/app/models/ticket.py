@@ -61,4 +61,11 @@ class Ticket(UUIDPKMixin, CreatedAtMixin, Base):
     # explainable even after an admin adjusts the department's threshold. See
     # docs/confidence-model.md.
     confidence_threshold: Mapped[float | None] = mapped_column(Numeric(), nullable=True)
+    # Browser extension (migration 0024): the complaint portal the user filed this
+    # ticket with, and the reference number that portal gave back.
+    portal_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("complaint_portals.id", ondelete="SET NULL"), nullable=True
+    )
+    portal_reference: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    portal_submitted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

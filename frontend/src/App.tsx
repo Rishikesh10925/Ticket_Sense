@@ -16,6 +16,7 @@ import AdminCustomers from "./pages/admin/AdminCustomers";
 import AdminEngineers from "./pages/admin/AdminEngineers";
 import AdminDepartments from "./pages/admin/AdminDepartments";
 import AdminKnowledgeBase from "./pages/admin/AdminKnowledgeBase";
+import AdminPortals from "./pages/admin/AdminPortals";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminModelHealth from "./pages/admin/AdminModelHealth";
 import AdminErrorBudget from "./pages/admin/AdminErrorBudget";
@@ -67,6 +68,7 @@ export default function App() {
                     <Route path="engineers" element={<AdminEngineers />} />
                     <Route path="departments" element={<AdminDepartments />} />
                     <Route path="knowledge-base" element={<AdminKnowledgeBase />} />
+                    <Route path="portals" element={<AdminPortals />} />
                     <Route path="analytics" element={<AdminAnalytics />} />
                     <Route path="model-health" element={<AdminModelHealth />} />
                     <Route path="error-budget" element={<AdminErrorBudget />} />

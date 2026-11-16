@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TicketSense</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <header class="bar">
+    <img src="icons/icon48.png" alt="" width="22" height="22">
+    <strong>TicketSense</strong>
+    <span id="who" class="who"></span>
+    <button id="settings-btn" class="link" type="button" title="Settings">Settings</button>
+  </header>
+
+  <div id="error" class="alert error" role="alert" hidden></div>
+
+  <!-- Settings -->
+  <section id="view-settings" class="view" hidden>
+    <h2>Settings</h2>
+    <label for="api-base">TicketSense API address</label>
+    <input id="api-base" type="url" placeholder="http://localhost:8000" required>
+    <p class="hint">Another address asks for permission to reach that site.</p>
+    <div class="actions">
+      <button id="save-settings" type="button">Save</button>
+      <button id="close-settings" class="secondary" type="button">Back</button>
+    </div>
+  </section>
+
+  <!-- Sign in -->
+  <section id="view-login" class="view" hidden>
+    <h2>Sign in</h2>
+    <p class="hint">Use your TicketSense account.</p>
+    <form id="login-form">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="username" required>
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <div class="actions"><button type="submit">Sign in</button></div>
+    </form>
+  </section>
+
+  <!-- Ask -->
+  <section id="view-ask" class="view" hidden>
+    <h2>What's the problem?</h2>
+    <form id="ask-form">
+      <label for="subject">Subject</label>
+      <input id="subject" maxlength="255" required placeholder="VPN keeps disconnecting">
+      <label for="description">Details</label>
+      <textarea id="description" required placeholder="What happened, what you tried, any error message"></textarea>
+      <p id="source-note" class="hint" hidden></p>
+      <p class="hint">Tip: select text on any page, right-click, and choose "Ask TicketSense".</p>
+      <div class="actions">
+        <button type="submit">Ask TicketSense</button>
+      </div>
+    </form>
+    <h3>Your tickets</h3>
+    <ul id="ticket-list" class="tickets"><li class="hint">No tickets yet.</li></ul>
+    <div class="actions"><button id="logout" class="link" type="button">Sign out</button></div>
+  </section>
+
+  <!-- Result for one ticket -->
+  <section id="view-ticket" class="view" hidden>
+    <button id="back" class="link" type="button">&larr; All tickets</button>
+    <h2 id="t-subject"></h2>
+    <p id="t-message" class="message"></p>
+
+    <div id="t-processing" class="processing" hidden>
+      <span class="spinner" aria-hidden="true"></span>
+      Searching the knowledge base and drafting an answer&hellip;
+    </div>
+
+    <div id="t-answer" hidden>
+      <div id="t-verify" class="alert warn" hidden>
+        <strong>Check before you act.</strong> This answer was not certified and an engineer has not reviewed
+        it yet. An engineer will also reply in TicketSense.
+      </div>
+      <pre id="t-answer-text" class="answer"></pre>
+      <h3>Sources</h3>
+      <ol id="t-sources" class="sources"></ol>
+      <div class="actions">
+        <button id="solved" type="button">This solved it</button>
+        <button id="not-solved" class="secondary" type="button">Didn't help: file a complaint</button>
+      </div>
+    </div>
+
+    <div id="t-final" hidden>
+      <h3>Engineer's reply</h3>
+      <pre id="t-final-text" class="answer"></pre>
+    </div>
+
+    <div id="t-portal" class="portal" hidden>
+      <h3 id="t-portal-name"></h3>
+      <p class="hint">TicketSense opens the portal and fills in the form below. <strong>You review it and
+        click Submit</strong>; the extension never submits for you.</p>
+      <dl id="t-portal-values" class="values"></dl>
+      <div class="actions"><button id="open-portal" type="button">Open portal and fill the form</button></div>
+      <p id="t-portal-status" class="hint" aria-live="polite"></p>
+    </div>
+
+    <p id="t-reference" class="alert ok" hidden></p>
+  </section>
+
+  <script type="module" src="sidepanel.js"></script>
+</body>
+</html>

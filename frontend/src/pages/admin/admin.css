@@ -171,3 +171,10 @@
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
+
+/* Complaint portals (browser extension) */
+.dept-panel details { margin: 8px 0; }
+.dept-panel details summary { cursor: pointer; color: var(--color-text-muted, inherit); }
+.dept-panel textarea { width: 100%; font-family: ui-monospace, monospace; font-size: 12.5px; }
+.portal-active { display: inline-flex; align-items: center; gap: 6px; margin: 6px 0; }
+.portal-actions { display: flex; gap: 8px; margin-top: 8px; }
